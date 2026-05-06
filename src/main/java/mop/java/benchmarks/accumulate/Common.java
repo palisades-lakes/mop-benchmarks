@@ -30,7 +30,7 @@ import mop.java.prng.PRNG;
 /** Test utilities
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2022-11-07
+ * @version 2026-05-06
  */
 @SuppressWarnings("unchecked")
 public final class Common {
@@ -44,6 +44,7 @@ public final class Common {
       Arrays.asList(
         new String[]
           { "mop.java.accumulators.DoubleAccumulator",
+            "mop.java.accumulators.DDAccumulator",
             "mop.java.accumulators.KahanAccumulator",
           }); }
 
@@ -1002,14 +1003,19 @@ public final class Common {
 
       final double x1o = Math.nextDown(x);
       final Object flo = fromDouble.apply(x1o);
-      Assertions.assertTrue(compareValues.applyAsInt(flo,f) < 0,
-        "\nf=" + f + " > flo=" + flo);
-      Assertions.assertTrue(compareValues.applyAsInt(flo,fx) <= 0);
+      Assertions.assertTrue(
+        compareValues.applyAsInt(flo,f) < 0,
+        "\nf=" + toString.apply(f) +
+          " > flo=" + toString.apply(flo));
+      Assertions.assertTrue(
+        compareValues.applyAsInt(flo,fx) <= 0);
 
       final double xhi = Math.nextUp(x);
       final Object fhi = fromDouble.apply(xhi);
-      Assertions.assertTrue(compareValues.applyAsInt(f,fhi) < 0,
-        "\nf=" + f + " < fhi=" + fhi);
+      Assertions.assertTrue(
+        compareValues.applyAsInt(f,fhi) < 0,
+        "\nf=" + toString.apply(f)
+          + " < fhi=" + toString.apply(fhi));
       Assertions.assertTrue(compareValues.applyAsInt(fx,fhi) <= 0);
 
       final Object dlo = dist.apply(f,flo);

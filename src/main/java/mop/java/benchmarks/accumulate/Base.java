@@ -14,7 +14,7 @@ import org.openjdk.jmh.infra.Blackhole;
  * Benchmark operations on <code>double[]</code>.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-05-03
+ * @version 2026-05-05
  */
 
 //@SuppressWarnings("unchecked")
@@ -85,9 +85,9 @@ public abstract class Base {
     //"8388609",
     //"4194303",
     //"2097153",
-    //"1048575",
+    "1048575",
     //"524289",
-    "131071",
+    //"131071",
   })
   int dim;
 

@@ -4,7 +4,7 @@ package mop.java.benchmarks.accumulate;
  * mvn install & jmh mop.java.benchmarks.accumulate.Totals
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-05-04
+ * @version 2026-05-05
  */
 
 public final class Totals {

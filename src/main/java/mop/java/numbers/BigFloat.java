@@ -26,6 +26,7 @@ implements Ringlike<BigFloat> {
   private final boolean _nonNegative;
   public final boolean nonNegative () { return _nonNegative; }
 
+  // TODO: long exponent?
   private final int _exponent;
   public final int exponent () { return _exponent; }
 
@@ -334,7 +335,7 @@ implements Ringlike<BigFloat> {
     return s; }
 
   //--------------------------------------------------------------
-  /** Exact <code>a*x+y</code> (aka fma). */
+  /** 'Exact' <code>(a*x) + y</code> (aka fma). */
 
   public static final BigFloat
   axpy (final double a,
@@ -362,7 +363,7 @@ implements Ringlike<BigFloat> {
 
   //    return valueOf(y).addProduct(a,x); }
 
-  /** Exact <code>a*x+y</code> (aka fma). */
+  /** 'Exact' <code>(a*x) + y</code> (aka fma). */
 
   public static final BigFloat[]
     axpy (final double[] a,
@@ -375,7 +376,7 @@ implements Ringlike<BigFloat> {
     for (int i=0;i<n;i++) { bf[i] = axpy(a[i],x[i],y[i]); }
     return bf; }
 
-  /** Exact <code>this*x+y</code> (aka fma). */
+  /** 'Exact' <code>(this*x) + y</code> (aka fma). */
 
   public static final BigFloat
   axpy (final double a,
@@ -383,7 +384,7 @@ implements Ringlike<BigFloat> {
         final double y) {
     return x.multiply(a).add(y); }
 
-  /** Exact <code>a*this+y</code> (aka fma). */
+  /** Exact <code>(a*x) + y</code> (aka fma). */
 
   public static final BigFloat[] axpy (final double[] a,
                                        final BigFloat[] x,
@@ -465,7 +466,7 @@ implements Ringlike<BigFloat> {
   // Number methods
   //--------------------------------------------------------------
   /** Unsupported.
-   *
+   * <br>
    * TODO: should it really truncate or round instead? Or
    * should there be more explicit round, floor, ceil, etc.?
    */
@@ -474,7 +475,7 @@ implements Ringlike<BigFloat> {
     throw Exceptions.unsupportedOperation(this,"intValue"); }
 
   /** Unsupported.
-   *
+   * <br>
    * TODO: should it really truncate or round instead? Or
    * should there be more explicit round, floor, ceil, etc.?
    */
@@ -533,6 +534,7 @@ implements Ringlike<BigFloat> {
     if (s0.isZero()) { return (p0 ? 0.0F : -0.0F); }
     // DANGER: what if hiBit isn't in the int range?
     final int eh = s0.hiBit();
+    // TODO: does Math.clamp work here? faster?
     final int es =
       Math.max(Floats.MINIMUM_EXPONENT_INTEGRAL_SIGNIFICAND-e0,
         Math.min(
@@ -612,6 +614,7 @@ implements Ringlike<BigFloat> {
                                           final int e0) {
     if (s0.isZero()) { return (p0 ? 0.0 : -0.0); }
     final int eh = s0.hiBit();
+    // TODO: does Math.clamp work here? faster?
     final int es =
       Math.max(Doubles.MINIMUM_EXPONENT_INTEGRAL_SIGNIFICAND-e0,
         Math.min(
