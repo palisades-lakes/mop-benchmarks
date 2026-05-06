@@ -17,7 +17,7 @@ public final class NaturalInts {
      * The maximum number of words, determined to hold
      * {@link #MAX_BITS}.
      */
-    final static int MAX_WORDS = (Integer.MAX_VALUE >> 5);
+    public final static int MAX_WORDS = (Integer.MAX_VALUE >> 5);
 
     /** The value of <code>hiBit</code> is assumed to fit in an
      * <code>int</code>. That means it can be at most
