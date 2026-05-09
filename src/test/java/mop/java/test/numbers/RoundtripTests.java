@@ -1,9 +1,18 @@
 package mop.java.test.numbers;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.math.MathContext;
+import java.math.RoundingMode;
+import java.util.List;
 
+import clojure.lang.Numbers;
+import clojure.lang.Ratio;
+import mop.java.numbers.DD;
+import org.apache.commons.math3.fraction.BigFraction;
 import org.junit.jupiter.api.Test;
 
 import com.upokecenter.numbers.EFloat;
@@ -24,7 +33,7 @@ import mop.java.accumulators.EFloatAccumulator;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2019-10-12
+ * @version 2026-05-08
  */
 
 public final class RoundtripTests {
@@ -49,260 +58,239 @@ public final class RoundtripTests {
   //--------------------------------------------------------------
   // continued fraction like
 
-  //  private static final double toDoubleGT1 (final BigInteger n,
-  //                                           final BigInteger d) {
-  //    assert 0 < n.compareTo(d);
-  //    final BigInteger[] qr = n.divideAndRemainder(d);
-  //    if (0 == qr[1].signum()) { return qr[0].doubleValue(); }
-  //    return qr[0].doubleValue() + (1.0/toDoubleGT0(d,qr[1])); }
-  //
-  //
-  //  private static final double toDoubleGT0 (final BigInteger n,
-  //                                           final BigInteger d) {
-  //    final int c = n.compareTo(d);
-  //    if (0 == c) { return 1.0; }
-  //    if (0 > c) { return 1.0/toDoubleGT1(d,n); }
-  //    return toDoubleGT1(n,d); }
+//    private static final double toDoubleGT1 (final BigInteger n,
+//                                             final BigInteger d) {
+//      assert 0 < n.compareTo(d);
+//      final BigInteger[] qr = n.divideAndRemainder(d);
+//      if (0 == qr[1].signum()) { return qr[0].doubleValue(); }
+//      return qr[0].doubleValue() + (1.0/toDoubleGT0(d,qr[1])); }
+//
+//
+//    private static final double toDoubleGT0 (final BigInteger n,
+//                                             final BigInteger d) {
+//      final int c = n.compareTo(d);
+//      if (0 == c) { return 1.0; }
+//      if (0 > c) { return 1.0/toDoubleGT1(d,n); }
+//      return toDoubleGT1(n,d); }
 
   /** Trial and error.
    */
-  //  public static final double toDouble (final BigFraction f) {
-  //    final BigFraction fr = f.reduce();
-  //    final BigInteger n = fr.getNumerator();
-  //    final BigInteger d = fr.getDenominator();
-  //    assert 1 == d.signum() :
-  //      n + "\n" + d;
-  //    final int ns = n.signum();
-  //    if (0 == ns) { return 0.0; }
-  //    if (-1 == ns) { return - toDoubleGT0(n.negate(),d); }
-  //    return toDoubleGT0(n,d);  }
+//    public static final double toDouble (final BigFraction f) {
+//      final BigFraction fr = f.reduce();
+//      final BigInteger n = fr.getNumerator();
+//      final BigInteger d = fr.getDenominator();
+//      assert 1 == d.signum() :
+//        n + "\n" + d;
+//      final int ns = n.signum();
+//      if (0 == ns) { return 0.0; }
+//      if (-1 == ns) { return - toDoubleGT0(n.negate(),d); }
+//      return toDoubleGT0(n,d);  }
 
   //--------------------------------------------------------------
   // shift 1 hack
 
-  //  private static final double toDouble (final BigInteger n,
-  //                                        final BigInteger d) {
-  //    final double nx = n.doubleValue();
-  //    final double dx = d.doubleValue();
-  //    System.out.println(
-  //      n + "\n" + d + "\n" +
-  //        Double.toHexString(nx) + "\n" +
-  //        Double.toHexString(dx));
-  //    if (Double.isInfinite(nx) || Double.isInfinite(dx)) {
-  //      return toDouble(n.shiftDown(1),d.shiftDown(1)); }
-  //    return nx / dx;  }
-  //
-  //  public static final double toDouble (final BigFraction f) {
-  //    final BigFraction fr = f.reduce();
-  //    final BigInteger n = fr.getNumerator();
-  //    final BigInteger d = fr.getDenominator();
-  //    assert 1 == d.signum() :
-  //      n + "\n" + d;
-  //    final int ns = n.signum();
-  //    if (0 == ns) { return 0.0; }
-  //    if (-1 == ns) { return - toDouble(n.negate(),d); }
-  //    return toDouble(n,d);  }
+//    private static final double toDouble (final BigInteger n,
+//                                          final BigInteger d) {
+//      final double nx = n.doubleValue();
+//      final double dx = d.doubleValue();
+//      System.out.println(
+//        n + "\n" + d + "\n" +
+//          Double.toHexString(nx) + "\n" +
+//          Double.toHexString(dx));
+//      if (Double.isInfinite(nx) || Double.isInfinite(dx)) {
+//        return toDouble(n.shiftDown(1),d.shiftDown(1)); }
+//      return nx / dx;  }
+
+//    public static final double toDouble (final BigFraction f) {
+//      final BigFraction fr = f.reduce();
+//      final BigInteger n = fr.getNumerator();
+//      final BigInteger d = fr.getDenominator();
+//      assert 1 == d.signum() :
+//        n + "\n" + d;
+//      final int ns = n.signum();
+//      if (0 == ns) { return 0.0; }
+//      if (-1 == ns) { return - toDouble(n.negate(),d); }
+//      return toDouble(n,d);  }
 
   //--------------------------------------------------------------
   // BigFraction
   // within an ulp, not exact...
 
-  //  private static final double toDouble (final BigFraction f) {
-  //    //final BigFraction fr = f.reduce();
-  //    final BigInteger n = f.getNumerator();
-  //    final int ns = n.signum();
-  //    if (0 == ns) { return 0.0; }
-  //    if (0 > ns) { return - toDouble(f.negate()); }
-  //    final BigInteger d = f.getDenominator();
-  //    final BigDecimal n10 = new BigDecimal(n);
-  //    final BigDecimal d10 = new BigDecimal(d);
-  //    //final MathContext mc = MathContext.DECIMAL128;
-  //    final MathContext mc = new MathContext(128,RoundingMode.HALF_UP);
-  //    final BigDecimal x10 = n10.divide(d10,mc);
-  //    final double x = x10.doubleValue();
-  //    if (Doubles.isNormal(x)) { return x; }
-  //    return 2.0*x; }
-  //  //    return toDouble(f.multiply(2)); }
+    private static final double toDouble (final BigFraction f) {
+      //final BigFraction fr = f.reduce();
+      final BigInteger n = f.getNumerator();
+      final int ns = n.signum();
+      if (0 == ns) { return 0.0; }
+      if (0 > ns) { return - toDouble(f.negate()); }
+      final BigInteger d = f.getDenominator();
+      final BigDecimal n10 = new BigDecimal(n);
+      final BigDecimal d10 = new BigDecimal(d);
+      //final MathContext mc = MathContext.DECIMAL128;
+      final MathContext mc = new MathContext(128, RoundingMode.HALF_UP);
+      final BigDecimal x10 = n10.divide(d10,mc);
+      final double x = x10.doubleValue();
+      if (Doubles.isNormal(x)) { return x; }
+      return 2.0*x; }
+    //    return toDouble(f.multiply(2)); }
 
-  //--------------------------------------------------------------
+    //--------------------------------------------------------------
 
+    public static final boolean double2BigFraction2Double1022 () {
+      final double x = -0x0.19c0ba819d5c3p-1022;
+      final BigFraction f = new BigFraction(x);
+      final double xf = toDouble(f);
+      System.out.println("\n\n" +
+        "toDouble:" + Doubles.isNormal(x) +"\n" +
+        x + "\n" +
+        xf + "\n\n" +
+        Double.toHexString(x) + "\n" +
+        Double.toHexString(xf) + "\n\n" +
+  //      f.getNumerator() + "\n" +
+  //      f.getDenominator() + "\n\n" +
+        f.getNumerator().toString(16) + "\n" +
+        f.getDenominator().toString(16));
+      //final double dx = Math.abs(x - xf);
+      //if (dx > Math.ulp(x)) {
+      return (x == xf); }
 
-  //  public static final boolean double2ERational2Double () {
-  //    final double x = -0x0.19c0ba819d5c3p-1022;
-  //    final ERational f = ERational.FromDouble(x);
-  //    final double xf = f.ToDouble();
-  //    System.out.println("\n\n" +
-  //      "ERational.ToDouble:" + Doubles.isNormal(x) +"\n" +
-  //      x + "\n" +
-  //      xf + "\n\n" +
-  //      Double.toHexString(x) + "\n" +
-  //      Double.toHexString(xf) + "\n\n" +
-  ////      f.getNumerator() + "\n" +
-  ////      f.getDenominator() + "\n\n" +
-  //      f.getNumerator().ToRadixString(16) + "\n" +
-  //      f.getDenominator().ToRadixString(16));
-  //    //final double dx = Math.abs(x - xf);
-  //    //if (dx > Math.ulp(x)) {
-  //    if (x != xf) {
-  //      return false; }
-  //    return true; }
+  public static final boolean double2BigFraction2Double () {
+    for (final Generator g : List.of(
+      finiteDoubles(), subnormalDoubles(), normalDoubles())) {
+      for (int i=0;i<TRYS;i++) {
+        final double x = g.nextDouble();
+        final BigFraction f = new BigFraction(x);
+        final double xf = toDouble(f);
+        if (x != xf) {
+          //        final double dx = Math.abs(x - xf);
+          //        if (dx > Math.ulp(x)) {
+          System.out.println("\n\n" +
+                               "toDouble:" + i + " " + Doubles.isNormal(x) +"\n" +
+                               x + "\n" +
+                               xf + "\n\n" +
+                               Double.toHexString(x) + "\n" +
+                               Double.toHexString(xf) + "\n\n" +
+                               f.getNumerator().toString(16) + "\n" +
+                               f.getDenominator().toString(16));
+          return false; } } }
+    return true; }
 
-  //  public static final boolean double2BigFraction2Double () {
-  //    final double x = -0x0.19c0ba819d5c3p-1022;
-  //    final BigFraction f = new BigFraction(x);
-  //    final double xf = toDouble(f);
-  //    System.out.println("\n\n" +
-  //      "toDouble:" + Doubles.isNormal(x) +"\n" +
-  //      x + "\n" +
-  //      xf + "\n\n" +
-  //      Double.toHexString(x) + "\n" +
-  //      Double.toHexString(xf) + "\n\n" +
-  ////      f.getNumerator() + "\n" +
-  ////      f.getDenominator() + "\n\n" +
-  //      f.getNumerator().toString(16) + "\n" +
-  //      f.getDenominator().toString(16));
-  //    //final double dx = Math.abs(x - xf);
-  //    //if (dx > Math.ulp(x)) {
-  //    if (x != xf) {
-  //      return false; }
-  //    return true; }
+    //--------------------------------------------------------------
 
-  //  public static final boolean double2BigFraction2Double () {
-  //    final Generator g =
-  //      finiteDoubles();
-  //    //      subnormalDoubles();
-  //    for (int i=0;i<TRYS;i++) {
-  //      final double x = g.nextDouble();
-  //      final BigFraction f = new BigFraction(x);
-  //      final double xf = toDouble(f);
-  //      if (x != xf) {
-  //        //        final double dx = Math.abs(x - xf);
-  //        //        if (dx > Math.ulp(x)) {
-  //        System.out.println("\n\n" +
-  //          "toDouble:" + i + " " + Doubles.isNormal(x) +"\n" +
-  //          x + "\n" +
-  //          xf + "\n\n" +
-  //          Double.toHexString(x) + "\n" +
-  //          Double.toHexString(xf) + "\n\n" +
-  //          f.getNumerator().toString(16) + "\n" +
-  //          f.getDenominator().toString(16));
-  //        return false; } }
-  //    return true; }
+    // Fails.
+//    /** Based on Rational.doubleValue() from jscience 4.3.1
+//     */
 
-  //--------------------------------------------------------------
+//    public static final double
+//    toDoubleJScience (final BigFraction f) {
+//      final BigInteger _dividend = f.getNumerator();
+//      final BigInteger _divisor = f.getDenominator();
+//      // Avoid negative numbers (ref. bitLength)
+//      if (-1 == _dividend.signum()) {
+//        return - toDoubleJScience(f.abs()); }
+//
+//      // Normalize to 63 bits (minimum).
+//      final int dividendBitLength = _dividend.bitLength();
+//      final int divisorBitLength = _divisor.bitLength();
+//      if (dividendBitLength > divisorBitLength) {
+//        // Normalizes the divisor to 63 bits.
+//        final int shift = divisorBitLength - 63;
+//        final long divisor = _divisor.shiftDown(shift).longValue();
+//        final BigInteger dividend = _dividend.shiftDown(shift);
+//        return dividend.doubleValue() / divisor; }
+//      // Normalizes the dividend to 63 bits.
+//      final int shift = dividendBitLength - 63;
+//      final long dividend = _dividend.shiftDown(shift).longValue();
+//      final BigInteger divisor = _divisor.shiftDown(shift);
+//      return dividend / divisor.doubleValue(); }
 
-  //  // Fails.
-  //  /** Based on Rational.doubleValue() from jscience 4.3.1
-  //   */
-  //
-  //  public static final double
-  //  toDoubleJScience (final BigFraction f) {
-  //    final BigInteger _dividend = f.getNumerator();
-  //    final BigInteger _divisor = f.getDenominator();
-  //    // Avoid negative numbers (ref. bitLength)
-  //    if (-1 == _dividend.signum()) {
-  //      return - toDoubleJScience(f.abs()); }
-  //
-  //    // Normalize to 63 bits (minimum).
-  //    final int dividendBitLength = _dividend.bitLength();
-  //    final int divisorBitLength = _divisor.bitLength();
-  //    if (dividendBitLength > divisorBitLength) {
-  //      // Normalizes the divisor to 63 bits.
-  //      final int shift = divisorBitLength - 63;
-  //      final long divisor = _divisor.shiftDown(shift).longValue();
-  //      final BigInteger dividend = _dividend.shiftDown(shift);
-  //      return dividend.doubleValue() / divisor; }
-  //    // Normalizes the dividend to 63 bits.
-  //    final int shift = dividendBitLength - 63;
-  //    final long dividend = _dividend.shiftDown(shift).longValue();
-  //    final BigInteger divisor = _divisor.shiftDown(shift);
-  //    return dividend / divisor.doubleValue(); }
+//    //Fails.
+//    /** BigFraction should be able to represent any double exactly.
+//     */
+//    public static final boolean double2BigFractionJS () {
+//      final Generator g = finiteDoubles();
+//      for (int i=0;i<TRYS;i++) {
+//        final double x = g.nextDouble();
+//        final BigFraction f = new BigFraction(x);
+//        final double xf = toDoubleJScience(f);
+//        if (x != xf) {
+//          System.out.println("\n" +
+//            "double2BigFraction:" + i + " " + Doubles.isNormal(x) +"\n" +
+//            Double.toHexString(x) + "\n" +
+//            Double.toHexString(xf) + "\n" +
+//            f.getNumerator() + "\n" +
+//            f.getDenominator());
+//          return false; } }
+//      return true; }
 
-  //  //Fails.
-  //  /** BigFraction should be able to represent any double exactly.
-  //   */
-  //  public static final boolean double2BigFractionJS () {
-  //    final Generator g = finiteDoubles();
-  //    for (int i=0;i<TRYS;i++) {
-  //      final double x = g.nextDouble();
-  //      final BigFraction f = new BigFraction(x);
-  //      final double xf = toDoubleJScience(f);
-  //      if (x != xf) {
-  //        System.out.println("\n" +
-  //          "double2BigFraction:" + i + " " + Doubles.isNormal(x) +"\n" +
-  //          Double.toHexString(x) + "\n" +
-  //          Double.toHexString(xf) + "\n" +
-  //          f.getNumerator() + "\n" +
-  //          f.getDenominator());
-  //        return false; } }
-  //    return true; }
+    // Fails.
+    /** BigFraction should be able to represent any double exactly.
+     */
+    public static final boolean double2BigFraction () {
+      for (final Generator g : List.of(
+        finiteDoubles(), subnormalDoubles(), normalDoubles())) {
+        for (int i=0;i<TRYS;i++) {
+          final double x = g.nextDouble();
+          final BigFraction f = new BigFraction(x);
+          final double xf = f.doubleValue();
+          if (x != xf) {
+            //        System.out.println("\n" +
+            //          "double2BigFraction:" + i + " " + Doubles.isNormal(x) +"\n" +
+            //          Double.toHexString(x) + "\n" +
+            //          Double.toHexString(xf) + "\n" +
+            //          f.getNumerator() + "\n" +
+            //          f.getDenominator());
+            return false; } } }
+      return true; }
 
-  //  // Fails.
-  //  /** BigFraction should be able to represent any double exactly.
-  //   */
-  //  public static final boolean double2BigFraction () {
-  //    final Generator g = finiteDoubles();
-  //    for (int i=0;i<TRYS;i++) {
-  //      final double x = g.nextDouble();
-  //      final BigFraction f = new BigFraction(x);
-  //      final double xf = f.doubleValue();
-  //      if (x != xf) {
-  //        //        System.out.println("\n" +
-  //        //          "double2BigFraction:" + i + " " + Doubles.isNormal(x) +"\n" +
-  //        //          Double.toHexString(x) + "\n" +
-  //        //          Double.toHexString(xf) + "\n" +
-  //        //          f.getNumerator() + "\n" +
-  //        //          f.getDenominator());
-  //        return false; } }
-  //    return true; }
+    // Fails. Off in least significant bit for small numbers.
+    /** Ratio should be able to represent any double exactly.
+     */
+    public static final boolean double2Ratio () {
+      for (final Generator g : List.of(
+        finiteDoubles(), subnormalDoubles(), normalDoubles())) {
+        for (int i=0;i<TRYS;i++) {
+          final double x = g.nextDouble();
+          final Ratio f = Numbers.toRatio(x);
+          final double xf = f.doubleValue();
+          if (x != xf) {
+            System.out.println("\n" +
+              "double2Ratio:" + i + " " + Doubles.isNormal(x) + "\n" +
+              Double.toHexString(x) + "\n" +
+              Double.toHexString(xf) + "\n" +
+              f.numerator + "\n" +
+              f.denominator);
+            return false; } } }
+      return true; }
 
-  //  // Fails. Off in least significant bit for small numbers.
-  //  /** Ratio should be able to represent any double exactly.
-  //   */
-  //  public static final boolean double2Ratio () {
-  //    final Generator g = finiteDoubles();
-  //    for (int i=0;i<TRYS;i++) {
-  //      final double x = g.nextDouble();
-  //      final Ratio f = Ratios.toRatio(x);
-  //      final double xf = f.doubleValue();
-  //      if (x != xf) {
-  //        System.out.println("\n" +
-  //          "double2Ratio:" + i + " " + Doubles.isNormal(x) + "\n" +
-  //          Double.toHexString(x) + "\n" +
-  //          Double.toHexString(xf) + "\n" +
-  //          f.numerator + "\n" +
-  //          f.denominator);
-  //        return false; } }
-  //    return true; }
-
-  //// Fails.
-  //  /** Ratio should be able to represent any double exactly.
-  //   */
-  //  public static final boolean double2Rationalize () {
-  //    final Generator g = finiteDoubles();
-  //    for (int i=0;i<TRYS;i++) {
-  //      final double x = g.nextDouble();
-  //      // Might return Ratio or BigInt
-  //      final Number f = Numbers.rationalize(Double.valueOf(x));
-  //      final double xf = f.doubleValue();
-  //      if (x != xf) {
-  //        //        System.out.println("\n" +
-  //        //          "double2Rationalize:" + i + " " + Doubles.isNormal(x) + "\n" +
-  //        //          Double.toHexString(x) + "\n" +
-  //        //          Double.toHexString(xf) + "\n" +
-  //        //          f);
-  //        return false; } }
-  //    return true; }
+  // Fails.
+    /** Ratio should be able to represent any double exactly.
+     */
+    public static final boolean double2Rationalize () {
+      for (final Generator g : List.of(
+        finiteDoubles(), subnormalDoubles(), normalDoubles())) {
+        for (int i=0;i<TRYS;i++) {
+          final double x = g.nextDouble();
+          // Might return Ratio or BigInt
+          final Number f = Numbers.rationalize(x);
+          final double xf = f.doubleValue();
+          if (x != xf) {
+            //        System.out.println("\n" +
+            //          "double2Rationalize:" + i + " " + Doubles.isNormal(x) + "\n" +
+            //          Double.toHexString(x) + "\n" +
+            //          Double.toHexString(xf) + "\n" +
+            //          f);
+            return false; } } }
+      return true; }
 
   // This fails.
-  /** Compare the results of various double -&gt; rational
-   * methods to see if the problem is in the first conversion
-   * or the 2nd.
-   * <p>
-   * <em>Answer:<em> get 3 different (numerator,denominator)
-   * combinations. No simple way to say who is right, but
-   * BigFraction code looks more ambitious.
-   */
+//  /** Compare the results of various double -&gt; rational
+//   * methods to see if the problem is in the first conversion
+//   * or the 2nd.
+//   * <p>
+//   * <em>Answer:<em> get 3 different (numerator,denominator)
+//   * combinations. No simple way to say who is right, but
+//   * BigFraction code looks more ambitious.
+//   */
   //  public static final boolean rationalizers () {
   //    final Generator g = finiteDoubles();
   //    for (int i=0;i<TRYS;i++) {
@@ -339,28 +327,51 @@ public final class RoundtripTests {
   //    return true; }
 
   //--------------------------------------------------------------
+  /** DD should be able to represent any double exactly.
+   */
+
+  private static final boolean double2DD2Double () {
+    for (final Generator g : List.of(
+      finiteDoubles(), subnormalDoubles(), normalDoubles())) {
+      for (int i=0;i<TRYS;i++) {
+        final double x = g.nextDouble();
+        final DD f = new DD(x);
+        final double xf = f.doubleValue();
+        if (x != xf) {
+          System.out.println("\n\n" +
+                               "DD.doubleValue:" + Doubles.isNormal(x) +"\n" +
+                               x + "\n" +
+                               xf + "\n\n" +
+                               Double.toHexString(x) + "\n" +
+                               Double.toHexString(xf) + "\n\n" +
+                               f + "\n"
+            //+ f.toHexString(f) + "\n"
+                            );
+          return false; } } }
+    return true; }
+
+   //--------------------------------------------------------------
   /** BigDecimal should be able to represent any double exactly.
    */
 
   private static final boolean double2BigDecimal2Double () {
-    final Generator g =
-      finiteDoubles();
-    //subnormalDoubles();
-    for (int i=0;i<TRYS;i++) {
-      final double x = g.nextDouble();
-      final BigDecimal f = new BigDecimal(x);
-      final double xf = f.doubleValue();
-      if (x != xf) {
-        System.out.println("\n\n" +
-          "BigDecimal.ToDouble:" + Doubles.isNormal(x) +"\n" +
-          x + "\n" +
-          xf + "\n\n" +
-          Double.toHexString(x) + "\n" +
-          Double.toHexString(xf) + "\n\n" +
-          f + "\n"
-          //+ f.toHexString(f) + "\n"
-          );
-        return false; } }
+    for (final Generator g : List.of(
+      finiteDoubles(), subnormalDoubles(), normalDoubles())) {
+      for (int i=0;i<TRYS;i++) {
+        final double x = g.nextDouble();
+        final BigDecimal f = new BigDecimal(x);
+        final double xf = f.doubleValue();
+        if (x != xf) {
+          System.out.println("\n\n" +
+                               "BigDecimal.ToDouble:" + Doubles.isNormal(x) +"\n" +
+                               x + "\n" +
+                               xf + "\n\n" +
+                               Double.toHexString(x) + "\n" +
+                               Double.toHexString(xf) + "\n\n" +
+                               f + "\n"
+            //+ f.toHexString(f) + "\n"
+                            );
+          return false; } } }
     return true; }
 
   //--------------------------------------------------------------
@@ -368,23 +379,22 @@ public final class RoundtripTests {
    */
 
   private static final boolean double2EFloat2Double () {
-    final Generator g =
-      finiteDoubles();
-    //subnormalDoubles();
-    for (int i=0;i<TRYS;i++) {
-      final double x = g.nextDouble();
-      final EFloat f = EFloat.FromDouble(x);
-      final double xf = f.ToDouble();
-      if (x != xf) {
-        System.out.println("\n\n" +
-          "EFloat.ToDouble:" + Doubles.isNormal(x) +"\n" +
-          x + "\n" +
-          xf + "\n\n" +
-          Double.toHexString(x) + "\n" +
-          Double.toHexString(xf) + "\n\n" +
-          f + "\n" +
-          EFloatAccumulator.toHexString(f) + "\n" );
-        return false; } }
+    for (final Generator g : List.of(
+      finiteDoubles(), subnormalDoubles(), normalDoubles())) {
+      for (int i=0;i<TRYS;i++) {
+        final double x = g.nextDouble();
+        final EFloat f = EFloat.FromDouble(x);
+        final double xf = f.ToDouble();
+        if (x != xf) {
+          System.out.println("\n\n" +
+                               "EFloat.ToDouble:" + Doubles.isNormal(x) +"\n" +
+                               x + "\n" +
+                               xf + "\n\n" +
+                               Double.toHexString(x) + "\n" +
+                               Double.toHexString(xf) + "\n\n" +
+                               f + "\n" +
+                               EFloatAccumulator.toHexString(f) + "\n" );
+          return false; } } }
     return true; }
 
   //--------------------------------------------------------------
@@ -392,26 +402,25 @@ public final class RoundtripTests {
    */
 
   private static final boolean double2RF2Double () {
-    final Generator g =
-      finiteDoubles();
-    //subnormalDoubles();
-    for (int i=0;i<TRYS;i++) {
-      final double x = g.nextDouble();
-      final RationalFloat f = RationalFloat.valueOf(x);
-      final double xf = f.doubleValue();
-      if (x != xf) {
-        System.out.println("\n\n" +
-          Classes.className(f) +
-          ".doubleValue:" + Doubles.isNormal(x) +"\n" +
-          x + "\n" +
-          xf + "\n\n" +
-          Double.toHexString(x) + "\n" +
-          Double.toHexString(xf) + "\n\n" +
-          f.numerator() + "\n" +
-          f.denominator() + "\n\n" +
-          f.numerator().toHexString() + "\n" +
-          f.denominator().toHexString());
-        return false; } }
+    for (final Generator g : List.of(
+      finiteDoubles(), subnormalDoubles(), normalDoubles())) {
+      for (int i=0;i<TRYS;i++) {
+        final double x = g.nextDouble();
+        final RationalFloat f = RationalFloat.valueOf(x);
+        final double xf = f.doubleValue();
+        if (x != xf) {
+          System.out.println("\n\n" +
+                               Classes.className(f) +
+                               ".doubleValue:" + Doubles.isNormal(x) +"\n" +
+                               x + "\n" +
+                               xf + "\n\n" +
+                               Double.toHexString(x) + "\n" +
+                               Double.toHexString(xf) + "\n\n" +
+                               f.numerator() + "\n" +
+                               f.denominator() + "\n\n" +
+                               f.numerator().toHexString() + "\n" +
+                               f.denominator().toHexString());
+          return false; } } }
     return true; }
 
   //--------------------------------------------------------------
@@ -419,25 +428,24 @@ public final class RoundtripTests {
    */
 
   private static final boolean double2ERational2Double () {
-    final Generator g =
-      finiteDoubles();
-    //subnormalDoubles();
-    for (int i=0;i<TRYS;i++) {
-      final double x = g.nextDouble();
-      final ERational f = ERational.FromDouble(x);
-      final double xf = f.ToDouble();
-      if (x != xf) {
-        System.out.println("\n\n" +
-          "ERational.ToDouble:" + Doubles.isNormal(x) +"\n" +
-          x + "\n" +
-          xf + "\n\n" +
-          Double.toHexString(x) + "\n" +
-          Double.toHexString(xf) + "\n\n" +
-          f.getNumerator() + "\n" +
-          f.getDenominator() + "\n\n" +
-          f.getNumerator().ToRadixString(16) + "\n" +
-          f.getDenominator().ToRadixString(16));
-        return false; } }
+    for (final Generator g : List.of(
+      finiteDoubles(), subnormalDoubles(), normalDoubles())) {
+      for (int i=0;i<TRYS;i++) {
+        final double x = g.nextDouble();
+        final ERational f = ERational.FromDouble(x);
+        final double xf = f.ToDouble();
+        if (x != xf) {
+          System.out.println("\n\n" +
+                               "ERational.ToDouble:" + Doubles.isNormal(x) +"\n" +
+                               x + "\n" +
+                               xf + "\n\n" +
+                               Double.toHexString(x) + "\n" +
+                               Double.toHexString(xf) + "\n\n" +
+                               f.getNumerator() + "\n" +
+                               f.getDenominator() + "\n\n" +
+                               f.getNumerator().ToRadixString(16) + "\n" +
+                               f.getDenominator().ToRadixString(16));
+          return false; } } }
     return true; }
 
   //--------------------------------------------------------------
@@ -449,11 +457,17 @@ public final class RoundtripTests {
   @Test
   public final void roundTripTest () {
 
+    assertTrue(double2DD2Double());
     assertTrue(double2RF2Double());
     assertTrue(double2BigDecimal2Double());
     assertTrue(double2ERational2Double());
     assertTrue(double2EFloat2Double());
-    //assertTrue(double2BigFraction2Double());
+
+    // These fail: don't use
+    // org.apache.commons.math3.fraction.BigFraction;
+
+    assertFalse(double2BigFraction2Double());
+    assertFalse(double2BigFraction2Double1022());
 
     // This should be true.
     // BigFraction should be able to represent any double exactly.
@@ -463,25 +477,27 @@ public final class RoundtripTests {
     // small numbers.
     // BigFraction should be able to represent any double exactly.
     // BigFraction.doubleValue() is broken.
-    //assertTrue(double2BigFraction());
+    assertFalse(double2BigFraction());
+
+    // These fail: don't use clojure.lang.Ratio
 
     // This should be true. Last significand bit wrong for some
     // small numbers.
     // Ratio should be able to represent any double exactly.
     // Not sure whether Ratio.doubleValue() or
     // Ratios.toRatio(double) is broken.
-    //    assertTrue(double2Ratio());
+    assertFalse(double2Ratio());
 
     // This should be true.
     // Ratio should be able to represent any double exactly.
     // Not sure whether Ratio.doubleValue() or
     // Ratios.toRatio(double) is broken.
-    //assertTrue(double2Rationalize());
+    assertFalse(double2Rationalize());
 
     // check where to-rational conversions differ
     // if they all did exact conversion to rational,
     // numerators and denominators would be the same
-    // assertTrue(rationalizers());
+    //assertTrue(rationalizers());
   }
   //--------------------------------------------------------------
 }

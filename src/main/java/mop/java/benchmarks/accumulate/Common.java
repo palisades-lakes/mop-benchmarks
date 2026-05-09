@@ -139,7 +139,7 @@ public final class Common {
     + "\n" + x1.toString(0x10)
     + "\n"); }
 
-  protected static final void
+  public static final void
   compare (final Function<BigInteger,BoundedNatural> fromBI,
            final BigInteger x0,
            final BigInteger x1) {
@@ -1007,8 +1007,7 @@ public final class Common {
         compareValues.applyAsInt(flo,f) < 0,
         "\nf=" + toString.apply(f) +
           " > flo=" + toString.apply(flo));
-      Assertions.assertTrue(
-        compareValues.applyAsInt(flo,fx) <= 0);
+      Assertions.assertTrue(compareValues.applyAsInt(flo,fx) <= 0);
 
       final double xhi = Math.nextUp(x);
       final Object fhi = fromDouble.apply(xhi);
@@ -1226,8 +1225,7 @@ public final class Common {
     finiteDoubleRoundingTest(fromDouble,toDouble,dist,string,
       compareValues,compareDists);
     subnormalDoubleRoundingTest(fromDouble,toDouble,dist,string,
-      compareValues,compareDists);
-  }
+      compareValues,compareDists); }
 
   //--------------------------------------------------------------
 

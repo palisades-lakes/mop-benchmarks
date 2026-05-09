@@ -37,7 +37,7 @@ public final class Floats implements Set {
 
   //--------------------------------------------------------------
   // TODO: cleanly separate stuff treating significand as
-  // integer from stuff treating is as a binary fraction
+  // integer from stuff treating it as a binary fraction
   // with one digit before the 'decimal' point.
   // In other words:
   // Most descriptions of floating point formats refer to the

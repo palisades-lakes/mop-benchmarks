@@ -1,7 +1,8 @@
 /*
  * palisades dot lakes at gmail dot com, 2026-05-05
  * modified from JTS for benchmarking relative to mop.
- * Split into immutable and mutable classes.
+ * TODO: Split into immutable and mutable classes.
+ *  TODO: distinguish positive and negative zero?
  * JTS version has some additions (determinant, correction (?)
  * to parse(String)) relative to Tinfour version, but otherwise
  * identical, except for comment formatting.
@@ -90,13 +91,12 @@ import java.io.Serializable;
  * <li>Yozo Hida, Xiaoye S. Li and David H. Bailey,
  * <i>Quad-Double Arithmetic: Algorithms, Implementation, and Application</i>,
  * manuscript, Oct 2000; Lawrence Berkeley National Laboratory Report BNL-46996.
- * <li>David Bailey, <i>High Precision Software Directory</i>;
- * <tt>http://crd.lbl.gov/~dhbailey/mpdist/index.html</tt>
+ * <li>David Bailey,
+ * <a href="https://crd.lbl.gov/~dhbailey/mpdist/index.html">
+ *   <i>High Precision Software Directory</i></a>
  * </ul>
  *
- *
  * @author Martin Davis
- *
  */
 public final class DD
   implements Serializable, Comparable, Cloneable {
@@ -143,15 +143,15 @@ public final class DD
     return new DD(Double.NaN, Double.NaN);
   }
 
-  /**
-   * Converts the string argument to a DoubleDouble number.
-   *
-   * @param str a string containing a representation of a numeric value
-   * @return the extended precision version of the value
-   * @throws NumberFormatException if <tt>s</tt> is not a valid representation of a number
-   */
-  public static DD valueOf (String str) throws NumberFormatException {
-    return parse(str); }
+//  /**
+//   * Converts the string argument to a DoubleDouble number.
+//   *
+//   * @param str a string containing a representation of a numeric value
+//   * @return the extended precision version of the value
+//   * @throws NumberFormatException if <tt>s</tt> is not a valid representation of a number
+//   */
+//  public static DD valueOf (String str) throws NumberFormatException {
+//    return parse(str); }
 
   /** Converts the <tt>double</tt> argument to a DoubleDouble number.
    *
@@ -221,17 +221,17 @@ public final class DD
     init(dd);
   }
 
-  /**
-   * Creates a new DoubleDouble with value equal to the argument.
-   *
-   * @param str the value to initialize by
-   * @throws NumberFormatException if <tt>str</tt> is not a valid representation of a number
-   */
-  public DD (String str)
-    throws NumberFormatException
-  {
-    this(parse(str));
-  }
+//  /**
+//   * Creates a new DoubleDouble with value equal to the argument.
+//   *
+//   * @param str the value to initialize by
+//   * @throws NumberFormatException if <tt>str</tt> is not a valid representation of a number
+//   */
+//  public DD (String str)
+//    throws NumberFormatException
+//  {
+//    this(parse(str));
+//  }
 
   /**
    * Creates a new DoubleDouble with the value of the argument.
@@ -829,34 +829,65 @@ public final class DD
    * @param exp the integer exponent
    * @return x raised to the integral power exp
    */
-  public DD pow (int exp)
-  {
-    if (exp == 0.0)
-      return valueOf(1.0);
+  public final DD pow (final int exp) {
 
+    // See java.lang.Math.pow(double,double)
+    // TODO: return immutable singleton
+    if (0 == exp) { return valueOf(1.0); }
+    // TODO: return immutable this
+    if (1 == exp) { return new DD(this); }
+    // TODO: return immutable singleton
+    if (isNaN()) { return createNaN(); }
+    // TODO: distinguish positive and negative zero cases to match
+    // java.lang.Math.pow(double,double)
+    if (isZero()) {
+      // TODO: return immutable this
+      if (0 < exp) { return new DD(this); }
+      // TODO: return immutable singleton
+      return new DD(Double.POSITIVE_INFINITY); }
+
+    // TODO: use mutable instances
     DD r = new DD(this);
     DD s = valueOf(1.0);
     int n = Math.abs(exp);
 
     if (n > 1) {
-      /* Use binary exponentiation */
+      // Use binary exponentiation
       while (n > 0) {
-        if (n % 2 == 1) {
-          s.selfMultiply(r);
-        }
+        if (n % 2 == 1) { s.selfMultiply(r); }
         n /= 2;
-        if (n > 0)
-          r = r.sqr();
-      }
-    } else {
-      s = r;
-    }
+        if (n > 0) { r = r.sqr(); } } }
+    else { s = r; }
 
     /* Compute the reciprocal if n is negative. */
-    if (exp < 0)
-      return s.reciprocal();
-    return s;
-  }
+    if (exp < 0) { s = s.reciprocal(); }
+    assert (! s.isNaN()) : "NaN:" + s.toHexString();
+    return s; }
+
+  // Issues: returns NaN in some cases, eg, small double + 0.0
+  // where it shouldn't?
+
+//  public DD pow (int exp) {
+//
+//    // TODO: return immutable singleton
+//    if (exp == 0.0) return valueOf(1.0);
+//
+//    DD r = new DD(this);
+//    DD s = valueOf(1.0);
+//    int n = Math.abs(exp);
+//
+//    if (n > 1) {
+//      /* Use binary exponentiation */
+//      while (n > 0) {
+//        if (n % 2 == 1) { s.selfMultiply(r); }
+//        n /= 2;
+//        if (n > 0) { r = r.sqr(); } } }
+//    else { s = r; }
+//
+//    /* Compute the reciprocal if n is negative. */
+//    if (exp < 0) { s = s.reciprocal(); }
+//    return s;
+//  }
 
   /**
    * Computes the determinant of the 2x2 matrix with the given entries.
@@ -1052,264 +1083,335 @@ public final class DD
   }
 
 
-  /*------------------------------------------------------------
-   *   Output
-   *------------------------------------------------------------
-   */
-
-  private static final int MAX_PRINT_DIGITS = 32;
-  private static final DD TEN = DD.valueOf(10.0);
-  private static final DD ONE = DD.valueOf(1.0);
-  private static final String SCI_NOT_EXPONENT_CHAR = "E";
-  private static final String SCI_NOT_ZERO = "0.0E0";
+  //-------------------------------------------------------------------
+  // Output
+  //-------------------------------------------------------------------
 
   /**
-   * Dumps the components of this number to a string.
-   *
-   * @return a string showing the components of the number
-   */
-  public String dump()
-  {
-    return "DD<" + hi + ", " + lo + ">";
-  }
-
-  /**
-   * Returns a string representation of this number, in either standard or scientific notation.
-   * If the magnitude of the number is in the range [ 10<sup>-3</sup>, 10<sup>8</sup> ]
-   * standard notation will be used.  Otherwise, scientific notation will be used.
+   * Returns a string representation of this number, as 2 terms printed
+   * by <code>Double.toString(double)</code>.
+   * <br>
+   * In case I do decide to try a 1-term decimal representation:
+   * <br>
+   * References:  (palisades dot lakes at gmail dot com, 2026-05-08)
+   * <ul>
+   *   <li>Russ Cox,
+   *   <a href="https://research.swtch.com/ftoa">
+   *     Floating Point to Decimal Conversion is Easy</a>, 2011
+   * <li>William Clinger,
+   * How to Read Floating Point Numbers Accurately, PLDI 1990.
+   * <li>Guy L. Steele Jr. and Jon L. White,
+   * How to Print Floating Point Numbers Accurately, PLDI 1990.
+   * <li>David M. Gay,
+   * Correctly Rounded Binary-Decimal and Decimal-Binary Conversions,
+   * AT&T Bell Laboratories, 1990.
+   * <li>Vern Paxson,
+   * A Program for Testing IEEE Decimal-Binary Conversion, May 1991.
+   * <li>Robert Burger and R. Kent Dybvig,
+   * Printing Floating-Point Numbers Quickly and Accurately,
+   * SIGPLAN 1996.
+   * <li>Florian Loitsch,
+   * &ldquo;<a href="http://florian.loitsch.com/publications/dtoa-pldi2010.pdf">
+   *   Printing Floating-Numbers Quickly and Accurately With Integers
+   *   </a>&rdquo;,
+   *   PLDI 2010.
+   * <li>Aubrey Jaffer, <a href="https://arxiv.org/pdf/1310.8121">
+   *   Easy Accurate Reading and Writing of Floating-Point Numbers</a>,
+   *   2018
+   * </ul>
    *
    * @return a string representation of this number
    */
-  public String toString()
-  {
-    int mag = magnitude(hi);
-    if (mag >= -3 && mag <= 20)
-      return toStandardNotation();
-    return toSciNotation();
-  }
+  public final String toString () {
+    return "DD<"
+      + Double.toString(hi) + " + "
+      + Double.toString(lo) + ">"; }
 
-  /**
-   * Returns the string representation of this value in standard notation.
-   *
-   * @return the string representation in standard notation
-   */
-  public String toStandardNotation()
-  {
-    String specialStr = getSpecialNumberString();
-    if (specialStr != null)
-      return specialStr;
+  public final String toHexString () {
+    return "DD<"
+      + Double.toHexString(hi) + " + "
+      + Double.toHexString(lo) + ">"; }
 
-    int[] magnitude = new int[1];
-    String sigDigits = extractSignificantDigits(true, magnitude);
-    int decimalPointPos = magnitude[0] + 1;
+//  private static final int MAX_PRINT_DIGITS = 32;
+//  private static final DD TEN = DD.valueOf(10.0);
+//  private static final DD ONE = DD.valueOf(1.0);
+//  private static final String SCI_NOT_EXPONENT_CHAR = "E";
+//  private static final String SCI_NOT_ZERO = "0.0E0";
 
-    String num = sigDigits;
-    // add a leading 0 if the decimal point is the first char
-    if (sigDigits.charAt(0) == '.') {
-      num = "0" + sigDigits;
-    }
-    else if (decimalPointPos < 0) {
-      num = "0." + stringOfChar('0', -decimalPointPos) + sigDigits;
-    }
-    else if (sigDigits.indexOf('.') == -1) {
-      // no point inserted - sig digits must be smaller than magnitude of number
-      // add zeroes to end to make number the correct size
-      int numZeroes = decimalPointPos - sigDigits.length();
-      String zeroes = stringOfChar('0', numZeroes);
-      num = sigDigits + zeroes + ".0";
-    }
+// Redundant given simpler toString:
+// palisades dot lakes at gmail dot com, 2026-05-05
+//  /**
+//   * Dumps the components of this number to a string.
+//   *
+//   * @return a string showing the components of the number
+//   */
+//  public String dump()
+//  {
+//    return "DD<" + hi + ", " + lo + ">";
+//  }
 
-    if (this.isNegative())
-      return "-" + num;
-    return num;
-  }
+// palisades dot lakes at gmail dot com, 2026-05-05
+  //
+  // This version is broken in a number of ways, at least for numbers
+  // in the vicinity of 0x1.0p-976, 0x1.0p-977, etc.
+  // For <hi,0.0> values, decimal string incorrectly has non-zero low
+  // order decimal digits.
+  // For some values, returns an incorrect string of all '0' digits,
+  // throwing an exception. Seems to be related to
+  // <code>TEN.pow(mag)</code> returning <code>NaN</code>, which may
+  // reflect a problem with <code<pow</code> that should be addressed
+  // independently.
+  //
+  // The problems seem to be expected to some degree, given the comments
+  // in the code.
+  // For my purposes, approximating a number with a decimal string is
+  // rarely useful. I'll just remove this code for now.
+  // The <code>toString</code> printed representation will display
+  // the 2 terms separately, using default Java decimal formatting.
+  // And I will add <code>toHexString</code>, which I find more useful
+  // for debugging.
+//  /**
+//   * Returns the string representation of this value in standard notation.
+//   *
+//   * @return the string representation in standard notation
+//   */
+//  public String toStandardNotation()
+//  {
+//    String specialStr = getSpecialNumberString();
+//    if (specialStr != null)
+//      return specialStr;
+//
+//    int[] magnitude = new int[1];
+//    String sigDigits = extractSignificantDigits(true, magnitude);
+//    int decimalPointPos = magnitude[0] + 1;
+//
+//    String num = sigDigits;
+//    // add a leading 0 if the decimal point is the first char
+//    if (sigDigits.charAt(0) == '.') {
+//      num = "0" + sigDigits;
+//    }
+//    else if (decimalPointPos < 0) {
+//      num = "0." + stringOfChar('0', -decimalPointPos) + sigDigits;
+//    }
+//    else if (sigDigits.indexOf('.') == -1) {
+//      // no point inserted - sig digits must be smaller than magnitude of number
+//      // add zeroes to end to make number the correct size
+//      int numZeroes = decimalPointPos - sigDigits.length();
+//      String zeroes = stringOfChar('0', numZeroes);
+//      num = sigDigits + zeroes + ".0";
+//    }
+//
+//    if (this.isNegative())
+//      return "-" + num;
+//    return num;
+//  }
 
-  /**
-   * Returns the string representation of this value in scientific notation.
-   *
-   * @return the string representation in scientific notation
-   */
-  public String toSciNotation()
-  {
-    // special case zero, to allow as
-    if (isZero())
-      return SCI_NOT_ZERO;
-
-    String specialStr = getSpecialNumberString();
-    if (specialStr != null)
-      return specialStr;
-
-    int[] magnitude = new int[1];
-    String digits = extractSignificantDigits(false, magnitude);
-    String expStr = SCI_NOT_EXPONENT_CHAR + magnitude[0];
-
-    // should never have leading zeroes
-    // MD - is this correct?  Or should we simply strip them if they are present?
-    if (digits.charAt(0) == '0') {
-      throw new IllegalStateException("Found leading zero: " + digits);
-    }
-
-    // add decimal point
-    String trailingDigits = "";
-    if (digits.length() > 1)
-      trailingDigits = digits.substring(1);
-    String digitsWithDecimal = digits.charAt(0) + "." + trailingDigits;
-
-    if (this.isNegative())
-      return "-" + digitsWithDecimal + expStr;
-    return digitsWithDecimal + expStr;
-  }
 
 
-  /**
-   * Extracts the significant digits in the decimal representation of the argument.
-   * A decimal point may be optionally inserted in the string of digits
-   * (as long as its position lies within the extracted digits
-   * - if not, the caller must prepend or append the appropriate zeroes and decimal point).
-   *
-   * @return the string containing the significant digits and possibly a decimal point
-   */
-  private String extractSignificantDigits(boolean insertDecimalPoint, int[] magnitude)
-  {
-    DD y = this.abs();
-    // compute *correct* magnitude of y
-    int mag = magnitude(y.hi);
-    DD scale = TEN.pow(mag);
-    y = y.divide(scale);
 
-    // fix magnitude if off by one
-    if (y.gt(TEN)) {
-      y = y.divide(TEN);
-      mag += 1;
-    }
-    else if (y.lt(ONE)) {
-      y = y.multiply(TEN);
-      mag -= 1;
-    }
-
-    int decimalPointPos = mag + 1;
-    StringBuffer buf = new StringBuffer();
-    int numDigits = MAX_PRINT_DIGITS - 1;
-    for (int i = 0; i <= numDigits; i++) {
-      if (insertDecimalPoint && i == decimalPointPos) {
-        buf.append('.');
-      }
-      int digit = (int) y.hi;
-//      System.out.println("printDump: [" + i + "] digit: " + digit + "  y: " + y.dump() + "  buf: " + buf);
-
-      /**
-       * This should never happen, due to heuristic checks on remainder below
-       */
-      if (digit < 0 || digit > 9) {
-//        System.out.println("digit > 10 : " + digit);
-//        throw new IllegalStateException("Internal errror: found digit = " + digit);
-      }
-      /**
-       * If a negative remainder is encountered, simply terminate the extraction.
-       * This is robust, but maybe slightly inaccurate.
-       * My current hypothesis is that negative remainders only occur for very small lo components,
-       * so the inaccuracy is tolerable
-       */
-      if (digit < 0) {
-        break;
-        // throw new IllegalStateException("Internal errror: found digit = " + digit);
-      }
-      boolean rebiasBy10 = false;
-      char digitChar = 0;
-      if (digit > 9) {
-        // set flag to re-bias after next 10-shift
-        rebiasBy10 = true;
-        // output digit will end up being '9'
-        digitChar = '9';
-      }
-      else {
-       digitChar = (char) ('0' + digit);
-      }
-      buf.append(digitChar);
-      y = (y.subtract(DD.valueOf(digit))
-          .multiply(TEN));
-      if (rebiasBy10)
-        y.selfAdd(TEN);
-
-      boolean continueExtractingDigits = true;
-      /**
-       * Heuristic check: if the remaining portion of
-       * y is non-positive, assume that output is complete
-       */
-//      if (y.hi <= 0.0)
-//        if (y.hi < 0.0)
+//  /**
+//   * Extracts the significant digits in the decimal representation of the argument.
+//   * A decimal point may be optionally inserted in the string of digits
+//   * (as long as its position lies within the extracted digits
+//   * - if not, the caller must prepend or append the appropriate zeroes and decimal point).
+//   *
+//   * @return the string containing the significant digits and possibly a decimal point
+//   *
+//   */
+//  private String extractSignificantDigits(boolean insertDecimalPoint, int[] magnitude)
+//  {
+//    DD y = this.abs();
+//    System.out.println(y.toHexString());
+//    // compute *correct* magnitude of y
+//    int mag = magnitude(y.hi);
+//    System.out.println("mag=" + mag);
+//    DD scale = TEN.pow(mag);
+//    System.out.println("scale="+scale.toHexString());
+//    y = y.divide(scale);
+//    System.out.println(y.toHexString());
+//
+//    // fix magnitude if off by one
+//    if (y.gt(TEN)) {
+//      y = y.divide(TEN);
+//      mag += 1;
+//    }
+//    else if (y.lt(ONE)) {
+//      y = y.multiply(TEN);
+//      mag -= 1;
+//    }
+//    System.out.println(y.toHexString());
+//
+//    int decimalPointPos = mag + 1;
+//    StringBuffer buf = new StringBuffer();
+//    int numDigits = MAX_PRINT_DIGITS - 1;
+//    for (int i = 0; i <= numDigits; i++) {
+//      if (insertDecimalPoint && i == decimalPointPos) {
+//        buf.append('.');
+//      }
+//      int digit = (int) y.hi;
+////      System.out.println("printDump: [" + i + "] digit: " + digit + "  y: " + y.dump() + "  buf: " + buf);
+//
+//      /**
+//       * This should never happen, due to heuristic checks on remainder below
+//       */
+//      if (digit < 0 || digit > 9) {
+////        System.out.println("digit > 10 : " + digit);
+////        throw new IllegalStateException("Internal errror: found digit = " + digit);
+//      }
+//      /**
+//       * If a negative remainder is encountered, simply terminate the extraction.
+//       * This is robust, but maybe slightly inaccurate.
+//       * My current hypothesis is that negative remainders only occur for very small lo components,
+//       * so the inaccuracy is tolerable
+//       */
+//      if (digit < 0) {
+//        break;
+//        // throw new IllegalStateException("Internal errror: found digit = " + digit);
+//      }
+//      boolean rebiasBy10 = false;
+//      char digitChar = 0;
+//      if (digit > 9) {
+//        // set flag to re-bias after next 10-shift
+//        rebiasBy10 = true;
+//        // output digit will end up being '9'
+//        digitChar = '9';
+//      }
+//      else {
+//        digitChar = (char) ('0' + digit);
+//      }
+//      buf.append(digitChar);
+//      y = (y.subtract(DD.valueOf(digit))
+//            .multiply(TEN));
+//      if (rebiasBy10)
+//        y.selfAdd(TEN);
+//
+//      boolean continueExtractingDigits = true;
+//      /**
+//       * Heuristic check: if the remaining portion of
+//       * y is non-positive, assume that output is complete
+//       */
+////      if (y.hi <= 0.0)
+////        if (y.hi < 0.0)
+////        continueExtractingDigits = false;
+//      /**
+//       * Check if remaining digits will be 0, and if so don't output them.
+//       * Do this by comparing the magnitude of the remainder with the expected precision.
+//       */
+//      int remMag = magnitude(y.hi);
+//      if (remMag < 0 && Math.abs(remMag) >= (numDigits - i))
 //        continueExtractingDigits = false;
-      /**
-       * Check if remaining digits will be 0, and if so don't output them.
-       * Do this by comparing the magnitude of the remainder with the expected precision.
-       */
-      int remMag = magnitude(y.hi);
-      if (remMag < 0 && Math.abs(remMag) >= (numDigits - i))
-        continueExtractingDigits = false;
-      if (! continueExtractingDigits)
-        break;
-    }
-    magnitude[0] = mag;
-    return buf.toString();
-  }
+//      if (! continueExtractingDigits) break;
+//    }
+//    magnitude[0] = mag;
+//    return buf.toString();
+//  }
+//  /**
+//   * Returns the string representation of this value in scientific notation.
+//   *
+//   * @return the string representation in scientific notation
+//   */
+//  public String toSciNotation()
+//  {
+//    // special case zero, to allow as
+//    if (isZero()) { return SCI_NOT_ZERO; }
+//
+//    String specialStr = getSpecialNumberString();
+//    if (specialStr != null) return specialStr;
+//
+//    int[] magnitude = new int[1];
+//    String digits = extractSignificantDigits(false, magnitude);
+//    String expStr = SCI_NOT_EXPONENT_CHAR + magnitude[0];
+//
+//    // should never have leading zeroes
+//    // MD - is this correct?  Or should we simply strip them if they are present?
+//    if (digits.charAt(0) == '0') {
+//      digits = digits.replaceAll("^0+",digits);
+////      throw new IllegalStateException("Found leading zero: " + digits + "\n" + dump());
+//    }
+//
+//    // add decimal point
+//    String trailingDigits = "";
+//    if (digits.length() > 1)
+//      trailingDigits = digits.substring(1);
+//    String digitsWithDecimal = digits.charAt(0) + "." + trailingDigits;
+//
+//    if (this.isNegative())
+//      return "-" + digitsWithDecimal + expStr;
+//    return digitsWithDecimal + expStr;
+//  }
+
+//  /**
+//   * Returns a string representation of this number, in either standard or scientific notation.
+//   * If the magnitude of the number is in the range [ 10<sup>-3</sup>, 10<sup>8</sup> ]
+//   * standard notation will be used.  Otherwise, scientific notation will be used.
+//   *
+//   * @return a string representation of this number
+//   */
+//  public String toString () {
+//    int mag = magnitude(hi);
+//    if (mag >= -3 && mag <= 20) { return toStandardNotation(); }
+//    return toSciNotation();
+//  }
 
 
-  /**
-   * Creates a string of a given length containing the given character
-   *
-   * @param ch the character to be repeated
-   * @param len the len of the desired string
-   * @return the string
-   */
-  private static String stringOfChar(char ch, int len)
-  {
-    StringBuffer buf = new StringBuffer();
-    for (int i = 0; i < len; i++) {
-      buf.append(ch);
-    }
-    return buf.toString();
-  }
-
-  /**
-   * Returns the string for this value if it has a known representation.
-   * (E.g. NaN or 0.0)
-   *
-   * @return the string for this special number
-   * or null if the number is not a special number
-   */
-  private String getSpecialNumberString()
-  {
-    if (isZero()) return "0.0";
-    if (isNaN())  return "NaN ";
-    return null;
-  }
 
 
-
-  /**
-   * Determines the decimal magnitude of a number.
-   * The magnitude is the exponent of the greatest power of 10 which is less than
-   * or equal to the number.
-   *
-   * @param x the number to find the magnitude of
-   * @return the decimal magnitude of x
-   */
-  private static int magnitude(double x)
-  {
-    double xAbs = Math.abs(x);
-    double xLog10 = Math.log(xAbs) / Math.log(10);
-    int xMag = (int) Math.floor(xLog10);
-    /**
-     * Since log computation is inexact, there may be an off-by-one error
-     * in the computed magnitude.
-     * Following tests that magnitude is correct, and adjusts it if not
-     */
-    double xApprox = Math.pow(10, xMag);
-    if (xApprox * 10 <= xAbs)
-      xMag += 1;
-
-    return xMag;
-  }
+//  /**
+//   * Creates a string of a given length containing the given character
+//   *
+//   * @param ch the character to be repeated
+//   * @param len the len of the desired string
+//   * @return the string
+//   */
+//  private static String stringOfChar(char ch, int len)
+//  {
+//    StringBuffer buf = new StringBuffer();
+//    for (int i = 0; i < len; i++) {
+//      buf.append(ch);
+//    }
+//    return buf.toString();
+//  }
+//
+//  /**
+//   * Returns the string for this value if it has a known representation.
+//   * (E.g. NaN or 0.0)
+//   *
+//   * @return the string for this special number
+//   * or null if the number is not a special number
+//   */
+//  private String getSpecialNumberString()
+//  {
+//    if (isZero()) return "0.0";
+//    if (isNaN())  return "NaN ";
+//    return null;
+//  }
+//
+//
+//
+//  /**
+//   * Determines the decimal magnitude of a number.
+//   * The magnitude is the exponent of the greatest power of 10 which is less than
+//   * or equal to the number.
+//   *
+//   * @param x the number to find the magnitude of
+//   * @return the decimal magnitude of x
+//   */
+//  private static int magnitude(double x)
+//  {
+//    double xAbs = Math.abs(x);
+//    double xLog10 = Math.log(xAbs) / Math.log(10);
+//    int xMag = (int) Math.floor(xLog10);
+//    /**
+//     * Since log computation is inexact, there may be an off-by-one error
+//     * in the computed magnitude.
+//     * Following tests that magnitude is correct, and adjusts it if not
+//     */
+//    double xApprox = Math.pow(10, xMag);
+//    if (xApprox * 10 <= xAbs)
+//      xMag += 1;
+//
+//    return xMag;
+//  }
 
 
   /*------------------------------------------------------------
@@ -1317,102 +1419,118 @@ public final class DD
    *------------------------------------------------------------
    */
 
-  /**
-   * Converts a string representation of a real number into a DoubleDouble value.
-   * The format accepted is similar to the standard Java real number syntax.
-   * It is defined by the following regular expression:
-   * <pre>
-   * [<tt>+</tt>|<tt>-</tt>] {<i>digit</i>} [ <tt>.</tt> {<i>digit</i>} ] [ ( <tt>e</tt> | <tt>E</tt> ) [<tt>+</tt>|<tt>-</tt>] {<i>digit</i>}+
-   * </pre>
-   *
-   * @param str the string to parse
-   * @return the value of the parsed number
-   * @throws NumberFormatException if <tt>str</tt> is not a valid representation of a number
-   */
-  public static DD parse (String str)
-    throws NumberFormatException
-  {
-    int i = 0;
-    int strlen = str.length();
+  // palisades dot lakes at gmail dot com, 2026-05-05
+  //
+  // Given the problems with <code>toString</code>, I don't trust this.
+  // I haven't tested it, so it may be ok, but I suspect that it is in
+  // fact unnecessary.
+  // I have trouble imagining a case where we have DD values that
+  // start life as a long decimal string that doesn't correspond to
+  //a value that can be represented exactly in a single <code>double</code>.
+  // If we need to do DD -> String -> DD to save state to a file,
+  // the 2-term hex representation is better. Either 1 or 2 term decimal
+  // strings introduce error and should be avoided.
 
-    // skip leading whitespace
-    while (Character.isWhitespace(str.charAt(i)))
-      i++;
 
-    // check for sign
-    boolean isNegative = false;
-    if (i < strlen) {
-      char signCh = str.charAt(i);
-      if (signCh == '-' || signCh == '+') {
-        i++;
-        if (signCh == '-') isNegative = true;
-      }
-    }
+//  /**
+//   * Converts a string representation of a real number into a DoubleDouble value.
+//   * The format accepted is similar to the standard Java real number syntax.
+//   * It is defined by the following regular expression:
+//   * <pre>
+//   * [<tt>+</tt>|<tt>-</tt>] {<i>digit</i>} [ <tt>.</tt> {<i>digit</i>} ] [ ( <tt>e</tt> | <tt>E</tt> ) [<tt>+</tt>|<tt>-</tt>] {<i>digit</i>}+
+//   * </pre>
+//   *
+//   * @param str the string to parse
+//   * @return the value of the parsed number
+//   * @throws NumberFormatException if <tt>str</tt> is not a valid representation of a number
+//   */
+//  public static DD parse (String str)
+//    throws NumberFormatException
+//  {
+//    int i = 0;
+//    int strlen = str.length();
+//
+//    // skip leading whitespace
+//    while (Character.isWhitespace(str.charAt(i)))
+//      i++;
+//
+//    // check for sign
+//    boolean isNegative = false;
+//    if (i < strlen) {
+//      char signCh = str.charAt(i);
+//      if (signCh == '-' || signCh == '+') {
+//        i++;
+//        if (signCh == '-') isNegative = true;
+//      }
+//    }
+//
+//    // scan all digits and accumulate into an integral value
+//    // Keep track of the location of the decimal point (if any) to allow scaling later
+//    DD val = new DD();
+//
+//    int numDigits = 0;
+//    int numBeforeDec = 0;
+//    int exp = 0;
+//    boolean hasDecimalChar = false;
+//    while (true) {
+//      if (i >= strlen)
+//        break;
+//      char ch = str.charAt(i);
+//      i++;
+//      if (Character.isDigit(ch)) {
+//        double d = ch - '0';
+//        val.selfMultiply(TEN);
+//        // MD: need to optimize this
+//        val.selfAdd(d);
+//        numDigits++;
+//        continue;
+//      }
+//      if (ch == '.') {
+//        numBeforeDec = numDigits;
+//        hasDecimalChar = true;
+//        continue;
+//      }
+//      if (ch == 'e' || ch == 'E') {
+//        String expStr = str.substring(i);
+//        // this should catch any format problems with the exponent
+//        try {
+//          exp = Integer.parseInt(expStr);
+//        }
+//        catch (NumberFormatException ex) {
+//          throw new NumberFormatException("Invalid exponent " + expStr + " in string " + str);
+//        }
+//        break;
+//      }
+//      throw new NumberFormatException("Unexpected character '" + ch
+//          + "' at position " + i
+//          + " in string " + str);
+//    }
+//    DD val2 = val;
+//
+//    // correct number of digits before decimal sign if we don't have a decimal sign in the string
+//    if (!hasDecimalChar) numBeforeDec = numDigits;
+//
+//    // scale the number correctly
+//    int numDecPlaces = numDigits - numBeforeDec - exp;
+//    if (numDecPlaces == 0) {
+//      val2 = val;
+//    }
+//    else if (numDecPlaces > 0) {
+//      DD scale = TEN.pow(numDecPlaces);
+//      val2 = val.divide(scale);
+//    }
+//    else if (numDecPlaces < 0) {
+//      DD scale = TEN.pow(-numDecPlaces);
+//      val2 = val.multiply(scale);
+//    }
+//    // apply leading sign, if any
+//    if (isNegative) {
+//      return val2.negate();
+//    }
+//    return val2;
+//
+//  }
 
-    // scan all digits and accumulate into an integral value
-    // Keep track of the location of the decimal point (if any) to allow scaling later
-    DD val = new DD();
-
-    int numDigits = 0;
-    int numBeforeDec = 0;
-    int exp = 0;
-    boolean hasDecimalChar = false;
-    while (true) {
-      if (i >= strlen)
-        break;
-      char ch = str.charAt(i);
-      i++;
-      if (Character.isDigit(ch)) {
-        double d = ch - '0';
-        val.selfMultiply(TEN);
-        // MD: need to optimize this
-        val.selfAdd(d);
-        numDigits++;
-        continue;
-      }
-      if (ch == '.') {
-        numBeforeDec = numDigits;
-        hasDecimalChar = true;
-        continue;
-      }
-      if (ch == 'e' || ch == 'E') {
-        String expStr = str.substring(i);
-        // this should catch any format problems with the exponent
-        try {
-          exp = Integer.parseInt(expStr);
-        }
-        catch (NumberFormatException ex) {
-          throw new NumberFormatException("Invalid exponent " + expStr + " in string " + str);
-        }
-        break;
-      }
-      throw new NumberFormatException("Unexpected character '" + ch
-          + "' at position " + i
-          + " in string " + str);
-    }
-    DD val2 = val;
-
-    // correct number of digits before decimal sign if we don't have a decimal sign in the string
-    if (!hasDecimalChar) numBeforeDec = numDigits;
-
-    // scale the number correctly
-    int numDecPlaces = numDigits - numBeforeDec - exp;
-    if (numDecPlaces == 0) {
-      val2 = val;
-    }
-    else if (numDecPlaces > 0) {
-      DD scale = TEN.pow(numDecPlaces);
-      val2 = val.divide(scale);
-    }
-    else if (numDecPlaces < 0) {
-      DD scale = TEN.pow(-numDecPlaces);
-      val2 = val.multiply(scale);
-    }
-    // apply leading sign, if any
-    if (isNegative) {
-      return val2.negate();
-    }
-    return val2;
-
-  }
-}
+  //-------------------------------------------------------------------
+} // end class
+//-------------------------------------------------------------------

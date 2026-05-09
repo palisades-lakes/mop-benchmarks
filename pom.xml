@@ -325,16 +325,26 @@
                   <artifact>*:*</artifact>
                   <excludes>
                     <exclude>module-info.class</exclude>
+                    <exclude>about.*</exclude>
+                    <exclude>plugin.*</exclude>
+                    <exclude>modeling32.png</exclude>
+                    <exclude>META-INF/registryFile.*</exclude>
+                    <exclude>META-INF/services/*</exclude>
+                    <exclude>META-INF/windows/*</exclude>
+                    <exclude>META-INF/windows/x64/org/lwjgl/*</exclude>
+                    <exclude>META-INF/windows/x64/org/lwjgl/opengl/*</exclude>
+                    <exclude>META-INF/windows/x64/org/lwjgl/glfw/*</exclude>
                     <exclude>META-INF/maven/palisades-lakes/nzqr/pom.*</exclude>
                     <exclude>META-INF/MANIFEST.MF</exclude>
                     <exclude>META-INF/LICENS*</exclude>
-                    <exclude>META-INF/NOTICE</exclude>
+                    <exclude>META-INF/NOTIC*</exclude>
                     <exclude>META-INF/AL2.0</exclude>
                     <exclude>META-INF/LGPL2.1</exclude>
                     <exclude>META-INF/*.SF</exclude>
                     <exclude>META-INF/*.DSA</exclude>
                     <exclude>META-INF/*.RSA</exclude>
                     <exclude>META-INF/versions/9/module-info.class</exclude>
+                    <exclude>META-INF/versions/11/module-info.class</exclude>
                   </excludes>
                 </filter>
               </filters>
