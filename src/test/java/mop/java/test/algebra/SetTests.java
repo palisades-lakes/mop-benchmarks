@@ -1,9 +1,11 @@
 package mop.java.test.algebra;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.function.Supplier;
 
+import mop.java.numbers.*;
 import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.ImmutableMap;
@@ -11,14 +13,7 @@ import com.google.common.collect.ImmutableMap;
 import mop.java.Classes;
 import mop.java.algebra.Set;
 import mop.java.algebra.Sets;
-import mop.java.numbers.BigFloats;
-import mop.java.numbers.Q;
-import mop.java.numbers.RationalFloats;
 import mop.java.prng.PRNG;
-import mop.java.numbers.BigDecimals;
-import mop.java.numbers.BigFractions;
-import mop.java.numbers.ERationals;
-import mop.java.numbers.Ratios;
 
 //----------------------------------------------------------------
 /** Common code for testing sets.
@@ -27,10 +22,9 @@ import mop.java.numbers.Ratios;
  * mvn -q -Dtest=xfp/java/test/algebra/SetTests test > Sets.txt
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2022-07-31
+ * @version 2026-05-09
  */
 
-@SuppressWarnings("unchecked")
 public final class SetTests {
 
   private static final int TRYS = 1023;
@@ -38,7 +32,7 @@ public final class SetTests {
   private static final void testMembership (final Set set,
                                             final int trys,
                                             final Supplier g) {
-    assertTrue(null != set);
+    assertNotNull(set);
     assertTrue(0 < trys);
     for (int i=0; i<trys; i++) {
       //System.out.println("set=" + set);
@@ -46,14 +40,14 @@ public final class SetTests {
       //System.out.println("element=" + x);
       assertTrue(
         set.contains(x),
-        () -> set.toString() + "\n does not contain \n" +
+        () -> set + "\n does not contain \n" +
           Classes.className(x) + ": " +
           x); } }
 
   private static final void testEquivalence (final Set set,
                                              final int trys,
                                              final Supplier g) {
-    assertTrue(null != set);
+    assertNotNull(set);
     assertTrue(0 < trys);
     for (int i=0; i<trys; i++) {
       assertTrue(Sets.isReflexive(set,g));
@@ -67,7 +61,7 @@ public final class SetTests {
 
   public static final void tests (final Set set,
                                   final int trys) {
-    assertTrue(null != set);
+    assertNotNull(set);
     assertTrue(0 < trys);
     final Supplier g =
       set.generator(
@@ -77,7 +71,7 @@ public final class SetTests {
     tests(set,trys,g); }
 
   public static final void tests (final Set set) {
-    assertTrue(null != set);
+    assertNotNull(set);
     tests(set,TRYS); }
 
   //--------------------------------------------------------------
@@ -111,6 +105,10 @@ public final class SetTests {
   @Test
   public final void BigFloats () {
     SetTests.tests(BigFloats.get()); }
+
+  @SuppressWarnings({ "static-method" })
+  @Test
+  public final void DDs () { SetTests.tests(DDs.get()); }
 
   @SuppressWarnings({ "static-method" })
   @Test

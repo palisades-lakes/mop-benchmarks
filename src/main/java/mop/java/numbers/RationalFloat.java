@@ -9,7 +9,7 @@ import static mop.java.numbers.Numbers.hiBit;
 
 /** Representing a rational number as a sign times a ratio of
  * {@link BoundedNatural} numbers times 2 to a <code>int</code> exponent.
- *
+ * <br>
  * The idea is that most data will start as <code>double</code>;
  * extracting the resulting powers of 2 from the numerator and
  * denominator should keep the RationalFLoats smaller, and make

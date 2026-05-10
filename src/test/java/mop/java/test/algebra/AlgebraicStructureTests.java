@@ -21,16 +21,16 @@ import mop.java.numbers.Ratios;
 
 //----------------------------------------------------------------
 /** <pre>
- * mvn -q -Dtest=nzqr/java/test/algebra/AlgebraicStructureTests test > AST.txt
+ * mvn -Dtest=mop.java.test.algebra.AlgebraicStructureTests test
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2022-10-30
+ * @version 2026-06-09
  */
 
 @SuppressWarnings("unchecked")
 public final class AlgebraicStructureTests {
   private static final int TRYS = 31;
-  static final int SPACE_TRYS = 5;
+  //static final int SPACE_TRYS = 5;
 
   //--------------------------------------------------------------
 
@@ -47,7 +47,7 @@ public final class AlgebraicStructureTests {
       for (int i=0; i<n; i++) {
         final boolean result = law.test(generators);
         assertTrue(result,
-          s.getClass().getName() + " : " + law.toString()); } } }
+          s.getClass().getName() + " : " + law); } } }
 
   //--------------------------------------------------------------
 
@@ -56,6 +56,10 @@ public final class AlgebraicStructureTests {
   public final void tests () {
 
     //Debug.DEBUG=false;
+    structureTests(DDs.ADDITIVE_MAGMA,TRYS);
+    structureTests(DDs.MULTIPLICATIVE_MAGMA,TRYS);
+    structureTests(DDs.FLOATING_POINT,TRYS);
+
     structureTests(ERationals.ADDITIVE_MAGMA, TRYS);
     structureTests(ERationals.MULTIPLICATIVE_MAGMA,TRYS);
     structureTests(ERationals.FIELD,TRYS);

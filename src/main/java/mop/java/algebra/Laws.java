@@ -126,7 +126,7 @@ public final class Laws {
       @Override
       public final boolean test (final Map<Set,Supplier> generators) {
         // TODO: what if we want <code>null</code>
-        // to be the identity? IS there an example where null is
+        // to be the identity? Is there an example where null is
         // better than empty list, empty string, ...
         final Supplier generator = generators.get(elements);
         if (null == identity) { return false; }

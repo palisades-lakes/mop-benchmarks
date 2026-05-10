@@ -17,11 +17,10 @@ import java.util.function.BinaryOperator;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
-/**
- * The set of quad precision {@link DD} floating point numbers
+/** The set of quad precision {@link DD} floating point numbers
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-05-06
+ * @version 2026-05-09
  */
 @SuppressWarnings({ "unchecked", "static-method" })
 public final class DDs implements Set {
@@ -29,20 +28,19 @@ public final class DDs implements Set {
   //--------------------------------------------------------------
   // operations for algebraic structures over BigFloats.
   //--------------------------------------------------------------
-
   // TODO: is consistency with other algebraic structure classes
   // worth the indirection?
 
   private final DD add (final DD q0,
                         final DD q1) {
-    //assert contains(q0);
-    //assert contains(q1);
+    assert contains(q0);
+    assert contains(q1);
     return q0.add(q1); }
 
   public final BinaryOperator<DD> adder () {
     return new BinaryOperator<>() {
       @Override
-      public final String toString () { return "BF.add()"; }
+      public final String toString () { return "DD.add()"; }
 
       @Override
       public final DD apply (final DD q0, final DD q1) {
@@ -50,8 +48,8 @@ public final class DDs implements Set {
 
   //--------------------------------------------------------------
 
-  public final DD additiveIdentity () {
-    return DD.valueOf(0L); }
+  private static final DD ZERO = DD.valueOf(0L);
+  public final DD additiveIdentity () { return ZERO; }
 
   //--------------------------------------------------------------
   // TODO: is consistency with other algebraic structure classes
@@ -59,13 +57,12 @@ public final class DDs implements Set {
 
   private final DD negate (final DD q) {
     //assert contains(q);
-    return q.negate();
-  }
+    return q.negate(); }
 
   public final UnaryOperator<DD> additiveInverse () {
     return new UnaryOperator<>() {
       @Override
-      public final String toString () { return "BF.negate()"; }
+      public final String toString () { return "DD.negate()"; }
 
       @Override
       public final DD apply (final DD q) {
@@ -75,14 +72,14 @@ public final class DDs implements Set {
 
   private final DD multiply (final DD q0,
                              final DD q1) {
-    //assert contains(q0);
-    //assert contains(q1);
+    assert contains(q0);
+    assert contains(q1);
     return q0.multiply(q1); }
 
   public final BinaryOperator<DD> multiplier () {
     return new BinaryOperator<>() {
       @Override
-      public final String toString () { return "BF.multiply"; }
+      public final String toString () { return "DD.multiply"; }
 
       @Override
       public final DD apply (final DD q0,
@@ -90,9 +87,23 @@ public final class DDs implements Set {
         return DDs.this.multiply(q0, q1); } }; }
 
   //--------------------------------------------------------------
+  // TODO: danger!!! while DD mutable
+  private static final DD ONE = DD.valueOf(1.0);
 
-  public final DD multiplicativeIdentity () {
-    return DD.valueOf(1L); }
+  @SuppressWarnings("static-method")
+  public final DD multiplicativeIdentity () { return ONE; }
+
+  //--------------------------------------------------------------
+
+  @SuppressWarnings("static-method")
+  private final DD reciprocal (final DD q) { return q.reciprocal();  }
+
+  public final UnaryOperator<DD> multiplicativeInverse () {
+    return new UnaryOperator<> () {
+      @Override
+      public final String toString () { return "DD.inverse()"; }
+      @Override
+      public final DD apply (final DD q) { return reciprocal(q); } }; }
 
   //--------------------------------------------------------------
   // Set methods
@@ -106,7 +117,7 @@ public final class DDs implements Set {
 
   @Override
   public final BiPredicate equivalence () {
-    return (BiPredicate<DD, DD>) (q0, q1) -> q0.equals(q1); }
+    return (BiPredicate<DD, DD>) DD::equals; }
 
   //--------------------------------------------------------------
   // Is this characteristic of most inputs?
@@ -142,6 +153,7 @@ public final class DDs implements Set {
   generator (final UniformRandomProvider urp) {
     return fromDoubleGenerator(urp); }
 
+  @SuppressWarnings("unused")
   public static final Generator
   fromDoubleGenerator (final int n,
                        final UniformRandomProvider urp) {
@@ -171,10 +183,7 @@ public final class DDs implements Set {
   public final Supplier generator (final Map options) {
     final UniformRandomProvider urp = Set.urp(options);
     final Generator g = generator(urp);
-    return
-      new Supplier() {
-        @Override
-        public final Object get () { return g.next(); } }; }
+    return g::next; }
 
   //--------------------------------------------------------------
   // Object methods
@@ -209,13 +218,14 @@ public final class DDs implements Set {
   public static final OneSetOneOperation MULTIPLICATIVE_MAGMA =
     OneSetOneOperation.magma(get().multiplier(), get());
 
-  public static final OneSetTwoOperations RING =
-    OneSetTwoOperations.commutativeRing(
+  public static final OneSetTwoOperations FLOATING_POINT =
+    OneSetTwoOperations.floatingPoint(
       get().adder(),
       get().additiveIdentity(),
       get().additiveInverse(),
       get().multiplier(),
       get().multiplicativeIdentity(),
+      get().multiplicativeInverse(),
       get());
 
   //--------------------------------------------------------------

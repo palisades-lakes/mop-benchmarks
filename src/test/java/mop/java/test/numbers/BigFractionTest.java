@@ -22,7 +22,7 @@ import mop.java.benchmarks.accumulate.Common;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2019-12-01
+ * @version 2026-05-09
  */
 
 public final class BigFractionTest {
@@ -37,26 +37,24 @@ public final class BigFractionTest {
 
     Assertions.assertThrows(
       AssertionFailedError.class,
-      () -> {
-        Common.doubleRoundingTests(
-          (i0,i1) -> new BigFraction(i0,i1),
-          x -> new BigFraction(x),
-          Numbers::doubleValue,
-          (q0,q1) -> ((BigFraction) q0).subtract((BigFraction) q1).abs(),
-          Object::toString,
-          Common::compareTo, Common::compareTo); },
+      () -> Common.doubleRoundingTests(
+        BigFraction::new,
+        BigFraction::new,
+        Numbers::doubleValue,
+        (q0,q1) -> ((BigFraction) q0).subtract((BigFraction) q1).abs(),
+        Object::toString,
+        Common::compareTo, Common::compareTo),
       "BigFraction doesn't round correctly");
 
     Assertions.assertThrows(
       AssertionFailedError.class,
-      () -> {
-        Common.floatRoundingTests(
-          (i0,i1) -> new BigFraction(i0,i1),
-          x -> new BigFraction(x),
-          Numbers::floatValue,
-          (q0,q1) -> ((BigFraction) q0).subtract((BigFraction) q1).abs(),
-          Object::toString,
-          Common::compareTo, Common::compareTo); },
+      () -> Common.floatRoundingTests(
+        BigFraction::new,
+        BigFraction::new,
+        Numbers::floatValue,
+        (q0,q1) -> ((BigFraction) q0).subtract((BigFraction) q1).abs(),
+        Object::toString,
+        Common::compareTo, Common::compareTo),
       "BigFraction doesn't round correctly");
 
   }

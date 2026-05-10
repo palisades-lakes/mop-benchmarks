@@ -16,7 +16,7 @@ import mop.java.numbers.BoundedNatural;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2021-05-29
+ * @version 2026-05-09
  */
 
 public final class BoundsTest {
@@ -50,39 +50,6 @@ public final class BoundsTest {
         final BoundedNatural n = BoundedNatural.maxValue().add(1);
         System.out.println(n.hiBit()); },
       "Overflow BoundedNatural"); }
-
-  //  @SuppressWarnings({ "static-method" })
-  //  @Test
-  //  public final void overflowNatural () {
-  //    //Debug.DEBUG=false;
-  //
-  //    final long t0 = System.nanoTime();
-  //    try {
-  //      BoundedNatural n =
-  ////      BoundedNatural.valueOf(0);
-  //      BoundedNatural.valueOf(1)
-  //        .shiftUp(BoundedNatural.MAX_BITS-1);
-  //      n = n.add(n.subtract(10));
-  //      for (long i=1L;i<=Long.MAX_VALUE;i++) {
-  //        System.out.print("BoundedNatural: " + i + ": " +
-  //          Integer.toUnsignedString(n.hiBit(),16));
-  //        final long t = System.nanoTime();
-  //        final BoundedNatural n1 = n.add(1L);
-  //        assert n1.compareTo(n) > 0 :
-  //          n1.compareTo(n) + "\n" +
-  //        Integer.toUnsignedString(n1.hiBit(),16) + " " +
-  //        Integer.toUnsignedString(Integer.MAX_VALUE,16);
-  //        n = n1;
-  //        System.out.printf(" [%4.3f]\n",
-  //          Double.valueOf((System.nanoTime()-t)*1.0e-9));
-  //        } }
-  //    finally {
-  //      System.out.printf("Total seconds: %4.3f\n",
-  //        Double.valueOf((System.nanoTime()-t0)*1.0e-9)); }
-  //
-  //    //Debug.DEBUG=false;
-  //  }
-
 
   //--------------------------------------------------------------
 }

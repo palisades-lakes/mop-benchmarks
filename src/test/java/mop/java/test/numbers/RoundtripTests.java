@@ -56,63 +56,6 @@ public final class RoundtripTests {
         PRNG.well44497b("seeds/Well44497b-2019-01-05.txt")); }
 
   //--------------------------------------------------------------
-  // continued fraction like
-
-//    private static final double toDoubleGT1 (final BigInteger n,
-//                                             final BigInteger d) {
-//      assert 0 < n.compareTo(d);
-//      final BigInteger[] qr = n.divideAndRemainder(d);
-//      if (0 == qr[1].signum()) { return qr[0].doubleValue(); }
-//      return qr[0].doubleValue() + (1.0/toDoubleGT0(d,qr[1])); }
-//
-//
-//    private static final double toDoubleGT0 (final BigInteger n,
-//                                             final BigInteger d) {
-//      final int c = n.compareTo(d);
-//      if (0 == c) { return 1.0; }
-//      if (0 > c) { return 1.0/toDoubleGT1(d,n); }
-//      return toDoubleGT1(n,d); }
-
-  /** Trial and error.
-   */
-//    public static final double toDouble (final BigFraction f) {
-//      final BigFraction fr = f.reduce();
-//      final BigInteger n = fr.getNumerator();
-//      final BigInteger d = fr.getDenominator();
-//      assert 1 == d.signum() :
-//        n + "\n" + d;
-//      final int ns = n.signum();
-//      if (0 == ns) { return 0.0; }
-//      if (-1 == ns) { return - toDoubleGT0(n.negate(),d); }
-//      return toDoubleGT0(n,d);  }
-
-  //--------------------------------------------------------------
-  // shift 1 hack
-
-//    private static final double toDouble (final BigInteger n,
-//                                          final BigInteger d) {
-//      final double nx = n.doubleValue();
-//      final double dx = d.doubleValue();
-//      System.out.println(
-//        n + "\n" + d + "\n" +
-//          Double.toHexString(nx) + "\n" +
-//          Double.toHexString(dx));
-//      if (Double.isInfinite(nx) || Double.isInfinite(dx)) {
-//        return toDouble(n.shiftDown(1),d.shiftDown(1)); }
-//      return nx / dx;  }
-
-//    public static final double toDouble (final BigFraction f) {
-//      final BigFraction fr = f.reduce();
-//      final BigInteger n = fr.getNumerator();
-//      final BigInteger d = fr.getDenominator();
-//      assert 1 == d.signum() :
-//        n + "\n" + d;
-//      final int ns = n.signum();
-//      if (0 == ns) { return 0.0; }
-//      if (-1 == ns) { return - toDouble(n.negate(),d); }
-//      return toDouble(n,d);  }
-
-  //--------------------------------------------------------------
   // BigFraction
   // within an ulp, not exact...
 
