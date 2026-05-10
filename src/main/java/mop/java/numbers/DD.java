@@ -111,24 +111,28 @@ public final class DD implements Serializable, Comparable, Cloneable {
   // TODO: immutable!
   //--------------------------------------------------------------------
   /**  The value nearest to the constant Pi.
+   * TODO: unsafe until immutable!
    */
   public static final DD PI = new DD(
     3.141592653589793116e+00,
     1.224646799147353207e-16);
 
   /** The value nearest to the constant 2 * Pi.
+   * TODO: unsafe until immutable!
    */
   public static final DD TWO_PI = new DD(
     6.283185307179586232e+00,
     2.449293598294706414e-16);
 
   /** The value nearest to the constant Pi / 2.
+   * TODO: unsafe until immutable!
    */
   public static final DD PI_2 = new DD(
     1.570796326794896558e+00,
     6.123233995736766036e-17);
 
   /** The value nearest to the constant e (the natural logarithm base).
+   * TODO: unsafe until immutable!
    */
   public static final DD E = new DD(
     2.718281828459045091e+00,
@@ -141,8 +145,20 @@ public final class DD implements Serializable, Comparable, Cloneable {
 
   /** A value representing the result of an operation which does not
    * return a valid number.
+   * TODO: unsafe until immutable!
    */
   public static final DD NaN = createNaN();
+
+  /** additive identity
+   * TODO: unsafe until immutable!
+   */
+  public static final DD ZERO = new DD(0.0,0.0);
+
+  /** multiplicative identity
+   * TODO: unsafe until immutable!
+   */
+  public static final DD ONE = new DD(1.0,0.0);
+
 
   /** The smallest representable relative difference between two
    * {link @DD} values
@@ -158,7 +174,7 @@ public final class DD implements Serializable, Comparable, Cloneable {
    *
    * @return the extended precision version of the value
    */
-  public static final DD valueOf (final double x) { return new DD(x); }
+  public static final DD valueOf (final double x) { return new DD(x,0.0); }
 
   /** Converts the <tt>double</tt> argument to a DD number.
    *
@@ -166,7 +182,7 @@ public final class DD implements Serializable, Comparable, Cloneable {
    *
    * @return the extended precision version of the value
    */
-  public static final DD valueOf (float x) { return new DD(x); }
+  public static final DD valueOf (float x) { return new DD(x,0.0); }
 
   //--------------------------------------------------------------------
   // instance slots
@@ -341,25 +357,39 @@ public final class DD implements Serializable, Comparable, Cloneable {
    * multiplication.
    * use a hex string for clarity
    */
-  private static final double SPLIT = 1.0 + 0x1.0p27;
-//  private static final double SPLIT = 134217729.0D;
+  private static final double SPLIT =
+    // TODO: should this be an int?
+    //1.0 + 0x1.0p27;
+   134217729.0D;
   // 2^27+1, for IEEE double
 
   private final DD selfMultiply (final double yhi, final double ylo) {
+    // TODO: check whether all these edge cases are necessary
     // TODO: danger until immutable!
-    if (isNaN()) { return NaN; }
-    if (Double.isNaN(yhi)) { return NaN; }
-    // TODO: shouldn't be possible!
-    if (Double.isNaN(ylo)) { return NaN; }
+    if (ZERO.equals(this)) { return this; }
+    if ((0.0==yhi) && (0.0==ylo)) { hi=0.0; lo=0.0; return this; }
+    if (ONE.equals(this)) { hi = yhi; lo = ylo; return this; }
+    if ((1.0==yhi) && (0.0==ylo)) { return this; }
+    // TODO: danger until immutable!
+    // TODO: last condition shouldn't be possible
+    if (this.isNaN() || Double.isNaN(yhi) || Double.isNaN(ylo)) {
+      hi = Double.NaN; lo = Double.NaN; return this; }
     final double hiTest = hi * yhi;
     // TODO: is this right? safe to ignore lo and ylo?
     // if so, then check sign and return POSITIVE or NEGATIVE INFINITY
     // singletons.
-    if (Double.isInfinite(hiTest)) { return new DD(hiTest); }
+    if (Double.isInfinite(hiTest)) { hi = hiTest; lo = 0.0; return this; }
     double C = SPLIT * hi;
-    assert Double.isFinite(C);
+    assert Double.isFinite(C) : "C=" + Double.toHexString(C);
     double hx = C - hi;
+    // TODO: overflows for large yhi
     double c = SPLIT * yhi;
+    assert Double.isFinite(c) :
+      "\nthis=  " + this.toString() +
+      "\nyhi=   " + Double.toHexString(yhi) +
+      "\nylo=   " + Double.toHexString(ylo) +
+      "\nSPLIT= " + Double.toHexString(SPLIT) +
+      "\nc=     " + Double.toHexString(c);
     hx = C - hx;
     double tx = hi - hx;
     double hy = c - yhi;
@@ -618,7 +648,8 @@ public final class DD implements Serializable, Comparable, Cloneable {
   public final DD abs () {
     if (isNaN()) { return NaN; }
     if (isNegative()) { return negate(); }
-    return new DD(this); }
+    // TODO: return this when immutable
+    return (DD) clone(); }
 
   /** Computes the square of this value.
    *
@@ -685,19 +716,19 @@ public final class DD implements Serializable, Comparable, Cloneable {
     // TODO: return immutable singleton
     if (0 == exp) { return valueOf(1.0); }
     // TODO: return immutable this
-    if (1 == exp) { return new DD(this); }
+    if (1 == exp) { return copy(this); }
     // TODO: return immutable singleton
     if (isNaN()) { return createNaN(); }
     // TODO: distinguish positive and negative zero cases to match
     // java.lang.Math.pow(double,double)
     if (isZero()) {
       // TODO: return immutable this
-      if (0 < exp) { return new DD(this); }
+      if (0 < exp) { return copy(this); }
       // TODO: return immutable singleton
-      return new DD(Double.POSITIVE_INFINITY); }
+      return new DD(Double.POSITIVE_INFINITY,0.0); }
 
     // TODO: use mutable instances
-    DD r = new DD(this);
+    DD r = copy(this);
     DD s = valueOf(1.0);
     int n = Math.abs(exp);
 
@@ -966,17 +997,17 @@ public final class DD implements Serializable, Comparable, Cloneable {
 //   */
 //  public DD () { this(0.0, 0.0); }
 
-  /** Creates a new DD with value x.
-   *
-   * @param x the value to initialize
-   */
-  public DD (final double x) { this(x,0.0); }
-
-  /** Creates a new DD with value equal to the argument.
-   *
-   * @param dd the value to initialize
-   */
-  public DD (final DD dd) { this(dd.hi,dd.lo); }
+//  /** Creates a new DD with value x.
+//   *
+//   * @param x the value to initialize
+//   */
+//  public DD (final double x) { this(x,0.0); }
+//
+//  /** Creates a new DD with value equal to the argument.
+//   *
+//   * @param dd the value to initialize
+//   */
+//  public DD (final DD dd) { this(dd.hi,dd.lo); }
 
   /** Creates a new DD with the value of the argument.
    *
@@ -984,7 +1015,8 @@ public final class DD implements Serializable, Comparable, Cloneable {
    *
    * @return a copy of the input value
    */
-  public static final DD copy (final DD dd) { return new DD(dd); }
+  public static final DD copy (final DD dd) {
+    return new DD(dd.hi,dd.lo); }
 
   /** Creates and returns a copy of this value.
    * @return a copy of this value

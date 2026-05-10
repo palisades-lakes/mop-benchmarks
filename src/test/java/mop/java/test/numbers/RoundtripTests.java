@@ -82,16 +82,16 @@ public final class RoundtripTests {
       final double x = -0x0.19c0ba819d5c3p-1022;
       final BigFraction f = new BigFraction(x);
       final double xf = toDouble(f);
-      System.out.println("\n\n" +
-        "toDouble:" + Doubles.isNormal(x) +"\n" +
-        x + "\n" +
-        xf + "\n\n" +
-        Double.toHexString(x) + "\n" +
-        Double.toHexString(xf) + "\n\n" +
-  //      f.getNumerator() + "\n" +
-  //      f.getDenominator() + "\n\n" +
-        f.getNumerator().toString(16) + "\n" +
-        f.getDenominator().toString(16));
+//      System.out.println("\n\n" +
+//        "toDouble:" + Doubles.isNormal(x) +"\n" +
+//        x + "\n" +
+//        xf + "\n\n" +
+//        Double.toHexString(x) + "\n" +
+//        Double.toHexString(xf) + "\n\n" +
+//  //      f.getNumerator() + "\n" +
+//  //      f.getDenominator() + "\n\n" +
+//        f.getNumerator().toString(16) + "\n" +
+//        f.getDenominator().toString(16));
       //final double dx = Math.abs(x - xf);
       //if (dx > Math.ulp(x)) {
       return (x == xf); }
@@ -106,14 +106,14 @@ public final class RoundtripTests {
         if (x != xf) {
           //        final double dx = Math.abs(x - xf);
           //        if (dx > Math.ulp(x)) {
-          System.out.println("\n\n" +
-                               "toDouble:" + i + " " + Doubles.isNormal(x) +"\n" +
-                               x + "\n" +
-                               xf + "\n\n" +
-                               Double.toHexString(x) + "\n" +
-                               Double.toHexString(xf) + "\n\n" +
-                               f.getNumerator().toString(16) + "\n" +
-                               f.getDenominator().toString(16));
+//          System.out.println("\n\n" +
+//                               "toDouble:" + i + " " + Doubles.isNormal(x) +"\n" +
+//                               x + "\n" +
+//                               xf + "\n\n" +
+//                               Double.toHexString(x) + "\n" +
+//                               Double.toHexString(xf) + "\n\n" +
+//                               f.getNumerator().toString(16) + "\n" +
+//                               f.getDenominator().toString(16));
           return false; } } }
     return true; }
 
@@ -196,12 +196,12 @@ public final class RoundtripTests {
           final Ratio f = Numbers.toRatio(x);
           final double xf = f.doubleValue();
           if (x != xf) {
-            System.out.println("\n" +
-              "double2Ratio:" + i + " " + Doubles.isNormal(x) + "\n" +
-              Double.toHexString(x) + "\n" +
-              Double.toHexString(xf) + "\n" +
-              f.numerator + "\n" +
-              f.denominator);
+//            System.out.println("\n" +
+//              "double2Ratio:" + i + " " + Doubles.isNormal(x) + "\n" +
+//              Double.toHexString(x) + "\n" +
+//              Double.toHexString(xf) + "\n" +
+//              f.numerator + "\n" +
+//              f.denominator);
             return false; } } }
       return true; }
 
@@ -278,7 +278,7 @@ public final class RoundtripTests {
       finiteDoubles(), subnormalDoubles(), normalDoubles())) {
       for (int i=0;i<TRYS;i++) {
         final double x = g.nextDouble();
-        final DD f = new DD(x);
+        final DD f = new DD(x,0.0);
         final double xf = f.doubleValue();
         if (x != xf) {
           System.out.println("\n\n" +

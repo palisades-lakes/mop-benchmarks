@@ -48,8 +48,7 @@ public final class DDs implements Set {
 
   //--------------------------------------------------------------
 
-  private static final DD ZERO = DD.valueOf(0L);
-  public final DD additiveIdentity () { return ZERO; }
+  public final DD additiveIdentity () { return DD.ZERO; }
 
   //--------------------------------------------------------------
   // TODO: is consistency with other algebraic structure classes
@@ -87,11 +86,9 @@ public final class DDs implements Set {
         return DDs.this.multiply(q0, q1); } }; }
 
   //--------------------------------------------------------------
-  // TODO: danger!!! while DD mutable
-  private static final DD ONE = DD.valueOf(1.0);
 
   @SuppressWarnings("static-method")
-  public final DD multiplicativeIdentity () { return ONE; }
+  public final DD multiplicativeIdentity () { return DD.ONE; }
 
   //--------------------------------------------------------------
 
