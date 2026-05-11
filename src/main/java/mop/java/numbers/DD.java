@@ -15,6 +15,8 @@
  */
 package mop.java.numbers;
 
+import org.jspecify.annotations.NonNull;
+
 import java.io.Serializable;
 
 /** Implements extended-precision floating-point numbers which maintain
@@ -108,6 +110,7 @@ import java.io.Serializable;
  * </ul>
  *
  */
+
 @SuppressWarnings("unused")
 public final class DD implements Serializable, Comparable {
 
@@ -115,28 +118,24 @@ public final class DD implements Serializable, Comparable {
   // class singletons
   //--------------------------------------------------------------------
   /**  The value nearest to the constant Pi.
-   * TODO: unsafe until immutable!
    */
   public static final DD PI = sum(
     3.141592653589793116e+00,
     1.224646799147353207e-16);
 
   /** The value nearest to the constant 2 * Pi.
-   * TODO: unsafe until immutable!
    */
   public static final DD TWO_PI = sum(
     6.283185307179586232e+00,
     2.449293598294706414e-16);
 
   /** The value nearest to the constant Pi / 2.
-   * TODO: unsafe until immutable!
    */
   public static final DD PI_2 = sum(
     1.570796326794896558e+00,
     6.123233995736766036e-17);
 
   /** The value nearest to the constant e (the natural logarithm base).
-   * TODO: unsafe until immutable!
    */
   public static final DD E = sum(
     2.718281828459045091e+00,
@@ -144,17 +143,20 @@ public final class DD implements Serializable, Comparable {
 
   /** A value representing the result of an operation which does not
    * return a valid number.
-   * TODO: unsafe until immutable!
    */
   public static final DD NaN = new DD(Double.NaN,Double.NaN);
 
+  public static final DD POSITIVE_INFINITY =
+    new DD(Double.POSITIVE_INFINITY,0.0);
+
+  public static final DD NEGATIVE_INFINITY =
+    new DD(Double.NEGATIVE_INFINITY,0.0);
+
   /** additive identity
-   * TODO: unsafe until immutable!
    */
   public static final DD ZERO = sum(0.0, 0.0);
 
   /** multiplicative identity
-   * TODO: unsafe until immutable!
    */
   public static final DD ONE = sum(1.0, 0.0);
 
@@ -277,12 +279,10 @@ public final class DD implements Serializable, Comparable {
 
   public final DD multiply (final double yhi, final double ylo) {
     // TODO: check whether all these edge cases are necessary
-    // TODO: danger until immutable!
     if (ZERO.equals(this)) { return ZERO; }
     if ((0.0==yhi) && (0.0==ylo)) { return ZERO; }
     if (ONE.equals(this)) { return sum(yhi, ylo); }
     if ((1.0==yhi) && (0.0==ylo)) { return this; }
-    // TODO: danger until immutable!
     // TODO: last condition shouldn't be possible
     if (this.isNaN() || Double.isNaN(yhi) || Double.isNaN(ylo)) {
       return NaN; }
@@ -290,7 +290,9 @@ public final class DD implements Serializable, Comparable {
     // TODO: is this right? safe to ignore lo and ylo?
     // if so, then check sign and return POSITIVE or NEGATIVE INFINITY
     // singletons.
-    if (Double.isInfinite(hiTest)) { return valueOf(hiTest); }
+    if (Double.isInfinite(hiTest)) {
+      if (0 < hiTest) { return POSITIVE_INFINITY; }
+      return NEGATIVE_INFINITY; }
     double C = SPLIT * hi;
     assert Double.isFinite(C) : "C=" + Double.toHexString(C);
     double hx = C - hi;
@@ -337,8 +339,8 @@ public final class DD implements Serializable, Comparable {
 
   /** @return <tt>(this * y)</tt>
    */
-  public final DD multiply (final DD y) {
-    return multiply(y.hi, y.lo); }
+  public final DD multiply (final DD that) {
+    return multiply(that.hi, that.lo); }
 
   /** @return <tt>(this * y)</tt>
    */
@@ -356,9 +358,9 @@ public final class DD implements Serializable, Comparable {
 
   /** @return the square of this value.
    */
-  public static final DD sqr (final double x) {
+  public static final DD sqr (final double z) {
     // TODO: optimized version of multiply
-    return valueOf(x).multiply(x); }
+    return valueOf(z).multiply(z); }
 
   //-------------------------------------------------------------------
   /** * Computes the positive square root of this value. If the number is
@@ -378,13 +380,13 @@ public final class DD implements Serializable, Comparable {
     only half the precision.
  */
 
-    if (isZero()) { return valueOf(0.0); }
+    if (isZero()) { return ZERO; }
     if (isNegative()) { return NaN; }
 
     double x = 1.0 / Math.sqrt(hi);
     double ax = hi * x;
     DD axdd = valueOf(ax);
-    DD diffSq = this.subtract(axdd.sqr());
+    DD diffSq = subtract(axdd.sqr());
     double d2 = diffSq.hi * (x * 0.5);
 
     return axdd.add(d2); }
@@ -414,7 +416,7 @@ public final class DD implements Serializable, Comparable {
       // TODO: return immutable this
       if (0 < exp) { return this; }
       // TODO: return immutable singleton
-      return sum(Double.POSITIVE_INFINITY, 0.0); }
+      return POSITIVE_INFINITY; }
 
     // TODO: use mutable instances
     DD r = this;
@@ -607,7 +609,7 @@ public final class DD implements Serializable, Comparable {
    * @return the minimum of the two numbers
    */
   public final DD min (final DD x) {
-    if (this.le(x)) { return this; }
+    if (le(x)) { return this; }
     else { return x; } }
 
   /** Computes the maximum of this and another DD number.
@@ -617,7 +619,7 @@ public final class DD implements Serializable, Comparable {
    * @return the maximum of the two numbers
    */
   public final DD max (final DD x) {
-    if (this.ge(x)) { return this; }
+    if (ge(x)) { return this; }
     else { return x; } }
 
   //-------------------------------------------------------------------
@@ -716,12 +718,12 @@ public final class DD implements Serializable, Comparable {
   /** Tests whether this value is greater than or equals to another
    * <tt>DD</tt> value.
    *
-   * @param y a DD value
+   * @param that a DD value
    *
    * @return true if this value &gt;= y
    */
-  public final boolean ge (final DD y) {
-    return (hi > y.hi) || (hi == y.hi && lo >= y.lo); }
+  public final boolean ge (final DD that) {
+    return (hi > that.hi) || (hi == that.hi && lo >= that.lo); }
 
   /** Tests whether this value is less than another <tt>DD</tt>  value.
    *
@@ -735,19 +737,20 @@ public final class DD implements Serializable, Comparable {
   /** Tests whether this value is less than or equal to another
    * <tt>DD</tt> value.
    *
-   * @param y a DD value
+   * @param that a DD value
    *
    * @return true if this value &lt;= y
    */
-  public final boolean le (final DD y) {
-    return (hi < y.hi) || (hi == y.hi && lo <= y.lo); }
+  public final boolean le (final DD that) {
+    return (hi < that.hi) || (hi == that.hi && lo <= that.lo); }
 
   /** Compares two DD objects numerically.
    *
-   * @return -1,0 or 1 depending on whether this value is less than,
+   * @return -1, 0, or 1 depending on whether this value is less than,
    * equal to or greater than the value of <tt>o</tt>
    */
-  public final int compareTo (final Object o) {
+  @Override
+  public final int compareTo (final @NonNull Object o) {
     final DD other = (DD) o;
     if (hi < other.hi) { return -1; }
     if (hi > other.hi) { return 1; }
@@ -867,7 +870,7 @@ public final class DD implements Serializable, Comparable {
 
   // TODO: benchmark twoSum vs fast2Sum
   // TODO: where can we use fast2Sum without magnitude test?
-  // TODO: change magnitude test to exponent test? (lange and Oishi 2020)
+  // TODO: change magnitude test to exponent test? (Lange and Oishi 2020)
   // https://link.springer.com/article/10.1007/s00211-020-01114-2
   private static final DD fast2Sum (final double a, final double b) {
     // not so fast with magnitude test!
@@ -883,11 +886,11 @@ public final class DD implements Serializable, Comparable {
     final double lo = (a-(hi-delta)) + (b-delta);
     return new DD(hi, lo);  }
 
-  /** See mop.java.accumulators.ZhuHayesAccumulator.twoSum
+  /** @link mop.java.accumulators.ZhuHayesAccumulator#twoSum
    * <br>
-   * See https://pavpanchekha.com/blog/fast-two-sum.html
+   * See <a href="https://pavpanchekha.com/blog/fast-two-sum.html>fast two sum</a>
    * <br>
-   * See https://en.wikipedia.org/wiki/2Sum
+   * See <a href="https://en.wikipedia.org/wiki/2Sum>2Sum</a>
    */
   public static final DD sum (final double a, final double b) {
     return twoSum(a, b); }
@@ -896,7 +899,7 @@ public final class DD implements Serializable, Comparable {
     return new DD(a, 0.0);  }
 
   public static final DD valueOf (final float a) {
-    return new DD((double) a, 0.0);  }
+    return new DD( a, 0.0);  }
 
 
   //-------------------------------------------------------------------
