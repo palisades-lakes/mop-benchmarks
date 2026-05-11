@@ -1,5 +1,12 @@
 /*
-  */
+ * palisades dot lakes at gmail dot com, 2026-05-05
+ * modified from JTS for benchmarking relative to mop.
+ * TODO: Split into immutable and mutable classes.
+ *  TODO: distinguish positive and negative zero?
+ * JTS version has some additions (determinant, correction (?)
+ * to parse(String)) relative to Tinfour version, but otherwise
+ * identical, except for comment formatting.
+ */
 /*
  * Copyright (c) 2016 Martin Davis.
  *
@@ -13,11 +20,12 @@
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
-package mop.java.numbers;
+package mop.java.accumulators;
 
 import java.io.Serializable;
 
-/** Implements extended-precision floating-point numbers which maintain
+/**
+ * Implements extended-precision floating-point numbers which maintain
  * 106 bits (approximately 30 decimal digits) of precision.
  * <p>
  * A <code>DD</code>> uses a representation containing two double-precision
@@ -60,13 +68,13 @@ import java.io.Serializable;
  * instances: two to hold the input values and one to hold the result of
  * the addition.
  * <pre>
- *     DD a = DD.make(2.0);
- *     DD b = DD.make(3.0);
+ *     DD a = new DD(2.0);
+ *     DD b = new DD(3.0);
  *     DD c = a.add(b);
  * </pre>
  * In contrast, the following approach uses only one object:
  * <pre>
- *     DD a = DD.make(2.0);
+ *     DD a = new DD(2.0);
  *     a.selfAdd(3.0);
  * </pre>
  * <p>
@@ -93,119 +101,62 @@ import java.io.Serializable;
  * </ul>
  *
  * @author Martin Davis
- * @author palisades dot lakes at gmail dot com, 2026-05-10
-  * <br> *
- *  modified from JTS for benchmarking relative to mop.
- * JTS version has some additions (determinant, correction (?)
- * to parse(String)) relative to Tinfour version, but otherwise
- * identical, except for comment formatting.
- * <ul>
- *   <li> Handle special cases in multiply to avoid overflows.
- *   <li> Split into immutable and mutable classes.
- *   <li>single construction path to enforce hi,lo constraints
- *   <li> TODO: distinguish positive and negative zero?
- * </ul>
- *
- * Removed methods related to DD <-> decimal string.
- * <br>
- * DD to decimal string methods are broken in a number of ways,
- * at least for numbers
- * in the vicinity of 0x1.0p-976, 0x1.0p-977, etc.
- * For <hi,0.0> values, decimal string incorrectly has non-zero low
- * order decimal digits.
- * For some values, returns an incorrect string of all '0' digits,
- * throwing an exception. Seems to be related to
- * <code>TEN.pow(mag)</code> returning <code>NaN</code>, which may
- * reflect a problem with <code<pow</code> that should be addressed
- * independently.
- * <br>
- * The problems seem to be expected to some degree, given the comments
- * in the code.
- * For my purposes, approximating a number with a decimal string is
- * rarely useful. I'll just remove this code for now.
- * The <code>toString</code> printed representation will display
- * the 2 terms separately, using default Java decimal formatting.
- * And I will add <code>toHexString</code>, which I find more useful
- * for debugging.
- * <br>
- * In case I do decide to try a 1-term decimal representation:
- * <br>
- * References:  (palisades dot lakes at gmail dot com, 2026-05-08)
- * <ul>
- *   <li>Russ Cox,
- *   <a href="https://research.swtch.com/ftoa">
- *     Floating Point to Decimal Conversion is Easy</a>, 2011
- * <li>William Clinger,
- * How to Read Floating Point Numbers Accurately, PLDI 1990.
- * <li>Guy L. Steele Jr. and Jon L. White,
- * How to Print Floating Point Numbers Accurately, PLDI 1990.
- * <li>David M. Gay,
- * Correctly Rounded Binary-Decimal and Decimal-Binary Conversions,
- * AT&T Bell Laboratories, 1990.
- * <li>Vern Paxson,
- * A Program for Testing IEEE Decimal-Binary Conversion, May 1991.
- * <li>Robert Burger and R. Kent Dybvig,
- * Printing Floating-Point Numbers Quickly and Accurately,
- * SIGPLAN 1996.
- * <li>Florian Loitsch,
- * &ldquo;<a href="http://florian.loitsch.com/publications/dtoa-pldi2010.pdf">
- *   Printing Floating-Numbers Quickly and Accurately With Integers
- *   </a>&rdquo;,
- *   PLDI 2010.
- * <li>Aubrey Jaffer, <a href="https://arxiv.org/pdf/1310.8121">
- *   Easy Accurate Reading and Writing of Floating-Point Numbers</a>,
- *   2018
- * </ul>
  */
-@SuppressWarnings("unused")
-public final class DD implements Serializable, Comparable {
+public final class MutableDD
+  implements Serializable, Comparable, Cloneable {
 
   //--------------------------------------------------------------------
   // class singletons
+  // TODO: immutable!
   //--------------------------------------------------------------------
   /**  The value nearest to the constant Pi.
    * TODO: unsafe until immutable!
    */
-  public static final DD PI = DD.sum(
+  public static final MutableDD PI = new MutableDD(
     3.141592653589793116e+00,
     1.224646799147353207e-16);
 
   /** The value nearest to the constant 2 * Pi.
    * TODO: unsafe until immutable!
    */
-  public static final DD TWO_PI = DD.sum(
+  public static final MutableDD TWO_PI = new MutableDD(
     6.283185307179586232e+00,
     2.449293598294706414e-16);
 
   /** The value nearest to the constant Pi / 2.
    * TODO: unsafe until immutable!
    */
-  public static final DD PI_2 = DD.sum(
+  public static final MutableDD PI_2 = new MutableDD(
     1.570796326794896558e+00,
     6.123233995736766036e-17);
 
   /** The value nearest to the constant e (the natural logarithm base).
    * TODO: unsafe until immutable!
    */
-  public static final DD E = DD.sum(
+  public static final MutableDD E = new MutableDD(
     2.718281828459045091e+00,
     1.445646891729250158e-16);
+
+  // TODO: move to construction section of file
+
+  private static final MutableDD createNaN () {
+    return new MutableDD(Double.NaN, Double.NaN); }
 
   /** A value representing the result of an operation which does not
    * return a valid number.
    * TODO: unsafe until immutable!
    */
-  public static final DD NaN = new DD(Double.NaN,Double.NaN);
+  public static final MutableDD NaN = createNaN();
 
   /** additive identity
    * TODO: unsafe until immutable!
    */
-  public static final DD ZERO = DD.sum(0.0, 0.0);
+  public static final MutableDD ZERO = new MutableDD(0.0, 0.0);
 
   /** multiplicative identity
    * TODO: unsafe until immutable!
    */
-  public static final DD ONE = DD.sum(1.0, 0.0);
+  public static final MutableDD ONE = new MutableDD(1.0, 0.0);
 
 
   /** The smallest representable relative difference between two
@@ -214,20 +165,65 @@ public final class DD implements Serializable, Comparable {
   public static final double EPS = 1.23259516440783e-32;  /* = 2^-106 */
 
   //--------------------------------------------------------------------
+  // class methods
+  //--------------------------------------------------------------------
+  /** Converts the <tt>double</tt> argument to a DD number.
+   *
+   * @param x a numeric value
+   *
+   * @return the extended precision version of the value
+   */
+  public static final MutableDD valueOf (final double x) { return new MutableDD(x, 0.0); }
+
+  /** Converts the <tt>double</tt> argument to a DD number.
+   *
+   * @param x a numeric value
+   *
+   * @return the extended precision version of the value
+   */
+  public static final MutableDD valueOf (float x) { return new MutableDD(x, 0.0); }
+
+  //--------------------------------------------------------------------
   // instance slots
+  // TODO: immutable, access methods
   //--------------------------------------------------------------------
   /** The high-order component of the double-double precision value.
    */
-  private final double hi;
-  public final double getHi() { return hi; }
+  private double hi = 0.0;
 
   /** The low-order component of the double-double precision value.
    */
-  private final double lo;
-  public final double getLo() { return lo; }
+  private double lo = 0.0;
 
   //--------------------------------------------------------------------
   // instance methods
+  //--------------------------------------------------------------------
+  // TODO: eliminate mutating methods
+  //--------------------------------------------------------------------
+  /** Set the value for the DD object. This method supports the mutating
+   * operations concept described in the class documentation (see
+   * above).
+   *
+   * @param value a DD instance supplying an extended-precision value.
+   *
+   * @return a self-reference to the DD instance.
+   */
+  public final MutableDD setValue (final MutableDD value) {
+    init(value.hi, value.lo);
+    return this; }
+
+  /** Set the value for the DD object. This method supports the mutating
+   * operations concept described in the class documentation (see
+   * above).
+   *
+   * @param value a floating point value to be stored in the instance.
+   *
+   * @return a self-reference to the DD instance.
+   */
+  public final MutableDD setValue (final double value) {
+    init(value,0.0);
+    return this; }
+
   //--------------------------------------------------------------------
   // arithmetic
   //--------------------------------------------------------------------
@@ -238,8 +234,8 @@ public final class DD implements Serializable, Comparable {
    *
    * @return <tt>(this + y)</tt>
    */
-  public final DD add (final DD y) {
-    return selfAdd(y); }
+  public final MutableDD add (final MutableDD y) {
+    return copy(this).selfAdd(y); }
 
   /** Returns a new DD whose value is <tt>(this + y)</tt>.
    *
@@ -247,8 +243,8 @@ public final class DD implements Serializable, Comparable {
    *
    * @return <tt>(this + y)</tt>
    */
-  public final DD add (final double y) {
-    return selfAdd(y);
+  public final MutableDD add (final double y) {
+    return copy(this).selfAdd(y);
   }
 
   /** Adds the argument to the value of <tt>this</tt>. To prevent
@@ -259,7 +255,7 @@ public final class DD implements Serializable, Comparable {
    *
    * @return this object, increased by y
    */
-  public final DD selfAdd (final DD y) {
+  public final MutableDD selfAdd (final MutableDD y) {
     return selfAdd(y.hi, y.lo);
   }
 
@@ -271,7 +267,7 @@ public final class DD implements Serializable, Comparable {
    *
    * @return this object, increased by y
    */
-  public final DD selfAdd (final double y) {
+  public final MutableDD selfAdd (final double y) {
     double H, h, S, s, e, f;
     S = hi + y;
     e = S - hi;
@@ -280,9 +276,11 @@ public final class DD implements Serializable, Comparable {
     f = s + lo;
     H = S + f;
     h = f + (S - H);
-    return DD.sum(H + h, h + (H - hi)); }
+    hi = H + h;
+    lo = h + (H - hi);
+    return this;  }
 
-  private final DD selfAdd (final double yhi, double ylo) {
+  private final MutableDD selfAdd (final double yhi, double ylo) {
     double H, h, T, t, S, s, e, f;
     S = hi + yhi;
     T = lo + ylo;
@@ -296,7 +294,10 @@ public final class DD implements Serializable, Comparable {
 
     double zhi = H + e;
     double zlo = e + (H - zhi);
-    return DD.sum(zhi, zlo); }
+    hi = zhi;
+    lo = zlo;
+    return this;
+  }
 
   /** Computes a new DD object whose value is <tt>(this -
    * y)</tt>.
@@ -305,7 +306,7 @@ public final class DD implements Serializable, Comparable {
    *
    * @return <tt>(this - y)</tt>
    */
-  public final DD subtract (final DD y) { return add(y.negate()); }
+  public final MutableDD subtract (final MutableDD y) { return add(y.negate()); }
 
   /** Computes a new DD object whose value is <tt>(this -
    * y)</tt>.
@@ -314,7 +315,7 @@ public final class DD implements Serializable, Comparable {
    *
    * @return <tt>(this - y)</tt>
    */
-  public final DD subtract (final double y) { return add(-y); }
+  public final MutableDD subtract (final double y) { return add(-y); }
 
   /** Subtracts the argument from the value of <tt>this</tt>. To prevent
    * altering constants, this method <b>must only</b> be used on values
@@ -324,7 +325,7 @@ public final class DD implements Serializable, Comparable {
    *
    * @return this object, decreased by y
    */
-  public final DD selfSubtract (final DD y) {
+  public final MutableDD selfSubtract (final MutableDD y) {
     if (isNaN()) { return this; }
     return selfAdd(-y.hi, -y.lo); }
 
@@ -336,7 +337,7 @@ public final class DD implements Serializable, Comparable {
    *
    * @return this object, decreased by y
    */
-  public final DD selfSubtract (final double y) {
+  public final MutableDD selfSubtract (final double y) {
     if (isNaN()) { return this; }
     return selfAdd(-y, 0.0); }
 
@@ -344,9 +345,9 @@ public final class DD implements Serializable, Comparable {
    *
    * @return <tt>-this</tt>
    */
-  public final DD negate () {
+  public final MutableDD negate () {
     if (isNaN()) { return this; }
-    return DD.sum(-hi, -lo); }
+    return new MutableDD(-hi, -lo); }
 
   //-------------------------------------------------------------------
   // multiplication
@@ -361,29 +362,29 @@ public final class DD implements Serializable, Comparable {
    134217729.0D;
   // 2^27+1, for IEEE double
 
-  private final DD selfMultiply (final double yhi, final double ylo) {
+  private final MutableDD selfMultiply (final double yhi, final double ylo) {
     // TODO: check whether all these edge cases are necessary
     // TODO: danger until immutable!
-    if (ZERO.equals(this)) { return ZERO; }
-    if ((0.0==yhi) && (0.0==ylo)) { return ZERO; }
-    if (ONE.equals(this)) { return sum(yhi, ylo); }
+    if (ZERO.equals(this)) { return this; }
+    if ((0.0==yhi) && (0.0==ylo)) { hi=0.0; lo=0.0; return this; }
+    if (ONE.equals(this)) { hi = yhi; lo = ylo; return this; }
     if ((1.0==yhi) && (0.0==ylo)) { return this; }
     // TODO: danger until immutable!
     // TODO: last condition shouldn't be possible
     if (this.isNaN() || Double.isNaN(yhi) || Double.isNaN(ylo)) {
-      return NaN; }
+      hi = Double.NaN; lo = Double.NaN; return this; }
     final double hiTest = hi * yhi;
     // TODO: is this right? safe to ignore lo and ylo?
     // if so, then check sign and return POSITIVE or NEGATIVE INFINITY
     // singletons.
-    if (Double.isInfinite(hiTest)) { return valueOf(hiTest); }
+    if (Double.isInfinite(hiTest)) { hi = hiTest; lo = 0.0; return this; }
     double C = SPLIT * hi;
     assert Double.isFinite(C) : "C=" + Double.toHexString(C);
     double hx = C - hi;
     // TODO: overflows for large yhi
     double c = SPLIT * yhi;
     assert Double.isFinite(c) :
-      "\nthis=  " + this.toHexString() +
+      "\nthis=  " + this.toString() +
       "\nyhi=   " + Double.toHexString(yhi) +
       "\nylo=   " + Double.toHexString(ylo) +
       "\nSPLIT= " + Double.toHexString(SPLIT) +
@@ -419,7 +420,9 @@ public final class DD implements Serializable, Comparable {
     final double zlo = c + hx;
     assert (! Double.isNaN(zhi));
     assert (! Double.isNaN(zlo));
-    return sum(zhi, zlo); }
+    hi = zhi;
+    lo = zlo;
+    return this; }
 
   /** Multiplies this object by the argument, returning <tt>this</tt>.
    * To prevent altering constants, this method <b>must only</b> be
@@ -429,7 +432,7 @@ public final class DD implements Serializable, Comparable {
    *
    * @return this object, multiplied by y
    */
-  public final DD selfMultiply (final DD y) {
+  public final MutableDD selfMultiply (final MutableDD y) {
     return selfMultiply(y.hi, y.lo); }
 
   /** Multiplies this object by the argument, returning <tt>this</tt>.
@@ -440,7 +443,7 @@ public final class DD implements Serializable, Comparable {
    *
    * @return this object, multiplied by y
    */
-  public final DD selfMultiply (final double y) {
+  public final MutableDD selfMultiply (final double y) {
     return selfMultiply(y, 0.0); }
 
   /** Returns a new DD whose value is <tt>(this * y)</tt>.
@@ -449,8 +452,8 @@ public final class DD implements Serializable, Comparable {
    *
    * @return <tt>(this * y)</tt>
    */
-  public final DD multiply (final DD y) {
-    return selfMultiply(y); }
+  public final MutableDD multiply (final MutableDD y) {
+    return copy(this).selfMultiply(y); }
 
   /** Returns a new DD whose value is <tt>(this * y)</tt>.
    *
@@ -458,9 +461,9 @@ public final class DD implements Serializable, Comparable {
    *
    * @return <tt>(this * y)</tt>
    */
-  public final DD multiply (final double y) {
-    if (Double.isNaN(y)) { return NaN; }
-    return selfMultiply(y, 0.0); }
+  public final MutableDD multiply (final double y) {
+    if (Double.isNaN(y)) { return createNaN(); }
+    return copy(this).selfMultiply(y, 0.0); }
 
   //-------------------------------------------------------------------
   // division
@@ -471,7 +474,7 @@ public final class DD implements Serializable, Comparable {
    *
    * @return a new object with the value <tt>(this / y)</tt>
    */
-  public final DD divide (final DD y) {
+  public final MutableDD divide (final MutableDD y) {
     double hc, tc, hy, ty, C, c, U, u;
     C = hi / y.hi; c = SPLIT * C; hc = c - C; u = SPLIT * y.hi;
     hc = c - hc;
@@ -483,7 +486,7 @@ public final class DD implements Serializable, Comparable {
 
     double zhi = u;
     double zlo = (C - u) + c;
-    return DD.sum(zhi, zlo); }
+    return new MutableDD(zhi, zlo); }
 
   /** Computes a new DD whose value is <tt>(this / y)</tt>.
    *
@@ -491,9 +494,9 @@ public final class DD implements Serializable, Comparable {
    *
    * @return a new object with the value <tt>(this / y)</tt>
    */
-  public final DD divide (final double y) {
-    if (Double.isNaN(y)) { return NaN; }
-    return selfDivide(y, 0.0); }
+  public final MutableDD divide (final double y) {
+    if (Double.isNaN(y)) { return createNaN(); }
+    return copy(this).selfDivide(y, 0.0); }
 
   /** Divides this object by the argument, returning <tt>this</tt>. To
    * prevent altering constants, this method <b>must only</b> be used on
@@ -503,7 +506,7 @@ public final class DD implements Serializable, Comparable {
    *
    * @return this object, divided by y
    */
-  public final DD selfDivide (final DD y) {
+  public final MutableDD selfDivide (final MutableDD y) {
     return selfDivide(y.hi, y.lo); }
 
   /** Divides this object by the argument, returning <tt>this</tt>. To
@@ -514,10 +517,10 @@ public final class DD implements Serializable, Comparable {
    *
    * @return this object, divided by y
    */
-  public final DD selfDivide (final double y) {
+  public final MutableDD selfDivide (final double y) {
     return selfDivide(y, 0.0); }
 
-  private final DD selfDivide (final double yhi, double ylo) {
+  private final MutableDD selfDivide (final double yhi, double ylo) {
     double hc, tc, hy, ty, C, c, U, u;
     C = hi / yhi; c = SPLIT * C; hc = c - C; u = SPLIT * yhi;
     hc = c - hc;
@@ -526,13 +529,15 @@ public final class DD implements Serializable, Comparable {
     c = ((((hi - U) - u) + lo) - C * ylo) / yhi;
     u = C + c;
 
-    return sum(u, (C - u) + c); }
+    hi = u;
+    lo = (C - u) + c;
+    return this; }
 
   /** Returns a DD whose value is  <tt>1 / this</tt>.
    *
    * @return the reciprocal of this value
    */
-  public final DD reciprocal () {
+  public final MutableDD reciprocal () {
     double hc, tc, hy, ty, C, c, U, u;
     C = 1.0 / hi;
     c = SPLIT * C;
@@ -545,7 +550,7 @@ public final class DD implements Serializable, Comparable {
 
     double zhi = C + c;
     double zlo = (C - zhi) + c;
-    return DD.sum(zhi, zlo); }
+    return new MutableDD(zhi, zlo); }
 
   /** Returns the largest (closest to positive infinity) value that is
    * not greater than the argument and is equal to a mathematical
@@ -558,14 +563,14 @@ public final class DD implements Serializable, Comparable {
    * not greater than the argument and is equal to a mathematical
    * integer.
    */
-  public final DD floor () {
+  public final MutableDD floor () {
     if (isNaN()) { return NaN; }
     double fhi = Math.floor(hi);
     double flo = 0.0;
     // Hi is already integral.  Floor the low word
     if (fhi == hi) { flo = Math.floor(lo); }
     // do we need to renormalize here?
-    return DD.sum(fhi, flo); }
+    return new MutableDD(fhi, flo); }
 
   /** Returns the smallest (closest to negative infinity) value that is
    * not less than the argument and is equal to a mathematical integer.
@@ -577,14 +582,14 @@ public final class DD implements Serializable, Comparable {
    * @return the smallest (closest to negative infinity) value that is
    * not less than the argument and is equal to a mathematical integer.
    */
-  public final DD ceil () {
+  public final MutableDD ceil () {
     if (isNaN()) { return NaN; }
     double fhi = Math.ceil(hi);
     double flo = 0.0;
     // Hi is already integral.  Ceil the low word
     // do we need to renormalize here?
     if (fhi == hi) { flo = Math.ceil(lo); }
-    return DD.sum(fhi, flo); }
+    return new MutableDD(fhi, flo); }
 
   /** Returns an integer indicating the sign of this value.
    * <ul>
@@ -612,10 +617,10 @@ public final class DD implements Serializable, Comparable {
    *
    * @return this value rounded to the nearest integer
    */
-  public final DD rint () {
+  public final MutableDD rint () {
     if (isNaN()) { return this; }
     // may not be 100% correct
-    DD plus5 = this.add(0.5);
+    MutableDD plus5 = this.add(0.5);
     return plus5.floor(); }
 
   /** Returns the integer which is largest in absolute value and not
@@ -627,7 +632,7 @@ public final class DD implements Serializable, Comparable {
    * @return the integer which is largest in absolute value and not
    * further from zero than this value
    */
-  public final DD trunc () {
+  public final MutableDD trunc () {
     if (isNaN()) { return NaN; }
     if (isPositive()) { return floor(); }
     else { return ceil(); } }
@@ -639,29 +644,30 @@ public final class DD implements Serializable, Comparable {
    *
    * @return the absolute value of this value
    */
-  public final DD abs () {
+  public final MutableDD abs () {
     if (isNaN()) { return NaN; }
     if (isNegative()) { return negate(); }
-    return this; }
+    // TODO: return this when immutable
+    return (MutableDD) clone(); }
 
   /** Computes the square of this value.
    *
    * @return the square of this value.
    */
-  public final DD sqr () { return this.multiply(this); }
+  public final MutableDD sqr () { return this.multiply(this); }
 
   /** Squares this object. To prevent altering constants, this method
    * <b>must only</b> be used on values known to be newly created.
    *
    * @return the square of this value.
    */
-  public final DD selfSqr () { return this.selfMultiply(this); }
+  public final MutableDD selfSqr () { return this.selfMultiply(this); }
 
   /** Computes the square of this value.
    *
    * @return the square of this value.
    */
-  public static final DD sqr (final double x) {
+  public static final MutableDD sqr (final double x) {
     return valueOf(x).selfMultiply(x); }
 
   /**
@@ -671,7 +677,7 @@ public final class DD implements Serializable, Comparable {
    * @return the positive square root of this number. If the argument is
    * NaN or less than zero, the result is NaN.
    */
-  public final DD sqrt () {
+  public final MutableDD sqrt () {
     /* Strategy:  Use Karp's trick:  if x is an approximation
     to sqrt(a), then
 
@@ -687,13 +693,13 @@ public final class DD implements Serializable, Comparable {
 
     double x = 1.0 / Math.sqrt(hi);
     double ax = hi * x;
-    DD axdd = valueOf(ax);
-    DD diffSq = this.subtract(axdd.sqr());
+    MutableDD axdd = valueOf(ax);
+    MutableDD diffSq = this.subtract(axdd.sqr());
     double d2 = diffSq.hi * (x * 0.5);
 
     return axdd.add(d2); }
 
-  public static final DD sqrt (final double x) {
+  public static final MutableDD sqrt (final double x) {
     return valueOf(x).sqrt(); }
 
   /** Computes the value of this number raised to an integral power.
@@ -703,29 +709,32 @@ public final class DD implements Serializable, Comparable {
    *
    * @return x raised to the integral power exp
    */
-  public final DD pow (final int exp) {
+  public final MutableDD pow (final int exp) {
 
     // See java.lang.Math.pow(double,double)
-    if (0 == exp) { return ONE; }
-    if (1 == exp) { return this; }
-    if (isNaN()) { return NaN; }
+    // TODO: return immutable singleton
+    if (0 == exp) { return valueOf(1.0); }
+    // TODO: return immutable this
+    if (1 == exp) { return copy(this); }
+    // TODO: return immutable singleton
+    if (isNaN()) { return createNaN(); }
     // TODO: distinguish positive and negative zero cases to match
     // java.lang.Math.pow(double,double)
     if (isZero()) {
       // TODO: return immutable this
-      if (0 < exp) { return this; }
+      if (0 < exp) { return copy(this); }
       // TODO: return immutable singleton
-      return DD.sum(Double.POSITIVE_INFINITY, 0.0); }
+      return new MutableDD(Double.POSITIVE_INFINITY, 0.0); }
 
     // TODO: use mutable instances
-    DD r = this;
-    DD s = ONE;
+    MutableDD r = copy(this);
+    MutableDD s = valueOf(1.0);
     int n = Math.abs(exp);
 
     if (n > 1) {
       // Use binary exponentiation
       while (n > 0) {
-        if (n % 2 == 1) { s = s.selfMultiply(r); }
+        if (n % 2 == 1) { s.selfMultiply(r); }
         n /= 2;
         if (n > 0) { r = r.sqr(); } } }
     else { s = r; }
@@ -744,10 +753,10 @@ public final class DD implements Serializable, Comparable {
    *
    * @return the determinant of the matrix of values
    */
-  public static final DD determinant (final DD x1,
-                                      final DD y1,
-                                      final DD x2,
-                                      final DD y2) {
+  public static final MutableDD determinant (final MutableDD x1,
+                                             final MutableDD y1,
+                                             final MutableDD x2,
+                                             final MutableDD y2) {
     return x1.multiply(y2).selfSubtract(y1.multiply(x2)); }
 
   /** Computes the determinant of the 2x2 matrix with the given entries.
@@ -759,10 +768,10 @@ public final class DD implements Serializable, Comparable {
    *
    * @return the determinant of the values
    */
-  public static final DD determinant (final double x1,
-                                      final double y1,
-                                      final double x2,
-                                      final double y2) {
+  public static final MutableDD determinant (final double x1,
+                                             final double y1,
+                                             final double x2,
+                                             final double y2) {
     return determinant(valueOf(x1), valueOf(y1),
                        valueOf(x2), valueOf(y2)); }
 
@@ -775,7 +784,7 @@ public final class DD implements Serializable, Comparable {
    *
    * @return the minimum of the two numbers
    */
-  public final DD min (final DD x) {
+  public final MutableDD min (final MutableDD x) {
     if (this.le(x)) { return this; }
     else { return x; } }
 
@@ -785,7 +794,7 @@ public final class DD implements Serializable, Comparable {
    *
    * @return the maximum of the two numbers
    */
-  public final DD max (final DD x) {
+  public final MutableDD max (final MutableDD x) {
     if (this.ge(x)) { return this; }
     else { return x; } }
 
@@ -863,7 +872,7 @@ public final class DD implements Serializable, Comparable {
    *
    * @return true if this value = y
    */
-  public final boolean equals (final DD y) {
+  public final boolean equals (final MutableDD y) {
     return hi == y.hi && lo == y.lo; }
 
   /** Tests whether this value is greater than another
@@ -873,7 +882,7 @@ public final class DD implements Serializable, Comparable {
    *
    * @return true if this value &gt; y
    */
-  public final boolean gt (final DD y) {
+  public final boolean gt (final MutableDD y) {
     return (hi > y.hi) || (hi == y.hi && lo > y.lo); }
 
   /** Tests whether this value is greater than or equals to another
@@ -883,7 +892,7 @@ public final class DD implements Serializable, Comparable {
    *
    * @return true if this value &gt;= y
    */
-  public final boolean ge (final DD y) {
+  public final boolean ge (final MutableDD y) {
     return (hi > y.hi) || (hi == y.hi && lo >= y.lo); }
 
   /** Tests whether this value is less than another <tt>DD</tt>  value.
@@ -892,7 +901,7 @@ public final class DD implements Serializable, Comparable {
    *
    * @return true if this value &lt; y
    */
-  public final boolean lt (final DD y) {
+  public final boolean lt (final MutableDD y) {
     return (hi < y.hi) || (hi == y.hi && lo < y.lo); }
 
   /** Tests whether this value is less than or equal to another
@@ -902,7 +911,7 @@ public final class DD implements Serializable, Comparable {
    *
    * @return true if this value &lt;= y
    */
-  public final boolean le (final DD y) {
+  public final boolean le (final MutableDD y) {
     return (hi < y.hi) || (hi == y.hi && lo <= y.lo); }
 
   /** Compares two DD objects numerically.
@@ -911,7 +920,7 @@ public final class DD implements Serializable, Comparable {
    * equal to or greater than the value of <tt>o</tt>
    */
   public final int compareTo (final Object o) {
-    final DD other = (DD) o;
+    final MutableDD other = (MutableDD) o;
     if (hi < other.hi) { return -1; }
     if (hi > other.hi) { return 1; }
     return Double.compare(lo, other.lo); }
@@ -948,7 +957,11 @@ public final class DD implements Serializable, Comparable {
 
   //--------------------------------------------------------------------
   // construction
+  // TODO: hide constructors, only one constructor
   //--------------------------------------------------------------------
+  // TODO: enforce constraint in single constructor.
+  // Later: enforce constraint in mutating methods for mutable instances:
+  //
   // A <code>DD</code>> uses a representation containing two double-precision
   // values. A number x is represented as a pair of doubles, x.hi and
   // x.lo, such that the number represented by x is x.hi + x.lo, where
@@ -960,50 +973,112 @@ public final class DD implements Serializable, Comparable {
   // operations are implemented using convenient properties of IEEE-754
   // floating-point arithmetic.
 
-  private final boolean checkUlp (final double s, final double t) {
-    // reverse test to handle NaN
-    return ! ((2*Math.abs(t)) > Math.ulp(s)); }
-
- /** Enforce <pre>hi = a + b</pre>, <pre>lo = hi - (a + b)</pre>
+  /** Enforce <pre>hi = a + b</pre>, <pre>lo = hi - (a + b)</pre>
    * so that <pre>|lo| &lt;= 0.5 * ulp(hi)</pre>.
    * @see <a href="https://en.wikipedia.org/wiki/2Sum"Fast2Sum</a>
    */
-  private DD (final double hi, final double lo) {
-    assert checkUlp(hi, lo) :
-      "\nLow order term too large:"  +
-        "\nhi= " + Double.toHexString(hi) +
-        "\nlo= " + Double.toHexString(lo) +
-        "\nulp(hi)= " + Double.toHexString(Math.ulp(hi));
-        this.hi = hi;this.lo = lo; }
+  private final void init (final double a, final double b) {
+    // TODO: any speed implications of earlier assignment to slots?
+    final double s = a+b;
+    final double z = s-a;
+    final double t = b-z;
+    hi = s; lo = t; }
 
-  // TODO: benchmark twoSum vs fast2Sum
-  // TODO: where can we use fast2Sum without magnitude test?
-  private static final DD fast2Sum (final double a, final double b) {
-    // not so fast with magnitude test!
-    if (Math.abs(a) < Math.abs(b)) { return fast2Sum(b, a); }
-    final double hi = a+b;
-    final double delta = hi-a;
-    final double lo = b-delta;
-    return new DD(hi, lo);  }
-
-  private static final DD twoSum (final double a, final double b) {
-    final double hi = a+b;
-    final double delta = hi-a;
-    final double lo = (a-(hi-delta)) + (b-delta);
-    return new DD(hi, lo);  }
-
-  /** See mop.java.accumulators.ZhuHayesAccumulator.twoSum
-   * <br>
-   * See https://pavpanchekha.com/blog/fast-two-sum.html
+  /** Creates a new DD with value (hi, lo).
+   *
+   * @param hi the high-order component
+   * @param lo the high-order component
    */
-  public static final DD sum (final double a, final double b) {
-    return twoSum(a, b); }
+  public MutableDD (final double hi, final double lo) { init(hi, lo); }
 
-  public static final DD valueOf (final double a) {
-    return new DD(a, 0.0);  }
+//  /** Creates a new DD with value 0.0.
+//   * TODO: replace with MutableDD.zero()
+//   */
+//  public DD () { this(0.0, 0.0); }
 
-  public static final DD valueOf (final float a) {
-    return new DD((double) a, 0.0);  }
+//  /** Creates a new DD with value x.
+//   *
+//   * @param x the value to initialize
+//   */
+//  public DD (final double x) { this(x,0.0); }
+//
+//  /** Creates a new DD with value equal to the argument.
+//   *
+//   * @param dd the value to initialize
+//   */
+//  public DD (final DD dd) { this(dd.hi,dd.lo); }
+
+  /** Creates a new DD with the value of the argument.
+   *
+   * @param dd the DD value to copy
+   *
+   * @return a copy of the input value
+   */
+  public static final MutableDD copy (final MutableDD dd) {
+    return new MutableDD(dd.hi, dd.lo); }
+
+  /** Creates and returns a copy of this value.
+   * @return a copy of this value
+   */
+  public final Object clone () {
+    try { return super.clone(); }
+    catch (final CloneNotSupportedException ex) {
+      // should never reach here
+      return null; } }
+
+  //--------------------------------------------------------------------
+  // palisades dot lakes at gmail dot com, 2026-05-05
+  //
+  // Removed methods related to DD <-> decimal string.
+  //
+  // DD to decimal string methods are broken in a number of ways,
+  // at least for numbers
+  // in the vicinity of 0x1.0p-976, 0x1.0p-977, etc.
+  // For <hi,0.0> values, decimal string incorrectly has non-zero low
+  // order decimal digits.
+  // For some values, returns an incorrect string of all '0' digits,
+  // throwing an exception. Seems to be related to
+  // <code>TEN.pow(mag)</code> returning <code>NaN</code>, which may
+  // reflect a problem with <code<pow</code> that should be addressed
+  // independently.
+  //
+  // The problems seem to be expected to some degree, given the comments
+  // in the code.
+  // For my purposes, approximating a number with a decimal string is
+  // rarely useful. I'll just remove this code for now.
+  // The <code>toString</code> printed representation will display
+  // the 2 terms separately, using default Java decimal formatting.
+  // And I will add <code>toHexString</code>, which I find more useful
+  // for debugging.
+  //
+  // In case I do decide to try a 1-term decimal representation:
+  // <br>
+  // References:  (palisades dot lakes at gmail dot com, 2026-05-08)
+  // <ul>
+  //   <li>Russ Cox,
+  //   <a href="https://research.swtch.com/ftoa">
+  //     Floating Point to Decimal Conversion is Easy</a>, 2011
+  // <li>William Clinger,
+  // How to Read Floating Point Numbers Accurately, PLDI 1990.
+  // <li>Guy L. Steele Jr. and Jon L. White,
+  // How to Print Floating Point Numbers Accurately, PLDI 1990.
+  // <li>David M. Gay,
+  // Correctly Rounded Binary-Decimal and Decimal-Binary Conversions,
+  // AT&T Bell Laboratories, 1990.
+  // <li>Vern Paxson,
+  // A Program for Testing IEEE Decimal-Binary Conversion, May 1991.
+  // <li>Robert Burger and R. Kent Dybvig,
+  // Printing Floating-Point Numbers Quickly and Accurately,
+  // SIGPLAN 1996.
+  // <li>Florian Loitsch,
+  // &ldquo;<a href="http://florian.loitsch.com/publications/dtoa-pldi2010.pdf">
+  //   Printing Floating-Numbers Quickly and Accurately With Integers
+  //   </a>&rdquo;,
+  //   PLDI 2010.
+  // <li>Aubrey Jaffer, <a href="https://arxiv.org/pdf/1310.8121">
+  //   Easy Accurate Reading and Writing of Floating-Point Numbers</a>,
+  //   2018
+  // </ul>
 
 
   //-------------------------------------------------------------------

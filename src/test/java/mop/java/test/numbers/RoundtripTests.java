@@ -278,7 +278,7 @@ public final class RoundtripTests {
       finiteDoubles(), subnormalDoubles(), normalDoubles())) {
       for (int i=0;i<TRYS;i++) {
         final double x = g.nextDouble();
-        final DD f = new DD(x,0.0);
+        final DD f = DD.valueOf(x);
         final double xf = f.doubleValue();
         if (x != xf) {
           System.out.println("\n\n" +
