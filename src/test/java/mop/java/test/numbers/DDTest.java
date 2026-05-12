@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-05-08
+ * @version 2026-05-11
  */
 
 public final class DDTest {
@@ -23,7 +23,7 @@ public final class DDTest {
       null,
       DD::valueOf,
       q -> ((DD) q).doubleValue(),
-      (q0,q1) -> (((DD) q0).subtract((DD) q1)).abs(),
+      (q0, q1) -> (((DD) q0).subtract((DD) q1)).abs(),
       dd -> ((DD) dd).toHexString(),
       Common::compareTo,
       Common::compareTo);
@@ -32,10 +32,11 @@ public final class DDTest {
       null,
       DD::valueOf,
       q -> ((DD) q).floatValue(),
-      (q0,q1) -> (((DD) q0).subtract((DD) q1)).abs(),
+      (q0, q1) -> (((DD) q0).subtract((DD) q1)).abs(),
       dd -> ((DD) dd).toHexString(),
       Common::compareTo,
       Common::compareTo);
+  }
 
   // toSciNotation has bugs. not fixing for now.
 //  @Test
@@ -78,8 +79,6 @@ public final class DDTest {
 //    Assertions.assertEquals(Double.toString(d),dd.toString());
 //  }
 
-
-  }
   //--------------------------------------------------------------
 }
 //--------------------------------------------------------------

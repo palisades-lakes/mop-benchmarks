@@ -1,6 +1,4 @@
 /*
-  */
-/*
  * Copyright (c) 2016 Martin Davis.
  *
  * All rights reserved. This program and the accompanying materials
@@ -96,7 +94,8 @@ import java.io.Serializable;
  * </ul>
  *
  * @author Martin Davis
- * @author palisades dot lakes at gmail dot com, 2026-05-10
+ * @author palisades dot lakes at gmail dot com,
+ * @version 2026-05-11
   * <br> *
  *  modified from JTS for benchmarking relative to mop.
  * JTS version has some additions (determinant, correction (?)
@@ -117,6 +116,24 @@ public final class DD implements Serializable, Comparable {
   //--------------------------------------------------------------------
   // class singletons
   //--------------------------------------------------------------------
+
+  public static final DD NaN = new DD(Double.NaN,Double.NaN);
+
+  public static final DD POSITIVE_INFINITY =
+    new DD(Double.POSITIVE_INFINITY,0.0);
+
+  public static final DD NEGATIVE_INFINITY =
+    new DD(Double.NEGATIVE_INFINITY,0.0);
+
+  /** additive identity
+   */
+  public static final DD ZERO = sum(0.0, 0.0);
+
+  /** multiplicative identity
+   */
+  public static final DD ONE = sum(1.0, 0.0);
+
+  // TODO: re-write constants with hex strings
   /**  The value nearest to the constant Pi.
    */
   public static final DD PI = sum(
@@ -141,30 +158,12 @@ public final class DD implements Serializable, Comparable {
     2.718281828459045091e+00,
     1.445646891729250158e-16);
 
-  /** A value representing the result of an operation which does not
-   * return a valid number.
-   */
-  public static final DD NaN = new DD(Double.NaN,Double.NaN);
-
-  public static final DD POSITIVE_INFINITY =
-    new DD(Double.POSITIVE_INFINITY,0.0);
-
-  public static final DD NEGATIVE_INFINITY =
-    new DD(Double.NEGATIVE_INFINITY,0.0);
-
-  /** additive identity
-   */
-  public static final DD ZERO = sum(0.0, 0.0);
-
-  /** multiplicative identity
-   */
-  public static final DD ONE = sum(1.0, 0.0);
-
-
+  // TODO: verify this, use hex string
   /** The smallest representable relative difference between two
    * {link @DD} values
    */
-  public static final double EPS = 1.23259516440783e-32;  /* = 2^-106 */
+  //public static final double EPS = 1.23259516440783e-32;  /* = 2^-106 */
+  //public static final double EPS = 0x1.0p-106;
 
   //--------------------------------------------------------------------
   // instance slots

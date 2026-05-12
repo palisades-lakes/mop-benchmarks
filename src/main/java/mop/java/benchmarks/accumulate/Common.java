@@ -30,7 +30,7 @@ import mop.java.prng.PRNG;
 /** Test utilities
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-05-06
+ * @version 2026-05-11
  */
 @SuppressWarnings("unchecked")
 public final class Common {
@@ -975,9 +975,9 @@ public final class Common {
     // differentiate -0.0, 0.0 and handle NaN
     Assertions.assertEquals(0,Double.compare(x0,x1),
       () ->
-    Double.toString(x0)
+    Double.toHexString(x0)
     + "\n->" + f.toString()
-    + "\n->" + Double.toString(x1)); }
+    + "\n->" + Double.toHexString(x1)); }
 
   //--------------------------------------------------------------
 
