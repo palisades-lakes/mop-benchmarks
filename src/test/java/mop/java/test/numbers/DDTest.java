@@ -18,7 +18,6 @@ public final class DDTest {
 
   @Test
   public final void testRounding () {
-
     Common.doubleRoundingTests(
       null,
       DD::valueOf,

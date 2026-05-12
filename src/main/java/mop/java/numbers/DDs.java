@@ -130,11 +130,11 @@ public final class DDs implements Set {
         new CollectionSampler(
           urp,
           List.of(
-            DD.sum(0.0, 0.0),
-            DD.sum(1.0, 0.0),
-            DD.sum(2.0, 0.0),
-            DD.sum(10.0, 0.0),
-            DD.sum(-1.0, 0.0)));
+            DD.twoSum(0.0, 0.0),
+            DD.twoSum(1.0, 0.0),
+            DD.twoSum(2.0, 0.0),
+            DD.twoSum(10.0, 0.0),
+            DD.twoSum(-1.0, 0.0)));
 
       @Override
       public Object next () {
@@ -143,7 +143,7 @@ public final class DDs implements Set {
         // TODO: almost surely wrong!
         // maybe ok if uniform generator
         // otherwise same distribution for high and low terms
-        return DD.sum(g.nextDouble(), g.nextDouble()); } }; }
+        return DD.twoSum(g.nextDouble(), g.nextDouble()); } }; }
 
   // Is this characteristic of most inputs?
   public static final Generator

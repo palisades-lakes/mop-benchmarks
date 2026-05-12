@@ -111,32 +111,94 @@ import java.io.Serializable;
  */
 
 //@SuppressWarnings("unused")
-public record DD (double hi, double lo)
-  implements Serializable, Comparable {
+public final class DD0 implements Serializable, Comparable {
 
   //--------------------------------------------------------------------
   // class singletons
   //--------------------------------------------------------------------
 
-  public static final DD NaN = new DD(Double.NaN,Double.NaN);
+  public static final DD0 NaN = new DD0(Double.NaN, Double.NaN);
 
-  public static final DD POSITIVE_INFINITY =
-    new DD(Double.POSITIVE_INFINITY,0.0);
+  public static final DD0 POSITIVE_INFINITY =
+    new DD0(Double.POSITIVE_INFINITY, 0.0);
 
-  public static final DD NEGATIVE_INFINITY =
-    new DD(Double.NEGATIVE_INFINITY,0.0);
+  public static final DD0 NEGATIVE_INFINITY =
+    new DD0(Double.NEGATIVE_INFINITY, 0.0);
 
   /** additive identity
    */
-  public static final DD ZERO = twoSum(0.0, 0.0);
+  public static final DD0 ZERO = sum(0.0, 0.0);
 
   /** multiplicative identity
    */
-  public static final DD ONE = twoSum(1.0, 0.0);
+  public static final DD0 ONE = sum(1.0, 0.0);
+
+  // TODO: re-write constants with hex strings
+//  /**  The value nearest to the constant Pi.
+//   */
+//  public static final DD PI = sum(
+//    3.141592653589793116e+00,
+//    1.224646799147353207e-16);
+//
+//  /** The value nearest to the constant 2 * Pi.
+//   */
+//  public static final DD TWO_PI = sum(
+//    6.283185307179586232e+00,
+//    2.449293598294706414e-16);
+//
+//  /** The value nearest to the constant Pi / 2.
+//   */
+//  public static final DD PI_2 = sum(
+//    1.570796326794896558e+00,
+//    6.123233995736766036e-17);
+//
+//  /** The value nearest to the constant e (the natural logarithm base).
+//   */
+//  public static final DD E = sum(
+//    2.718281828459045091e+00,
+//    1.445646891729250158e-16);
+
+  // TODO: verify this, use hex string
+//  /** The smallest representable relative difference between two
+//   * {link @DD} values
+//   */
+  //public static final double EPS = 1.23259516440783e-32;  /* = 2^-106 */
+  //public static final double EPS = 0x1.0p-106;
+
+  //--------------------------------------------------------------------
+  // instance slots
+  //--------------------------------------------------------------------
+  /** The high-order component of the double-double precision value.
+   */
+  private final double hi;
+  //public final double getHi() { return hi; }
+
+  /** The low-order component of the double-double precision value.
+   */
+  private final double lo;
+  //public final double getLo() { return lo; }
 
   //--------------------------------------------------------------------
   // instance methods
   //-------------------------------------------------------------------
+  /** Returns an integer indicating the sign of this value.
+   * <ul>
+   * <li>if this value is &gt; 0, returns 1
+   * <li>if this value is &lt; 0, returns -1
+   * <li>if this value is = 0, returns 0
+   * <li>if this value is NaN, returns 0
+   * </ul>
+   *
+   * @return an integer indicating the sign of this value
+   */
+  public final int signum () {
+    if (hi > 0) { return 1; }
+    if (hi < 0) { return -1; }
+    if (lo > 0) { return 1; }
+    if (lo < 0) { return -1; }
+    return 0; }
+
+  //--------------------------------------------------------------------
   /** Returns the absolute value of this value. Special cases:
    * <ul>
    * <li>If this value is NaN, it is returned.
@@ -144,9 +206,9 @@ public record DD (double hi, double lo)
    *
    * @return the absolute value of this value
    */
-  public final DD abs () {
+  public final DD0 abs () {
     if (isNaN()) { return NaN; }
-    if (isNegative()) { return twoSum(-hi, -lo); }
+    if (isNegative()) { return sum(-hi,-lo); }
     return this; }
 
   //--------------------------------------------------------------------
@@ -156,7 +218,7 @@ public record DD (double hi, double lo)
 
   /** @return <tt>(this + y)</tt>
    */
-  public final DD add (final double y) {
+  public final DD0 add (final double y) {
     final double S = hi + y;
     final double e = S - hi;
     double s = S - e;
@@ -164,9 +226,9 @@ public record DD (double hi, double lo)
     final double f = s + lo;
     final double H = S + f;
     final double h = f + (S - H);
-    return twoSum(H + h, h + (H - hi)); }
+    return sum(H + h, h + (H - hi)); }
 
-  private final DD add (final double yhi, double ylo) {
+  private final DD0 add (final double yhi, double ylo) {
     final double S = hi + yhi;
     final double T = lo + ylo;
     double e = S - hi;
@@ -181,26 +243,26 @@ public record DD (double hi, double lo)
     e = t + h;
     final double zhi = H + e;
     final double zlo = e + (H - zhi);
-    return twoSum(zhi, zlo); }
+    return sum(zhi, zlo); }
 
   /** @return <tt>(this + y)</tt>
    */
-  public final DD add (final DD y) {
+  public final DD0 add (final DD0 y) {
     return add(y.hi,y.lo); }
 
   /** @return <tt>(this - y)</tt>
    */
-  public final DD subtract (final DD y) { return add(-y.hi,-y.lo); }
+  public final DD0 subtract (final DD0 y) { return add(-y.hi, -y.lo); }
 
   /** @return <tt>(this - y)</tt>
    */
-  public final DD subtract (final double y) { return add(-y); }
+  public final DD0 subtract (final double y) { return add(-y); }
 
   /** @return <tt>(this - y)</tt>
    */
-  public final DD negate () {
+  public final DD0 negate () {
     // TODO: sum probably not necessary
-    return twoSum(-hi, -lo); }
+    return sum(-hi,-lo); }
 
   //-------------------------------------------------------------------
   // multiplication
@@ -212,11 +274,11 @@ public record DD (double hi, double lo)
    */
   private static final double SPLIT = 1.0 + 0x1.0p27;
 
-  public final DD multiply (final double yhi, final double ylo) {
+  public final DD0 multiply (final double yhi, final double ylo) {
     // TODO: check whether all these edge cases are necessary
     if (ZERO.equals(this)) { return ZERO; }
     if ((0.0==yhi) && (0.0==ylo)) { return ZERO; }
-    if (ONE.equals(this)) { return twoSum(yhi, ylo); }
+    if (ONE.equals(this)) { return sum(yhi, ylo); }
     if ((1.0==yhi) && (0.0==ylo)) { return this; }
     if (isNaN()) { return NaN; }
     if (Double.isNaN(yhi)) {return NaN; }
@@ -243,24 +305,112 @@ public record DD (double hi, double lo)
     final double zhi = C + c;
     hx = C - zhi;
     final double zlo = c + hx;
-    return twoSum(zhi, zlo); }
+    return sum(zhi, zlo); }
 
   /** @return <tt>(this * y)</tt>
    */
-  public final DD multiply (final DD that) {
+  public final DD0 multiply (final DD0 that) {
     return multiply(that.hi, that.lo); }
 
   /** @return <tt>(this * y)</tt>
    */
-  public final DD multiply (final double y) {
+  public final DD0 multiply (final double y) {
     // TODO: optimize simple double case
     return multiply(y, 0.0); }
+
+  //-------------------------------------------------------------------
+//  /** @return the square of this value.
+//   */
+//  public final DD sqr () {
+//    // TODO: optimized version of multiply
+//    // TODO: unit test x.sqr() == x.multiply(x) == x.pow(2)
+//    return multiply(this); }
+
+//  /** @return the square of this value.
+//   */
+//  public static final DD sqr (final double z) {
+//    // TODO: optimized version of multiply
+//    return valueOf(z).multiply(z); }
+
+  //-------------------------------------------------------------------
+//  /** * Computes the positive square root of this value. If the number is
+//   * NaN or negative, NaN is returned.
+//   *
+//   * @return the positive square root of this number. If the argument is
+//   * NaN or less than zero, the result is NaN.
+//   */
+//  public final DD sqrt () {
+//    /* Strategy:  Use Karp's trick:  if x is an approximation
+//    to sqrt(a), then
+//
+//       sqrt(a) = a*x + [a - (a*x)^2] * x / 2   (approx)
+//
+//    The approximation is accurate to twice the accuracy of x.
+//    Also, the multiplication (a*x) and [-]*x can be done with
+//    only half the precision.
+// */
+//
+//    if (isZero()) { return ZERO; }
+//    if (isNegative()) { return NaN; }
+//
+//    double x = 1.0 / Math.sqrt(hi);
+//    double ax = hi * x;
+//    DD axdd = valueOf(ax);
+//    DD diffSq = subtract(axdd.sqr());
+//    double d2 = diffSq.hi * (x * 0.5);
+//
+//    return axdd.add(d2); }
+
+//  public static final DD sqrt (final double x) {
+//    // TODO: optimize instance creation
+//    return valueOf(x).sqrt(); }
+
+  //-------------------------------------------------------------------
+//  /** Computes the value of this number raised to an integral power.
+//   * Follows semantics of Java Math.pow as closely as possible.
+//   *
+//   * @param exp the integer exponent
+//   *
+//   * @return x raised to the integral power exp
+//   */
+//  public final DD pow (final int exp) {
+//    // TODO: optimize out tmp instances
+//    // TODO: unit test reciprocal() == pow(-1)
+//    // See java.lang.Math.pow(double,double)
+//    if (0 == exp) { return ONE; }
+//    if (1 == exp) { return this; }
+//    if (isNaN()) { return NaN; }
+//    // TODO: distinguish positive and negative zero cases to match
+//    // java.lang.Math.pow(double,double)
+//    if (isZero()) {
+//      // TODO: return immutable this
+//      if (0 < exp) { return this; }
+//      // TODO: return immutable singleton
+//      return POSITIVE_INFINITY; }
+//
+//    // TODO: use mutable instances
+//    DD r = this;
+//    DD s = ONE;
+//    int n = Math.abs(exp);
+//
+//    if (n > 1) {
+//      // Use binary exponentiation
+//      while (n > 0) {
+//        if (n % 2 == 1) { s = s.multiply(r); }
+//        n /= 2;
+//        if (n > 0) { r = r.sqr(); } } }
+//    else { s = r; }
+//
+//    /* Compute the reciprocal if n is negative. */
+//    if (exp < 0) { s = s.reciprocal(); }
+//    assert (!s.isNaN()) : "NaN:" + s.toHexString();
+//    return s; }
 
   //-------------------------------------------------------------------
   // division
   //-------------------------------------------------------------------
 
-   public final DD divide (final double yhi, final double ylo) {
+   public final DD0 divide (final double yhi, final double ylo) {
      double hc, tc, hy, ty, C, c, U, u;
      C = hi / yhi; c = SPLIT * C; hc = c - C; u = SPLIT * yhi;
      hc = c - hc;
@@ -269,7 +419,7 @@ public record DD (double hi, double lo)
      u = (((hc * hy - U) + hc * ty) + tc * hy) + tc * ty;
      c = ((((hi - U) - u) + lo) - C * ylo) / yhi;
      u = C + c;
-     return twoSum(u, (C - u) + c); }
+     return sum(u,  (C - u) + c); }
 
   /** Computes a new DD whose value is <tt>(this / y)</tt>.
    *
@@ -277,7 +427,7 @@ public record DD (double hi, double lo)
    *
    * @return a new object with the value <tt>(this / y)</tt>
    */
-  public final DD divide (final DD y) {
+  public final DD0 divide (final DD0 y) {
    return divide(y.hi, y.lo); }
 
   /** Computes a new DD whose value is <tt>(this / y)</tt>.
@@ -286,7 +436,7 @@ public record DD (double hi, double lo)
    *
    * @return a new object with the value <tt>(this / y)</tt>
    */
-  public final DD divide (final double y) {
+  public final DD0 divide (final double y) {
     if (Double.isNaN(y)) { return NaN; }
     // TODO: optimize single double case
     return divide(y, 0.0); }
@@ -296,7 +446,7 @@ public record DD (double hi, double lo)
    *
    * @return the reciprocal of this value
    */
-  public final DD reciprocal () {
+  public final DD0 reciprocal () {
     // TODO: unit test ONE.divide(x) == x.reciprocal() == x.pow(-1)
     double hc, tc, hy, ty, C, c, U, u;
     C = 1.0 / hi;
@@ -310,7 +460,7 @@ public record DD (double hi, double lo)
 
     double zhi = C + c;
     double zlo = (C - zhi) + c;
-    return twoSum(zhi, zlo); }
+    return sum(zhi, zlo); }
 
   //-------------------------------------------------------------------
   // truncation and rounding
@@ -428,7 +578,7 @@ public record DD (double hi, double lo)
    *
    * @return the minimum of the two numbers
    */
-  public final DD min (final DD x) {
+  public final DD0 min (final DD0 x) {
     if (le(x)) { return this; }
     else { return x; } }
 
@@ -438,7 +588,7 @@ public record DD (double hi, double lo)
    *
    * @return the maximum of the two numbers
    */
-  public final DD max (final DD x) {
+  public final DD0 max (final DD0 x) {
     if (ge(x)) { return this; }
     else { return x; } }
 
@@ -522,7 +672,7 @@ public record DD (double hi, double lo)
    *
    * @return true if this value = y
    */
-  public final boolean equals (final DD y) {
+  public final boolean equals (final DD0 y) {
     return hi == y.hi && lo == y.lo; }
 
 //  /** Tests whether this value is greater than another
@@ -542,7 +692,7 @@ public record DD (double hi, double lo)
    *
    * @return true if this value &gt;= y
    */
-  public final boolean ge (final DD that) {
+  public final boolean ge (final DD0 that) {
     return (hi > that.hi) || (hi == that.hi && lo >= that.lo); }
 
 //  /** Tests whether this value is less than another <tt>DD</tt>  value.
@@ -561,7 +711,7 @@ public record DD (double hi, double lo)
    *
    * @return true if this value &lt;= y
    */
-  public final boolean le (final DD that) {
+  public final boolean le (final DD0 that) {
     return (hi < that.hi) || (hi == that.hi && lo <= that.lo); }
 
   /** Compares two DD objects numerically.
@@ -571,7 +721,7 @@ public record DD (double hi, double lo)
    */
   @Override
   public final int compareTo (final @NonNull Object o) {
-    final DD other = (DD) o;
+    final DD0 other = (DD0) o;
     if (hi < other.hi) { return -1; }
     if (hi > other.hi) { return 1; }
     return Double.compare(lo, other.lo); }
@@ -655,7 +805,7 @@ public record DD (double hi, double lo)
    *
    * @return a string representation of this number
    */
-  public final @NonNull String toString () { return toHexString(); }
+  public final String toString () { return toHexString(); }
 
   //--------------------------------------------------------------------
   // construction
@@ -676,35 +826,50 @@ public record DD (double hi, double lo)
     // reverse test to handle NaN
     return ! ((2*Math.abs(t)) > Math.ulp(s)); }
 
-  /** Enforce <pre>hi = a + b</pre>, <pre>lo = hi - (a + b)</pre>
+ /** Enforce <pre>hi = a + b</pre>, <pre>lo = hi - (a + b)</pre>
    * so that <pre>|lo| &lt;= 0.5 * ulp(hi)</pre>.
    * @see <a href="https://en.wikipedia.org/wiki/2Sum"Fast2Sum</a>
    */
-  public DD {
+  private DD0 (final double hi, final double lo) {
     assert checkUlp(hi, lo) :
-      "\nLow order term too large:" +
+      "\nLow order term too large:"  +
         "\nhi= " + Double.toHexString(hi) +
         "\nlo= " + Double.toHexString(lo) +
         "\nulp(hi)= " + Double.toHexString(Math.ulp(hi));
-  }
+        this.hi = hi;this.lo = lo; }
 
-    /** @link mop.java.accumulators.ZhuHayesAccumulator#twoSum
+  // TODO: benchmark twoSum vs fast2Sum
+  // TODO: where can we use fast2Sum without magnitude test?
+  // TODO: change magnitude test to exponent test? (Lange and Oishi 2020)
+  // https://link.springer.com/article/10.1007/s00211-020-01114-2
+//  private static final DD fast2Sum (final double a, final double b) {
+//    // not so fast with magnitude test!
+//    if (Math.abs(a) < Math.abs(b)) { return fast2Sum(b, a); }
+//    final double hi = a+b;
+//    final double delta = hi-a;
+//    final double lo = b-delta;
+//    return new DD(hi, lo);  }
+
+  private static final DD0 twoSum (final double a, final double b) {
+    final double hi = a+b;
+    final double delta = hi-a;
+    final double lo = (a-(hi-delta)) + (b-delta);
+    return new DD0(hi, lo);  }
+
+  /** @link mop.java.accumulators.ZhuHayesAccumulator#twoSum
    * <br>
    * See <a href="https://pavpanchekha.com/blog/fast-two-sum.html>fast two sum</a>
    * <br>
    * See <a href="https://en.wikipedia.org/wiki/2Sum>2Sum</a>
    */
-  public static final DD twoSum (final double a, final double b) {
-      final double hi = a+b;
-      final double delta = hi-a;
-      final double lo = (a-(hi-delta)) + (b-delta);
-      return new DD(hi, lo);  }
+  public static final DD0 sum (final double a, final double b) {
+    return twoSum(a, b); }
 
-    public static final DD valueOf (final double a) {
-    return new DD(a, 0.0);  }
+  public static final DD0 valueOf (final double a) {
+    return new DD0(a, 0.0);  }
 
-  public static final DD valueOf (final float a) {
-    return new DD( a, 0.0);  }
+  public static final DD0 valueOf (final float a) {
+    return new DD0(a, 0.0);  }
 
 
   //-------------------------------------------------------------------
