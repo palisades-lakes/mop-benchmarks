@@ -12,7 +12,7 @@ import com.google.common.collect.ImmutableList;
 
 import mop.java.Classes;
 
-/** Constructor methods for Predicates/BiPredicate closures on
+/** Constructor methods for mop.java.numbers.predicates.Predicates/BiPredicate closures on
  * sets and operations.
  *
  * Universal algebra approach: binary, unary, nullary ops

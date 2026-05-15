@@ -821,7 +821,7 @@ public final class MutableDD
   public final int intValue () { return (int) hi; }
 
   //-------------------------------------------------------------------
-  // Predicates
+  // mop.java.numbers.predicates.Predicates
   //-------------------------------------------------------------------
   /** Tests whether this value is equal to 0.
    *

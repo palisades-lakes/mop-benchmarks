@@ -1,7 +1,7 @@
 /*****************************************************************************/
 /*                                                                           */
 /*  Routines for Arbitrary Precision Floating-point Arithmetic               */
-/*  and Fast Robust Geometric Predicates                                     */
+/*  and Fast Robust Geometric mop.java.numbers.predicates.Predicates                                     */
 /*  (predicates.c)                                                           */
 /*                                                                           */
 /*  May 18, 1996                                                             */
@@ -19,7 +19,7 @@
 /*    robustly performing the orientation and incircle tests used in         */
 /*    computational geometry.  The algorithms and underlying theory are      */
 /*    described in Jonathan Richard Shewchuk.  "Adaptive Precision Floating- */
-/*    Point Arithmetic and Fast Robust Geometric Predicates."  Technical     */
+/*    Point Arithmetic and Fast Robust Geometric mop.java.numbers.predicates.Predicates."  Technical     */
 /*    Report CMU-CS-96-140, School of Computer Science, Carnegie Mellon      */
 /*    University, Pittsburgh, Pennsylvania, May 1996.  (Submitted to         */
 /*    Discrete & Computational Geometry.)                                    */
@@ -2318,7 +2318,7 @@ REAL *pd;
   adxbdy = adx * bdy;
   bdxady = bdx * ady;
 
-  det = adz * (bdxcdy - cdxbdy) 
+  det = adz * (bdxcdy - cdxbdy)
       + bdz * (cdxady - adxcdy)
       + cdz * (adxbdy - bdxady);
 
