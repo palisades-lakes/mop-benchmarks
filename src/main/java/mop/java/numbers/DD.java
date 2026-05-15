@@ -75,7 +75,7 @@ import java.io.Serializable;
  * Knuth, Kahan, Dekker, and Linnainmaa. Douglas Priest developed the
  * first C implementation of these techniques. Other more recent C++
  * implementation are due to Keith M. Briggs and David Bailey et al.
- *
+ * <p>
  * <h3>References</h3>
  * <ul>
  * <li>Priest, D., <i>Algorithms for Arbitrary Precision Floating
@@ -104,10 +104,9 @@ import java.io.Serializable;
  * <ul>
  *   <li> Handle special cases in multiply to avoid overflows.
  *   <li> Split into immutable and mutable classes.
- *   <li>single construction path to enforce hi,lo constraints
+ *   <li> single construction path to enforce hi,lo constraints
  *   <li> TODO: distinguish positive and negative zero?
  * </ul>
- *
  */
 
 //@SuppressWarnings("unused")
@@ -468,7 +467,7 @@ public record DD (double hi, double lo)
   public final int intValue () { return (int) hi; }
 
   //-------------------------------------------------------------------
-  // Predicates
+  // mop.java.numbers.predicates.Predicates
   //-------------------------------------------------------------------
   /** Tests whether this value is equal to 0.
    *

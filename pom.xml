@@ -177,7 +177,6 @@
       <version>${hppc-version}</version>
     </dependency>
 
-
     <dependency>
       <groupId>org.tinfour</groupId>
       <artifactId>TinfourCore</artifactId>
