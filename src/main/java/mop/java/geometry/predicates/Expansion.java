@@ -1,9 +1,11 @@
-package mop.java.numbers.predicates;
+package mop.java.geometry.predicates;
 // 2026-05-14
 // macro expand predicates.c via https://godbolt.org/
 // minimal changes to compile as java
 // 2026-05-15
 // split into algorithm type classes
+
+import java.util.Arrays;
 
 /**
  * Adaptive precision floating point based on:
@@ -103,7 +105,7 @@ public final class Expansion {
   // but that has no effect after Java 17, which requires
   // all floating point calculations to have IEEE 754 semantics.
   static {
-    assert 0 < Integer.getInteger("java.version").compareTo(17)
+    assert (0 > "17".compareTo(System.getProperty("java.version")))
       : "Java: " + System.getProperty("java.version") +
       " not supported";
   }
@@ -112,29 +114,28 @@ public final class Expansion {
   // initialize some constants
   //--------------------------------------------------------------------
 
-  static final double EPSILON;
-  static final double SPLITTER;
+  static final double EPSILON = 0x1.0p-53;
+  static final double SPLITTER = 0x1.0000002p27;
 
-  // TODO: get these as hex string constants rather than calculating
-  static {
-    double check = 1.0;
-    boolean every_other = true;
-    double half = 0.5;
-    double epsilon = 1.0;
-    double splitter = 1.0;
-    double lastcheck;
-    do {
-      lastcheck = check; epsilon *= half;
-      if (every_other) { splitter *= 2.0; }
-      every_other = !every_other;
-      check = 1.0 + epsilon;
-    } while ((check != 1.0) && (check != lastcheck));
-    splitter += 1.0;
-    EPSILON = epsilon;
-    SPLITTER = splitter;
-    System.out.println("EPSILON=" + Double.toHexString(EPSILON));
-    System.out.println("SPLITTER=" + Double.toHexString(SPLITTER));
-  }
+//  static {
+//    double check = 1.0;
+//    boolean every_other = true;
+//    double half = 0.5;
+//    double epsilon = 1.0;
+//    double splitter = 1.0;
+//    double lastcheck;
+//    do {
+//      lastcheck = check; epsilon *= half;
+//      if (every_other) { splitter *= 2.0; }
+//      every_other = !every_other;
+//      check = 1.0 + epsilon;
+//    } while ((check != 1.0) && (check != lastcheck));
+//    splitter += 1.0;
+//    EPSILON = epsilon;
+//    SPLITTER = splitter;
+//    System.out.println("EPSILON=" + Double.toHexString(EPSILON));
+//    System.out.println("SPLITTER=" + Double.toHexString(SPLITTER));
+//  }
 
   static final double resulterrbound =
     (3.0 + 8.0 * EPSILON) * EPSILON;
@@ -414,83 +415,102 @@ public final class Expansion {
                                                        final int flen,
                                                        final double[] f,
                                                        final double[] h) {
+    assert elen <= e.length;
+    assert flen <= f.length;
+//    System.out.println("e="+ Arrays.toString(e));
+//    System.out.println("elen=" + elen);
+//    System.out.println("f="+ Arrays.toString(f));
+//    System.out.println("flen="+ flen);
+//    System.out.println("h="+ Arrays.toString(h));
+
     double Q;
     double Qnew;
-    double hh;
-    double bvirt;
-    double avirt, bround, around;
-    int eindex, findex, hindex;
-    double enow, fnow;
+    double hh = 0.0;
+    int eindex=0;
+    int findex=0;
+    int hindex=0;
 
-    enow = e[0];
-    fnow = f[0];
-    eindex = findex = 0;
-    if ((fnow > enow) == (fnow > -enow)) {
-      Q = enow;
-      enow = e[++eindex];
-    }
-    else {
-      Q = fnow;
-      fnow = f[++findex];
-    }
-    hindex = 0;
+    double enow = e[0];
+    double fnow = f[0];
+
+    if ((fnow > enow) == (fnow > -enow)) { Q = enow; enow = e[++eindex]; }
+    else { Q = fnow; fnow = f[++findex]; }
+
     if ((eindex < elen) && (findex < flen)) {
       if ((fnow > enow) == (fnow > -enow)) {
-        Qnew = (enow + Q); bvirt = Qnew - enow; hh = Q - bvirt;
-        enow = e[++eindex];
-      }
+        // Fast_Two_Sum(enow, Q, Qnew, hh);
+        Qnew = (enow + Q);
+        final double bvirt = Qnew - enow;
+        hh = Q - bvirt;
+        enow = e[++eindex]; }
       else {
-        Qnew = (fnow + Q); bvirt = Qnew - fnow; hh = Q - bvirt;
-        fnow = f[++findex];
-      }
+        // Fast_Two_Sum(fnow, Q, Qnew, hh);
+        Qnew = (fnow + Q);
+        final double bvirt = Qnew - fnow;
+        hh = Q - bvirt;
+        fnow = f[++findex]; }
+
       Q = Qnew;
-      if (hh != 0.0) {
-        h[hindex++] = hh;
-      }
+
+      if (hh != 0.0) { h[hindex++] = hh; }
+//      System.out.println("hindex="+ hindex);
+//      System.out.println("h="+ Arrays.toString(h));
+
       while ((eindex < elen) && (findex < flen)) {
         if ((fnow > enow) == (fnow > -enow)) {
-          Qnew = (Q + enow); bvirt = (Qnew - Q);
-          avirt = Qnew - bvirt; bround = enow - bvirt;
-          around = Q - avirt; hh = around + bround;
-          enow = e[++eindex];
-        }
+          //Two_Sum(Q, enow, Qnew, hh);
+          Qnew = (Q + enow);
+          final double bvirt = (Qnew - Q);
+          final double avirt = Qnew - bvirt;
+          final double bround = enow - bvirt;
+          final double around = Q - avirt;
+          hh = around + bround;
+//          System.out.println("fnow="+ Double.toHexString(fnow));
+//          System.out.println("enow="+ Double.toHexString(enow));
+//          System.out.println("e="+ Arrays.toString(e));
+//          System.out.println("eindex="+ eindex);
+          eindex++;
+          if (eindex<elen) { enow = e[eindex]; } }
         else {
-          Qnew = (Q + fnow); bvirt = (Qnew - Q);
-          avirt = Qnew - bvirt; bround = fnow - bvirt;
-          around = Q - avirt; hh = around + bround;
-          fnow = f[++findex];
-        }
+          //Two_Sum(Q, fnow, Qnew, hh);
+          Qnew = (Q + fnow);
+          final double bvirt = (Qnew - Q);
+          final double avirt = Qnew - bvirt;
+          final double bround = fnow - bvirt;
+          final double around = Q - avirt;
+          hh = around + bround;
+          findex++;
+          if (findex>flen) { fnow = f[findex]; } }
         Q = Qnew;
-        if (hh != 0.0) {
-          h[hindex++] = hh;
-        }
-      }
-    }
+        if (hh != 0.0) { h[hindex++] = hh; } } }
+
     while (eindex < elen) {
-      Qnew = (Q + enow); bvirt = (Qnew - Q);
-      avirt = Qnew - bvirt; bround = enow - bvirt; around = Q - avirt;
+      Qnew = (Q + enow);
+      final double bvirt = (Qnew - Q);
+      final double avirt = Qnew - bvirt;
+      final double bround = enow - bvirt;
+      final double around = Q - avirt;
       hh = around + bround;
-      enow = e[++eindex];
+      eindex++;
+      if (eindex<elen) { enow = e[eindex]; }
       Q = Qnew;
-      if (hh != 0.0) {
-        h[hindex++] = hh;
-      }
-    }
+      if (hh != 0.0) { h[hindex++] = hh; } }
+
     while (findex < flen) {
-      Qnew = (Q + fnow); bvirt = (Qnew - Q);
-      avirt = Qnew - bvirt; bround = fnow - bvirt; around = Q - avirt;
+      Qnew = (Q + fnow);
+      final double bvirt = (Qnew - Q);
+      final double avirt = Qnew - bvirt;
+      final double bround = fnow - bvirt;
+      final double around = Q - avirt;
       hh = around + bround;
-      fnow = f[++findex];
+      findex++;
+      if (findex<flen) { fnow = f[findex]; }
       Q = Qnew;
-      if (hh != 0.0) {
-        h[hindex++] = hh;
-      }
-    }
-    if ((Q != 0.0) || (hindex == 0)) {
-      h[hindex++] = Q;
-    }
-    return hindex;
-  }
+      if (hh != 0.0) { h[hindex++] = hh; } }
+
+    if ((Q != 0.0) || (hindex == 0)) { h[hindex++] = Q; }
+
+    return hindex; }
 
   //--------------------------------------------------------------------
   public static final int linear_expansion_sum (final int elen,

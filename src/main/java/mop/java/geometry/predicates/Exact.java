@@ -1,4 +1,4 @@
-package mop.java.numbers.predicates;
+package mop.java.geometry.predicates;
 // 2026-05-14
 // macro expand predicates.c via https://godbolt.org/
 // minimal changes to compile as java
@@ -6,7 +6,7 @@ package mop.java.numbers.predicates;
 // split into Expansion manipulation and fast, slow, exact, adaptive
 // algorithm classes
 
-import static mop.java.numbers.predicates.Expansion.*;
+import static mop.java.geometry.predicates.Expansion.*;
 
 /**
  * Exact tests.  Robust.
@@ -83,14 +83,18 @@ import static mop.java.numbers.predicates.Expansion.*;
  */
 
 // strictfp unnecessary for JDK17 and later
-public final class Exact implements Predicate{
+public final class Exact implements Predicate {
+
+  //--------------------------------------------------------------------
+
+  public final boolean isExact () { return true; }
 
   //--------------------------------------------------------------------
   // orient2d
   //--------------------------------------------------------------------
   public final double orient2d (final double[] pa,
-                                       final double[] pb,
-                                       final double[] pc) {
+                                final double[] pb,
+                                final double[] pc) {
     double axby1, axcy1, bxcy1, bxay1, cxay1, cxby1;
     double axby0, axcy0, bxcy0, bxay0, cxay0, cxby0;
     double[] aterms = new double[4];
@@ -196,15 +200,17 @@ public final class Exact implements Predicate{
   // orient3d
   //--------------------------------------------------------------------
   public final double orient3d (final double[] pa,
-                                       final double[] pb,
-                                       final double[] pc,
-                                       final double[] pd) {
+                                final double[] pb,
+                                final double[] pc,
+                                final double[] pd) {
     double axby1, bxcy1, cxdy1, dxay1, axcy1, bxdy1;
     double bxay1, cxby1, dxcy1, axdy1, cxay1, dxby1;
     double axby0, bxcy0, cxdy0, dxay0, axcy0, bxdy0;
     double bxay0, cxby0, dxcy0, axdy0, cxay0, dxby0;
-    double[] ab = new double[4], bc = new double[4], cd = new double[4],
-      da = new double[4], ac = new double[4], bd = new double[4];
+    double[] ab = new double[4],
+      bc = new double[4], cd = new double[4],
+      da = new double[4], ac = new double[4],
+      bd = new double[4];
     double[] temp8 = new double[8];
     int templen;
     double[] abc = new double[12], bcd = new double[12],
@@ -397,9 +403,9 @@ public final class Exact implements Predicate{
   // incircle
   //--------------------------------------------------------------------
   public final double incircle (final double[] pa,
-                                       final double[] pb,
-                                       final double[] pc,
-                                       final double[] pd) {
+                                final double[] pb,
+                                final double[] pc,
+                                final double[] pd) {
     double axby1, bxcy1, cxdy1, dxay1, axcy1, bxdy1;
     double bxay1, cxby1, dxcy1, axdy1, cxay1, dxby1;
     double axby0, bxcy0, cxdy0, dxay0, axcy0, bxdy0;
@@ -624,10 +630,10 @@ public final class Exact implements Predicate{
   // insphere
   //--------------------------------------------------------------------
   public final double insphere (final double[] pa,
-                                       final double[] pb,
-                                       final double[] pc,
-                                       final double[] pd,
-                                       final double[] pe) {
+                                final double[] pb,
+                                final double[] pc,
+                                final double[] pd,
+                                final double[] pe) {
     double axby1, bxcy1, cxdy1, dxey1, exay1;
     double bxay1, cxby1, dxcy1, exdy1, axey1;
     double axcy1, bxdy1, cxey1, dxay1, exby1;
@@ -1128,7 +1134,7 @@ public final class Exact implements Predicate{
   //--------------------------------------------------------------------
   // TODO: singleton?
 
-  public Exact () {super(); }
+  public Exact () { super(); }
 
   //-------------------------------------------------------------------
 } // end class

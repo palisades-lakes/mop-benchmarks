@@ -1,11 +1,11 @@
-package mop.java.numbers.predicates;// 2026-05-14
+package mop.java.geometry.predicates;// 2026-05-14
 // macro expand predicates.c via https://godbolt.org/
 // minimal changes to compile as java
 // 2026-05-15
 // split into Expansion manipulation and fast, slow, exact, adaptive
 // algorithm classes
 
-import static mop.java.numbers.predicates.Expansion.*;
+import static mop.java.geometry.predicates.Expansion.*;
 
 /**
  * Adaptive precision floating point based on:
@@ -76,12 +76,12 @@ import static mop.java.numbers.predicates.Expansion.*;
  *   even <code>BigInteger</code> to extend range.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-05-14
+ * @version 2026-05-16
  */
 
 //@SuppressWarnings("unused")
 // strictfp unnecessary for JDK17 and later
-strictfp public final class Predicates {
+public final class Predicates {
 
   //--------------------------------------------------------------------
   // orient2d

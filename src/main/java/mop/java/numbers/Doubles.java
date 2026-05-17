@@ -982,7 +982,6 @@ public final class Doubles implements Set {
              final UniformRandomProvider urp) {
     return arrayGenerator(n,generator(urp)); }
 
-
   //--------------------------------------------------------------
   // array utilities
   //--------------------------------------------------------------
@@ -1018,7 +1017,6 @@ public final class Doubles implements Set {
     final double[] x = zeroSum((double[]) g.next());
     ListSampler.shuffle(urp,Arrays.asList(x));
     return x; }
-
 
   public static double[][] sampleDoubles (final int dim,
                                           final int n) {

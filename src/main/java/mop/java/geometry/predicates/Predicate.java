@@ -1,4 +1,4 @@
-package mop.java.numbers.predicates;
+package mop.java.geometry.predicates;
 // 2026-05-14
 // macro expand predicates.c via https://godbolt.org/
 // minimal changes to compile as java
@@ -82,8 +82,16 @@ package mop.java.numbers.predicates;
 // TODO: merge with Expansion class?
 public interface Predicate {
 
-  /**
-   * Return a positive value if the points pa, pb, and pc occur in
+  //--------------------------------------------------------------------
+  // TODO: algorithm might be exact for some operations and not others.
+  // TODO: an estimate of accuracy for each operation would be better.
+  /** Is this algorithm exact (to the resolution expansions)
+   * or approximate?
+   */
+  public default boolean isExact() { return false; }
+
+  //--------------------------------------------------------------------
+  /** Return a positive value if the points pa, pb, and pc occur in
    * counterclockwise order; a negative value if they occur in clockwise
    * order; and zero if they are collinear.  The result is also a rough
    * approximation of twice the signed area of the triangle defined by
@@ -105,8 +113,8 @@ public interface Predicate {
                           final double[] pb,
                           final double[] pc);
 
-  /**
-   * Return a positive value if the point pd lies inside the circle
+  //--------------------------------------------------------------------
+  /** Return a positive value if the point pd lies inside the circle
    * passing through pa, pb, and pc; a negative value if it lies
    * outside; and zero if the four points are cocircular. The points pa,
    * pb, and pc must be in counterclockwise order, or the sign of the

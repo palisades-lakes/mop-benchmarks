@@ -1,4 +1,4 @@
-package mop.java.numbers.predicates;
+package mop.java.geometry.predicates;
 // 2026-05-14
 // macro expand predicates.c via https://godbolt.org/
 // minimal changes to compile as java

@@ -1,4 +1,4 @@
-package mop.java.numbers.predicates;
+package mop.java.geometry.predicates;
 // 2026-05-14
 // macro expand predicates.c via https://godbolt.org/
 // minimal changes to compile as java
@@ -6,7 +6,7 @@ package mop.java.numbers.predicates;
 // split into Expansion manipulation and fast, slow, exact, adaptive
 // algorithm classes
 
-import static mop.java.numbers.predicates.Expansion.*;
+import static mop.java.geometry.predicates.Expansion.*;
 
 /**
  * More exact tests.  Robust.
@@ -84,6 +84,10 @@ import static mop.java.numbers.predicates.Expansion.*;
 
 // strictfp unnecessary for JDK17 and later
 public final class Slow implements Predicate {
+
+  //--------------------------------------------------------------------
+
+  public final boolean isExact () { return true; }
 
   //--------------------------------------------------------------------
   // orient2d
