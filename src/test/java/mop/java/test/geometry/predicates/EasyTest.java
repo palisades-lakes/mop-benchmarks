@@ -14,7 +14,7 @@ import java.util.List;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-05-16
+ * @version 2026-05-17
  */
 
 public final class EasyTest {

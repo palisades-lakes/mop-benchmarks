@@ -75,7 +75,7 @@ package mop.java.geometry.predicates;
  *   even <code>BigInteger</code> to extend range.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-05-14
+ * @version 2026-05-17
  */
 
 // strictfp unnecessary for JDK17 and later
@@ -87,69 +87,58 @@ public final class Fast implements Predicate {
   public final double orient2d (final double[] pa,
                                 final double[] pb,
                                 final double[] pc) {
-    double acx, bcx, acy, bcy;
-
-    acx = pa[0] - pc[0];
-    bcx = pb[0] - pc[0];
-    acy = pa[1] - pc[1];
-    bcy = pb[1] - pc[1];
-    return acx * bcy - acy * bcx;
-  }
+    final double acx = pa[0] - pc[0];
+    final double bcx = pb[0] - pc[0];
+    final double acy = pa[1] - pc[1];
+    final double bcy = pb[1] - pc[1];
+    return (acx * bcy) - (acy * bcx); }
 
   //--------------------------------------------------------------------
   // orient3d
   //--------------------------------------------------------------------
+
   public final double orient3d (final double[] pa,
                                 final double[] pb,
                                 final double[] pc,
                                 final double[] pd) {
-    double adx, bdx, cdx;
-    double ady, bdy, cdy;
-    double adz, bdz, cdz;
+    final double adx = pa[0] - pd[0];
+    final double bdx = pb[0] - pd[0];
+    final double cdx = pc[0] - pd[0];
+    final double ady = pa[1] - pd[1];
+    final double bdy = pb[1] - pd[1];
+    final double cdy = pc[1] - pd[1];
+    final double adz = pa[2] - pd[2];
+    final double bdz = pb[2] - pd[2];
+    final double cdz = pc[2] - pd[2];
 
-    adx = pa[0] - pd[0];
-    bdx = pb[0] - pd[0];
-    cdx = pc[0] - pd[0];
-    ady = pa[1] - pd[1];
-    bdy = pb[1] - pd[1];
-    cdy = pc[1] - pd[1];
-    adz = pa[2] - pd[2];
-    bdz = pb[2] - pd[2];
-    cdz = pc[2] - pd[2];
-
-    return adx * (bdy * cdz - bdz * cdy)
-      + bdx * (cdy * adz - cdz * ady)
-      + cdx * (ady * bdz - adz * bdy);
-  }
+    return (adx * ((bdy * cdz) - (bdz * cdy))) +
+      (bdx * ((cdy * adz) - (cdz * ady))) +
+      (cdx * ((ady * bdz) - (adz * bdy))); }
 
 
   //--------------------------------------------------------------------
   // incircle
   //--------------------------------------------------------------------
+
   public final double incircle (final double[] pa,
                                 final double[] pb,
                                 final double[] pc,
                                 final double[] pd) {
-    double adx, ady, bdx, bdy, cdx, cdy;
-    double abdet, bcdet, cadet;
-    double alift, blift, clift;
+    final double adx = pa[0] - pd[0];
+    final double ady = pa[1] - pd[1];
+    final double bdx = pb[0] - pd[0];
+    final double bdy = pb[1] - pd[1];
+    final double cdx = pc[0] - pd[0];
+    final double cdy = pc[1] - pd[1];
 
-    adx = pa[0] - pd[0];
-    ady = pa[1] - pd[1];
-    bdx = pb[0] - pd[0];
-    bdy = pb[1] - pd[1];
-    cdx = pc[0] - pd[0];
-    cdy = pc[1] - pd[1];
+    final double abdet = (adx * bdy) - (bdx * ady);
+    final double bcdet = (bdx * cdy) - (cdx * bdy);
+    final double cadet = (cdx * ady) - (adx * cdy);
+    final double alift = (adx * adx) + (ady * ady);
+    final double blift = (bdx * bdx) + (bdy * bdy);
+    final double clift = (cdx * cdx) + (cdy * cdy);
 
-    abdet = adx * bdy - bdx * ady;
-    bcdet = bdx * cdy - cdx * bdy;
-    cadet = cdx * ady - adx * cdy;
-    alift = adx * adx + ady * ady;
-    blift = bdx * bdx + bdy * bdy;
-    clift = cdx * cdx + cdy * cdy;
-
-    return alift * bcdet + blift * cadet + clift * abdet;
-  }
+    return (alift * bcdet) + (blift * cadet) + (clift * abdet); }
 
   //--------------------------------------------------------------------
   // insphere
@@ -160,45 +149,39 @@ public final class Fast implements Predicate {
                                 final double[] pc,
                                 final double[] pd,
                                 final double[] pe) {
-    double aex, bex, cex, dex;
-    double aey, bey, cey, dey;
-    double aez, bez, cez, dez;
-    double alift, blift, clift, dlift;
-    double ab, bc, cd, da, ac, bd;
-    double abc, bcd, cda, dab;
+    final double aex = pa[0] - pe[0];
+    final double bex = pb[0] - pe[0];
+    final double cex = pc[0] - pe[0];
+    final double dex = pd[0] - pe[0];
+    final double aey = pa[1] - pe[1];
+    final double bey = pb[1] - pe[1];
+    final double cey = pc[1] - pe[1];
+    final double dey = pd[1] - pe[1];
+    final double aez = pa[2] - pe[2];
+    final double bez = pb[2] - pe[2];
+    final double cez = pc[2] - pe[2];
+    final double dez = pd[2] - pe[2];
 
-    aex = pa[0] - pe[0];
-    bex = pb[0] - pe[0];
-    cex = pc[0] - pe[0];
-    dex = pd[0] - pe[0];
-    aey = pa[1] - pe[1];
-    bey = pb[1] - pe[1];
-    cey = pc[1] - pe[1];
-    dey = pd[1] - pe[1];
-    aez = pa[2] - pe[2];
-    bez = pb[2] - pe[2];
-    cez = pc[2] - pe[2];
-    dez = pd[2] - pe[2];
+    final double ab = (aex * bey) - (bex * aey);
+    final double bc = (bex * cey) - (cex * bey);
+    final double cd = (cex * dey) - (dex * cey);
+    final double da = (dex * aey) - (aex * dey);
 
-    ab = aex * bey - bex * aey;
-    bc = bex * cey - cex * bey;
-    cd = cex * dey - dex * cey;
-    da = dex * aey - aex * dey;
+    final double ac = (aex * cey) - (cex * aey);
+    final double bd = (bex * dey) - (dex * bey);
 
-    ac = aex * cey - cex * aey;
-    bd = bex * dey - dex * bey;
+    final double abc = (aez * bc) - (bez * ac) + (cez * ab);
+    final double bcd = (bez * cd) - (cez * bd) + (dez * bc);
+    final double cda = (cez * da) + (dez * ac) + (aez * cd);
+    final double dab = (dez * ab) + (aez * bd) + (bez * da);
 
-    abc = aez * bc - bez * ac + cez * ab;
-    bcd = bez * cd - cez * bd + dez * bc;
-    cda = cez * da + dez * ac + aez * cd;
-    dab = dez * ab + aez * bd + bez * da;
+    final double alift = (aex * aex) + (aey * aey) + (aez * aez);
+    final double blift = (bex * bex) + (bey * bey) + (bez * bez);
+    final double clift = (cex * cex) + (cey * cey) + (cez * cez);
+    final double dlift = (dex * dex) + (dey * dey) + (dez * dez);
 
-    alift = aex * aex + aey * aey + aez * aez;
-    blift = bex * bex + bey * bey + bez * bez;
-    clift = cex * cex + cey * cey + cez * cez;
-    dlift = dex * dex + dey * dey + dez * dez;
-
-    return (dlift * abc - clift * dab) + (blift * cda - alift * bcd);
+    return
+      ((dlift * abc) - (clift * dab)) + ((blift * cda) - (alift * bcd));
   }
 
   //--------------------------------------------------------------------

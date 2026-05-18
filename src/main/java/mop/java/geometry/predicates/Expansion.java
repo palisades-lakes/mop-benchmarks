@@ -5,8 +5,6 @@ package mop.java.geometry.predicates;
 // 2026-05-15
 // split into algorithm type classes
 
-import java.util.Arrays;
-
 /**
  * Adaptive precision floating point based on:
  * <ul>
@@ -76,7 +74,7 @@ import java.util.Arrays;
  *   even <code>BigInteger</code> to extend range.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-05-15
+ * @version 2026-05-17
  */
 
 // strictfp unnecessary for JDK17 and later
@@ -143,273 +141,283 @@ public final class Expansion {
   //--------------------------------------------------------------------
   // class methods
   //--------------------------------------------------------------------
-  public static final int grow_expansion (final int elen,
-                                          final double[] e,
-                                          final double b,
-                                          final double[] h) {
-    double Q;
-    double Qnew;
-    int eindex;
-    double enow;
-    double bvirt;
-    double avirt, bround, around;
-
-    Q = b;
-    for (eindex = 0; eindex < elen; eindex++) {
-      enow = e[eindex];
-      Qnew = (Q + enow);
-      bvirt = (Qnew - Q);
-      avirt = Qnew - bvirt;
-      bround = enow - bvirt;
-      around = Q - avirt;
-      h[eindex] = around + bround;
-      Q = Qnew;
-    }
-    h[eindex] = Q;
-    return eindex + 1;
-  }
+//  public static final int grow_expansion (final int elen,
+//                                          final double[] e,
+//                                          final double b,
+//                                          final double[] h) {
+//    int eindex = 0;
+//    double Q = b;
+//    for (; eindex < elen; eindex++) {
+//      final double enow = e[eindex];
+//      //Two_Sum(Q, enow, Qnew, h[eindex]);
+//      double Qnew = (Q + enow);
+//      final double bvirt = (Qnew - Q);
+//      final double avirt = Qnew - bvirt;
+//      final double bround = enow - bvirt;
+//      final double around = Q - avirt;
+//      h[eindex] = around + bround;
+//      //------------------------------
+//      Q = Qnew;
+//    }
+//    h[eindex] = Q;
+//    return eindex + 1;
+//  }
 
   //--------------------------------------------------------------------
-  public static final int grow_expansion_zeroelim (final int elen,
-                                                   final double[] e,
-                                                   final double b,
-                                                   final double[] h) {
-    double Q, hh;
-    double Qnew;
-    int eindex, hindex;
-    double enow;
-    double bvirt;
-    double avirt, bround, around;
-
-    hindex = 0;
-    Q = b;
-    for (eindex = 0; eindex < elen; eindex++) {
-      enow = e[eindex];
-      Qnew = (Q + enow);
-      bvirt = (Qnew - Q);
-      avirt = Qnew - bvirt;
-      bround = enow - bvirt;
-      around = Q - avirt;
-      hh = around + bround;
-      Q = Qnew;
-      if (hh != 0.0) {
-        h[hindex++] = hh;
-      }
-    }
-    if ((Q != 0.0) || (hindex == 0)) {
-      h[hindex++] = Q;
-    }
-    return hindex;
-  }
-
-  //--------------------------------------------------------------------
-  public static final int expansion_sum (final int elen,
-                                         final double[] e,
-                                         final int flen,
-                                         final double[] f,
-                                         final double[] h) {
-    double Q;
-    double Qnew;
-    int findex, hindex, hlast;
-    double hnow;
-    double bvirt;
-    double avirt, bround, around;
-
-    Q = f[0];
-    for (hindex = 0; hindex < elen; hindex++) {
-      hnow = e[hindex];
-      Qnew = (Q + hnow); bvirt = (Qnew - Q);
-      avirt = Qnew - bvirt; bround = hnow - bvirt; around = Q - avirt;
-      h[hindex] = around + bround;
-      Q = Qnew;
-    }
-    h[hindex] = Q;
-    hlast = hindex;
-    for (findex = 1; findex < flen; findex++) {
-      Q = f[findex];
-      for (hindex = findex; hindex <= hlast; hindex++) {
-        hnow = h[hindex];
-        Qnew = (Q + hnow); bvirt = (Qnew - Q);
-        avirt = Qnew - bvirt; bround = hnow - bvirt; around = Q - avirt;
-        h[hindex] = around + bround;
-        Q = Qnew;
-      }
-      h[++hlast] = Q;
-    }
-    return hlast + 1;
-  }
+//  public static final int grow_expansion_zeroelim (final int elen,
+//                                                   final double[] e,
+//                                                   final double b,
+//                                                   final double[] h) {
+//    double Q, hh;
+//    double Qnew;
+//    int eindex, hindex;
+//    double enow;
+//    double bvirt;
+//    double avirt, bround, around;
+//
+//    hindex = 0;
+//    Q = b;
+//    for (eindex = 0; eindex < elen; eindex++) {
+//      enow = e[eindex];
+//      //Two_Sum(Q, enow, Qnew, hh);
+//      Qnew = (Q + enow);
+//      bvirt = (Qnew - Q);
+//      avirt = Qnew - bvirt;
+//      bround = enow - bvirt;
+//      around = Q - avirt;
+//      hh = around + bround;
+//      //-----------------
+//      Q = Qnew;
+//      if (hh != 0.0) {
+//        h[hindex++] = hh;
+//      }
+//    }
+//    if ((Q != 0.0) || (hindex == 0)) {
+//      h[hindex++] = Q;
+//    }
+//    return hindex;
+//  }
 
   //--------------------------------------------------------------------
-  public static final int expansion_sum_zeroelim1 (final int elen,
-                                                   final double[] e,
-                                                   final int flen,
-                                                   final double[] f,
-                                                   final double[] h) {
-    double Q;
-    double Qnew;
-    int index, findex, hindex, hlast;
-    double hnow;
-    double bvirt;
-    double avirt, bround, around;
-
-    Q = f[0];
-    for (hindex = 0; hindex < elen; hindex++) {
-      hnow = e[hindex];
-      Qnew = (Q + hnow); bvirt = (Qnew - Q);
-      avirt = Qnew - bvirt; bround = hnow - bvirt; around = Q - avirt;
-      h[hindex] = around + bround;
-      Q = Qnew;
-    }
-    h[hindex] = Q;
-    hlast = hindex;
-    for (findex = 1; findex < flen; findex++) {
-      Q = f[findex];
-      for (hindex = findex; hindex <= hlast; hindex++) {
-        hnow = h[hindex];
-        Qnew = (Q + hnow); bvirt = (Qnew - Q);
-        avirt = Qnew - bvirt; bround = hnow - bvirt; around = Q - avirt;
-        h[hindex] = around + bround;
-        Q = Qnew;
-      }
-      h[++hlast] = Q;
-    }
-    hindex = -1;
-    for (index = 0; index <= hlast; index++) {
-      hnow = h[index];
-      if (hnow != 0.0) {
-        h[++hindex] = hnow;
-      }
-    }
-    if (hindex == -1) {
-      return 1;
-    }
-    else {
-      return hindex + 1;
-    }
-  }
+//  public static final int expansion_sum (final int elen,
+//                                         final double[] e,
+//                                         final int flen,
+//                                         final double[] f,
+//                                         final double[] h) {
+//    double Q;
+//    double Qnew;
+//    int findex, hindex, hlast;
+//    double hnow;
+//    double bvirt;
+//    double avirt, bround, around;
+//
+//    Q = f[0];
+//    for (hindex = 0; hindex < elen; hindex++) {
+//      hnow = e[hindex];
+//      Qnew = (Q + hnow); bvirt = (Qnew - Q);
+//      avirt = Qnew - bvirt; bround = hnow - bvirt; around = Q - avirt;
+//      h[hindex] = around + bround;
+//      Q = Qnew;
+//    }
+//    h[hindex] = Q;
+//    hlast = hindex;
+//    for (findex = 1; findex < flen; findex++) {
+//      Q = f[findex];
+//      for (hindex = findex; hindex <= hlast; hindex++) {
+//        hnow = h[hindex];
+//        Qnew = (Q + hnow); bvirt = (Qnew - Q);
+//        avirt = Qnew - bvirt; bround = hnow - bvirt; around = Q - avirt;
+//        h[hindex] = around + bround;
+//        Q = Qnew;
+//      }
+//      h[++hlast] = Q;
+//    }
+//    return hlast + 1;
+//  }
 
   //--------------------------------------------------------------------
-  public static final int expansion_sum_zeroelim2 (final int elen,
-                                                   final double[] e,
-                                                   final int flen,
-                                                   final double[] f,
-                                                   final double[] h) {
-    double Q, hh;
-    double Qnew;
-    int eindex, findex, hindex, hlast;
-    double enow;
-    double bvirt;
-    double avirt, bround, around;
-
-    hindex = 0;
-    Q = f[0];
-    for (eindex = 0; eindex < elen; eindex++) {
-      enow = e[eindex];
-      Qnew = (Q + enow); bvirt = (Qnew - Q);
-      avirt = Qnew - bvirt; bround = enow - bvirt; around = Q - avirt;
-      hh = around + bround;
-      Q = Qnew;
-      if (hh != 0.0) {
-        h[hindex++] = hh;
-      }
-    }
-    h[hindex] = Q;
-    hlast = hindex;
-    for (findex = 1; findex < flen; findex++) {
-      hindex = 0;
-      Q = f[findex];
-      for (eindex = 0; eindex <= hlast; eindex++) {
-        enow = h[eindex];
-        Qnew = (Q + enow); bvirt = (Qnew - Q);
-        avirt = Qnew - bvirt; bround = enow - bvirt; around = Q - avirt;
-        hh = around + bround;
-        Q = Qnew;
-        if (hh != 0) {
-          h[hindex++] = hh;
-        }
-      }
-      h[hindex] = Q;
-      hlast = hindex;
-    }
-    return hlast + 1;
-  }
-
+//  public static final int expansion_sum_zeroelim1 (final int elen,
+//                                                   final double[] e,
+//                                                   final int flen,
+//                                                   final double[] f,
+//                                                   final double[] h) {
+//    double Q;
+//    double Qnew;
+//    int index, findex, hindex, hlast;
+//    double hnow;
+//    double bvirt;
+//    double avirt, bround, around;
+//
+//    Q = f[0];
+//    for (hindex = 0; hindex < elen; hindex++) {
+//      hnow = e[hindex];
+//      Qnew = (Q + hnow); bvirt = (Qnew - Q);
+//      avirt = Qnew - bvirt; bround = hnow - bvirt; around = Q - avirt;
+//      h[hindex] = around + bround;
+//      Q = Qnew;
+//    }
+//    h[hindex] = Q;
+//    hlast = hindex;
+//    for (findex = 1; findex < flen; findex++) {
+//      Q = f[findex];
+//      for (hindex = findex; hindex <= hlast; hindex++) {
+//        hnow = h[hindex];
+//        Qnew = (Q + hnow); bvirt = (Qnew - Q);
+//        avirt = Qnew - bvirt; bround = hnow - bvirt; around = Q - avirt;
+//        h[hindex] = around + bround;
+//        Q = Qnew;
+//      }
+//      h[++hlast] = Q;
+//    }
+//    hindex = -1;
+//    for (index = 0; index <= hlast; index++) {
+//      hnow = h[index];
+//      if (hnow != 0.0) {
+//        h[++hindex] = hnow;
+//      }
+//    }
+//    if (hindex == -1) {
+//      return 1;
+//    }
+//    else {
+//      return hindex + 1;
+//    }
+//  }
+//
   //--------------------------------------------------------------------
-  public static final int fast_expansion_sum (final int elen,
-                                              final double[] e,
-                                              final int flen,
-                                              final double[] f,
-                                              final double[] h) {
-    double Q;
-    double Qnew;
-    double bvirt;
-    double avirt, bround, around;
-    int eindex, findex, hindex;
-    double enow, fnow;
-
-    enow = e[0];
-    fnow = f[0];
-    eindex = findex = 0;
-    if ((fnow > enow) == (fnow > -enow)) {
-      Q = enow;
-      enow = e[++eindex];
-    }
-    else {
-      Q = fnow;
-      fnow = f[++findex];
-    }
-    hindex = 0;
-    if ((eindex < elen) && (findex < flen)) {
-      if ((fnow > enow) == (fnow > -enow)) {
-        Qnew = (enow + Q); bvirt = Qnew - enow;
-        h[0] = Q - bvirt;
-        enow = e[++eindex];
-      }
-      else {
-        Qnew = (fnow + Q); bvirt = Qnew - fnow;
-        h[0] = Q - bvirt;
-        fnow = f[++findex];
-      }
-      Q = Qnew;
-      hindex = 1;
-      while ((eindex < elen) && (findex < flen)) {
-        if ((fnow > enow) == (fnow > -enow)) {
-          Qnew = (Q + enow); bvirt = (Qnew - Q);
-          avirt = Qnew - bvirt; bround = enow - bvirt;
-          around = Q - avirt; h[hindex] = around + bround;
-          enow = e[++eindex];
-        }
-        else {
-          Qnew = (Q + fnow); bvirt = (Qnew - Q);
-          avirt = Qnew - bvirt; bround = fnow - bvirt;
-          around = Q - avirt; h[hindex] = around + bround;
-          fnow = f[++findex];
-        }
-        Q = Qnew;
-        hindex++;
-      }
-    }
-    while (eindex < elen) {
-      Qnew = (Q + enow); bvirt = (Qnew - Q);
-      avirt = Qnew - bvirt; bround = enow - bvirt; around = Q - avirt;
-      h[hindex] = around + bround;
-      enow = e[++eindex];
-      Q = Qnew;
-      hindex++;
-    }
-    while (findex < flen) {
-      Qnew = (Q + fnow); bvirt = (Qnew - Q);
-      avirt = Qnew - bvirt; bround = fnow - bvirt; around = Q - avirt;
-      h[hindex] = around + bround;
-      fnow = f[++findex];
-      Q = Qnew;
-      hindex++;
-    }
-    h[hindex] = Q;
-    return hindex + 1;
-  }
-
+//  public static final int expansion_sum_zeroelim2 (final int elen,
+//                                                   final double[] e,
+//                                                   final int flen,
+//                                                   final double[] f,
+//                                                   final double[] h) {
+//    double Q, hh;
+//    double Qnew;
+//    int eindex, findex, hindex, hlast;
+//    double enow;
+//    double bvirt;
+//    double avirt, bround, around;
+//
+//    hindex = 0;
+//    Q = f[0];
+//    for (eindex = 0; eindex < elen; eindex++) {
+//      enow = e[eindex];
+//      Qnew = (Q + enow); bvirt = (Qnew - Q);
+//      avirt = Qnew - bvirt; bround = enow - bvirt; around = Q - avirt;
+//      hh = around + bround;
+//      Q = Qnew;
+//      if (hh != 0.0) {
+//        h[hindex++] = hh;
+//      }
+//    }
+//    h[hindex] = Q;
+//    hlast = hindex;
+//    for (findex = 1; findex < flen; findex++) {
+//      hindex = 0;
+//      Q = f[findex];
+//      for (eindex = 0; eindex <= hlast; eindex++) {
+//        enow = h[eindex];
+//        Qnew = (Q + enow); bvirt = (Qnew - Q);
+//        avirt = Qnew - bvirt; bround = enow - bvirt; around = Q - avirt;
+//        hh = around + bround;
+//        Q = Qnew;
+//        if (hh != 0) {
+//          h[hindex++] = hh;
+//        }
+//      }
+//      h[hindex] = Q;
+//      hlast = hindex;
+//    }
+//    return hlast + 1;
+//  }
+//
   //--------------------------------------------------------------------
+//  public static final int fast_expansion_sum (final int elen,
+//                                              final double[] e,
+//                                              final int flen,
+//                                              final double[] f,
+//                                              final double[] h) {
+//    double Q;
+//    double Qnew;
+//    double bvirt;
+//    double avirt, bround, around;
+//    int eindex, findex, hindex;
+//    double enow, fnow;
+//
+//    enow = e[0];
+//    fnow = f[0];
+//    eindex = findex = 0;
+//    if ((fnow > enow) == (fnow > -enow)) {
+//      Q = enow;
+//      enow = e[++eindex];
+//    }
+//    else {
+//      Q = fnow;
+//      fnow = f[++findex];
+//    }
+//    hindex = 0;
+//    if ((eindex < elen) && (findex < flen)) {
+//      if ((fnow > enow) == (fnow > -enow)) {
+//        Qnew = (enow + Q); bvirt = Qnew - enow;
+//        h[0] = Q - bvirt;
+//        enow = e[++eindex];
+//      }
+//      else {
+//        Qnew = (fnow + Q); bvirt = Qnew - fnow;
+//        h[0] = Q - bvirt;
+//        fnow = f[++findex];
+//      }
+//      Q = Qnew;
+//      hindex = 1;
+//      while ((eindex < elen) && (findex < flen)) {
+//        if ((fnow > enow) == (fnow > -enow)) {
+//          Qnew = (Q + enow); bvirt = (Qnew - Q);
+//          avirt = Qnew - bvirt; bround = enow - bvirt;
+//          around = Q - avirt; h[hindex] = around + bround;
+//          enow = e[++eindex];
+//        }
+//        else {
+//          Qnew = (Q + fnow); bvirt = (Qnew - Q);
+//          avirt = Qnew - bvirt; bround = fnow - bvirt;
+//          around = Q - avirt; h[hindex] = around + bround;
+//          fnow = f[++findex];
+//        }
+//        Q = Qnew;
+//        hindex++;
+//      }
+//    }
+//    while (eindex < elen) {
+//      Qnew = (Q + enow); bvirt = (Qnew - Q);
+//      avirt = Qnew - bvirt; bround = enow - bvirt; around = Q - avirt;
+//      h[hindex] = around + bround;
+//      enow = e[++eindex];
+//      Q = Qnew;
+//      hindex++;
+//    }
+//    while (findex < flen) {
+//      Qnew = (Q + fnow); bvirt = (Qnew - Q);
+//      avirt = Qnew - bvirt; bround = fnow - bvirt; around = Q - avirt;
+//      h[hindex] = around + bround;
+//      fnow = f[++findex];
+//      Q = Qnew;
+//      hindex++;
+//    }
+//    h[hindex] = Q;
+//    return hindex + 1;
+//  }
+//
+  //--------------------------------------------------------------------
+  /** Sum two expansions, eliminating zero components from the output
+   * expansion.
+   *  <br>
+   *  Sets h = e + f.  See the long version of my paper for details.
+   *  <br>
+   *  If round-to-even is used (as with IEEE 754),
+   *  maintains the strongly nonoverlapping property.  (That is,
+   *  if e is strongly nonoverlapping, h will be also.)
+   *  Does NOT maintain the nonoverlapping or nonadjacent
+   *  properties.
+   */
+
   public static final int fast_expansion_sum_zeroelim (final int elen,
                                                        final double[] e,
                                                        final int flen,
@@ -425,7 +433,7 @@ public final class Expansion {
 
     double Q;
     double Qnew;
-    double hh = 0.0;
+    double hh;
     int eindex=0;
     int findex=0;
     int hindex=0;
@@ -442,12 +450,14 @@ public final class Expansion {
         Qnew = (enow + Q);
         final double bvirt = Qnew - enow;
         hh = Q - bvirt;
+        //-------------
         enow = e[++eindex]; }
       else {
         // Fast_Two_Sum(fnow, Q, Qnew, hh);
         Qnew = (fnow + Q);
         final double bvirt = Qnew - fnow;
         hh = Q - bvirt;
+        //-------------
         fnow = f[++findex]; }
 
       Q = Qnew;
@@ -465,6 +475,7 @@ public final class Expansion {
           final double bround = enow - bvirt;
           final double around = Q - avirt;
           hh = around + bround;
+          //-------------
 //          System.out.println("fnow="+ Double.toHexString(fnow));
 //          System.out.println("enow="+ Double.toHexString(enow));
 //          System.out.println("e="+ Arrays.toString(e));
@@ -479,30 +490,35 @@ public final class Expansion {
           final double bround = fnow - bvirt;
           final double around = Q - avirt;
           hh = around + bround;
+          //-------------
           findex++;
           if (findex>flen) { fnow = f[findex]; } }
         Q = Qnew;
         if (hh != 0.0) { h[hindex++] = hh; } } }
 
     while (eindex < elen) {
+      //Two_Sum(Q, enow, Qnew, hh);
       Qnew = (Q + enow);
       final double bvirt = (Qnew - Q);
       final double avirt = Qnew - bvirt;
       final double bround = enow - bvirt;
       final double around = Q - avirt;
       hh = around + bround;
+      //---------------------
       eindex++;
       if (eindex<elen) { enow = e[eindex]; }
       Q = Qnew;
       if (hh != 0.0) { h[hindex++] = hh; } }
 
     while (findex < flen) {
+      //Two_Sum(Q, fnow, Qnew, hh);
       Qnew = (Q + fnow);
       final double bvirt = (Qnew - Q);
       final double avirt = Qnew - bvirt;
       final double bround = fnow - bvirt;
       final double around = Q - avirt;
       hh = around + bround;
+      //---------------------------
       findex++;
       if (findex<flen) { fnow = f[findex]; }
       Q = Qnew;
@@ -513,174 +529,185 @@ public final class Expansion {
     return hindex; }
 
   //--------------------------------------------------------------------
-  public static final int linear_expansion_sum (final int elen,
-                                                final double[] e,
-                                                final int flen,
-                                                final double[] f,
-                                                final double[] h) {
-    double Q, q;
-    double Qnew;
-    double R;
-    double bvirt;
-    double avirt, bround, around;
-    int eindex, findex, hindex;
-    double enow, fnow;
-    double g0;
-
-    enow = e[0];
-    fnow = f[0];
-    eindex = findex = 0;
-    if ((fnow > enow) == (fnow > -enow)) {
-      g0 = enow;
-      enow = e[++eindex];
-    }
-    else {
-      g0 = fnow;
-      fnow = f[++findex];
-    }
-    if ((eindex < elen) && ((findex >= flen)
-      || ((fnow > enow) == (fnow > -enow)))) {
-      Qnew = (enow + g0); bvirt = Qnew - enow; q = g0 - bvirt;
-      enow = e[++eindex];
-    }
-    else {
-      Qnew = (fnow + g0); bvirt = Qnew - fnow; q = g0 - bvirt;
-      fnow = f[++findex];
-    }
-    Q = Qnew;
-    for (hindex = 0; hindex < elen + flen - 2; hindex++) {
-      if ((eindex < elen) && ((findex >= flen)
-        || ((fnow > enow) == (fnow > -enow)))) {
-        R = (enow + q); bvirt = R - enow;
-        h[hindex] = q - bvirt;
-        enow = e[++eindex];
-      }
-      else {
-        R = (fnow + q); bvirt = R - fnow;
-        h[hindex] = q - bvirt;
-        fnow = f[++findex];
-      }
-      Qnew = (Q + R); bvirt = (Qnew - Q);
-      avirt = Qnew - bvirt; bround = R - bvirt; around = Q - avirt;
-      q = around + bround;
-      Q = Qnew;
-    }
-    h[hindex] = q;
-    h[hindex + 1] = Q;
-    return hindex + 2;
-  }
+//  public static final int linear_expansion_sum (final int elen,
+//                                                final double[] e,
+//                                                final int flen,
+//                                                final double[] f,
+//                                                final double[] h) {
+//    double Q, q;
+//    double Qnew;
+//    double R;
+//    double bvirt;
+//    double avirt, bround, around;
+//    int eindex, findex, hindex;
+//    double enow, fnow;
+//    double g0;
+//
+//    enow = e[0];
+//    fnow = f[0];
+//    eindex = findex = 0;
+//    if ((fnow > enow) == (fnow > -enow)) {
+//      g0 = enow;
+//      enow = e[++eindex];
+//    }
+//    else {
+//      g0 = fnow;
+//      fnow = f[++findex];
+//    }
+//    if ((eindex < elen) && ((findex >= flen)
+//      || ((fnow > enow) == (fnow > -enow)))) {
+//      Qnew = (enow + g0); bvirt = Qnew - enow; q = g0 - bvirt;
+//      enow = e[++eindex];
+//    }
+//    else {
+//      Qnew = (fnow + g0); bvirt = Qnew - fnow; q = g0 - bvirt;
+//      fnow = f[++findex];
+//    }
+//    Q = Qnew;
+//    for (hindex = 0; hindex < elen + flen - 2; hindex++) {
+//      if ((eindex < elen) && ((findex >= flen)
+//        || ((fnow > enow) == (fnow > -enow)))) {
+//        R = (enow + q); bvirt = R - enow;
+//        h[hindex] = q - bvirt;
+//        enow = e[++eindex];
+//      }
+//      else {
+//        R = (fnow + q); bvirt = R - fnow;
+//        h[hindex] = q - bvirt;
+//        fnow = f[++findex];
+//      }
+//      Qnew = (Q + R); bvirt = (Qnew - Q);
+//      avirt = Qnew - bvirt; bround = R - bvirt; around = Q - avirt;
+//      q = around + bround;
+//      Q = Qnew;
+//    }
+//    h[hindex] = q;
+//    h[hindex + 1] = Q;
+//    return hindex + 2;
+//  }
+//
+  //--------------------------------------------------------------------
+//  public static final int linear_expansion_sum_zeroelim (
+//    final int elen,
+//    final double[] e,
+//    final int flen,
+//    final double[] f,
+//    final double[] h) {
+//    double Q, q, hh;
+//    double Qnew;
+//    double R;
+//    double bvirt;
+//    double avirt, bround, around;
+//    int eindex, findex, hindex;
+//    int count;
+//    double enow, fnow;
+//    double g0;
+//
+//    enow = e[0];
+//    fnow = f[0];
+//    eindex = findex = 0;
+//    hindex = 0;
+//    if ((fnow > enow) == (fnow > -enow)) {
+//      g0 = enow;
+//      enow = e[++eindex];
+//    }
+//    else {
+//      g0 = fnow;
+//      fnow = f[++findex];
+//    }
+//    if ((eindex < elen) && ((findex >= flen)
+//      || ((fnow > enow) == (fnow > -enow)))) {
+//      Qnew = (enow + g0); bvirt = Qnew - enow; q = g0 - bvirt;
+//      enow = e[++eindex];
+//    }
+//    else {
+//      Qnew = (fnow + g0); bvirt = Qnew - fnow; q = g0 - bvirt;
+//      fnow = f[++findex];
+//    }
+//    Q = Qnew;
+//    for (count = 2; count < elen + flen; count++) {
+//      if ((eindex < elen) && ((findex >= flen)
+//        || ((fnow > enow) == (fnow > -enow)))) {
+//        R = (enow + q); bvirt = R - enow; hh = q - bvirt;
+//        enow = e[++eindex];
+//      }
+//      else {
+//        R = (fnow + q); bvirt = R - fnow; hh = q - bvirt;
+//        fnow = f[++findex];
+//      }
+//      Qnew = (Q + R); bvirt = (Qnew - Q);
+//      avirt = Qnew - bvirt; bround = R - bvirt; around = Q - avirt;
+//      q = around + bround;
+//      Q = Qnew;
+//      if (hh != 0) {
+//        h[hindex++] = hh;
+//      }
+//    }
+//    if (q != 0) {
+//      h[hindex++] = q;
+//    }
+//    if ((Q != 0.0) || (hindex == 0)) {
+//      h[hindex++] = Q;
+//    }
+//    return hindex;
+//  }
+//
+  //--------------------------------------------------------------------
+//  public static final int scale_expansion (final int elen,
+//                                           final double[] e,
+//                                           final double b,
+//                                           final double[] h) {
+//    double Q;
+//    double sum;
+//    double product1;
+//    double product0;
+//    int eindex, hindex;
+//    double enow;
+//    double bvirt;
+//    double avirt, bround, around;
+//    double c;
+//    double abig;
+//    double ahi, alo, bhi, blo;
+//    double err1, err2, err3;
+//
+//    c = (SPLITTER * b); abig = (c - b);
+//    bhi = c - abig; blo = b - bhi;
+//    Q = (e[0] * b); c = (SPLITTER * e[0]);
+//    abig = (c - e[0]); ahi = c - abig; alo = e[0] - ahi;
+//    err1 = Q - (ahi * bhi); err2 = err1 - (alo * bhi);
+//    err3 = err2 - (ahi * blo); h[0] = (alo * blo) - err3;
+//    hindex = 1;
+//    for (eindex = 1; eindex < elen; eindex++) {
+//      enow = e[eindex];
+//      product1 = (enow * b); c = (SPLITTER * enow);
+//      abig = (c - enow); ahi = c - abig; alo = enow - ahi;
+//      err1 = product1 - (ahi * bhi); err2 = err1 - (alo * bhi);
+//      err3 = err2 - (ahi * blo); product0 = (alo * blo) - err3;
+//      sum = (Q + product0); bvirt = (sum - Q);
+//      avirt = sum - bvirt; bround = product0 - bvirt;
+//      around = Q - avirt; h[hindex] = around + bround;
+//      hindex++;
+//      Q = (product1 + sum); bvirt = (Q - product1);
+//      avirt = Q - bvirt; bround = sum - bvirt;
+//      around = product1 - avirt; h[hindex] = around + bround;
+//      hindex++;
+//    }
+//    h[hindex] = Q;
+//    return elen + elen;
+//  }
 
   //--------------------------------------------------------------------
-  public static final int linear_expansion_sum_zeroelim (
-    final int elen,
-    final double[] e,
-    final int flen,
-    final double[] f,
-    final double[] h) {
-    double Q, q, hh;
-    double Qnew;
-    double R;
-    double bvirt;
-    double avirt, bround, around;
-    int eindex, findex, hindex;
-    int count;
-    double enow, fnow;
-    double g0;
+  /** Multiply an expansion by a scalar, eliminating zero components
+   * from the output expansion.
+   *  <br>
+   *  Sets h = be.  See either version of my paper for details.
+   *  <br>
+   *  Maintains the nonoverlapping property.  If round-to-even is used
+   *  (as with IEEE 754), maintains the strongly nonoverlapping and
+   *  nonadjacent properties as well.  (That is, if e has one of these
+   *  properties, so will h.)
+   */
 
-    enow = e[0];
-    fnow = f[0];
-    eindex = findex = 0;
-    hindex = 0;
-    if ((fnow > enow) == (fnow > -enow)) {
-      g0 = enow;
-      enow = e[++eindex];
-    }
-    else {
-      g0 = fnow;
-      fnow = f[++findex];
-    }
-    if ((eindex < elen) && ((findex >= flen)
-      || ((fnow > enow) == (fnow > -enow)))) {
-      Qnew = (enow + g0); bvirt = Qnew - enow; q = g0 - bvirt;
-      enow = e[++eindex];
-    }
-    else {
-      Qnew = (fnow + g0); bvirt = Qnew - fnow; q = g0 - bvirt;
-      fnow = f[++findex];
-    }
-    Q = Qnew;
-    for (count = 2; count < elen + flen; count++) {
-      if ((eindex < elen) && ((findex >= flen)
-        || ((fnow > enow) == (fnow > -enow)))) {
-        R = (enow + q); bvirt = R - enow; hh = q - bvirt;
-        enow = e[++eindex];
-      }
-      else {
-        R = (fnow + q); bvirt = R - fnow; hh = q - bvirt;
-        fnow = f[++findex];
-      }
-      Qnew = (Q + R); bvirt = (Qnew - Q);
-      avirt = Qnew - bvirt; bround = R - bvirt; around = Q - avirt;
-      q = around + bround;
-      Q = Qnew;
-      if (hh != 0) {
-        h[hindex++] = hh;
-      }
-    }
-    if (q != 0) {
-      h[hindex++] = q;
-    }
-    if ((Q != 0.0) || (hindex == 0)) {
-      h[hindex++] = Q;
-    }
-    return hindex;
-  }
-
-  //--------------------------------------------------------------------
-  public static final int scale_expansion (final int elen,
-                                           final double[] e,
-                                           final double b,
-                                           final double[] h) {
-    double Q;
-    double sum;
-    double product1;
-    double product0;
-    int eindex, hindex;
-    double enow;
-    double bvirt;
-    double avirt, bround, around;
-    double c;
-    double abig;
-    double ahi, alo, bhi, blo;
-    double err1, err2, err3;
-
-    c = (SPLITTER * b); abig = (c - b);
-    bhi = c - abig; blo = b - bhi;
-    Q = (e[0] * b); c = (SPLITTER * e[0]);
-    abig = (c - e[0]); ahi = c - abig; alo = e[0] - ahi;
-    err1 = Q - (ahi * bhi); err2 = err1 - (alo * bhi);
-    err3 = err2 - (ahi * blo); h[0] = (alo * blo) - err3;
-    hindex = 1;
-    for (eindex = 1; eindex < elen; eindex++) {
-      enow = e[eindex];
-      product1 = (enow * b); c = (SPLITTER * enow);
-      abig = (c - enow); ahi = c - abig; alo = enow - ahi;
-      err1 = product1 - (ahi * bhi); err2 = err1 - (alo * bhi);
-      err3 = err2 - (ahi * blo); product0 = (alo * blo) - err3;
-      sum = (Q + product0); bvirt = (sum - Q);
-      avirt = sum - bvirt; bround = product0 - bvirt;
-      around = Q - avirt; h[hindex] = around + bround;
-      hindex++;
-      Q = (product1 + sum); bvirt = (Q - product1);
-      avirt = Q - bvirt; bround = sum - bvirt;
-      around = product1 - avirt; h[hindex] = around + bround;
-      hindex++;
-    }
-    h[hindex] = Q;
-    return elen + elen;
-  }
-
-  //--------------------------------------------------------------------
   public static final int scale_expansion_zeroelim (final int elen,
                                                     final double[] e,
                                                     final double b,
@@ -698,18 +725,23 @@ public final class Expansion {
     double ahi, alo, bhi, blo;
     double err1, err2, err3;
 
+    //Split(b, bhi, blo);
     c = (SPLITTER * b); abig = (c - b);
-    bhi = c - abig; blo = b - bhi;
+    bhi = c - abig;
+    blo = b - bhi;
+    //------------------------------------------------
+    //Two_Product_Presplit(e[0], b, bhi, blo, Q, hh);
     Q = (e[0] * b); c = (SPLITTER * e[0]);
     abig = (c - e[0]); ahi = c - abig; alo = e[0] - ahi;
     err1 = Q - (ahi * bhi); err2 = err1 - (alo * bhi);
     err3 = err2 - (ahi * blo); hh = (alo * blo) - err3;
+    //------------------------------------------------
     hindex = 0;
-    if (hh != 0) {
-      h[hindex++] = hh;
-    }
+    if (hh != 0) { h[hindex++] = hh; }
     for (eindex = 1; eindex < elen; eindex++) {
       enow = e[eindex];
+      //Two_Product_Presplit(enow, b, bhi, blo, product1, product0);
+      //Two_Sum(Q, product0, sum, hh);
       product1 = (enow * b); c = (SPLITTER * enow);
       abig = (c - enow); ahi = c - abig; alo = enow - ahi;
       err1 = product1 - (ahi * bhi); err2 = err1 - (alo * bhi);
@@ -717,79 +749,72 @@ public final class Expansion {
       sum = (Q + product0); bvirt = (sum - Q);
       avirt = sum - bvirt; bround = product0 - bvirt;
       around = Q - avirt; hh = around + bround;
-      if (hh != 0) {
-        h[hindex++] = hh;
-      }
+      //-------------------------------------------------------
+      if (hh != 0) { h[hindex++] = hh; }
+      //  Fast_Two_Sum(product1, sum, Q, hh)
       Q = (product1 + sum); bvirt = Q - product1;
       hh = sum - bvirt;
-      if (hh != 0) {
-        h[hindex++] = hh;
-      }
-    }
-    if ((Q != 0.0) || (hindex == 0)) {
-      h[hindex++] = Q;
-    }
-    return hindex;
-  }
+      //------------------------------------------------------
+      if (hh != 0) { h[hindex++] = hh; } }
+    if ((Q != 0.0) || (hindex == 0)) { h[hindex++] = Q; }
+    return hindex; }
 
   //--------------------------------------------------------------------
-  public static final int compress (final int elen,
-                                    final double[] e,
-                                    final double[] h) {
-    double Q, q;
-    double Qnew;
-    int eindex, hindex;
-    double bvirt;
-    double enow, hnow;
-    int top, bottom;
-
-    bottom = elen - 1;
-    Q = e[bottom];
-    for (eindex = elen - 2; eindex >= 0; eindex--) {
-      enow = e[eindex];
-      Qnew = (Q + enow); bvirt = Qnew - Q; q = enow - bvirt;
-      if (q != 0) {
-        h[bottom--] = Qnew;
-        Q = q;
-      }
-      else {
-        Q = Qnew;
-      }
-    }
-    top = 0;
-    for (hindex = bottom + 1; hindex < elen; hindex++) {
-      hnow = h[hindex];
-      Qnew = (hnow + Q); bvirt = Qnew - hnow; q = Q - bvirt;
-      if (q != 0) {
-        h[top++] = q;
-      }
-      Q = Qnew;
-    }
-    h[top] = Q;
-    return top + 1;
-  }
+//  public static final int compress (final int elen,
+//                                    final double[] e,
+//                                    final double[] h) {
+//    double Q, q;
+//    double Qnew;
+//    int eindex, hindex;
+//    double bvirt;
+//    double enow, hnow;
+//    int top, bottom;
+//
+//    bottom = elen - 1;
+//    Q = e[bottom];
+//    for (eindex = elen - 2; eindex >= 0; eindex--) {
+//      enow = e[eindex];
+//      Qnew = (Q + enow); bvirt = Qnew - Q; q = enow - bvirt;
+//      if (q != 0) {
+//        h[bottom--] = Qnew;
+//        Q = q;
+//      }
+//      else {
+//        Q = Qnew;
+//      }
+//    }
+//    top = 0;
+//    for (hindex = bottom + 1; hindex < elen; hindex++) {
+//      hnow = h[hindex];
+//      Qnew = (hnow + Q); bvirt = Qnew - hnow; q = Q - bvirt;
+//      if (q != 0) {
+//        h[top++] = q;
+//      }
+//      Q = Qnew;
+//    }
+//    h[top] = Q;
+//    return top + 1;
+//  }
 
   //--------------------------------------------------------------------
+  // TODO: would a more accurate sum help anything?
+  /** Produce a one-word estimate of an expansion's value.
+  * <br>
+  * See either version of my paper for details.
+  */
 
   public static final double estimate (final int elen,
                                        final double[] e) {
-    double Q;
-    int eindex;
-
-    Q = e[0];
-    for (eindex = 1; eindex < elen; eindex++) {
-      Q += e[eindex];
-    }
-    return Q;
-  }
+    double Q = e[0];
+    for (int eindex = 1; eindex < elen; eindex++) {
+      Q += e[eindex]; }
+    return Q; }
 
   //--------------------------------------------------------------------
   // disable construction
   //--------------------------------------------------------------------
 
-  private Expansion () {
-    throw new UnsupportedOperationException();
-  }
+  private Expansion () { throw new UnsupportedOperationException(); }
 
   //-------------------------------------------------------------------
 } // end class
