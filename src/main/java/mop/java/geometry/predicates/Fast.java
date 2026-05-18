@@ -6,7 +6,8 @@ package mop.java.geometry.predicates;
 // split into Expansion manipulation and fast, slow, exact, adaptive
 // algorithm classes
 
-/**
+/** Approximate predicates, nonrobust.
+ * <p>>
  * Adaptive precision floating point based on:
  * <ul>
  * <li><a href="https://www.cs.cmu.edu/~quake/robust.html">

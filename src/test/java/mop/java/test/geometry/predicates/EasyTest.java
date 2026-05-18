@@ -24,15 +24,14 @@ public final class EasyTest {
 
   private static final List<Predicate> makePredicates () {
     final Predicate adapt = new Adapt();
-    final Predicate def = new Default();
     final Predicate exact = new Exact();
     final Predicate fast = new Fast();
     final Predicate slow = new Slow();
-    return List.of(adapt,def,fast,exact,slow); }
+    return List.of(adapt,fast,exact,slow); }
 
   // ground truth predicate.
   // TODO: may be different for different problems
-  private static final Predicate truth () { return new Default(); }
+  private static final Predicate truth () { return new Adapt(); }
 
   //--------------------------------------------------------------
 
@@ -63,11 +62,10 @@ public final class EasyTest {
     orient2D(makePredicates(), p1, p0, p2);
     orient2D(makePredicates(), p0, p0, p0);
     // TODO: Slow returns -1, not 0
-    orient2D(List.of(new Adapt(),new Default(),new Fast(),new Exact()),
+    orient2D(List.of(new Adapt(),new Fast(),new Exact()),
              p0, p0, p2);
     // TODO: Exact, Slow are wrong: 2*signed area = 1.0
-    orient2D(List.of(new Adapt(),new Default(),new Fast()),
-             p1, p0, p3); }
+    orient2D(List.of(new Adapt(),new Fast()),p1, p0, p3); }
 
   //--------------------------------------------------------------
 
