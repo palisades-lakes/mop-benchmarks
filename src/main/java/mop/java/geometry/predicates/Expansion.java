@@ -416,13 +416,15 @@ public final class Expansion {
    *  if e is strongly nonoverlapping, h will be also.)
    *  Does NOT maintain the nonoverlapping or nonadjacent
    *  properties.
+   *  <br>
+   *  Was: fast_expansion_sum_zeroelim
    */
 
-  public static final int fast_expansion_sum_zeroelim (final int elen,
-                                                       final double[] e,
-                                                       final int flen,
-                                                       final double[] f,
-                                                       final double[] h) {
+  public static final int sum (final int elen,
+                               final double[] e,
+                               final int flen,
+                               final double[] f,
+                               final double[] h) {
     assert elen <= e.length;
     assert flen <= f.length;
 //    System.out.println("e="+ Arrays.toString(e));
@@ -480,6 +482,7 @@ public final class Expansion {
 //          System.out.println("enow="+ Double.toHexString(enow));
 //          System.out.println("e="+ Arrays.toString(e));
 //          System.out.println("eindex="+ eindex);
+          // original code goes of the end of e[]
           eindex++;
           if (eindex<elen) { enow = e[eindex]; } }
         else {
@@ -491,6 +494,7 @@ public final class Expansion {
           final double around = Q - avirt;
           hh = around + bround;
           //-------------
+          // original code goes of the end of f[]
           findex++;
           if (findex>flen) { fnow = f[findex]; } }
         Q = Qnew;
@@ -505,6 +509,7 @@ public final class Expansion {
       final double around = Q - avirt;
       hh = around + bround;
       //---------------------
+      // original code goes of the end of e[]
       eindex++;
       if (eindex<elen) { enow = e[eindex]; }
       Q = Qnew;
@@ -519,6 +524,7 @@ public final class Expansion {
       final double around = Q - avirt;
       hh = around + bround;
       //---------------------------
+      // original code goes of the end of f[]
       findex++;
       if (findex<flen) { fnow = f[findex]; }
       Q = Qnew;
@@ -708,10 +714,10 @@ public final class Expansion {
    *  properties, so will h.)
    */
 
-  public static final int scale_expansion_zeroelim (final int elen,
-                                                    final double[] e,
-                                                    final double b,
-                                                    final double[] h) {
+  public static final int scale (final int elen,
+                                 final double[] e,
+                                 final double b,
+                                 final double[] h) {
     double Q, sum;
     double hh;
     double product1;

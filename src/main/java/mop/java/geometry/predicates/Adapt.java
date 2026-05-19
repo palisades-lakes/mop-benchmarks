@@ -8,8 +8,9 @@ package mop.java.geometry.predicates;
 
 import static mop.java.geometry.predicates.Expansion.*;
 
-/**
- * Adaptive exact tests.  Robust.
+/** Adaptive 'exact' tests. Robust.
+ * 'Exact' seems to mean boolean predicate, that is, the sign of the
+ * returned value is correct, not its specific value.
  * <br>
  * Adaptive precision floating point based on:
  * <ul>
@@ -87,7 +88,7 @@ public final class Adapt implements Predicate {
 
   //--------------------------------------------------------------------
 
-  public final boolean isExact () { return true; }
+  public final boolean isExact () { return false; }
 
   //--------------------------------------------------------------------
   // orient2d
@@ -188,7 +189,7 @@ public final class Adapt implements Predicate {
 
     det = estimate(4, B);
     errbound = ccwerrboundB * detsum;
-    if ((det >= errbound) || (-det >= errbound)) {
+    if (Math.abs(det) >= errbound) {
       return det;
     }
 
@@ -223,7 +224,7 @@ public final class Adapt implements Predicate {
                                                              : -(det));
     det += (acx * bcytail + bcy * acxtail)
       - (acy * bcxtail + bcx * acytail);
-    if ((det >= errbound) || (-det >= errbound)) {
+    if (Math.abs(det) >= errbound) {
       return det;
     }
 
@@ -278,7 +279,7 @@ public final class Adapt implements Predicate {
     around = _j - avirt;
     u[2] = around + bround;
     u[3] = u3;
-    C1length = fast_expansion_sum_zeroelim(4, B, 4, u, C1);
+    C1length = sum(4, B, 4, u, C1);
 
     s1 = (acx * bcytail);
     c = (SPLITTER * acx);
@@ -331,7 +332,7 @@ public final class Adapt implements Predicate {
     around = _j - avirt;
     u[2] = around + bround;
     u[3] = u3;
-    C2length = fast_expansion_sum_zeroelim(C1length, C1, 4, u, C2);
+    C2length = sum(C1length, C1, 4, u, C2);
 
     s1 = (acxtail * bcytail);
     c = (SPLITTER * acxtail);
@@ -384,7 +385,7 @@ public final class Adapt implements Predicate {
     around = _j - avirt;
     u[2] = around + bround;
     u[3] = u3;
-    Dlength = fast_expansion_sum_zeroelim(C2length, C2, 4, u, D);
+    Dlength = sum(C2length, C2, 4, u, D);
 
     return (D[Dlength - 1]);
   }
@@ -399,40 +400,23 @@ public final class Adapt implements Predicate {
   public final double orient2d (final double[] pa,
                                 final double[] pb,
                                 final double[] pc) {
-    double detleft, detright, det;
-    double detsum, errbound;
 
-    detleft = (pa[0] - pc[0]) * (pb[1] - pc[1]);
-    detright = (pa[1] - pc[1]) * (pb[0] - pc[0]);
-    det = detleft - detright;
-
+    final double detleft = (pa[0] - pc[0]) * (pb[1] - pc[1]);
+    final double detright = (pa[1] - pc[1]) * (pb[0] - pc[0]);
+    final double det = detleft - detright;
+    final double detsum;
     if (detleft > 0.0) {
-      if (detright <= 0.0) {
-        return det;
-      }
-      else {
-        detsum = detleft + detright;
-      }
-    }
+      if (detright <= 0.0) { return det; }
+      else { detsum = detleft + detright; } }
     else if (detleft < 0.0) {
-      if (detright >= 0.0) {
-        return det;
-      }
-      else {
-        detsum = -detleft - detright;
-      }
-    }
-    else {
-      return det;
-    }
+      if (detright >= 0.0) { return det; }
+      else { detsum = - (detleft + detright); } }
+    else { return det; }
 
-    errbound = ccwerrboundA * detsum;
-    if ((det >= errbound) || (-det >= errbound)) {
-      return det;
-    }
+    final double errbound = ccwerrboundA * detsum;
+    if (Math.abs(det) >= errbound) { return det; }
 
-    return orient2d(pa, pb, pc, detsum);
-  }
+    return orient2d(pa, pb, pc, detsum); }
 
   //--------------------------------------------------------------------
   // orient3d
@@ -565,7 +549,7 @@ public final class Adapt implements Predicate {
     around = _j - avirt;
     bc[2] = around + bround;
     bc[3] = bc3;
-    alen = scale_expansion_zeroelim(4, bc, adz, adet);
+    alen = scale(4, bc, adz, adet);
 
     cdxady1 = (cdx * ady);
     c = (SPLITTER * cdx);
@@ -618,7 +602,7 @@ public final class Adapt implements Predicate {
     around = _j - avirt;
     ca[2] = around + bround;
     ca[3] = ca3;
-    blen = scale_expansion_zeroelim(4, ca, bdz, bdet);
+    blen = scale(4, ca, bdz, bdet);
 
     adxbdy1 = (adx * bdy);
     c = (SPLITTER * adx);
@@ -671,15 +655,15 @@ public final class Adapt implements Predicate {
     around = _j - avirt;
     ab[2] = around + bround;
     ab[3] = ab3;
-    clen = scale_expansion_zeroelim(4, ab, cdz, cdet);
+    clen = scale(4, ab, cdz, cdet);
 
-    ablen = fast_expansion_sum_zeroelim(alen, adet, blen, bdet, abdet);
+    ablen = sum(alen, adet, blen, bdet, abdet);
     finlength =
-      fast_expansion_sum_zeroelim(ablen, abdet, clen, cdet, fin1);
+      sum(ablen, abdet, clen, cdet, fin1);
 
     det = estimate(finlength, fin1);
     errbound = o3derrboundB * permanent;
-    if ((det >= errbound) || (-det >= errbound)) {
+    if (Math.abs(det) >= errbound) {
       return det;
     }
 
@@ -748,7 +732,7 @@ public final class Adapt implements Predicate {
       + (cdz * ((adx * bdytail + bdy * adxtail)
       - (ady * bdxtail + bdx * adytail))
       + cdztail * (adx * bdy - ady * bdx));
-    if ((det >= errbound) || (-det >= errbound)) {
+    if (Math.abs(det) >= errbound) {
       return det;
     }
 
@@ -1309,58 +1293,58 @@ public final class Adapt implements Predicate {
     }
 
     bctlen =
-      fast_expansion_sum_zeroelim(bt_clen, bt_c, ct_blen, ct_b, bct);
-    wlength = scale_expansion_zeroelim(bctlen, bct, adz, w);
+      sum(bt_clen, bt_c, ct_blen, ct_b, bct);
+    wlength = scale(bctlen, bct, adz, w);
     finlength =
-      fast_expansion_sum_zeroelim(finlength, finnow, wlength, w,
-                                  finother);
+      sum(finlength, finnow, wlength, w,
+          finother);
     finswap = finnow;
     finnow = finother;
     finother = finswap;
 
     catlen =
-      fast_expansion_sum_zeroelim(ct_alen, ct_a, at_clen, at_c, cat);
-    wlength = scale_expansion_zeroelim(catlen, cat, bdz, w);
+      sum(ct_alen, ct_a, at_clen, at_c, cat);
+    wlength = scale(catlen, cat, bdz, w);
     finlength =
-      fast_expansion_sum_zeroelim(finlength, finnow, wlength, w,
-                                  finother);
+      sum(finlength, finnow, wlength, w,
+          finother);
     finswap = finnow;
     finnow = finother;
     finother = finswap;
 
     abtlen =
-      fast_expansion_sum_zeroelim(at_blen, at_b, bt_alen, bt_a, abt);
-    wlength = scale_expansion_zeroelim(abtlen, abt, cdz, w);
+      sum(at_blen, at_b, bt_alen, bt_a, abt);
+    wlength = scale(abtlen, abt, cdz, w);
     finlength =
-      fast_expansion_sum_zeroelim(finlength, finnow, wlength, w,
-                                  finother);
+      sum(finlength, finnow, wlength, w,
+          finother);
     finswap = finnow;
     finnow = finother;
     finother = finswap;
 
     if (adztail != 0.0) {
-      vlength = scale_expansion_zeroelim(4, bc, adztail, v);
+      vlength = scale(4, bc, adztail, v);
       finlength =
-        fast_expansion_sum_zeroelim(finlength, finnow, vlength, v,
-                                    finother);
+        sum(finlength, finnow, vlength, v,
+            finother);
       finswap = finnow;
       finnow = finother;
       finother = finswap;
     }
     if (bdztail != 0.0) {
-      vlength = scale_expansion_zeroelim(4, ca, bdztail, v);
+      vlength = scale(4, ca, bdztail, v);
       finlength =
-        fast_expansion_sum_zeroelim(finlength, finnow, vlength, v,
-                                    finother);
+        sum(finlength, finnow, vlength, v,
+            finother);
       finswap = finnow;
       finnow = finother;
       finother = finswap;
     }
     if (cdztail != 0.0) {
-      vlength = scale_expansion_zeroelim(4, ab, cdztail, v);
+      vlength = scale(4, ab, cdztail, v);
       finlength =
-        fast_expansion_sum_zeroelim(finlength, finnow, vlength, v,
-                                    finother);
+        sum(finlength, finnow, vlength, v,
+            finother);
       finswap = finnow;
       finnow = finother;
       finother = finswap;
@@ -1413,8 +1397,8 @@ public final class Adapt implements Predicate {
         bvirt = u3 - _j;
         u[2] = _k - bvirt;
         u[3] = u3;
-        finlength = fast_expansion_sum_zeroelim(finlength, finnow, 4, u,
-                                                finother);
+        finlength = sum(finlength, finnow, 4, u,
+                        finother);
         finswap = finnow;
         finnow = finother;
         finother = finswap;
@@ -1452,8 +1436,8 @@ public final class Adapt implements Predicate {
           u[2] = _k - bvirt;
           u[3] = u3;
           finlength =
-            fast_expansion_sum_zeroelim(finlength, finnow, 4, u,
-                                        finother);
+            sum(finlength, finnow, 4, u,
+                finother);
           finswap = finnow;
           finnow = finother;
           finother = finswap;
@@ -1506,8 +1490,8 @@ public final class Adapt implements Predicate {
         bvirt = u3 - _j;
         u[2] = _k - bvirt;
         u[3] = u3;
-        finlength = fast_expansion_sum_zeroelim(finlength, finnow, 4, u,
-                                                finother);
+        finlength = sum(finlength, finnow, 4, u,
+                        finother);
         finswap = finnow;
         finnow = finother;
         finother = finswap;
@@ -1545,8 +1529,8 @@ public final class Adapt implements Predicate {
           u[2] = _k - bvirt;
           u[3] = u3;
           finlength =
-            fast_expansion_sum_zeroelim(finlength, finnow, 4, u,
-                                        finother);
+            sum(finlength, finnow, 4, u,
+                finother);
           finswap = finnow;
           finnow = finother;
           finother = finswap;
@@ -1600,8 +1584,8 @@ public final class Adapt implements Predicate {
         bvirt = u3 - _j;
         u[2] = _k - bvirt;
         u[3] = u3;
-        finlength = fast_expansion_sum_zeroelim(finlength, finnow, 4, u,
-                                                finother);
+        finlength = sum(finlength, finnow, 4, u,
+                        finother);
         finswap = finnow;
         finnow = finother;
         finother = finswap;
@@ -1639,8 +1623,8 @@ public final class Adapt implements Predicate {
           u[2] = _k - bvirt;
           u[3] = u3;
           finlength =
-            fast_expansion_sum_zeroelim(finlength, finnow, 4, u,
-                                        finother);
+            sum(finlength, finnow, 4, u,
+                finother);
           finswap = finnow;
           finnow = finother;
           finother = finswap;
@@ -1693,8 +1677,8 @@ public final class Adapt implements Predicate {
         bvirt = u3 - _j;
         u[2] = _k - bvirt;
         u[3] = u3;
-        finlength = fast_expansion_sum_zeroelim(finlength, finnow, 4, u,
-                                                finother);
+        finlength = sum(finlength, finnow, 4, u,
+                        finother);
         finswap = finnow;
         finnow = finother;
         finother = finswap;
@@ -1732,8 +1716,8 @@ public final class Adapt implements Predicate {
           u[2] = _k - bvirt;
           u[3] = u3;
           finlength =
-            fast_expansion_sum_zeroelim(finlength, finnow, 4, u,
-                                        finother);
+            sum(finlength, finnow, 4, u,
+                finother);
           finswap = finnow;
           finnow = finother;
           finother = finswap;
@@ -1787,8 +1771,8 @@ public final class Adapt implements Predicate {
         bvirt = u3 - _j;
         u[2] = _k - bvirt;
         u[3] = u3;
-        finlength = fast_expansion_sum_zeroelim(finlength, finnow, 4, u,
-                                                finother);
+        finlength = sum(finlength, finnow, 4, u,
+                        finother);
         finswap = finnow;
         finnow = finother;
         finother = finswap;
@@ -1826,8 +1810,8 @@ public final class Adapt implements Predicate {
           u[2] = _k - bvirt;
           u[3] = u3;
           finlength =
-            fast_expansion_sum_zeroelim(finlength, finnow, 4, u,
-                                        finother);
+            sum(finlength, finnow, 4, u,
+                finother);
           finswap = finnow;
           finnow = finother;
           finother = finswap;
@@ -1880,8 +1864,8 @@ public final class Adapt implements Predicate {
         bvirt = u3 - _j;
         u[2] = _k - bvirt;
         u[3] = u3;
-        finlength = fast_expansion_sum_zeroelim(finlength, finnow, 4, u,
-                                                finother);
+        finlength = sum(finlength, finnow, 4, u,
+                        finother);
         finswap = finnow;
         finnow = finother;
         finother = finswap;
@@ -1919,8 +1903,8 @@ public final class Adapt implements Predicate {
           u[2] = _k - bvirt;
           u[3] = u3;
           finlength =
-            fast_expansion_sum_zeroelim(finlength, finnow, 4, u,
-                                        finother);
+            sum(finlength, finnow, 4, u,
+                finother);
           finswap = finnow;
           finnow = finother;
           finother = finswap;
@@ -1929,28 +1913,28 @@ public final class Adapt implements Predicate {
     }
 
     if (adztail != 0.0) {
-      wlength = scale_expansion_zeroelim(bctlen, bct, adztail, w);
+      wlength = scale(bctlen, bct, adztail, w);
       finlength =
-        fast_expansion_sum_zeroelim(finlength, finnow, wlength, w,
-                                    finother);
+        sum(finlength, finnow, wlength, w,
+            finother);
       finswap = finnow;
       finnow = finother;
       finother = finswap;
     }
     if (bdztail != 0.0) {
-      wlength = scale_expansion_zeroelim(catlen, cat, bdztail, w);
+      wlength = scale(catlen, cat, bdztail, w);
       finlength =
-        fast_expansion_sum_zeroelim(finlength, finnow, wlength, w,
-                                    finother);
+        sum(finlength, finnow, wlength, w,
+            finother);
       finswap = finnow;
       finnow = finother;
       finother = finswap;
     }
     if (cdztail != 0.0) {
-      wlength = scale_expansion_zeroelim(abtlen, abt, cdztail, w);
+      wlength = scale(abtlen, abt, cdztail, w);
       finlength =
-        fast_expansion_sum_zeroelim(finlength, finnow, wlength, w,
-                                    finother);
+        sum(finlength, finnow, wlength, w,
+            finother);
       //finswap = finnow;
       finnow = finother;
       // TODO: unused?
@@ -2174,12 +2158,12 @@ public final class Adapt implements Predicate {
     around = _j - avirt;
     bc[2] = around + bround;
     bc[3] = bc3;
-    axbclen = scale_expansion_zeroelim(4, bc, adx, axbc);
-    axxbclen = scale_expansion_zeroelim(axbclen, axbc, adx, axxbc);
-    aybclen = scale_expansion_zeroelim(4, bc, ady, aybc);
-    ayybclen = scale_expansion_zeroelim(aybclen, aybc, ady, ayybc);
-    alen = fast_expansion_sum_zeroelim(axxbclen, axxbc, ayybclen, ayybc,
-                                       adet);
+    axbclen = scale(4, bc, adx, axbc);
+    axxbclen = scale(axbclen, axbc, adx, axxbc);
+    aybclen = scale(4, bc, ady, aybc);
+    ayybclen = scale(aybclen, aybc, ady, ayybc);
+    alen = sum(axxbclen, axxbc, ayybclen, ayybc,
+               adet);
 
     cdxady1 = (cdx * ady);
     c = (SPLITTER * cdx);
@@ -2232,12 +2216,12 @@ public final class Adapt implements Predicate {
     around = _j - avirt;
     ca[2] = around + bround;
     ca[3] = ca3;
-    bxcalen = scale_expansion_zeroelim(4, ca, bdx, bxca);
-    bxxcalen = scale_expansion_zeroelim(bxcalen, bxca, bdx, bxxca);
-    bycalen = scale_expansion_zeroelim(4, ca, bdy, byca);
-    byycalen = scale_expansion_zeroelim(bycalen, byca, bdy, byyca);
-    blen = fast_expansion_sum_zeroelim(bxxcalen, bxxca, byycalen, byyca,
-                                       bdet);
+    bxcalen = scale(4, ca, bdx, bxca);
+    bxxcalen = scale(bxcalen, bxca, bdx, bxxca);
+    bycalen = scale(4, ca, bdy, byca);
+    byycalen = scale(bycalen, byca, bdy, byyca);
+    blen = sum(bxxcalen, bxxca, byycalen, byyca,
+               bdet);
 
     adxbdy1 = (adx * bdy);
     c = (SPLITTER * adx);
@@ -2290,20 +2274,20 @@ public final class Adapt implements Predicate {
     around = _j - avirt;
     ab[2] = around + bround;
     ab[3] = ab3;
-    cxablen = scale_expansion_zeroelim(4, ab, cdx, cxab);
-    cxxablen = scale_expansion_zeroelim(cxablen, cxab, cdx, cxxab);
-    cyablen = scale_expansion_zeroelim(4, ab, cdy, cyab);
-    cyyablen = scale_expansion_zeroelim(cyablen, cyab, cdy, cyyab);
-    clen = fast_expansion_sum_zeroelim(cxxablen, cxxab, cyyablen, cyyab,
-                                       cdet);
+    cxablen = scale(4, ab, cdx, cxab);
+    cxxablen = scale(cxablen, cxab, cdx, cxxab);
+    cyablen = scale(4, ab, cdy, cyab);
+    cyyablen = scale(cyablen, cyab, cdy, cyyab);
+    clen = sum(cxxablen, cxxab, cyyablen, cyyab,
+               cdet);
 
-    ablen = fast_expansion_sum_zeroelim(alen, adet, blen, bdet, abdet);
+    ablen = sum(alen, adet, blen, bdet, abdet);
     finlength =
-      fast_expansion_sum_zeroelim(ablen, abdet, clen, cdet, fin1);
+      sum(ablen, abdet, clen, cdet, fin1);
 
     det = estimate(finlength, fin1);
     errbound = iccerrboundB * permanent;
-    if ((det >= errbound) || (-det >= errbound)) {
+    if (Math.abs(det) >= errbound) {
       return det;
     }
 
@@ -2355,7 +2339,7 @@ public final class Adapt implements Predicate {
       + ((cdx * cdx + cdy * cdy) * ((adx * bdytail + bdy * adxtail)
       - (ady * bdxtail + bdx * adytail))
       + 2.0 * (cdx * cdxtail + cdy * cdytail) * (adx * bdy - ady * bdx));
-    if ((det >= errbound) || (-det >= errbound)) {
+    if (Math.abs(det) >= errbound) {
       return det;
     }
 
@@ -2496,157 +2480,157 @@ public final class Adapt implements Predicate {
     }
 
     if (adxtail != 0.0) {
-      axtbclen = scale_expansion_zeroelim(4, bc, adxtail, axtbc);
-      temp16alen = scale_expansion_zeroelim(axtbclen, axtbc, 2.0 * adx,
-                                            temp16a);
+      axtbclen = scale(4, bc, adxtail, axtbc);
+      temp16alen = scale(axtbclen, axtbc, 2.0 * adx,
+                         temp16a);
 
-      axtcclen = scale_expansion_zeroelim(4, cc, adxtail, axtcc);
+      axtcclen = scale(4, cc, adxtail, axtcc);
       temp16blen =
-        scale_expansion_zeroelim(axtcclen, axtcc, bdy, temp16b);
+        scale(axtcclen, axtcc, bdy, temp16b);
 
-      axtbblen = scale_expansion_zeroelim(4, bb, adxtail, axtbb);
+      axtbblen = scale(4, bb, adxtail, axtbb);
       temp16clen =
-        scale_expansion_zeroelim(axtbblen, axtbb, -cdy, temp16c);
+        scale(axtbblen, axtbb, -cdy, temp16c);
 
-      temp32alen = fast_expansion_sum_zeroelim(temp16alen, temp16a,
-                                               temp16blen, temp16b,
-                                               temp32a);
-      temp48len = fast_expansion_sum_zeroelim(temp16clen, temp16c,
-                                              temp32alen, temp32a,
-                                              temp48);
+      temp32alen = sum(temp16alen, temp16a,
+                       temp16blen, temp16b,
+                       temp32a);
+      temp48len = sum(temp16clen, temp16c,
+                      temp32alen, temp32a,
+                      temp48);
       finlength =
-        fast_expansion_sum_zeroelim(finlength, finnow, temp48len,
-                                    temp48, finother);
+        sum(finlength, finnow, temp48len,
+            temp48, finother);
       finswap = finnow;
       finnow = finother;
       finother = finswap;
     }
     if (adytail != 0.0) {
-      aytbclen = scale_expansion_zeroelim(4, bc, adytail, aytbc);
-      temp16alen = scale_expansion_zeroelim(aytbclen, aytbc, 2.0 * ady,
-                                            temp16a);
+      aytbclen = scale(4, bc, adytail, aytbc);
+      temp16alen = scale(aytbclen, aytbc, 2.0 * ady,
+                         temp16a);
 
-      aytbblen = scale_expansion_zeroelim(4, bb, adytail, aytbb);
+      aytbblen = scale(4, bb, adytail, aytbb);
       temp16blen =
-        scale_expansion_zeroelim(aytbblen, aytbb, cdx, temp16b);
+        scale(aytbblen, aytbb, cdx, temp16b);
 
-      aytcclen = scale_expansion_zeroelim(4, cc, adytail, aytcc);
+      aytcclen = scale(4, cc, adytail, aytcc);
       temp16clen =
-        scale_expansion_zeroelim(aytcclen, aytcc, -bdx, temp16c);
+        scale(aytcclen, aytcc, -bdx, temp16c);
 
-      temp32alen = fast_expansion_sum_zeroelim(temp16alen, temp16a,
-                                               temp16blen, temp16b,
-                                               temp32a);
-      temp48len = fast_expansion_sum_zeroelim(temp16clen, temp16c,
-                                              temp32alen, temp32a,
-                                              temp48);
+      temp32alen = sum(temp16alen, temp16a,
+                       temp16blen, temp16b,
+                       temp32a);
+      temp48len = sum(temp16clen, temp16c,
+                      temp32alen, temp32a,
+                      temp48);
       finlength =
-        fast_expansion_sum_zeroelim(finlength, finnow, temp48len,
-                                    temp48, finother);
+        sum(finlength, finnow, temp48len,
+            temp48, finother);
       finswap = finnow;
       finnow = finother;
       finother = finswap;
     }
     if (bdxtail != 0.0) {
-      bxtcalen = scale_expansion_zeroelim(4, ca, bdxtail, bxtca);
-      temp16alen = scale_expansion_zeroelim(bxtcalen, bxtca, 2.0 * bdx,
-                                            temp16a);
+      bxtcalen = scale(4, ca, bdxtail, bxtca);
+      temp16alen = scale(bxtcalen, bxtca, 2.0 * bdx,
+                         temp16a);
 
-      bxtaalen = scale_expansion_zeroelim(4, aa, bdxtail, bxtaa);
+      bxtaalen = scale(4, aa, bdxtail, bxtaa);
       temp16blen =
-        scale_expansion_zeroelim(bxtaalen, bxtaa, cdy, temp16b);
+        scale(bxtaalen, bxtaa, cdy, temp16b);
 
-      bxtcclen = scale_expansion_zeroelim(4, cc, bdxtail, bxtcc);
+      bxtcclen = scale(4, cc, bdxtail, bxtcc);
       temp16clen =
-        scale_expansion_zeroelim(bxtcclen, bxtcc, -ady, temp16c);
+        scale(bxtcclen, bxtcc, -ady, temp16c);
 
-      temp32alen = fast_expansion_sum_zeroelim(temp16alen, temp16a,
-                                               temp16blen, temp16b,
-                                               temp32a);
-      temp48len = fast_expansion_sum_zeroelim(temp16clen, temp16c,
-                                              temp32alen, temp32a,
-                                              temp48);
+      temp32alen = sum(temp16alen, temp16a,
+                       temp16blen, temp16b,
+                       temp32a);
+      temp48len = sum(temp16clen, temp16c,
+                      temp32alen, temp32a,
+                      temp48);
       finlength =
-        fast_expansion_sum_zeroelim(finlength, finnow, temp48len,
-                                    temp48, finother);
+        sum(finlength, finnow, temp48len,
+            temp48, finother);
       finswap = finnow;
       finnow = finother;
       finother = finswap;
     }
     if (bdytail != 0.0) {
-      bytcalen = scale_expansion_zeroelim(4, ca, bdytail, bytca);
-      temp16alen = scale_expansion_zeroelim(bytcalen, bytca, 2.0 * bdy,
-                                            temp16a);
+      bytcalen = scale(4, ca, bdytail, bytca);
+      temp16alen = scale(bytcalen, bytca, 2.0 * bdy,
+                         temp16a);
 
-      bytcclen = scale_expansion_zeroelim(4, cc, bdytail, bytcc);
+      bytcclen = scale(4, cc, bdytail, bytcc);
       temp16blen =
-        scale_expansion_zeroelim(bytcclen, bytcc, adx, temp16b);
+        scale(bytcclen, bytcc, adx, temp16b);
 
-      bytaalen = scale_expansion_zeroelim(4, aa, bdytail, bytaa);
+      bytaalen = scale(4, aa, bdytail, bytaa);
       temp16clen =
-        scale_expansion_zeroelim(bytaalen, bytaa, -cdx, temp16c);
+        scale(bytaalen, bytaa, -cdx, temp16c);
 
-      temp32alen = fast_expansion_sum_zeroelim(temp16alen, temp16a,
-                                               temp16blen, temp16b,
-                                               temp32a);
-      temp48len = fast_expansion_sum_zeroelim(temp16clen, temp16c,
-                                              temp32alen, temp32a,
-                                              temp48);
+      temp32alen = sum(temp16alen, temp16a,
+                       temp16blen, temp16b,
+                       temp32a);
+      temp48len = sum(temp16clen, temp16c,
+                      temp32alen, temp32a,
+                      temp48);
       finlength =
-        fast_expansion_sum_zeroelim(finlength, finnow, temp48len,
-                                    temp48, finother);
+        sum(finlength, finnow, temp48len,
+            temp48, finother);
       finswap = finnow;
       finnow = finother;
       finother = finswap;
     }
     if (cdxtail != 0.0) {
-      cxtablen = scale_expansion_zeroelim(4, ab, cdxtail, cxtab);
-      temp16alen = scale_expansion_zeroelim(cxtablen, cxtab, 2.0 * cdx,
-                                            temp16a);
+      cxtablen = scale(4, ab, cdxtail, cxtab);
+      temp16alen = scale(cxtablen, cxtab, 2.0 * cdx,
+                         temp16a);
 
-      cxtbblen = scale_expansion_zeroelim(4, bb, cdxtail, cxtbb);
+      cxtbblen = scale(4, bb, cdxtail, cxtbb);
       temp16blen =
-        scale_expansion_zeroelim(cxtbblen, cxtbb, ady, temp16b);
+        scale(cxtbblen, cxtbb, ady, temp16b);
 
-      cxtaalen = scale_expansion_zeroelim(4, aa, cdxtail, cxtaa);
+      cxtaalen = scale(4, aa, cdxtail, cxtaa);
       temp16clen =
-        scale_expansion_zeroelim(cxtaalen, cxtaa, -bdy, temp16c);
+        scale(cxtaalen, cxtaa, -bdy, temp16c);
 
-      temp32alen = fast_expansion_sum_zeroelim(temp16alen, temp16a,
-                                               temp16blen, temp16b,
-                                               temp32a);
-      temp48len = fast_expansion_sum_zeroelim(temp16clen, temp16c,
-                                              temp32alen, temp32a,
-                                              temp48);
+      temp32alen = sum(temp16alen, temp16a,
+                       temp16blen, temp16b,
+                       temp32a);
+      temp48len = sum(temp16clen, temp16c,
+                      temp32alen, temp32a,
+                      temp48);
       finlength =
-        fast_expansion_sum_zeroelim(finlength, finnow, temp48len,
-                                    temp48, finother);
+        sum(finlength, finnow, temp48len,
+            temp48, finother);
       finswap = finnow;
       finnow = finother;
       finother = finswap;
     }
     if (cdytail != 0.0) {
-      cytablen = scale_expansion_zeroelim(4, ab, cdytail, cytab);
-      temp16alen = scale_expansion_zeroelim(cytablen, cytab, 2.0 * cdy,
-                                            temp16a);
+      cytablen = scale(4, ab, cdytail, cytab);
+      temp16alen = scale(cytablen, cytab, 2.0 * cdy,
+                         temp16a);
 
-      cytaalen = scale_expansion_zeroelim(4, aa, cdytail, cytaa);
+      cytaalen = scale(4, aa, cdytail, cytaa);
       temp16blen =
-        scale_expansion_zeroelim(cytaalen, cytaa, bdx, temp16b);
+        scale(cytaalen, cytaa, bdx, temp16b);
 
-      cytbblen = scale_expansion_zeroelim(4, bb, cdytail, cytbb);
+      cytbblen = scale(4, bb, cdytail, cytbb);
       temp16clen =
-        scale_expansion_zeroelim(cytbblen, cytbb, -adx, temp16c);
+        scale(cytbblen, cytbb, -adx, temp16c);
 
-      temp32alen = fast_expansion_sum_zeroelim(temp16alen, temp16a,
-                                               temp16blen, temp16b,
-                                               temp32a);
-      temp48len = fast_expansion_sum_zeroelim(temp16clen, temp16c,
-                                              temp32alen, temp32a,
-                                              temp48);
+      temp32alen = sum(temp16alen, temp16a,
+                       temp16blen, temp16b,
+                       temp32a);
+      temp48len = sum(temp16clen, temp16c,
+                      temp32alen, temp32a,
+                      temp48);
       finlength =
-        fast_expansion_sum_zeroelim(finlength, finnow, temp48len,
-                                    temp48, finother);
+        sum(finlength, finnow, temp48len,
+            temp48, finother);
       finswap = finnow;
       finnow = finother;
       finother = finswap;
@@ -2759,7 +2743,7 @@ public final class Adapt implements Predicate {
         around = _j - avirt;
         v[2] = around + bround;
         v[3] = v3;
-        bctlen = fast_expansion_sum_zeroelim(4, u, 4, v, bct);
+        bctlen = sum(4, u, 4, v, bct);
 
         ti1 = (bdxtail * cdytail);
         c = (SPLITTER * bdxtail);
@@ -2823,66 +2807,66 @@ public final class Adapt implements Predicate {
 // TODO: axtbclen not initialized!!!
       if (adxtail != 0.0) {
         temp16alen =
-          scale_expansion_zeroelim(axtbclen, axtbc, adxtail, temp16a);
+          scale(axtbclen, axtbc, adxtail, temp16a);
         axtbctlen =
-          scale_expansion_zeroelim(bctlen, bct, adxtail, axtbct);
+          scale(bctlen, bct, adxtail, axtbct);
         temp32alen =
-          scale_expansion_zeroelim(axtbctlen, axtbct, 2.0 * adx,
-                                   temp32a);
-        temp48len = fast_expansion_sum_zeroelim(temp16alen, temp16a,
-                                                temp32alen, temp32a,
-                                                temp48);
+          scale(axtbctlen, axtbct, 2.0 * adx,
+                temp32a);
+        temp48len = sum(temp16alen, temp16a,
+                        temp32alen, temp32a,
+                        temp48);
         finlength =
-          fast_expansion_sum_zeroelim(finlength, finnow, temp48len,
-                                      temp48, finother);
+          sum(finlength, finnow, temp48len,
+              temp48, finother);
         finswap = finnow;
         finnow = finother;
         finother = finswap;
         if (bdytail != 0.0) {
-          temp8len = scale_expansion_zeroelim(4, cc, adxtail, temp8);
+          temp8len = scale(4, cc, adxtail, temp8);
           temp16alen =
-            scale_expansion_zeroelim(temp8len, temp8, bdytail,
-                                     temp16a);
+            scale(temp8len, temp8, bdytail,
+                  temp16a);
           finlength =
-            fast_expansion_sum_zeroelim(finlength, finnow, temp16alen,
-                                        temp16a, finother);
+            sum(finlength, finnow, temp16alen,
+                temp16a, finother);
           finswap = finnow;
           finnow = finother;
           finother = finswap;
         }
         if (cdytail != 0.0) {
-          temp8len = scale_expansion_zeroelim(4, bb, -adxtail, temp8);
+          temp8len = scale(4, bb, -adxtail, temp8);
           temp16alen =
-            scale_expansion_zeroelim(temp8len, temp8, cdytail,
-                                     temp16a);
+            scale(temp8len, temp8, cdytail,
+                  temp16a);
           finlength =
-            fast_expansion_sum_zeroelim(finlength, finnow, temp16alen,
-                                        temp16a, finother);
+            sum(finlength, finnow, temp16alen,
+                temp16a, finother);
           finswap = finnow;
           finnow = finother;
           finother = finswap;
         }
 
         temp32alen =
-          scale_expansion_zeroelim(axtbctlen, axtbct, adxtail,
-                                   temp32a);
+          scale(axtbctlen, axtbct, adxtail,
+                temp32a);
         axtbcttlen =
-          scale_expansion_zeroelim(bcttlen, bctt, adxtail, axtbctt);
+          scale(bcttlen, bctt, adxtail, axtbctt);
         temp16alen =
-          scale_expansion_zeroelim(axtbcttlen, axtbctt, 2.0 * adx,
-                                   temp16a);
+          scale(axtbcttlen, axtbctt, 2.0 * adx,
+                temp16a);
         temp16blen =
-          scale_expansion_zeroelim(axtbcttlen, axtbctt, adxtail,
-                                   temp16b);
-        temp32blen = fast_expansion_sum_zeroelim(temp16alen, temp16a,
-                                                 temp16blen, temp16b,
-                                                 temp32b);
-        temp64len = fast_expansion_sum_zeroelim(temp32alen, temp32a,
-                                                temp32blen, temp32b,
-                                                temp64);
+          scale(axtbcttlen, axtbctt, adxtail,
+                temp16b);
+        temp32blen = sum(temp16alen, temp16a,
+                         temp16blen, temp16b,
+                         temp32b);
+        temp64len = sum(temp32alen, temp32a,
+                        temp32blen, temp32b,
+                        temp64);
         finlength =
-          fast_expansion_sum_zeroelim(finlength, finnow, temp64len,
-                                      temp64, finother);
+          sum(finlength, finnow, temp64len,
+              temp64, finother);
         finswap = finnow;
         finnow = finother;
         finother = finswap;
@@ -2890,42 +2874,42 @@ public final class Adapt implements Predicate {
 // TODO: aytbclen not initialized!!!
       if (adytail != 0.0) {
         temp16alen =
-          scale_expansion_zeroelim(aytbclen, aytbc, adytail, temp16a);
+          scale(aytbclen, aytbc, adytail, temp16a);
         aytbctlen =
-          scale_expansion_zeroelim(bctlen, bct, adytail, aytbct);
+          scale(bctlen, bct, adytail, aytbct);
         temp32alen =
-          scale_expansion_zeroelim(aytbctlen, aytbct, 2.0 * ady,
-                                   temp32a);
-        temp48len = fast_expansion_sum_zeroelim(temp16alen, temp16a,
-                                                temp32alen, temp32a,
-                                                temp48);
+          scale(aytbctlen, aytbct, 2.0 * ady,
+                temp32a);
+        temp48len = sum(temp16alen, temp16a,
+                        temp32alen, temp32a,
+                        temp48);
         finlength =
-          fast_expansion_sum_zeroelim(finlength, finnow, temp48len,
-                                      temp48, finother);
+          sum(finlength, finnow, temp48len,
+              temp48, finother);
         finswap = finnow;
         finnow = finother;
         finother = finswap;
 
         temp32alen =
-          scale_expansion_zeroelim(aytbctlen, aytbct, adytail,
-                                   temp32a);
+          scale(aytbctlen, aytbct, adytail,
+                temp32a);
         aytbcttlen =
-          scale_expansion_zeroelim(bcttlen, bctt, adytail, aytbctt);
+          scale(bcttlen, bctt, adytail, aytbctt);
         temp16alen =
-          scale_expansion_zeroelim(aytbcttlen, aytbctt, 2.0 * ady,
-                                   temp16a);
+          scale(aytbcttlen, aytbctt, 2.0 * ady,
+                temp16a);
         temp16blen =
-          scale_expansion_zeroelim(aytbcttlen, aytbctt, adytail,
-                                   temp16b);
-        temp32blen = fast_expansion_sum_zeroelim(temp16alen, temp16a,
-                                                 temp16blen, temp16b,
-                                                 temp32b);
-        temp64len = fast_expansion_sum_zeroelim(temp32alen, temp32a,
-                                                temp32blen, temp32b,
-                                                temp64);
+          scale(aytbcttlen, aytbctt, adytail,
+                temp16b);
+        temp32blen = sum(temp16alen, temp16a,
+                         temp16blen, temp16b,
+                         temp32b);
+        temp64len = sum(temp32alen, temp32a,
+                        temp32blen, temp32b,
+                        temp64);
         finlength =
-          fast_expansion_sum_zeroelim(finlength, finnow, temp64len,
-                                      temp64, finother);
+          sum(finlength, finnow, temp64len,
+              temp64, finother);
         finswap = finnow;
         finnow = finother;
         finother = finswap;
@@ -3038,7 +3022,7 @@ public final class Adapt implements Predicate {
         around = _j - avirt;
         v[2] = around + bround;
         v[3] = v3;
-        catlen = fast_expansion_sum_zeroelim(4, u, 4, v, cat);
+        catlen = sum(4, u, 4, v, cat);
 
         ti1 = (cdxtail * adytail);
         c = (SPLITTER * cdxtail);
@@ -3102,66 +3086,66 @@ public final class Adapt implements Predicate {
 // TODO: bxtcalen not initialized!!!
       if (bdxtail != 0.0) {
         temp16alen =
-          scale_expansion_zeroelim(bxtcalen, bxtca, bdxtail, temp16a);
+          scale(bxtcalen, bxtca, bdxtail, temp16a);
         bxtcatlen =
-          scale_expansion_zeroelim(catlen, cat, bdxtail, bxtcat);
+          scale(catlen, cat, bdxtail, bxtcat);
         temp32alen =
-          scale_expansion_zeroelim(bxtcatlen, bxtcat, 2.0 * bdx,
-                                   temp32a);
-        temp48len = fast_expansion_sum_zeroelim(temp16alen, temp16a,
-                                                temp32alen, temp32a,
-                                                temp48);
+          scale(bxtcatlen, bxtcat, 2.0 * bdx,
+                temp32a);
+        temp48len = sum(temp16alen, temp16a,
+                        temp32alen, temp32a,
+                        temp48);
         finlength =
-          fast_expansion_sum_zeroelim(finlength, finnow, temp48len,
-                                      temp48, finother);
+          sum(finlength, finnow, temp48len,
+              temp48, finother);
         finswap = finnow;
         finnow = finother;
         finother = finswap;
         if (cdytail != 0.0) {
-          temp8len = scale_expansion_zeroelim(4, aa, bdxtail, temp8);
+          temp8len = scale(4, aa, bdxtail, temp8);
           temp16alen =
-            scale_expansion_zeroelim(temp8len, temp8, cdytail,
-                                     temp16a);
+            scale(temp8len, temp8, cdytail,
+                  temp16a);
           finlength =
-            fast_expansion_sum_zeroelim(finlength, finnow, temp16alen,
-                                        temp16a, finother);
+            sum(finlength, finnow, temp16alen,
+                temp16a, finother);
           finswap = finnow;
           finnow = finother;
           finother = finswap;
         }
         if (adytail != 0.0) {
-          temp8len = scale_expansion_zeroelim(4, cc, -bdxtail, temp8);
+          temp8len = scale(4, cc, -bdxtail, temp8);
           temp16alen =
-            scale_expansion_zeroelim(temp8len, temp8, adytail,
-                                     temp16a);
+            scale(temp8len, temp8, adytail,
+                  temp16a);
           finlength =
-            fast_expansion_sum_zeroelim(finlength, finnow, temp16alen,
-                                        temp16a, finother);
+            sum(finlength, finnow, temp16alen,
+                temp16a, finother);
           finswap = finnow;
           finnow = finother;
           finother = finswap;
         }
 
         temp32alen =
-          scale_expansion_zeroelim(bxtcatlen, bxtcat, bdxtail,
-                                   temp32a);
+          scale(bxtcatlen, bxtcat, bdxtail,
+                temp32a);
         bxtcattlen =
-          scale_expansion_zeroelim(cattlen, catt, bdxtail, bxtcatt);
+          scale(cattlen, catt, bdxtail, bxtcatt);
         temp16alen =
-          scale_expansion_zeroelim(bxtcattlen, bxtcatt, 2.0 * bdx,
-                                   temp16a);
+          scale(bxtcattlen, bxtcatt, 2.0 * bdx,
+                temp16a);
         temp16blen =
-          scale_expansion_zeroelim(bxtcattlen, bxtcatt, bdxtail,
-                                   temp16b);
-        temp32blen = fast_expansion_sum_zeroelim(temp16alen, temp16a,
-                                                 temp16blen, temp16b,
-                                                 temp32b);
-        temp64len = fast_expansion_sum_zeroelim(temp32alen, temp32a,
-                                                temp32blen, temp32b,
-                                                temp64);
+          scale(bxtcattlen, bxtcatt, bdxtail,
+                temp16b);
+        temp32blen = sum(temp16alen, temp16a,
+                         temp16blen, temp16b,
+                         temp32b);
+        temp64len = sum(temp32alen, temp32a,
+                        temp32blen, temp32b,
+                        temp64);
         finlength =
-          fast_expansion_sum_zeroelim(finlength, finnow, temp64len,
-                                      temp64, finother);
+          sum(finlength, finnow, temp64len,
+              temp64, finother);
         finswap = finnow;
         finnow = finother;
         finother = finswap;
@@ -3169,42 +3153,42 @@ public final class Adapt implements Predicate {
       // TODO: bytcalen not initialized!!!
       if (bdytail != 0.0) {
         temp16alen =
-          scale_expansion_zeroelim(bytcalen, bytca, bdytail, temp16a);
+          scale(bytcalen, bytca, bdytail, temp16a);
         bytcatlen =
-          scale_expansion_zeroelim(catlen, cat, bdytail, bytcat);
+          scale(catlen, cat, bdytail, bytcat);
         temp32alen =
-          scale_expansion_zeroelim(bytcatlen, bytcat, 2.0 * bdy,
-                                   temp32a);
-        temp48len = fast_expansion_sum_zeroelim(temp16alen, temp16a,
-                                                temp32alen, temp32a,
-                                                temp48);
+          scale(bytcatlen, bytcat, 2.0 * bdy,
+                temp32a);
+        temp48len = sum(temp16alen, temp16a,
+                        temp32alen, temp32a,
+                        temp48);
         finlength =
-          fast_expansion_sum_zeroelim(finlength, finnow, temp48len,
-                                      temp48, finother);
+          sum(finlength, finnow, temp48len,
+              temp48, finother);
         finswap = finnow;
         finnow = finother;
         finother = finswap;
 
         temp32alen =
-          scale_expansion_zeroelim(bytcatlen, bytcat, bdytail,
-                                   temp32a);
+          scale(bytcatlen, bytcat, bdytail,
+                temp32a);
         bytcattlen =
-          scale_expansion_zeroelim(cattlen, catt, bdytail, bytcatt);
+          scale(cattlen, catt, bdytail, bytcatt);
         temp16alen =
-          scale_expansion_zeroelim(bytcattlen, bytcatt, 2.0 * bdy,
-                                   temp16a);
+          scale(bytcattlen, bytcatt, 2.0 * bdy,
+                temp16a);
         temp16blen =
-          scale_expansion_zeroelim(bytcattlen, bytcatt, bdytail,
-                                   temp16b);
-        temp32blen = fast_expansion_sum_zeroelim(temp16alen, temp16a,
-                                                 temp16blen, temp16b,
-                                                 temp32b);
-        temp64len = fast_expansion_sum_zeroelim(temp32alen, temp32a,
-                                                temp32blen, temp32b,
-                                                temp64);
+          scale(bytcattlen, bytcatt, bdytail,
+                temp16b);
+        temp32blen = sum(temp16alen, temp16a,
+                         temp16blen, temp16b,
+                         temp32b);
+        temp64len = sum(temp32alen, temp32a,
+                        temp32blen, temp32b,
+                        temp64);
         finlength =
-          fast_expansion_sum_zeroelim(finlength, finnow, temp64len,
-                                      temp64, finother);
+          sum(finlength, finnow, temp64len,
+              temp64, finother);
         finswap = finnow;
         finnow = finother;
         finother = finswap;
@@ -3317,7 +3301,7 @@ public final class Adapt implements Predicate {
         around = _j - avirt;
         v[2] = around + bround;
         v[3] = v3;
-        abtlen = fast_expansion_sum_zeroelim(4, u, 4, v, abt);
+        abtlen = sum(4, u, 4, v, abt);
 
         ti1 = (adxtail * bdytail);
         c = (SPLITTER * adxtail);
@@ -3381,66 +3365,66 @@ public final class Adapt implements Predicate {
 // TODO: cxtablen not initialized!!!
       if (cdxtail != 0.0) {
         temp16alen =
-          scale_expansion_zeroelim(cxtablen, cxtab, cdxtail, temp16a);
+          scale(cxtablen, cxtab, cdxtail, temp16a);
         cxtabtlen =
-          scale_expansion_zeroelim(abtlen, abt, cdxtail, cxtabt);
+          scale(abtlen, abt, cdxtail, cxtabt);
         temp32alen =
-          scale_expansion_zeroelim(cxtabtlen, cxtabt, 2.0 * cdx,
-                                   temp32a);
-        temp48len = fast_expansion_sum_zeroelim(temp16alen, temp16a,
-                                                temp32alen, temp32a,
-                                                temp48);
+          scale(cxtabtlen, cxtabt, 2.0 * cdx,
+                temp32a);
+        temp48len = sum(temp16alen, temp16a,
+                        temp32alen, temp32a,
+                        temp48);
         finlength =
-          fast_expansion_sum_zeroelim(finlength, finnow, temp48len,
-                                      temp48, finother);
+          sum(finlength, finnow, temp48len,
+              temp48, finother);
         finswap = finnow;
         finnow = finother;
         finother = finswap;
         if (adytail != 0.0) {
-          temp8len = scale_expansion_zeroelim(4, bb, cdxtail, temp8);
+          temp8len = scale(4, bb, cdxtail, temp8);
           temp16alen =
-            scale_expansion_zeroelim(temp8len, temp8, adytail,
-                                     temp16a);
+            scale(temp8len, temp8, adytail,
+                  temp16a);
           finlength =
-            fast_expansion_sum_zeroelim(finlength, finnow, temp16alen,
-                                        temp16a, finother);
+            sum(finlength, finnow, temp16alen,
+                temp16a, finother);
           finswap = finnow;
           finnow = finother;
           finother = finswap;
         }
         if (bdytail != 0.0) {
-          temp8len = scale_expansion_zeroelim(4, aa, -cdxtail, temp8);
+          temp8len = scale(4, aa, -cdxtail, temp8);
           temp16alen =
-            scale_expansion_zeroelim(temp8len, temp8, bdytail,
-                                     temp16a);
+            scale(temp8len, temp8, bdytail,
+                  temp16a);
           finlength =
-            fast_expansion_sum_zeroelim(finlength, finnow, temp16alen,
-                                        temp16a, finother);
+            sum(finlength, finnow, temp16alen,
+                temp16a, finother);
           finswap = finnow;
           finnow = finother;
           finother = finswap;
         }
 
         temp32alen =
-          scale_expansion_zeroelim(cxtabtlen, cxtabt, cdxtail,
-                                   temp32a);
+          scale(cxtabtlen, cxtabt, cdxtail,
+                temp32a);
         cxtabttlen =
-          scale_expansion_zeroelim(abttlen, abtt, cdxtail, cxtabtt);
+          scale(abttlen, abtt, cdxtail, cxtabtt);
         temp16alen =
-          scale_expansion_zeroelim(cxtabttlen, cxtabtt, 2.0 * cdx,
-                                   temp16a);
+          scale(cxtabttlen, cxtabtt, 2.0 * cdx,
+                temp16a);
         temp16blen =
-          scale_expansion_zeroelim(cxtabttlen, cxtabtt, cdxtail,
-                                   temp16b);
-        temp32blen = fast_expansion_sum_zeroelim(temp16alen, temp16a,
-                                                 temp16blen, temp16b,
-                                                 temp32b);
-        temp64len = fast_expansion_sum_zeroelim(temp32alen, temp32a,
-                                                temp32blen, temp32b,
-                                                temp64);
+          scale(cxtabttlen, cxtabtt, cdxtail,
+                temp16b);
+        temp32blen = sum(temp16alen, temp16a,
+                         temp16blen, temp16b,
+                         temp32b);
+        temp64len = sum(temp32alen, temp32a,
+                        temp32blen, temp32b,
+                        temp64);
         finlength =
-          fast_expansion_sum_zeroelim(finlength, finnow, temp64len,
-                                      temp64, finother);
+          sum(finlength, finnow, temp64len,
+              temp64, finother);
         finswap = finnow;
         finnow = finother;
         finother = finswap;
@@ -3448,42 +3432,42 @@ public final class Adapt implements Predicate {
 // TODO: cytablen not initialized!!!
       if (cdytail != 0.0) {
         temp16alen =
-          scale_expansion_zeroelim(cytablen, cytab, cdytail, temp16a);
+          scale(cytablen, cytab, cdytail, temp16a);
         cytabtlen =
-          scale_expansion_zeroelim(abtlen, abt, cdytail, cytabt);
+          scale(abtlen, abt, cdytail, cytabt);
         temp32alen =
-          scale_expansion_zeroelim(cytabtlen, cytabt, 2.0 * cdy,
-                                   temp32a);
-        temp48len = fast_expansion_sum_zeroelim(temp16alen, temp16a,
-                                                temp32alen, temp32a,
-                                                temp48);
+          scale(cytabtlen, cytabt, 2.0 * cdy,
+                temp32a);
+        temp48len = sum(temp16alen, temp16a,
+                        temp32alen, temp32a,
+                        temp48);
         finlength =
-          fast_expansion_sum_zeroelim(finlength, finnow, temp48len,
-                                      temp48, finother);
+          sum(finlength, finnow, temp48len,
+              temp48, finother);
         finswap = finnow;
         finnow = finother;
         finother = finswap;
 
         temp32alen =
-          scale_expansion_zeroelim(cytabtlen, cytabt, cdytail,
-                                   temp32a);
+          scale(cytabtlen, cytabt, cdytail,
+                temp32a);
         cytabttlen =
-          scale_expansion_zeroelim(abttlen, abtt, cdytail, cytabtt);
+          scale(abttlen, abtt, cdytail, cytabtt);
         temp16alen =
-          scale_expansion_zeroelim(cytabttlen, cytabtt, 2.0 * cdy,
-                                   temp16a);
+          scale(cytabttlen, cytabtt, 2.0 * cdy,
+                temp16a);
         temp16blen =
-          scale_expansion_zeroelim(cytabttlen, cytabtt, cdytail,
-                                   temp16b);
-        temp32blen = fast_expansion_sum_zeroelim(temp16alen, temp16a,
-                                                 temp16blen, temp16b,
-                                                 temp32b);
-        temp64len = fast_expansion_sum_zeroelim(temp32alen, temp32a,
-                                                temp32blen, temp32b,
-                                                temp64);
+          scale(cytabttlen, cytabtt, cdytail,
+                temp16b);
+        temp32blen = sum(temp16alen, temp16a,
+                         temp16blen, temp16b,
+                         temp32b);
+        temp64len = sum(temp32alen, temp32a,
+                        temp32blen, temp32b,
+                        temp64);
         finlength =
-          fast_expansion_sum_zeroelim(finlength, finnow, temp64len,
-                                      temp64, finother);
+          sum(finlength, finnow, temp64len,
+              temp64, finother);
         // TODO: unused?
         //finswap = finnow;
         finnow = finother;
@@ -3930,90 +3914,90 @@ public final class Adapt implements Predicate {
     bd[2] = around + bround;
     bd[3] = bd3;
 
-    temp8alen = scale_expansion_zeroelim(4, cd, bez, temp8a);
-    temp8blen = scale_expansion_zeroelim(4, bd, -cez, temp8b);
-    temp8clen = scale_expansion_zeroelim(4, bc, dez, temp8c);
-    temp16len = fast_expansion_sum_zeroelim(temp8alen, temp8a,
-                                            temp8blen, temp8b, temp16);
-    temp24len = fast_expansion_sum_zeroelim(temp8clen, temp8c,
-                                            temp16len, temp16, temp24);
+    temp8alen = scale(4, cd, bez, temp8a);
+    temp8blen = scale(4, bd, -cez, temp8b);
+    temp8clen = scale(4, bc, dez, temp8c);
+    temp16len = sum(temp8alen, temp8a,
+                    temp8blen, temp8b, temp16);
+    temp24len = sum(temp8clen, temp8c,
+                    temp16len, temp16, temp24);
     temp48len =
-      scale_expansion_zeroelim(temp24len, temp24, aex, temp48);
-    xlen = scale_expansion_zeroelim(temp48len, temp48, -aex, xdet);
+      scale(temp24len, temp24, aex, temp48);
+    xlen = scale(temp48len, temp48, -aex, xdet);
     temp48len =
-      scale_expansion_zeroelim(temp24len, temp24, aey, temp48);
-    ylen = scale_expansion_zeroelim(temp48len, temp48, -aey, ydet);
+      scale(temp24len, temp24, aey, temp48);
+    ylen = scale(temp48len, temp48, -aey, ydet);
     temp48len =
-      scale_expansion_zeroelim(temp24len, temp24, aez, temp48);
-    zlen = scale_expansion_zeroelim(temp48len, temp48, -aez, zdet);
-    xylen = fast_expansion_sum_zeroelim(xlen, xdet, ylen, ydet, xydet);
-    alen = fast_expansion_sum_zeroelim(xylen, xydet, zlen, zdet, adet);
+      scale(temp24len, temp24, aez, temp48);
+    zlen = scale(temp48len, temp48, -aez, zdet);
+    xylen = sum(xlen, xdet, ylen, ydet, xydet);
+    alen = sum(xylen, xydet, zlen, zdet, adet);
 
-    temp8alen = scale_expansion_zeroelim(4, da, cez, temp8a);
-    temp8blen = scale_expansion_zeroelim(4, ac, dez, temp8b);
-    temp8clen = scale_expansion_zeroelim(4, cd, aez, temp8c);
-    temp16len = fast_expansion_sum_zeroelim(temp8alen, temp8a,
-                                            temp8blen, temp8b, temp16);
-    temp24len = fast_expansion_sum_zeroelim(temp8clen, temp8c,
-                                            temp16len, temp16, temp24);
+    temp8alen = scale(4, da, cez, temp8a);
+    temp8blen = scale(4, ac, dez, temp8b);
+    temp8clen = scale(4, cd, aez, temp8c);
+    temp16len = sum(temp8alen, temp8a,
+                    temp8blen, temp8b, temp16);
+    temp24len = sum(temp8clen, temp8c,
+                    temp16len, temp16, temp24);
     temp48len =
-      scale_expansion_zeroelim(temp24len, temp24, bex, temp48);
-    xlen = scale_expansion_zeroelim(temp48len, temp48, bex, xdet);
+      scale(temp24len, temp24, bex, temp48);
+    xlen = scale(temp48len, temp48, bex, xdet);
     temp48len =
-      scale_expansion_zeroelim(temp24len, temp24, bey, temp48);
-    ylen = scale_expansion_zeroelim(temp48len, temp48, bey, ydet);
+      scale(temp24len, temp24, bey, temp48);
+    ylen = scale(temp48len, temp48, bey, ydet);
     temp48len =
-      scale_expansion_zeroelim(temp24len, temp24, bez, temp48);
-    zlen = scale_expansion_zeroelim(temp48len, temp48, bez, zdet);
-    xylen = fast_expansion_sum_zeroelim(xlen, xdet, ylen, ydet, xydet);
-    blen = fast_expansion_sum_zeroelim(xylen, xydet, zlen, zdet, bdet);
+      scale(temp24len, temp24, bez, temp48);
+    zlen = scale(temp48len, temp48, bez, zdet);
+    xylen = sum(xlen, xdet, ylen, ydet, xydet);
+    blen = sum(xylen, xydet, zlen, zdet, bdet);
 
-    temp8alen = scale_expansion_zeroelim(4, ab, dez, temp8a);
-    temp8blen = scale_expansion_zeroelim(4, bd, aez, temp8b);
-    temp8clen = scale_expansion_zeroelim(4, da, bez, temp8c);
-    temp16len = fast_expansion_sum_zeroelim(temp8alen, temp8a,
-                                            temp8blen, temp8b, temp16);
-    temp24len = fast_expansion_sum_zeroelim(temp8clen, temp8c,
-                                            temp16len, temp16, temp24);
+    temp8alen = scale(4, ab, dez, temp8a);
+    temp8blen = scale(4, bd, aez, temp8b);
+    temp8clen = scale(4, da, bez, temp8c);
+    temp16len = sum(temp8alen, temp8a,
+                    temp8blen, temp8b, temp16);
+    temp24len = sum(temp8clen, temp8c,
+                    temp16len, temp16, temp24);
     temp48len =
-      scale_expansion_zeroelim(temp24len, temp24, cex, temp48);
-    xlen = scale_expansion_zeroelim(temp48len, temp48, -cex, xdet);
+      scale(temp24len, temp24, cex, temp48);
+    xlen = scale(temp48len, temp48, -cex, xdet);
     temp48len =
-      scale_expansion_zeroelim(temp24len, temp24, cey, temp48);
-    ylen = scale_expansion_zeroelim(temp48len, temp48, -cey, ydet);
+      scale(temp24len, temp24, cey, temp48);
+    ylen = scale(temp48len, temp48, -cey, ydet);
     temp48len =
-      scale_expansion_zeroelim(temp24len, temp24, cez, temp48);
-    zlen = scale_expansion_zeroelim(temp48len, temp48, -cez, zdet);
-    xylen = fast_expansion_sum_zeroelim(xlen, xdet, ylen, ydet, xydet);
-    clen = fast_expansion_sum_zeroelim(xylen, xydet, zlen, zdet, cdet);
+      scale(temp24len, temp24, cez, temp48);
+    zlen = scale(temp48len, temp48, -cez, zdet);
+    xylen = sum(xlen, xdet, ylen, ydet, xydet);
+    clen = sum(xylen, xydet, zlen, zdet, cdet);
 
-    temp8alen = scale_expansion_zeroelim(4, bc, aez, temp8a);
-    temp8blen = scale_expansion_zeroelim(4, ac, -bez, temp8b);
-    temp8clen = scale_expansion_zeroelim(4, ab, cez, temp8c);
-    temp16len = fast_expansion_sum_zeroelim(temp8alen, temp8a,
-                                            temp8blen, temp8b, temp16);
-    temp24len = fast_expansion_sum_zeroelim(temp8clen, temp8c,
-                                            temp16len, temp16, temp24);
+    temp8alen = scale(4, bc, aez, temp8a);
+    temp8blen = scale(4, ac, -bez, temp8b);
+    temp8clen = scale(4, ab, cez, temp8c);
+    temp16len = sum(temp8alen, temp8a,
+                    temp8blen, temp8b, temp16);
+    temp24len = sum(temp8clen, temp8c,
+                    temp16len, temp16, temp24);
     temp48len =
-      scale_expansion_zeroelim(temp24len, temp24, dex, temp48);
-    xlen = scale_expansion_zeroelim(temp48len, temp48, dex, xdet);
+      scale(temp24len, temp24, dex, temp48);
+    xlen = scale(temp48len, temp48, dex, xdet);
     temp48len =
-      scale_expansion_zeroelim(temp24len, temp24, dey, temp48);
-    ylen = scale_expansion_zeroelim(temp48len, temp48, dey, ydet);
+      scale(temp24len, temp24, dey, temp48);
+    ylen = scale(temp48len, temp48, dey, ydet);
     temp48len =
-      scale_expansion_zeroelim(temp24len, temp24, dez, temp48);
-    zlen = scale_expansion_zeroelim(temp48len, temp48, dez, zdet);
-    xylen = fast_expansion_sum_zeroelim(xlen, xdet, ylen, ydet, xydet);
-    dlen = fast_expansion_sum_zeroelim(xylen, xydet, zlen, zdet, ddet);
+      scale(temp24len, temp24, dez, temp48);
+    zlen = scale(temp48len, temp48, dez, zdet);
+    xylen = sum(xlen, xdet, ylen, ydet, xydet);
+    dlen = sum(xylen, xydet, zlen, zdet, ddet);
 
-    ablen = fast_expansion_sum_zeroelim(alen, adet, blen, bdet, abdet);
-    cdlen = fast_expansion_sum_zeroelim(clen, cdet, dlen, ddet, cddet);
+    ablen = sum(alen, adet, blen, bdet, abdet);
+    cdlen = sum(clen, cdet, dlen, ddet, cddet);
     finlength =
-      fast_expansion_sum_zeroelim(ablen, abdet, cdlen, cddet, fin1);
+      sum(ablen, abdet, cdlen, cddet, fin1);
 
     det = estimate(finlength, fin1);
     errbound = isperrboundB * permanent;
-    if ((det >= errbound) || (-det >= errbound)) {
+    if (Math.abs(det) >= errbound) {
       return det;
     }
 
@@ -4120,7 +4104,7 @@ public final class Adapt implements Predicate {
       * (bez * cd3 - cez * bd3 + dez * bc3)
       + (cex * cextail + cey * ceytail + cez * ceztail)
       * (dez * ab3 + aez * bd3 + bez * da3)));
-    if ((det >= errbound) || (-det >= errbound)) {
+    if (Math.abs(det) >= errbound) {
       return det;
     }
 
