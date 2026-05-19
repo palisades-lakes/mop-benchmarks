@@ -52,13 +52,14 @@ public final class Orient2DTest {
     for (final Predicate p : predicates) {
       final double areaX2 = p.orient2d(p0, p1, p2);
       if (p.isExact()) {
+        // with delta=0.0 handles +0 vs -0 'correctly'
         Assertions.assertEquals(
-          trueAreaX2, areaX2,
+          trueAreaX2, areaX2, 0.0,
           failureMsg(trueAreaX2,gold,p,predicates,p0,p1,p2)); }
       else {
-      Assertions.assertEquals(
-        Math.signum(trueAreaX2), Math.signum(areaX2),
-        failureMsg(trueAreaX2,gold,p,predicates,p0,p1,p2)); } } }
+        Assertions.assertEquals(
+          Math.signum(trueAreaX2), Math.signum(areaX2),
+          failureMsg(trueAreaX2,gold,p,predicates,p0,p1,p2)); } } }
 
   @Test
   public final void testOrient2D () {
@@ -79,7 +80,7 @@ public final class Orient2DTest {
     // Co-linear triangle
     // TODO: Exact is wrong: , returns 2.0, but 2*signed area = 0.0
     orient2D(Common.makePredicates(), p0, p1, p3);
-    }
+  }
 
 
   //--------------------------------------------------------------

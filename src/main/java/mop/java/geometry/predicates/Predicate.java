@@ -109,9 +109,10 @@ public interface Predicate {
    * input points are collinear or nearly so.
    */
 
-  public double orient2d (final double[] pa,
+  default double orient2d (final double[] pa,
                           final double[] pb,
-                          final double[] pc);
+                          final double[] pc) {
+    throw new UnsupportedOperationException(); }
 
   //--------------------------------------------------------------------
   /** Return a positive value if the point pd lies inside the circle
@@ -131,10 +132,11 @@ public interface Predicate {
    * orient3d() is usually quite fast, but will run more slowly when the
    * input points are coplanar or nearly so.
    */
-  public double orient3d (final double[] pa,
+  default double orient3d (final double[] pa,
                           final double[] pb,
                           final double[] pc,
-                          final double[] pd);
+                          final double[] pd) {
+    throw new UnsupportedOperationException(); }
 
   //--------------------------------------------------------------------
   /** Return a positive value if the point pd lies inside the circle
@@ -154,10 +156,11 @@ public interface Predicate {
    * incircle() is usually quite fast, but will run more slowly when the
    * input points are cocircular or nearly so.
    */
-  public double incircle (final double[] pa,
+  default double incircle (final double[] pa,
                           final double[] pb,
                           final double[] pc,
-                          final double[] pd);
+                          final double[] pd) {
+    throw new UnsupportedOperationException(); }
 
   //--------------------------------------------------------------------
 
@@ -180,11 +183,12 @@ public interface Predicate {
    * input points are co-spherical or nearly so.
    */
 
-  public double insphere (final double[] pa,
+  default double insphere (final double[] pa,
                           final double[] pb,
                           final double[] pc,
                           final double[] pd,
-                          final double[] pe);
+                          final double[] pe) {
+    throw new UnsupportedOperationException(); }
   //-------------------------------------------------------------------
 } // end class
 //-------------------------------------------------------------------

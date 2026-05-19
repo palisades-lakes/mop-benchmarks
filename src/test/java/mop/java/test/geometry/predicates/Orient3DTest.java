@@ -56,8 +56,9 @@ public final class Orient3DTest {
     for (final Predicate p : predicates) {
       final double vol = p.orient3d(p0, p1, p2, p3);
       if (p.isExact()) {
+        // with delta=0.0 handles +0 vs -0 'correctly'
         Assertions.assertEquals(
-          trueVol, vol,
+          trueVol, vol, 0.0,
           failureMsg(trueVol,gold,p,predicates,p0,p1,p2,p3)); }
       else {
         Assertions.assertEquals(

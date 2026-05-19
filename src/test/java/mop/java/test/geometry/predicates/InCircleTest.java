@@ -58,8 +58,9 @@ public final class InCircleTest {
     for (final Predicate p : predicates) {
       final double inc = p.incircle(p0, p1, p2, p3);
       if (p.isExact()) {
+        // with delta=0.0 handles +0 vs -0 'correctly'
         Assertions.assertEquals(
-          trueInc, inc,
+          trueInc, inc, 0.0,
           failureMsg(trueInc,gold,p,predicates,p0,p1,p2,p3)); }
       else {
         Assertions.assertEquals(

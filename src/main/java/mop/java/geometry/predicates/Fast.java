@@ -85,6 +85,7 @@ public final class Fast implements Predicate {
   //--------------------------------------------------------------------
   // orient2d
   //--------------------------------------------------------------------
+
   public final double orient2d (final double[] pa,
                                 final double[] pb,
                                 final double[] pc) {
@@ -182,7 +183,9 @@ public final class Fast implements Predicate {
     final double dlift = (dex * dex) + (dey * dey) + (dez * dez);
 
     return
-      ((dlift * abc) - (clift * dab)) + ((blift * cda) - (alift * bcd));
+      ((dlift * abc) - (clift * dab))
+        +
+        ((blift * cda) - (alift * bcd));
   }
 
   //--------------------------------------------------------------------
