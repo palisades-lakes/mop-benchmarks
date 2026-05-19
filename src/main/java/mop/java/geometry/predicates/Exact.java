@@ -6,8 +6,6 @@ package mop.java.geometry.predicates;
 // split into Expansion manipulation and fast, slow, exact, adaptive
 // algorithm classes
 
-import static mop.java.geometry.predicates.Expansion.SPLITTER;
-
 /**
  * Exact tests.  Robust.
  * <br>
@@ -18,11 +16,13 @@ import static mop.java.geometry.predicates.Expansion.SPLITTER;
  *   profiling.
  * </p>
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-05-18
+ * @version 2026-05-19
  */
 
 // strictfp unnecessary for JDK17 and later
 public final class Exact implements Predicate {
+
+  private static final double SPLITTER = 0x1.0000002p27;
 
   //--------------------------------------------------------------------
 
@@ -31,8 +31,85 @@ public final class Exact implements Predicate {
   //--------------------------------------------------------------------
   // orient2d
   //--------------------------------------------------------------------
+  private final double[] twoProduct (final double a,
+                                     final double b) {
+    final double x = (a * b);
+    // Two_Product_Tail(a, b, x, y)
+    //-----------------------------
+    // Split(a, ahi, alo);
+    final double ca = (SPLITTER * a);
+    final double abiga = (ca - a);
+    final double ahi = ca - abiga;
+    final double alo = a - ahi;
+    // Split(b, bhi, blo);
+    final double cb = (SPLITTER * b);
+    final double abigb = (cb - b);
+    final double bhi = cb - abigb;
+    final double blo = b - bhi;
+    //-------------------------
+    final double err1 = x - (ahi * bhi);
+    final double err2 = err1 - (alo * bhi);
+    final double err3 = err2 - (ahi * blo);
+    final double y = (alo * blo) - err3;
+    // TODO: compare performance to a XY record class
+    // TODO: pre-allocate array/instance for return values?
+    // TODO: reverse order of returned value and treat as an Expansion?
+    return new double[] { x, y, };
+  }
+  //--------------------------------------------------------------------
+  private static final double[] twoSum (final double a,
+                                         final double b) {
+    final double x = (a + b);
+    //  Two_Sum_Tail(a, b, x, y)
+    final double bvirt = (x - a);
+    final double avirt = x - bvirt;
+    final double bround = b - bvirt;
+    final double around = a - avirt;
+    final double y = around + bround;
+    return new double[] { x, y, }; }
+  //--------------------------------------------------------------------
+  private static final double[] twoDiff (final double a,
+                                         final double b) {
+    final double x = (a - b);
+    //Two_Diff_Tail(a, b, x, y)
+    final double bvirt = (a - x);
+    final double avirt = x + bvirt;
+    final double bround = bvirt - b;
+    final double around = a - avirt;
+    final double y = around + bround;
+    return new double[] { x, y, }; }
+  //--------------------------------------------------------------------
+  private static final double[] twoOneDiff (final double a1,
+                                            final double a0,
+                                            final double b) {
+
+    // Two_Diff (a0, b, _i, x0);
+    final double _i, x0;
+    { final double[] td = twoDiff(a0,b); _i = td[0]; x0 = td[1]; }
+    // Two_Sum (a1, _i, x2, x1)
+    final double x2, x1;
+    { final double[] ts = twoSum(a1,_i); x2 = ts[0]; x1 = ts[1]; }
+    return new double[] {x2,x1,x0}; }
+  //--------------------------------------------------------------------
+  // NOTE: order of args is reversed from Expansion array elements.
+  // Here it's most significant first, Expansion is most significant
+  // last (not counting implied array length and trailing zeros!).
+  private static final double[] twoTwoDiff (final double a1,
+                                            final double a0,
+                                            final double b1,
+                                            final double b0) {
+    // Two_One_Diff(a1, a0, b0, _j, _0, x0); \
+    final double _j, _0, x0;
+    { final double[] tod = twoOneDiff(a1,a0,b0);
+      _j = tod[0]; _0 = tod[1]; x0 =  tod[2]; }
+    // Two_One_Diff(_j, _0, b1, x3, x2, x1)
+    final double x3, x2, x1;
+    { final double[] tod = twoOneDiff(_j,_0,b1);
+      x3 = tod[0]; x2 = tod[1]; x1 =  tod[2]; }
+    return new double[] {x3,x2,x1,x0}; }
+  //--------------------------------------------------------------------
   // TODO: seems to return signed area, not 2xsigned area
-  // TODO: retunrs 1.0 for a co-linear triangle,
+  // TODO: returns 1.0 for a co-linear triangle,
   //  where one vtx is the mean of the other 2.
 
   public final double orient2d (final double[] pa,
@@ -40,141 +117,57 @@ public final class Exact implements Predicate {
                                 final double[] pc) {
     // Two_Product(pa[0], pb[1], axby1, axby0);
     final double axby1, axby0;
-    { axby1 = (pa[0] * pb[1]);
-      final double ca = (SPLITTER * pa[0]);
-      final double abiga = (ca - pa[0]);
-      final double ahi = ca - abiga;
-      final double alo = pa[0] - ahi;
-      final double cb = (SPLITTER * pb[1]);
-      final double abigb = (cb - pb[1]);
-      final double bhi = cb - abigb;
-      final double blo = pb[1] - bhi;
-      final double err1 = axby1 - (ahi * bhi);
-      final double err2 = err1 - (alo * bhi);
-      final double err3 = err2 - (ahi * blo);
-      axby0 = (alo * blo) - err3; }
-
+    { final double[] tp = twoProduct(pa[0],pb[1]);
+      axby1 = tp[0]; axby0 = tp[1]; }
     // Two_Product(pa[0], pc[1], axcy1, axcy0);
     final double axcy1, axcy0;
-    { axcy1 = (pa[0] * pc[1]);
-      final double ca = (SPLITTER * pa[0]);
-      final double abiga = (ca - pa[0]);
-      final double ahi = ca - abiga;
-      final double alo = pa[0] - ahi;
-      final double cb = (SPLITTER * pc[1]);
-      final double abigb = (cb - pc[1]);
-      final double bhi = cb - abigb;
-      final double blo = pc[1] - bhi;
-      final double err1 = axcy1 - (ahi * bhi);
-      final double err2 = err1 - (alo * bhi);
-      final double err3 = err2 - (ahi * blo);
-      axcy0 = (alo * blo) - err3; }
-
+    { final double[] tp = twoProduct(pa[0], pc[1]);
+      axcy1 = tp[0]; axcy0 = tp[1]; }
     // Two_Two_Diff(axby1, axby0, axcy1, axcy0,
     //              aterms3, aterms[2], aterms[1], aterms[0]);
-
-    double _i = (axby0 - axcy0);
-    double bvirt = (axby0 - _i);
-    double avirt = _i + bvirt;
-    double bround = bvirt - axcy0;
-    double around = axby0 - avirt;
     final double[] aterms = new double[4];
-    aterms[0] = around + bround;
-    double _j = (axby1 + _i);
-    bvirt = (_j - axby1);
-    avirt = _j - bvirt;
-    bround = _i - bvirt;
-    around = axby1 - avirt;
-    double _0 = around + bround;
-    _i = (_0 - axcy1);
-    bvirt = (_0 - _i); avirt = _i + bvirt; bround = bvirt - axcy1;
-    around = _0 - avirt; aterms[1] = around + bround;
-    final double aterms3 = (_j + _i); bvirt = (aterms3 - _j);
-    avirt = aterms3 - bvirt; bround = _i - bvirt; around = _j - avirt;
-    aterms[2] = around + bround;
-    //------------------------------------------------------------------
-    aterms[3] = aterms3;
+    { final double[] ttd = twoTwoDiff(axby1, axby0, axcy1, axcy0);
+      aterms[3] = ttd[0];
+      aterms[2] = ttd[1]; aterms[1] = ttd[2]; aterms[0] = ttd[3]; }
 
     //Two_Product(pb[0], pc[1], bxcy1, bxcy0);
+    final double bxcy1, bxcy0;
+    { final double[] tp = twoProduct(pb[0], pc[1]);
+      bxcy1 = tp[0]; bxcy0 = tp[1]; }
     //Two_Product(pb[0], pa[1], bxay1, bxay0);
+    final double bxay1, bxay0;
+    { final double[] tp = twoProduct(pb[0], pa[1]);
+      bxay1 = tp[0]; bxay0 = tp[1]; }
+
     //Two_Two_Diff(bxcy1, bxcy0, bxay1, bxay0,
     //             bterms3, bterms[2], bterms[1], bterms[0]);
-    final double bxcy1 = (pb[0] * pc[1]);
-    double c = (SPLITTER * pb[0]);
-    double abig = (c - pb[0]);
-    double ahi = c - abig;
-    double alo = pb[0] - ahi;
-    c = (SPLITTER * pc[1]);
-    abig = (c - pc[1]);
-    double bhi = c - abig;
-    double blo = pc[1] - bhi;
-    double err1 = bxcy1 - (ahi * bhi);
-    double err2 = err1 - (alo * bhi);
-    double err3 = err2 - (ahi * blo);
-    final double bxcy0 = (alo * blo) - err3;
-    final double bxay1 = (pb[0] * pa[1]); c = (SPLITTER * pb[0]); abig = (c - pb[0]);
-    ahi = c - abig; alo = pb[0] - ahi; c = (SPLITTER * pa[1]);
-    abig = (c - pa[1]); bhi = c - abig; blo = pa[1] - bhi;
-    err1 = bxay1 - (ahi * bhi); err2 = err1 - (alo * bhi);
-    err3 = err2 - (ahi * blo);
-    final double bxay0 = (alo * blo) - err3;
-    _i = (bxcy0 - bxay0); bvirt = (bxcy0 - _i); avirt = _i + bvirt;
-    bround = bvirt - bxay0; around = bxcy0 - avirt;
     final double[] bterms = new double[4];
-    bterms[0] = around + bround; _j = (bxcy1 + _i);
-    bvirt = (_j - bxcy1); avirt = _j - bvirt; bround = _i - bvirt;
-    around = bxcy1 - avirt; _0 = around + bround; _i = (_0 - bxay1);
-    bvirt = (_0 - _i); avirt = _i + bvirt; bround = bvirt - bxay1;
-    around = _0 - avirt; bterms[1] = around + bround;
-    final double bterms3 = (_j + _i); bvirt = (bterms3 - _j);
-    avirt = bterms3 - bvirt; bround = _i - bvirt; around = _j - avirt;
-    bterms[2] = around + bround;
-    //------------------------------------------------------------------
-    bterms[3] = bterms3;
+    { final double[] ttd = twoTwoDiff(bxcy1, bxcy0, bxay1, bxay0);
+      bterms[3] = ttd[0];
+      bterms[2] = ttd[1]; bterms[1] = ttd[2]; bterms[0] = ttd[3]; }
 
     //Two_Product(pc[0], pa[1], cxay1, cxay0);
+    final double cxay1, cxay0;
+    { final double[] tp = twoProduct(pc[0], pa[1]);
+      cxay1 = tp[0]; cxay0 = tp[1]; }
+
     //Two_Product(pc[0], pb[1], cxby1, cxby0);
+    final double cxby1, cxby0;
+    { final double[] tp = twoProduct(pc[0], pb[1]);
+      cxby1 = tp[0]; cxby0 = tp[1]; }
+
     //Two_Two_Diff(cxay1, cxay0, cxby1, cxby0,
     //             cterms3, cterms[2], cterms[1], cterms[0]);
-    final double cxay1 = (pc[0] * pa[1]); c = (SPLITTER * pc[0]); abig = (c - pc[0]);
-    ahi = c - abig; alo = pc[0] - ahi; c = (SPLITTER * pa[1]);
-    abig = (c - pa[1]); bhi = c - abig; blo = pa[1] - bhi;
-    err1 = cxay1 - (ahi * bhi); err2 = err1 - (alo * bhi);
-    err3 = err2 - (ahi * blo);
-    final double cxay0 = (alo * blo) - err3;
-    final double cxby1 = (pc[0] * pb[1]); c = (SPLITTER * pc[0]); abig = (c - pc[0]);
-    ahi = c - abig; alo = pc[0] - ahi; c = (SPLITTER * pb[1]);
-    abig = (c - pb[1]); bhi = c - abig; blo = pb[1] - bhi;
-    err1 = cxby1 - (ahi * bhi); err2 = err1 - (alo * bhi);
-    err3 = err2 - (ahi * blo);
-    final double cxby0 = (alo * blo) - err3;
-    _i = (cxay0 - cxby0); bvirt = (cxay0 - _i); avirt = _i + bvirt;
-    bround = bvirt - cxby0; around = cxay0 - avirt;
     final double[] cterms = new double[4];
-    cterms[0] = around + bround;
-    _j = (cxay1 + _i);
-    bvirt = (_j - cxay1);
-    avirt = _j - bvirt;
-    bround = _i - bvirt;
-    around = cxay1 - avirt;
-    _0 = around + bround;
-    _i = (_0 - cxby1);
-    bvirt = (_0 - _i); avirt = _i + bvirt; bround = bvirt - cxby1;
-    around = _0 - avirt; cterms[1] = around + bround;
-    final double cterms3 = (_j + _i); bvirt = (cterms3 - _j);
-    avirt = cterms3 - bvirt; bround = _i - bvirt; around = _j - avirt;
-    cterms[2] = around + bround;
-    //------------------------------------------------------------------
-    cterms[3] = cterms3;
+    { final double[] ttd = twoTwoDiff(cxay1, cxay0, cxby1, cxby0);
+      cterms[3] = ttd[0];
+      cterms[2] = ttd[1]; cterms[1] = ttd[2]; cterms[0] = ttd[3]; }
 
     final double[] v = new double[8];
     final int vlength = Expansion.sum(4, aterms, 4, bterms, v);
     final double[] w = new double[12];
     final int wlength = Expansion.sum(vlength, v, 4, cterms, w);
-
-    // 2*signed area since it supposed to be 'exact'
-    return 2*w[wlength - 1];
-  }
+    return w[wlength - 1]; }
 
   //--------------------------------------------------------------------
   // orient3d

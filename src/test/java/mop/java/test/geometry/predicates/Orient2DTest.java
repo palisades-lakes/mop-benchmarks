@@ -15,10 +15,31 @@ import java.util.List;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-05-18
+ * @version 2026-05-19
  */
 
 public final class Orient2DTest {
+
+  //--------------------------------------------------------------
+  private static final String failureMsg (final double truth,
+                                          final Predicate gold,
+                                          final Predicate pred,
+                                          final List<Predicate> predicates,
+                                          final double[] p0,
+                                          final double[] p1,
+                                          final double[] p2) {
+    StringBuilder msg = new StringBuilder("\norient2d(" +
+                                            Arrays.toString(p0) + "," +
+                                            Arrays.toString(p1) + "," +
+                                            Arrays.toString(p2) + ")" +
+                                            "\ngold=" + gold + ", truth=" + truth +
+                                            "\npred=" + pred +
+                                            " -> " + Double.toHexString(
+      pred.orient2d(p0, p1, p2)));
+    for (final Predicate p : predicates) {
+      msg.append("\n").append(p).append(" -> ")
+         .append(Double.toHexString(p.orient2d(p0, p1, p2))); }
+    return msg + "\n"; }
 
   //--------------------------------------------------------------
 
@@ -26,24 +47,18 @@ public final class Orient2DTest {
                                       final double[] p0,
                                       final double[] p1,
                                       final double[] p2) {
-    for (final Predicate predicate : predicates) {
-      final double trueAreaX2 = Common.truth().orient2d(p0, p1, p2);
-      final double areaX2 = predicate.orient2d(p0, p1, p2);
-      if (predicate.isExact()) {
+    final Predicate gold = Common.truth();
+    final double trueAreaX2 = gold.orient2d(p0, p1, p2);
+    for (final Predicate p : predicates) {
+      final double areaX2 = p.orient2d(p0, p1, p2);
+      if (p.isExact()) {
         Assertions.assertEquals(
           trueAreaX2, areaX2,
-          "\n" + " truth=" + Double.toHexString(trueAreaX2) +
-            "\n" + predicate + " orient2d=" + Double.toHexString(areaX2) +
-            "\n" + Arrays.toString(p0) +
-            "\n" + Arrays.toString(p1) +
-            "\n" + Arrays.toString(p2)); }
+          failureMsg(trueAreaX2,gold,p,predicates,p0,p1,p2)); }
+      else {
       Assertions.assertEquals(
         Math.signum(trueAreaX2), Math.signum(areaX2),
-        "\n" + " truth=" + Double.toHexString(trueAreaX2) +
-          "\n" + predicate + " orient2d=" + Double.toHexString(areaX2) +
-          "\n" + Arrays.toString(p0) +
-          "\n" + Arrays.toString(p1) +
-          "\n" + Arrays.toString(p2)); } }
+        failureMsg(trueAreaX2,gold,p,predicates,p0,p1,p2)); } } }
 
   @Test
   public final void testOrient2D () {

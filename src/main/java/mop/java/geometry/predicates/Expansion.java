@@ -405,6 +405,25 @@ public final class Expansion {
 //    return hindex + 1;
 //  }
 //
+  private static final double[] twoSum (final double a,
+                                        final double b) {
+    final double x = (a + b);
+    //Two_Sum_Tail(a, b, x, y);
+    final double bvirt = (x - a);
+    final double avirt = x - bvirt;
+    final double bround = b - bvirt;
+    final double around = a - avirt;
+    final double y = around + bround;
+    return new double[] {x , y, }; }
+
+  //--------------------------------------------------------------------
+  private static final double[] fastTwoSum (final double a,
+                                            final double b) {
+    final double x = (a + b);
+    //Fast_Two_Sum_Tail(a, b, x, y)
+    final double bvirt = x - a;
+    final double y = b - bvirt;
+    return new double[] {x, y}; }
   //--------------------------------------------------------------------
   /** Sum two expansions, eliminating zero components from the output
    * expansion.
@@ -425,13 +444,8 @@ public final class Expansion {
                                final int flen,
                                final double[] f,
                                final double[] h) {
-    assert elen <= e.length;
-    assert flen <= f.length;
-//    System.out.println("e="+ Arrays.toString(e));
-//    System.out.println("elen=" + elen);
-//    System.out.println("f="+ Arrays.toString(f));
-//    System.out.println("flen="+ flen);
-//    System.out.println("h="+ Arrays.toString(h));
+//    assert elen <= e.length;
+//    assert flen <= f.length;
 
     double Q;
     double Qnew;
@@ -443,73 +457,49 @@ public final class Expansion {
     double enow = e[0];
     double fnow = f[0];
 
-    if ((fnow > enow) == (fnow > -enow)) { Q = enow; enow = e[++eindex]; }
-    else { Q = fnow; fnow = f[++findex]; }
+    if ((fnow > enow) == (fnow > -enow)) {
+      Q = enow; enow = e[++eindex]; }
+    else {
+      Q = fnow; fnow = f[++findex]; }
 
     if ((eindex < elen) && (findex < flen)) {
       if ((fnow > enow) == (fnow > -enow)) {
         // Fast_Two_Sum(enow, Q, Qnew, hh);
-        Qnew = (enow + Q);
-        final double bvirt = Qnew - enow;
-        hh = Q - bvirt;
-        //-------------
+        { final double[] fts = fastTwoSum(enow,Q);
+          Qnew = fts[0]; hh = fts[1]; }
         enow = e[++eindex]; }
       else {
         // Fast_Two_Sum(fnow, Q, Qnew, hh);
-        Qnew = (fnow + Q);
-        final double bvirt = Qnew - fnow;
-        hh = Q - bvirt;
-        //-------------
+        { final double[] fts = fastTwoSum(fnow,Q);
+          Qnew = fts[0]; hh = fts[1]; }
         fnow = f[++findex]; }
 
       Q = Qnew;
 
       if (hh != 0.0) { h[hindex++] = hh; }
-//      System.out.println("hindex="+ hindex);
-//      System.out.println("h="+ Arrays.toString(h));
 
       while ((eindex < elen) && (findex < flen)) {
         if ((fnow > enow) == (fnow > -enow)) {
           //Two_Sum(Q, enow, Qnew, hh);
-          Qnew = (Q + enow);
-          final double bvirt = (Qnew - Q);
-          final double avirt = Qnew - bvirt;
-          final double bround = enow - bvirt;
-          final double around = Q - avirt;
-          hh = around + bround;
-          //-------------
-//          System.out.println("fnow="+ Double.toHexString(fnow));
-//          System.out.println("enow="+ Double.toHexString(enow));
-//          System.out.println("e="+ Arrays.toString(e));
-//          System.out.println("eindex="+ eindex);
-          // original code goes of the end of e[]
+          { final double[] ts = twoSum(Q,enow);
+          Qnew = ts[0]; hh = ts[1]; }
+          // original code goes off the end of e[]
           eindex++;
           if (eindex<elen) { enow = e[eindex]; } }
         else {
           //Two_Sum(Q, fnow, Qnew, hh);
-          Qnew = (Q + fnow);
-          final double bvirt = (Qnew - Q);
-          final double avirt = Qnew - bvirt;
-          final double bround = fnow - bvirt;
-          final double around = Q - avirt;
-          hh = around + bround;
-          //-------------
+          { final double[] ts = twoSum(Q,fnow);
+            Qnew = ts[0]; hh = ts[1]; }
           // original code goes of the end of f[]
           findex++;
-          if (findex>flen) { fnow = f[findex]; } }
+          if (findex<flen) { fnow = f[findex]; } }
         Q = Qnew;
         if (hh != 0.0) { h[hindex++] = hh; } } }
 
     while (eindex < elen) {
       //Two_Sum(Q, enow, Qnew, hh);
-      Qnew = (Q + enow);
-      final double bvirt = (Qnew - Q);
-      final double avirt = Qnew - bvirt;
-      final double bround = enow - bvirt;
-      final double around = Q - avirt;
-      hh = around + bround;
-      //---------------------
-      // original code goes of the end of e[]
+      { final double[] ts = twoSum(Q,enow); Qnew = ts[0]; hh = ts[1]; }
+      // original code goes of the end of e[], but value never used
       eindex++;
       if (eindex<elen) { enow = e[eindex]; }
       Q = Qnew;
@@ -517,14 +507,9 @@ public final class Expansion {
 
     while (findex < flen) {
       //Two_Sum(Q, fnow, Qnew, hh);
-      Qnew = (Q + fnow);
-      final double bvirt = (Qnew - Q);
-      final double avirt = Qnew - bvirt;
-      final double bround = fnow - bvirt;
-      final double around = Q - avirt;
-      hh = around + bround;
+      { final double[] ts = twoSum(Q,fnow); Qnew = ts[0]; hh = ts[1]; }
       //---------------------------
-      // original code goes of the end of f[]
+      // original code goes of the end of f[], but value never used
       findex++;
       if (findex<flen) { fnow = f[findex]; }
       Q = Qnew;

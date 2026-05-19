@@ -12,7 +12,7 @@ import java.util.List;
 /** Common code for geometry predicate tests.
   *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-05-18
+ * @version 2026-05-19
  */
 
 public final class Common {
@@ -25,7 +25,7 @@ public final class Common {
     final Predicate exact = new Exact();
     final Predicate fast = new Fast();
     final Predicate slow = new Slow();
-    return List.of(adapt,fast,exact,slow); }
+    return List.of(exact,adapt,fast,slow); }
 
   // ground truth predicate.
   // TODO: may be different for different problems
