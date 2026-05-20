@@ -1,6 +1,7 @@
 package mop.java.test.geometry.predicates;
 
 import mop.java.geometry.predicates.*;
+import mop.java.geometry.predicates.jts.*;
 
 import java.util.List;
 
@@ -16,6 +17,27 @@ public final class Common {
   //--------------------------------------------------------------
   // TODO: setup and tear down
 
+  public static final List<Predicate> inCirclePredicates () {
+    final Predicate ddFast = new DDFast();
+    final Predicate ddNormalized = new DDNormalized();
+    final Predicate ddSlow = new DDSlow();
+    final Predicate inCircleCC = new InCircleCC();
+    final Predicate inCircleNonRobust = new InCircleNonRobust();
+    final Predicate inCircleNormalized = new InCircleNormalized();
+    final Predicate bigFloat = new BigFloatPredicate();
+    final Predicate rationalFloat = new RationalFloatPredicate();
+    final Predicate adapt = new Adapt();
+    final Predicate exact = new Exact();
+    final Predicate fast = new Fast();
+    final Predicate slow = new Slow();
+    return List.of(
+      // JTS
+      ddFast,ddNormalized,ddSlow,inCircleCC,inCircleNonRobust,inCircleNormalized,
+      // mine
+      rationalFloat,bigFloat,
+      // Shewchuk predicates.c
+      exact,adapt,fast,slow); }
+
   public static final List<Predicate> makePredicates () {
     final Predicate bigFloat = new BigFloatPredicate();
     final Predicate rationalFloat = new RationalFloatPredicate();
@@ -23,7 +45,11 @@ public final class Common {
     final Predicate exact = new Exact();
     final Predicate fast = new Fast();
     final Predicate slow = new Slow();
-    return List.of(rationalFloat,bigFloat,exact,adapt,fast,slow); }
+    return List.of(
+      // mine
+      rationalFloat,bigFloat,
+      // Shewchuk predicates.c
+      exact,adapt,fast,slow); }
 
   // ground truth predicate.
   // TODO: may be different for different problems

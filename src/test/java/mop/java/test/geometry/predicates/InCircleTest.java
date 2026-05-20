@@ -77,8 +77,8 @@ public final class InCircleTest {
     final double[] p3 = new double[] { -1.0, -1.0, };
     final double[] p4 = new double[] { 1.0, -1.0, };
 
-    inCircle(Common.makePredicates(), p1, p2, p3, p0);
-    inCircle(Common.makePredicates(), p1, p2, p3, p4);
+    inCircle(Common.inCirclePredicates(), p1, p2, p3, p0);
+    inCircle(Common.inCirclePredicates(), p1, p2, p3, p4);
   }
   //--------------------------------------------------------------
   //--------------------------------------------------------------
