@@ -62,7 +62,8 @@ public final class Orient3DTest {
           failureMsg(trueVol,gold,p,predicates,p0,p1,p2,p3)); }
       else {
         Assertions.assertEquals(
-          Math.signum(trueVol), Math.signum(vol),
+
+          Math.signum(trueVol), Math.signum(vol), 0.0,
           failureMsg(trueVol,gold,p,predicates,p0,p1,p2,p3)); } } }
 
   @Test

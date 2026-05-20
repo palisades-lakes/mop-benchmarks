@@ -5,10 +5,10 @@ import mop.java.geometry.predicates.Predicate;
 /** From org.locationtech.jts.triangulate.quadedge.TrianglePredicate
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-05-19
+ * @version 2026-05-20
  */
 
-public final class InCircleNonRobust implements Predicate {
+public final class DoubleNonRobust implements Predicate {
 
   //--------------------------------------------------------------------
   /** TrianglePredicate.triArea
@@ -23,6 +23,16 @@ public final class InCircleNonRobust implements Predicate {
     return (b[0] - a[0]) * (c[1] - a[1])
       - (b[1] - a[1]) * (c[0] - a[0]);
   }
+  //--------------------------------------------------------------------
+  // orient2d
+  //--------------------------------------------------------------------
+
+  @Override
+  public final double orient2d (final double[] a,
+                                final double[] b,
+                                final double[] c) {
+    return triArea(a,b,c); }
+
   //--------------------------------------------------------------------
   // incircle
   //--------------------------------------------------------------------
@@ -42,7 +52,7 @@ public final class InCircleNonRobust implements Predicate {
   //--------------------------------------------------------------------
   // TODO: singleton?
 
-  public InCircleNonRobust () { super(); }
+  public DoubleNonRobust () { super(); }
 
   //-------------------------------------------------------------------
 } // end class

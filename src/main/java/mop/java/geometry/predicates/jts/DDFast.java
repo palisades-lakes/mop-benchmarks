@@ -28,10 +28,22 @@ public final class DDFast implements Predicate {
     }
 
   //--------------------------------------------------------------------
+  // orient2d
+  //--------------------------------------------------------------------
+
+  @Override
+  public final double orient2d (final double[] a,
+                                final double[] b,
+                                final double[] c) {
+    return triAreaDDFast(a,b,c).doubleValue(); }
+
+
+  //--------------------------------------------------------------------
   // incircle
   //--------------------------------------------------------------------
   /** TrianglePredicate.isInCircleNonRobust.
    */
+  @Override
   public final double incircle (final double[] a,
                                 final double[] b,
                                 final double[] c,

@@ -58,7 +58,7 @@ public final class Orient2DTest {
           failureMsg(trueAreaX2,gold,p,predicates,p0,p1,p2)); }
       else {
         Assertions.assertEquals(
-          Math.signum(trueAreaX2), Math.signum(areaX2),
+          Math.signum(trueAreaX2), Math.signum(areaX2), 0.0,
           failureMsg(trueAreaX2,gold,p,predicates,p0,p1,p2)); } } }
 
   @Test
@@ -68,18 +68,19 @@ public final class Orient2DTest {
     final double[] p2 = new double[] { -1.0, 1.0, };
     final double[] p3 = new double[] { -1.0, -1.0, };
 
-    orient2D(Common.makePredicates(), p0, p1, p2);
+    final List<Predicate> predicates = Common.orient2dPredicates();
+    orient2D(predicates, p0, p1, p2);
     // reverse
-    orient2D(Common.makePredicates(), p1, p0, p2);
+    orient2D(predicates, p1, p0, p2);
     // 1 pt singular
-    orient2D(Common.makePredicates(), p0, p0, p0);
+    orient2D(predicates, p0, p0, p0);
     // 2 pt line segment
-    orient2D(Common.makePredicates(),p0, p2, p0);
+    orient2D(predicates,p0, p2, p0);
     // TODO: Slow returns -1, not 0
-    orient2D(List.of(new Adapt(),new Fast()),p0, p0, p2);
+    orient2D(predicates,p0, p0, p2);
+    //orient2D(List.of(new Adapt(),new Fast()),p0, p0, p2);
     // Co-linear triangle
-    // TODO: Exact is wrong: , returns 2.0, but 2*signed area = 0.0
-    orient2D(Common.makePredicates(), p0, p1, p3);
+    orient2D(predicates, p0, p1, p3);
   }
 
 

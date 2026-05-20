@@ -20,6 +20,24 @@ public final class DDSlow implements Predicate {
               .subtract(
                 by.subtract(ay).multiply(cx.subtract(ax))));
   }
+
+  //--------------------------------------------------------------------
+  // orient2d
+  //--------------------------------------------------------------------
+
+  @Override
+  public final double orient2d (final double[] a,
+                                final double[] b,
+                                final double[] c) {
+    final DD ax = DD.valueOf(a[0]);
+    final DD ay = DD.valueOf(a[1]);
+    final DD bx = DD.valueOf(b[0]);
+    final DD by = DD.valueOf(b[1]);
+    final DD cx = DD.valueOf(c[0]);
+    final DD cy = DD.valueOf(c[1]);
+
+    return triAreaDDSlow(ax,ay,bx,by,cx,cy).doubleValue(); }
+
   //--------------------------------------------------------------------
   // incircle
   //--------------------------------------------------------------------

@@ -78,8 +78,6 @@ package mop.java.geometry.predicates;
  * @version 2026-05-15
  */
 
-// strictfp unnecessary for JDK17 and later
-// TODO: merge with Expansion class?
 public interface Predicate {
 
   //--------------------------------------------------------------------
@@ -110,9 +108,9 @@ public interface Predicate {
    */
 
   default double orient2d (final double[] pa,
-                          final double[] pb,
-                          final double[] pc) {
-    throw new UnsupportedOperationException(); }
+                           final double[] pb,
+                           final double[] pc) {
+    throw new UnsupportedOperationException(getClass().getSimpleName()); }
 
   //--------------------------------------------------------------------
   /** Return a positive value if the point pd lies inside the circle
@@ -133,10 +131,10 @@ public interface Predicate {
    * input points are coplanar or nearly so.
    */
   default double orient3d (final double[] pa,
-                          final double[] pb,
-                          final double[] pc,
-                          final double[] pd) {
-    throw new UnsupportedOperationException(); }
+                           final double[] pb,
+                           final double[] pc,
+                           final double[] pd) {
+    throw new UnsupportedOperationException(getClass().getSimpleName()); }
 
   //--------------------------------------------------------------------
   /** Return a positive value if the point pd lies inside the circle
@@ -157,10 +155,10 @@ public interface Predicate {
    * input points are cocircular or nearly so.
    */
   default double incircle (final double[] pa,
-                          final double[] pb,
-                          final double[] pc,
-                          final double[] pd) {
-    throw new UnsupportedOperationException(); }
+                           final double[] pb,
+                           final double[] pc,
+                           final double[] pd) {
+    throw new UnsupportedOperationException(getClass().getSimpleName()); }
 
   //--------------------------------------------------------------------
 
@@ -184,11 +182,11 @@ public interface Predicate {
    */
 
   default double insphere (final double[] pa,
-                          final double[] pb,
-                          final double[] pc,
-                          final double[] pd,
-                          final double[] pe) {
-    throw new UnsupportedOperationException(); }
+                           final double[] pb,
+                           final double[] pc,
+                           final double[] pd,
+                           final double[] pe) {
+    throw new UnsupportedOperationException(getClass().getSimpleName()); }
   //-------------------------------------------------------------------
 } // end class
 //-------------------------------------------------------------------

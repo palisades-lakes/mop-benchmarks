@@ -64,7 +64,7 @@ public final class InCircleTest {
           failureMsg(trueInc,gold,p,predicates,p0,p1,p2,p3)); }
       else {
         Assertions.assertEquals(
-          Math.signum(trueInc), Math.signum(inc),
+          Math.signum(trueInc), Math.signum(inc), 0.0,
           failureMsg(trueInc,gold,p,predicates,p0,p1,p2,p3)); } } }
 
   //--------------------------------------------------------------
