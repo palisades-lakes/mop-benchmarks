@@ -1,12 +1,7 @@
 package mop.java.geometry;
 
-import mop.java.numbers.Doubles;
 import mop.java.prng.Generator;
 import mop.java.prng.GeneratorBase;
-import mop.java.prng.PRNG;
-import org.apache.commons.geometry.euclidean.threed.Vector3D;
-import org.apache.commons.geometry.euclidean.twod.Vector2D;
-import org.apache.commons.rng.UniformRandomProvider;
 
 import java.util.function.Function;
 
@@ -22,6 +17,8 @@ import java.util.function.Function;
 public final class Generators {
 
   //--------------------------------------------------------------
+  // For now just generate doubel2 and double[3]
+  // Later:
   // Constructors for:
   // <ol>
   // <li> org.apache.commons.geometry.euclidean.twod.Vector2D
@@ -53,10 +50,10 @@ public final class Generators {
 //                     final double sigma)
   //--------------------------------------------------------------
 
-  public static final Function<double[], Vector2D>
-    vector2D = Vector2D::of;
-  public static final Function<double[], Vector3D>
-    vector3D = Vector3D::of;
+//  public static final Function<double[], Vector2D>
+//    vector2D = Vector2D::of;
+//  public static final Function<double[], Vector3D>
+//    vector3D = Vector3D::of;
 
   //--------------------------------------------------------------
   // TODO: transform generated coordinates to get correlated values, etc
@@ -74,15 +71,15 @@ public final class Generators {
   }
 
   //--------------------------------------------------------------
-  private static final String SEED0 =
-    "seeds/Well44497b-2019-01-05.txt";
-  private static final UniformRandomProvider URP0 =
-    PRNG.well44497b(SEED0);
-
-  public static final Generator
-    exponentialVector2dGenerator = generator(
-    Doubles.exponentialGenerator(2, URP0, 1.0, 10.0),
-    Vector2D::of);
+//  private static final String SEED0 =
+//    "seeds/Well44497b-2019-01-05.txt";
+//  private static final UniformRandomProvider URP0 =
+//    PRNG.well44497b(SEED0);
+//
+//  public static final Generator
+//    exponentialVector2dGenerator = generator(
+//    Doubles.exponentialGenerator(2, URP0, 1.0, 10.0),
+//    Vector2D::of);
 
 
   //--------------------------------------------------------------

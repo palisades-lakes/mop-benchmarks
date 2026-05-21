@@ -8,6 +8,7 @@ import mop.java.geometry.predicates.Predicate;
  * @version 2026-05-19
  */
 
+@SuppressWarnings("unused")
 public final class InCircleCC implements Predicate {
 
   //--------------------------------------------------------------------
@@ -43,33 +44,44 @@ public final class InCircleCC implements Predicate {
    * This method uses an algorithm due to J.R.Shewchuk which uses normalization
    * to the origin to improve the accuracy of computation. (See <i>Lecture Notes
    * on Geometric Robustness</i>, Jonathan Richard Shewchuk, 1999).
-   *
-   * @param a
-   *          a vertex of the triangle
-   * @param b
-   *          a vertex of the triangle
-   * @param c
-   *          a vertex of the triangle
-   * @return the circumcentre of the triangle
    */
-  private static double[] circumcentre(double[] a, double[] b, double[] c)
-  {
-    double cx = c[0];
-    double cy = c[1];
-    double ax = a[0] - cx;
-    double ay = a[1] - cy;
-    double bx = b[0] - cx;
-    double by = b[1] - cy;
+  private static final double[] circumcentre (final double[] a,
+                                              final double[] b,
+                                              final double[] c) {
+    final double cx = c[0];
+    final double cy = c[1];
+    final double ax = a[0] - cx;
+    final double ay = a[1] - cy;
+    final double bx = b[0] - cx;
+    final double by = b[1] - cy;
 
-    double denom = 2 * det(ax, ay, bx, by);
-    double numx = det(ay, ax * ax + ay * ay, by, bx * bx + by * by);
-    double numy = det(ax, ax * ax + ay * ay, bx, bx * bx + by * by);
+    final double denom = 2 * det(ax, ay, bx, by);
+    // TODO: singular triangle => denom = 0
+    //  What should the circumcenter and radius be?
+    //  3 vertexes the same:
+    //    any vtx is circumcenter, radius 0.0
+    //  2 vertices the same, or 3 colinear:
+    //    Infinite radius, infinite center?
+    //  Try vtx mean as center, and zero or infinite radius depending
+    if (0.0==denom) {
+      if ((0.0==ax) && (0.0==ay) && (0.0==bx) && (0.0==by)) {
+        // 1 pt triangle
+        return a; }
+      // else triangle is a line segment, center is pt at infinity
+      // TODO: immutable singleton?
+      return new double[] { Double.POSITIVE_INFINITY,
+                            Double.POSITIVE_INFINITY }; }
+    final double numx = det(ay,
+                            ax * ax + ay * ay, by,
+                            bx * bx + by * by);
+    final double numy = det(ax,
+                            ax * ax + ay * ay, bx,
+                            bx * bx + by * by);
 
-    double ccx = cx - numx / denom;
-    double ccy = cy + numy / denom;
+    final double ccx = cx - numx / denom;
+    final double ccy = cy + numy / denom;
 
-    return new double[] {ccx, ccy, };
-  }
+    return new double[] { ccx, ccy, }; }
 
   /**
    * Computes the length of the vector (x,y).
@@ -82,7 +94,7 @@ public final class InCircleCC implements Predicate {
    * @param y the y ordinate
    * @return the length of vector (x,y)
    */
-  private static double hypot(double x, double y) {
+  private static final double hypot (final double x, final double y) {
     return Math.sqrt(x * x +  y * y);
   }
 
@@ -93,7 +105,7 @@ public final class InCircleCC implements Predicate {
    * @param c a point
    * @return the 2-dimensional Euclidean distance between the locations
    */
-  private static double distance(double[] a, double[] c) {
+  private static double distance (final double[] a, final double[] c) {
     double dx = a[0] - c[0];
     double dy = a[1] - c[1];
     return hypot(dx, dy);
@@ -108,7 +120,7 @@ public final class InCircleCC implements Predicate {
                                 final double[] b,
                                 final double[] c,
                                 final double[] p) {
-    double[] cc = circumcentre(a, b, c);
+    final double[] cc = circumcentre(a, b, c);
     // sign reversed from JTS for consistency with other predicates
     // TODO: could we use squared distance?
     return distance(a,cc) - distance(p, cc);

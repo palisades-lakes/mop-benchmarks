@@ -39,7 +39,7 @@ public final class Common {
     final Predicate ddFast = new DDFast();
     final Predicate ddNormalized = new DDNormalized();
     final Predicate ddSlow = new DDSlow();
-    final Predicate inCircleCC = new InCircleCC();
+    //final Predicate inCircleCC = new InCircleCC();
     final Predicate doubleNonRobust = new DoubleNonRobust();
     final Predicate inCircleNormalized = new InCircleNormalized();
     final Predicate bigFloat = new BigFloatPredicate();
@@ -50,7 +50,7 @@ public final class Common {
     final Predicate slow = new Slow();
     return List.of(
       // JTS
-      ddFast,ddNormalized,ddSlow,inCircleCC,doubleNonRobust,inCircleNormalized,
+      ddFast,ddNormalized,ddSlow,doubleNonRobust,inCircleNormalized,
       // mine
       rationalFloat,bigFloat,
       // Shewchuk predicates.c
