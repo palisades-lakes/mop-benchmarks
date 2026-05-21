@@ -11,7 +11,6 @@ import java.util.function.DoubleFunction;
 import java.util.function.Function;
 import java.util.function.ToDoubleFunction;
 import java.util.function.ToIntBiFunction;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import mop.java.numbers.*;
@@ -30,9 +29,9 @@ import mop.java.prng.PRNG;
 /** Test utilities
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-05-11
+ * @version 2026-05-21
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked", "unused"})
 public final class Common {
 
   public static final int TRYS = 131;
@@ -42,23 +41,19 @@ public final class Common {
   public static final List<String> inexactAccumulators () {
     return
       Arrays.asList(
-        new String[]
-          { "mop.java.accumulators.DoubleAccumulator",
-            "mop.java.accumulators.DDAccumulator",
-            "mop.java.accumulators.KahanAccumulator",
-          }); }
+        "mop.java.accumulators.DoubleAccumulator",
+        "mop.java.accumulators.DDAccumulator",
+        "mop.java.accumulators.KahanAccumulator"); }
 
   public static final List<String> accumulators () {
     return
       Arrays.asList(
-        new String[]
-          { //"mop.java.accumulators.ERationalAccumulator",
-            //"mop.java.accumulators.EFloatAccumulator",
-            "mop.java.accumulators.DistilledAccumulator",
-            "mop.java.accumulators.ZhuHayesAccumulator",
-            "mop.java.accumulators.BigFloatAccumulator",
-            "mop.java.accumulators.RationalFloatAccumulator",
-          }); }
+        //"mop.java.accumulators.ERationalAccumulator",
+        //"mop.java.accumulators.EFloatAccumulator",
+        "mop.java.accumulators.DistilledAccumulator",
+        "mop.java.accumulators.ZhuHayesAccumulator",
+        "mop.java.accumulators.BigFloatAccumulator",
+        "mop.java.accumulators.RationalFloatAccumulator"); }
 
   //--------------------------------------------------------------
 
@@ -88,7 +83,7 @@ public final class Common {
       classNames
       .stream()
       .map(Common::makeAccumulator)
-      .collect(Collectors.toUnmodifiableList()); }
+      .toList(); }
 
   //--------------------------------------------------------------
   // natural number/ integer tests
@@ -123,8 +118,8 @@ public final class Common {
     final T r1 = valueOf.apply(rs);
     Assertions.assertEquals(r0,r1,() ->
     "\n" + rs + "\n"
-    + r0.toString()
-    + "\n" + r1.toString() + "\n");  }
+    + r0
+    + "\n" + r1 + "\n");  }
 
   public static final <T extends Ringlike<T>> void
   biRoundTrip (final Function<BigInteger,T> fromBI,
@@ -135,7 +130,7 @@ public final class Common {
     Assertions.assertEquals(x0,x1,() ->
     "\n" + y.getClass()
     + "\n" + x0.toString(0x10)
-    + "\n" + y.toString()
+    + "\n" + y
     + "\n" + x1.toString(0x10)
     + "\n"); }
 
@@ -152,9 +147,9 @@ public final class Common {
     + "\n compareTo "
     + "\n" +  x1.toString(0x10)
     + "\n -> " + c0
-    + "\n\n" + y0.toString()
+    + "\n\n" + y0
     + "\n compareTo "
-    + "\n" +  y1.toString()
+    + "\n" + y1
     + "\n -> " + c1
     + "\n\n");
     final int shift = (3*32) + 17;
@@ -166,22 +161,22 @@ public final class Common {
     + "\n" +  x1.toString(0x10)
     + "\nshiftUp " + shift
     + "\n -> " + c2
-    + "\n\n" + y0.toString()
+    + "\n\n" + y0
     + "\n compareTo "
-    + "\n" +  y1.toString()
+    + "\n" + y1
     + "\nshiftUp " + shift
     + "\n -> " + c3
     + "\n\n");
     final int c4 = y0.compareTo(y1.shiftUp(shift));
     Assertions.assertEquals(c3,c4, ()->
-    "\n\n" + y0.toString()
+    "\n\n" + y0
     + "\n compareTo "
-    + "\n" +  y1.toString()
+    + "\n" + y1
     + "\nshiftUp " + shift
     + "\n -> " + c3
-    + "\n\n" + y0.toString()
+    + "\n\n" + y0
     + "\n compareTo "
-    + "\n" +  y1.toString()
+    + "\n" +  y1
     + "\n, " + shift
     + "\n -> " + c4
     + "\n\n");
@@ -198,17 +193,17 @@ public final class Common {
     final T y2 = y0.add(y1);
     final BigInteger x3 = toBI.apply(y2);
     Assertions.assertEquals(x2,x3,() ->
-    "\n" + x0.toString(0x10) + "(" + x0.toString() + ")"
+    "\n" + x0.toString(0x10) + "(" + x0 + ")"
     + "\n + "
-    + "\n" +  x1.toString(0x10) + "(" + x1.toString() + ")"
+    + "\n" +  x1.toString(0x10) + "(" + x1 + ")"
     + "\n -> "
-    + "\n" + x2.toString(0x10) + "(" + x2.toString() + ")"
-    + "\n\n" + y0.toString()
+    + "\n" + x2.toString(0x10) + "(" + x2 + ")"
+    + "\n\n" + y0
     + "\n + "
-    + "\n" +  y1.toString()
+    + "\n" +  y1
     + "\n -> "
-    + "\n" + y2.toString()
-    + "\n\n" + x3.toString(0x10) + "(" + x3.toString() + ")"
+    + "\n" + y2
+    + "\n\n" + x3.toString(0x10) + "(" + x3 + ")"
     + "\n\n"); }
 
   public static final <T extends Ringlike<T>> void
@@ -229,11 +224,11 @@ public final class Common {
     + "\n" +  x1.toString(0x10)
     + "\n -> "
     + "\n" + x2.toString(0x10)
-    + "\n" + y0.toString()
+    + "\n" + y0
     + "\n - "
-    + "\n" +  y1.toString()
+    + "\n" +  y1
     + "\n -> "
-    + "\n" + y2.toString()
+    + "\n" + y2
     + "\n" + x3.toString(0x10)); }
 
   public static final <T extends Ringlike<T>> void
@@ -252,11 +247,11 @@ public final class Common {
     + "\n" +  x1.toString(0x10)
     + "\n -> "
     + "\n" + x2.toString(0x10)
-    + "\n" + y0.toString()
+    + "\n" + y0
     + "\n - "
-    + "\n" +  y1.toString()
+    + "\n" +  y1
     + "\n -> "
-    + "\n" + y2.toString()
+    + "\n" + y2
     + "\n" + x3.toString(0x10)); }
 
   public static final <T extends Ringlike<T>> void
@@ -272,9 +267,9 @@ public final class Common {
     "\n" + x0.toString(0x10)
     + "\n square -> "
     + "\n" + x2.toString(0x10)
-    + "\n\n" + y0.toString()
+    + "\n\n" + y0
     + "\n square -> "
-    + "\n" + y2.toString()
+    + "\n" + y2
     + "\n\n" + x3.toString(0x10)
     + "\n" + x2.toString(0x10)
     + "\n\n" + dx.toString(0x10)); }
@@ -297,11 +292,11 @@ public final class Common {
     + "\n" +  x1.toString(0x10)
     + "\n -> "
     + "\n" + x2.toString(0x10)
-    + "\n\n" + y0.toString()
+    + "\n\n" + y0
     + "\n * "
-    + "\n" +  y1.toString()
+    + "\n" +  y1
     + "\n -> "
-    + "\n" + y2.toString()
+    + "\n" + y2
     + "\n\n" + x3.toString(0x10)
     + "\n\n" + dx.toString(0x10)); }
 
@@ -322,11 +317,11 @@ public final class Common {
       + "\n" +  x1.toString(0x10)
       + "\n -> "
       + "\n" + x2.toString(0x10)
-      + "\n" + y0.toString()
+      + "\n" + y0
       + "\n / "
-      + "\n" +  y1.toString()
+      + "\n" +  y1
       + "\n -> "
-      + "\n" + y2.toString()
+      + "\n" + y2
       + "\n" + x3.toString(0x10)); } }
 
   public static final <T extends Ringlike<T>> void
@@ -348,11 +343,11 @@ public final class Common {
       + "\n" +  x1.toString(0x10)
       + "\n -> "
       + "\n" + x2[0].toString(0x10)
-      + "\n" + y0.toString()
+      + "\n" + y0
       + "\n / "
-      + "\n" +  y1.toString()
+      + "\n" +  y1
       + "\n -> "
-      + "\n" + y2[0].toString()
+      + "\n" + y2[0]
       + "\n" + x3[0].toString(0x10));
 
       Assertions.assertEquals(x2[1],x3[1],() ->
@@ -361,11 +356,11 @@ public final class Common {
       + "\n" +  x1.toString(0x10)
       + "\n -> "
       + "\n" + x2[1].toString(0x10)
-      + "\n" + y0.toString()
+      + "\n" + y0
       + "\n rem "
-      + "\n" +  y1.toString()
+      + "\n" +  y1
       + "\n -> "
-      + "\n" + y2[1].toString()
+      + "\n" + y2[1]
       + "\n" + x3[1].toString(0x10)); } }
 
   public static final void
@@ -389,12 +384,12 @@ public final class Common {
       + "\n -> "
       + "\n" + x2[0].toString(0x10)
       + "\n" + y0.getClass()
-      + "\n" + y0.toString()
+      + "\n" + y0
       + "\n / "
-      + "\n" +  y1.toString()
+      + "\n" +  y1
       + "\n -> "
       + "\n" + y2[0].getClass()
-      + "\n" + y2[0].toString()
+      + "\n" + y2[0]
       + "\n" + x3[0].toString(0x10));
 
       Assertions.assertEquals(x2[1],x3[1],() ->
@@ -403,11 +398,11 @@ public final class Common {
       + "\n" +  x1.toString(0x10)
       + "\n -> "
       + "\n" + x2[1].toString(0x10)
-      + "\n" + y0.toString()
+      + "\n" + y0
       + "\n rem "
-      + "\n" +  y1.toString()
+      + "\n" +  y1
       + "\n -> "
-      + "\n" + y2[1].toString()
+      + "\n" + y2[1]
       + "\n" + x3[1].toString(0x10)); } }
 
   public static final void
@@ -430,11 +425,11 @@ public final class Common {
       + "\n" +  x1.toString(0x10)
       + "\n -> "
       + "\n" + x2[0].toString(0x10)
-      + "\n" + y0.toString()
+      + "\n" + y0
       + "\n / "
-      + "\n" +  y1.toString()
+      + "\n" +  y1
       + "\n -> "
-      + "\n" + y2[0].toString()
+      + "\n" + y2[0]
       + "\n" + x3[0].toString(0x10) + "\n");
 
       Assertions.assertEquals(x2[1],x3[1],() ->
@@ -443,11 +438,11 @@ public final class Common {
       + "\n" +  x1.toString(0x10)
       + "\n -> "
       + "\n" + x2[1].toString(0x10)
-      + "\n" + y0.toString()
+      + "\n" + y0
       + "\n rem "
-      + "\n" +  y1.toString()
+      + "\n" +  y1
       + "\n -> "
-      + "\n" + y2[1].toString()
+      + "\n" + y2[1]
       + "\n" + x3[1].toString(0x10) + "\n"); } }
 
   public static final <T extends Ringlike<T>> void
@@ -468,11 +463,11 @@ public final class Common {
       + "\n" +  x1.toString(0x10)
       + "\n -> "
       + "\n" + x2.toString(0x10)
-      + "\n" + y0.toString()
+      + "\n" + y0
       + "\n rem "
-      + "\n" +  y1.toString()
+      + "\n" +  y1
       + "\n -> "
-      + "\n" + y2.toString()
+      + "\n" + y2
       + "\n" + x3.toString(0x10)); } }
 
   public static final <T extends Ringlike<T>> void
@@ -493,11 +488,11 @@ public final class Common {
       + "\n" +  x1.toString(0x10)
       + "\n -> "
       + "\n" + x2.toString(0x10)
-      + "\n" + y0.toString()
+      + "\n" + y0
       + "\n gcd "
-      + "\n" +  y1.toString()
+      + "\n" +  y1
       + "\n -> "
-      + "\n" + y2.toString()
+      + "\n" + y2
       + "\n" + x3.toString(0x10)); } }
 
   private static final List<BigInteger>
@@ -542,13 +537,13 @@ public final class Common {
       + "\n / "
       + "\n" +  x1.toString(0x10)
       + "\n -> "
-      + "\n" + x2.get(0).toString(0x10)
-      + "\n" + y0.toString()
+      + "\n" + x2.getFirst().toString(0x10)
+      + "\n" + y0
       + "\n / "
-      + "\n" +  y1.toString()
+      + "\n" +  y1
       + "\n -> "
-      + "\n" + y2[0].toString()
-      + "\n" + x3.get(0).toString(0x10));
+      + "\n" + y2[0]
+      + "\n" + x3.getFirst().toString(0x10));
 
       Assertions.assertEquals(x2.get(1),x3.get(1),() ->
       x0.toString(0x10)
@@ -556,11 +551,11 @@ public final class Common {
       + "\n" +  x1.toString(0x10)
       + "\n -> "
       + "\n" + x2.get(1).toString(0x10)
-      + "\n" + y0.toString()
+      + "\n" + y0
       + "\n rem "
-      + "\n" +  y1.toString()
+      + "\n" +  y1
       + "\n -> "
-      + "\n" + y2[1].toString()
+      + "\n" + y2[1]
       + "\n" + x3.get(1).toString(0x10)); } }
 
   //--------------------------------------------------------------
@@ -710,10 +705,7 @@ public final class Common {
     final float x1 = toFloat.applyAsFloat(f);
     // differentiate -0.0, 0.0 and handle NaN
     Assertions.assertEquals(0,Float.compare(x0,x1),
-      () ->
-    Float.toString(x0)
-    + "\n->" + f.toString()
-    + "\n->" + Float.toString(x1)); }
+      () -> x0 + "\n->" + f + "\n->" + x1); }
 
   //--------------------------------------------------------------
 
@@ -751,9 +743,6 @@ public final class Common {
       Assertions.assertTrue(compareDists.applyAsInt(dx,dlo) <= 0,
         () ->
       "not nearest float!"
-      + "\nxlo=" + Float.toString(x1o)
-      + "\nx  =" + Float.toString(x)
-      + "\nxhi=" + Float.toString(xhi)
       + "\nxlo=" + Float.toHexString(x1o)
       + "\nx  =" + Float.toHexString(x)
       + "\nxhi=" + Float.toHexString(xhi)
@@ -767,9 +756,6 @@ public final class Common {
       Assertions.assertTrue(compareDists.applyAsInt(dx,dhi) <= 0,
         () ->
       "not nearest float!"
-      + "\nxlo=" + Float.toString(x1o)
-      + "\nx  =" + Float.toString(x)
-      + "\nxhi=" + Float.toString(xhi)
       + "\nxlo=" + Float.toHexString(x1o)
       + "\nx  =" + Float.toHexString(x)
       + "\nxhi=" + Float.toHexString(xhi)
@@ -784,9 +770,6 @@ public final class Common {
         Assertions.assertTrue(Floats.isEven(x),
                               () ->
         "tied, not even!"
-        + "\nxlo=" + Float.toString(x1o)
-        + "\nx  =" + Float.toString(x)
-        + "\nxhi=" + Float.toString(xhi)
         + "\nxlo=" + Float.toHexString(x1o)
         + "\nx  =" + Float.toHexString(x)
         + "\nxhi=" + Float.toHexString(xhi)
@@ -976,7 +959,7 @@ public final class Common {
     Assertions.assertEquals(0,Double.compare(x0,x1),
       () ->
     Double.toHexString(x0)
-    + "\n->" + f.toString()
+    + "\n->" + f
     + "\n->" + Double.toHexString(x1)); }
 
   //--------------------------------------------------------------
@@ -1024,9 +1007,6 @@ public final class Common {
       Assertions.assertTrue(compareDists.applyAsInt(dx,dlo) <= 0,
         () ->
       "not nearest double!"
-      + "\nxlo=" + Double.toString(x1o)
-      + "\nx  =" + Double.toString(x)
-      + "\nxhi=" + Double.toString(xhi)
       + "\nxlo=" + Double.toHexString(x1o)
       + "\nx  =" + Double.toHexString(x)
       + "\nxhi=" + Double.toHexString(xhi)
@@ -1040,9 +1020,6 @@ public final class Common {
       Assertions.assertTrue(compareDists.applyAsInt(dx,dhi) <= 0,
         () ->
       "not nearest double!"
-      + "\nxlo=" + Double.toString(x1o)
-      + "\nx  =" + Double.toString(x)
-      + "\nxhi=" + Double.toString(xhi)
       + "\nxlo=" + Double.toHexString(x1o)
       + "\nx  =" + Double.toHexString(x)
       + "\nxhi=" + Double.toHexString(xhi)
@@ -1057,9 +1034,6 @@ public final class Common {
         Assertions.assertTrue(Doubles.isEven(x),
                               () ->
         "tied, not even!"
-        + "\nxlo=" + Double.toString(x1o)
-        + "\nx  =" + Double.toString(x)
-        + "\nxhi=" + Double.toString(xhi)
         + "\nxlo=" + Double.toHexString(x1o)
         + "\nx  =" + Double.toHexString(x)
         + "\nxhi=" + Double.toHexString(xhi)
@@ -1247,30 +1221,27 @@ public final class Common {
     final double dmax = Math.abs((double) (1<<emax));
     assert (0.0<dmax) : "\n0>= " + dmax + "\nemax=" + emax;
     return Arrays.asList(
-      new Generator[]
-        {
-         Doubles.gaussianGenerator(dim,urp1,0.0,dmax),
-         Doubles.exponentialGenerator(dim,urp2,0.0,dmax),
-         Doubles.laplaceGenerator(dim,urp3,0.0,dmax),
-         Doubles.uniformGenerator(dim,urp4,-dmax,dmax),
-         Doubles.finiteGenerator(dim,urp0,emax),
-        }); }
+      Doubles.gaussianGenerator(dim,urp1,0.0,dmax),
+      Doubles.exponentialGenerator(dim,urp2,0.0,dmax),
+      Doubles.laplaceGenerator(dim,urp3,0.0,dmax),
+      Doubles.uniformGenerator(dim,urp4,-dmax,dmax),
+      Doubles.finiteGenerator(dim,urp0,emax)); }
 
   private static final List<Generator>
   zeroSumGenerators (final List<Generator> gs0) {
 
     final List<Generator> gs1 =
       gs0.stream().map(Doubles::zeroSumGenerator)
-      .collect(Collectors.toUnmodifiableList());
+      .toList();
     final UniformRandomProvider urp =
       PRNG.well44497b("seeds/Well44497b-2019-04-09.txt");
     final List<Generator> gs2 =
       gs1.stream().map((g) -> Doubles.shuffledGenerator(g,urp))
-      .collect(Collectors.toUnmodifiableList());
+      .toList();
     return
       Stream
       .concat(gs1.stream(),gs2.stream())
-      .collect(Collectors.toUnmodifiableList()); }
+      .toList(); }
 
   //--------------------------------------------------------------
   /** Generate <code>double[dim]</code> such that the sum of the
@@ -1291,10 +1262,7 @@ public final class Common {
   public static final List<Generator> generators (final int dim) {
     final List<Generator> gs0 = baseGenerators(dim);
     final List<Generator> gs1 = zeroSumGenerators(gs0);
-    return
-      Stream
-      .concat(gs0.stream(),gs1.stream())
-      .collect(Collectors.toUnmodifiableList()); }
+    return Stream.concat(gs0.stream(),gs1.stream()).toList(); }
 
   //--------------------------------------------------------------
 
@@ -1503,7 +1471,7 @@ public final class Common {
     //Assertions.assertTrue(base.isExact());
     final double[] x = (double[]) g.next();
     //Debug.println(Classes.className(base));
-    //Debug.println(base.toString());
+    //Debug.println(base);
     //Debug.println(g.name());
     for (final Accumulator a : accumulators) {
       Accumulator e = base.clear();
@@ -1539,14 +1507,14 @@ public final class Common {
     final double[] x = (double[]) g.next();
     final Accumulator e = base.clear().addAll(x);
     //Debug.println(Classes.className(base));
-    //Debug.println(base.toString());
+    //Debug.println(base);
     final double truth = e.doubleValue();
     //Debug.println(g.name());
     for (final Accumulator a : accumulators) {
       //final long t0 = System.nanoTime();
       final Accumulator pfinal = a.clear().addAll(x);
       //Debug.println(Classes.className(a));
-      //Debug.println(pfinal.value().toString());
+      //Debug.println(pfinal.value());
       final double pred = pfinal.doubleValue();
       //final long t1 = (System.nanoTime()-t0);
       Assertions.assertEquals(truth,pred,

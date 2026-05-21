@@ -31,6 +31,9 @@ public record Hilo (double hi, double lo)
     // TODO: what about lo? Constrain both to be NaN?
     return Double.isNaN(hi); }
 
+  public final boolean isFinite () {
+    return Double.isFinite(hi) && Double.isFinite(lo); }
+
   public final boolean isNegative () {
     return hi < 0.0 || (hi == 0.0 && lo < 0.0); }
 
@@ -120,7 +123,7 @@ public record Hilo (double hi, double lo)
     if ((1.0==yhi) && (0.0==ylo)) { return this; }
     if (isNaN()) { return NaN; }
     if (Double.isNaN(yhi)) {return NaN; }
-    assert ! Double.isNaN(ylo);
+    assert ! Double.isNaN(ylo) : toHexString();
     final double hiTest = hi * yhi;
     // TODO: is this right? safe to ignore lo and ylo?
     if (Double.isInfinite(hiTest)) {
@@ -307,6 +310,15 @@ public record Hilo (double hi, double lo)
   public static final Hilo valueOf (final float a) {
     return new Hilo(a, 0.0);  }
 
+  public static final Hilo valueOf (final BigFloat bf) {
+    final double a = bf.doubleValue();
+    if (Double.isFinite(a)) {
+      final double b = bf.add(-a).doubleValue();
+      // TODO: use fastTwoSUm?
+      return twoSum(a, b);  }
+    if (Double.isNaN(a)) { return NaN; }
+    if (0.0 <= a) { return POSITIVE_INFINITY; }
+    return NEGATIVE_INFINITY;  }
 
   //-------------------------------------------------------------------
 } // end class

@@ -21,13 +21,14 @@ import mop.java.prng.Generator;
 import mop.java.prng.GeneratorBase;
 import mop.java.prng.Generators;
 
-/** The set of arbitrary precision floating point numbers
+/** The set of arbitrary (high, not really arbitrary) precision
+ * floating point numbers
  * represented by <code>BigFloat</code>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2022-09-04
+ * @version 2026-05-21
  */
-@SuppressWarnings({"unchecked","static-method"})
+@SuppressWarnings({"unchecked","static-method","unused"})
 public final class BigFloats implements Set {
 
   //--------------------------------------------------------------
@@ -107,24 +108,20 @@ public final class BigFloats implements Set {
 
   @Override
   public final BiPredicate equivalence () {
-    return new BiPredicate<BigFloat,BigFloat>() {
-      @Override
-      public final boolean test (final BigFloat q0,
-                                 final BigFloat q1) {
-        final boolean result = q0.equals(q1);
-        //        if (! result) {
-        //          System.out.println("nonNegative:" +
-        //            (q0.nonNegative()==q1.nonNegative()));
-        //          System.out.println("exponent:" +
-        //            (q0.exponent()==q1.exponent()));
-        //          System.out.println("significand:" +
-        //            (q0.significand()==q1.significand()));
-        //          System.out.println(q0.significand().getClass());
-        //          System.out.println(q0.significand());
-        //          System.out.println(q1.significand().getClass());
-        //          System.out.println(q1.significand());
-        //        }
-        return result;} }; }
+    //final boolean result = q0.equals(q1);
+//        if (! result) {
+//          System.out.println("nonNegative:" +
+//            (q0.nonNegative()==q1.nonNegative()));
+//          System.out.println("exponent:" +
+//            (q0.exponent()==q1.exponent()));
+//          System.out.println("significand:" +
+//            (q0.significand()==q1.significand()));
+//          System.out.println(q0.significand().getClass());
+//          System.out.println(q0.significand());
+//          System.out.println(q1.significand().getClass());
+//          System.out.println(q1.significand());
+//        }
+    return (BiPredicate<BigFloat, BigFloat>) BigFloat::equals; }
 
   //--------------------------------------------------------------
 
@@ -223,10 +220,7 @@ public final class BigFloats implements Set {
   public final Supplier generator (final Map options) {
     final UniformRandomProvider urp = Set.urp(options);
     final Generator g = generator(urp);
-    return
-      new Supplier () {
-      @Override
-      public final Object get () { return g.next(); } }; }
+    return g::next; }
 
   //--------------------------------------------------------------
   // Object methods

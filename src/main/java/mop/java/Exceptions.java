@@ -32,7 +32,7 @@ public final class Exceptions {
                         final Class... args) {
     final String[] argClasses =
       Stream.of(args)
-      .map(x -> Classes.simpleName(x))
+      .map(Classes::simpleName)
       .toArray(String[]::new);
     return unsupportedOperation(
       receiver.getSimpleName(),method,argClasses); }
@@ -44,8 +44,8 @@ public final class Exceptions {
                         final Object... args) {
     final Class[] argClasses =
       Stream.of(args)
-      .map(x -> Classes.getClass(x)) // null safe
-      .toArray(Class[]::new);
+            .map(Classes::getClass) // null safe
+            .toArray(Class[]::new);
     return unsupportedOperation(
       receiver.getClass(),method,argClasses); }
 

@@ -2,7 +2,6 @@ package mop.java.numbers;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.rng.UniformRandomProvider;
@@ -17,9 +16,9 @@ import mop.java.prng.Generators;
 /** Utilities for Object and primitive numbers.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2024-01-16
+ * @version 2026-05-21
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked","unused"})
 public final class Numbers implements Set {
 
   /** <code>(int &amp; UNSIGNED_MASK)</code>
@@ -84,6 +83,8 @@ public final class Numbers implements Set {
   // Useful for passing as a Function method reference
 
   public static final double doubleValue (final Object x) {
+    if (x instanceof Hilo) {
+      return ((Hilo) x).doubleValue(); }
     if (x instanceof BigFloat) {
       return ((BigFloat) x).doubleValue(); }
     if (x instanceof RationalFloat) {
@@ -92,9 +93,11 @@ public final class Numbers implements Set {
       return ((BoundedNatural) x).doubleValue(); }
     if (x instanceof Number) {
       return ((Number) x).doubleValue(); }
-    throw Exceptions.unsupportedOperation(null,"doubleValue",x); }
+    throw Exceptions.unsupportedOperation(x,"doubleValue",x); }
 
   public static float floatValue (final Object x) {
+    if (x instanceof Hilo) {
+      return ((Hilo) x).floatValue(); }
     if (x instanceof BigFloat) {
       return ((BigFloat) x).floatValue(); }
     if (x instanceof RationalFloat) {
@@ -103,7 +106,7 @@ public final class Numbers implements Set {
       return ((BoundedNatural) x).floatValue(); }
     if (x instanceof Number) {
       return ((Number) x).floatValue(); }
-    throw Exceptions.unsupportedOperation(null,"floatValue",x); }
+    throw Exceptions.unsupportedOperation(x,"floatValue",x); }
 
   //--------------------------------------------------------------
 
@@ -168,19 +171,13 @@ public final class Numbers implements Set {
   public static final boolean isZero (final Number x) {
     if (x instanceof BigInteger) { return isZero((BigInteger) x); }
     if (x instanceof BigDecimal) { return isZero((BigDecimal) x); }
-    if (x instanceof Double) {
-      return isZero(((Double) x).doubleValue()); }
-    if (x instanceof Float) {
-      return isZero(((Float) x).floatValue()); }
-    if (x instanceof Integer) {
-      return isZero(((Integer) x).intValue()); }
-    if (x instanceof Long) {
-      return isZero(((Long) x).longValue()); }
-    if (x instanceof Byte) {
-      return isZero(((Byte) x).byteValue()); }
-    if (x instanceof Short) {
-      return isZero(((Short) x).shortValue()); }
-    throw Exceptions.unsupportedOperation(null,"valueOf",x); }
+    if (x instanceof Double) { return isZero(x.doubleValue()); }
+    if (x instanceof final Float v) { return isZero(v.floatValue()); }
+    if (x instanceof final Integer i) { return isZero(i.intValue()); }
+    if (x instanceof final Long l) { return isZero(l.longValue()); }
+    if (x instanceof final Byte b) { return isZero(b.byteValue()); }
+    if (x instanceof final Short i) { return isZero(i.shortValue()); }
+    throw Exceptions.unsupportedOperation(x,"isZero",x); }
 
   public static final boolean isZero (final Object x) {
     if (x instanceof Ringlike) { return ((Ringlike) x).isZero(); }
@@ -192,25 +189,29 @@ public final class Numbers implements Set {
   public static final String description (final String name,
                                           final BigInteger i) {
 
-    return name
-      + "[lo,hi)=" + loBit(i) + "," + hiBit(i) + ")"
-      + " : " + i.toString(0x10); }
+    return name + "[lo,hi)=" +
+      loBit(i) + "," +
+      hiBit(i) + ")" +
+      " : " + i.toString(0x10); }
 
   public static final String description (final String name,
                                           final int i) {
 
-    return name + " = "
-      + Integer.toHexString(i) + "; " + Integer.toString(i) + "\n"
-      + "lo,hi bits= [" +
-      loBit(i) + "," + hiBit(i) + ")"; }
+    return name + " = " +
+      Integer.toHexString(i) +
+      "; " + i +
+      "\n" + "lo,hi bits= [" +
+      loBit(i) + "," +
+      hiBit(i) + ")"; }
 
   public static final String description (final String name,
                                           final long i) {
 
-    return name + " = "
-      + Long.toHexString(i) + "; " + Long.toString(i) + "\n"
-      + "lo,hi bits= [" +
-      loBit(i) + "," + hiBit(i) + ")"; }
+    return name + " = " +
+      Long.toHexString(i) + "; " +
+      i + "\n" +
+      "lo,hi bits= [" + loBit(i) +
+      "," + hiBit(i) + ")"; }
 
   //--------------------------------------------------------------
   // Set methods
