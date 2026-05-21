@@ -215,9 +215,7 @@ public final class XDouble {
   }
 
   //--------------------------------------------------------------------
-
-  /**
-   * Multiply an expansion by a scalar, eliminating zero components from
+  /** Multiply an expansion by a scalar, eliminating zero components from
    * the output expansion.
    * <br>
    * Sets h = be.  See either version of my paper for details.

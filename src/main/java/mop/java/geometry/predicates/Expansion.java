@@ -135,9 +135,6 @@ public final class Expansion {
 //    System.out.println("SPLITTER=" + Double.toHexString(SPLITTER));
 //  }
 
-  static final double resulterrbound =
-    (3.0 + 8.0 * EPSILON) * EPSILON;
-
   //--------------------------------------------------------------------
   // class methods
   //--------------------------------------------------------------------

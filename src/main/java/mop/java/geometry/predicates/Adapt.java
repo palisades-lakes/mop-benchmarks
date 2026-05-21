@@ -93,6 +93,9 @@ public final class Adapt implements Predicate {
   //--------------------------------------------------------------------
   // orient2d
   //--------------------------------------------------------------------
+  private static final double resulterrbound =
+    (3.0 + 8.0 * EPSILON) * EPSILON;
+
   private static final double ccwerrboundB =
     (2.0 + 12.0 * EPSILON) * EPSILON;
 
