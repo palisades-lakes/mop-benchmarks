@@ -22,7 +22,7 @@ import mop.java.prng.PRNG;
  * mvn -q -Dtest=xfp/java/test/algebra/SetTests test > Sets.txt
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-05-09
+ * @version 2026-05-21
  */
 
 public final class SetTests {
@@ -108,7 +108,7 @@ public final class SetTests {
 
   @SuppressWarnings({ "static-method" })
   @Test
-  public final void DDs () { SetTests.tests(DDs.get()); }
+  public final void Hilos () { SetTests.tests(Hilos.get()); }
 
   @SuppressWarnings({ "static-method" })
   @Test

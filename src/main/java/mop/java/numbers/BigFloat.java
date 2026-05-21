@@ -12,12 +12,11 @@ import static mop.java.numbers.Numbers.loBit;
  * <code>int</code> exponent.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2024-01-02
+ * @version 2026-05-21
  */
 
-@SuppressWarnings("unchecked")
-public final class BigFloat
-implements Ringlike<BigFloat> {
+@SuppressWarnings("unused")
+public final class BigFloat implements Ringlike<BigFloat> {
 
   //--------------------------------------------------------------
   // instance fields and methods
@@ -44,7 +43,7 @@ implements Ringlike<BigFloat> {
 
   @Override
   public final boolean isOne () {
-    return this.isOne(); }
+    return equals(ONE); }
 
   //--------------------------------------------------------------
 
@@ -536,10 +535,10 @@ implements Ringlike<BigFloat> {
     final int eh = s0.hiBit();
     // TODO: does Math.clamp work here? faster?
     final int es =
-      Math.max(Floats.MINIMUM_EXPONENT_INTEGRAL_SIGNIFICAND-e0,
-        Math.min(
-          Floats.MAXIMUM_EXPONENT_INTEGRAL_SIGNIFICAND-e0-1,
-          eh-Floats.SIGNIFICAND_BITS));
+      Math.clamp(
+        eh - Floats.SIGNIFICAND_BITS,
+        Floats.MINIMUM_EXPONENT_INTEGRAL_SIGNIFICAND - e0,
+        Floats.MAXIMUM_EXPONENT_INTEGRAL_SIGNIFICAND - e0 - 1);
     if (0==es) {
       return floatMergeBits(p0,s0.intValue(),e0); }
     if (0 > es) {
@@ -614,12 +613,11 @@ implements Ringlike<BigFloat> {
                                           final int e0) {
     if (s0.isZero()) { return (p0 ? 0.0 : -0.0); }
     final int eh = s0.hiBit();
-    // TODO: does Math.clamp work here? faster?
     final int es =
-      Math.max(Doubles.MINIMUM_EXPONENT_INTEGRAL_SIGNIFICAND-e0,
-        Math.min(
-          Doubles.MAXIMUM_EXPONENT_INTEGRAL_SIGNIFICAND-e0-1,
-          eh-Doubles.SIGNIFICAND_BITS));
+      Math.clamp(
+        eh - Doubles.SIGNIFICAND_BITS,
+        Doubles.MINIMUM_EXPONENT_INTEGRAL_SIGNIFICAND - e0,
+        Doubles.MAXIMUM_EXPONENT_INTEGRAL_SIGNIFICAND - e0 - 1);
     if ((eh-es)>Doubles.SIGNIFICAND_BITS) {
       return
         (p0 ?
@@ -683,19 +681,19 @@ implements Ringlike<BigFloat> {
     // assuming reduced
     if ((null==a) || ! a.significand().equals(b.significand())) { return false; }
     if (a.significand().isZero()) { return true; }
-    if ((a.nonNegative()!=b.nonNegative()) || (a.exponent()!=b.exponent())) { return false; }
-    return true; }
+    return (a.nonNegative() == b.nonNegative())
+      && (a.exponent() == b.exponent()); }
 
   public final boolean equals (final BigFloat q) {
     return reducedEquals(reduce(),q.reduce()); }
 
   @Override
-  public boolean equals (final Object o) {
+  public final boolean equals (final Object o) {
     if (!(o instanceof BigFloat)) { return false; }
     return equals((BigFloat) o); }
 
   @Override
-  public int hashCode () {
+  public final int hashCode () {
     final BigFloat a = reduce();
     int h = 17;
     h = (31*h) + (a.nonNegative() ? 0 : 1);
@@ -727,10 +725,10 @@ implements Ringlike<BigFloat> {
   public static final BigFloat ZERO =
     new BigFloat(true,BoundedNatural.ZERO,0);
 
-  //  private static final BigFloat ONE =
-  //    new BigFloat(true,BoundedNatural.valueOf(1),0);
-  //
-  //  private static final BigFloat TWO =
+    private static final BigFloat ONE =
+      new BigFloat(true,BoundedNatural.valueOf(1),0);
+
+//    private static final BigFloat TWO =
   //    new BigFloat(true,BoundedNatural.valueOf(1),1);
   //
   //  private static final BigFloat TEN =

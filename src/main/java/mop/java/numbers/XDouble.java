@@ -99,23 +99,18 @@ public final class XDouble {
   }
 
   //--------------------------------------------------------------------
-  // initialize some constants
-  //--------------------------------------------------------------------
+  // TODO: can this be derived from Double constants?
 
-  static final double EPSILON = 0x1.0p-53;
-  static final double SPLITTER = 0x1.0000002p27;
+  private static final double EPSILON = 0x1.0p-53;
 
   //--------------------------------------------------------------------
   // class methods
   //--------------------------------------------------------------------
-
-  //--------------------------------------------------------------------
-
-  /**
-   * Sum two expansions, eliminating zero components from the output
+  /** Sum two expansions, eliminating zero components from the output
    * expansion.
    * <br>
-   * Sets h = e + f.  See the long version of my paper for details.
+   * Return <pre>this + f</pre>.
+   * See the long version of Shewchuk's paper for details.
    * <br>
    * If round-to-even is used (as with IEEE 754), maintains the strongly
    * nonoverlapping property.  (That is, if e is strongly
@@ -145,8 +140,7 @@ public final class XDouble {
         // Fast_Two_Sum(ti, Q, Qnew, hh);
         { final Hilo fts = Hilo.fastTwoSum(ti, Q);
           Qnew = fts.hi(); hh = fts.lo(); }
-        ti = _terms[++i];
-      }
+        ti = _terms[++i]; }
       else {
         // Fast_Two_Sum(fj, Q, Qnew, hh);
         { final Hilo fts = Hilo.fastTwoSum(fj, Q);
@@ -160,59 +154,46 @@ public final class XDouble {
       while ((i < _nterms) && (j < f._nterms)) {
         if ((fj > ti) == (fj > -ti)) {
           //Two_Sum(Q, ti, Qnew, hh);
-          {
-            final Hilo ts = Hilo.twoSum(Q, ti);
-            Qnew = ts.hi(); hh = ts.lo();
-          }
+          { final Hilo ts = Hilo.twoSum(Q, ti);
+            Qnew = ts.hi(); hh = ts.lo(); }
           // original code goes off the end of _terms[]
           i++;
-          if (i < _nterms) { ti = _terms[i]; }
-        }
+          if (i < _nterms) { ti = _terms[i]; } }
         else {
           //Two_Sum(Q, fj, Qnew, hh);
-          {
-            final Hilo ts = Hilo.twoSum(Q, fj);
-            Qnew = ts.hi(); hh = ts.lo();
-          }
+          { final Hilo ts = Hilo.twoSum(Q, fj);
+            Qnew = ts.hi(); hh = ts.lo(); }
           // original code goes of the end of f._terms[]
           j++;
-          if (j < f._nterms) { fj = f._terms[j]; }
-        }
+          if (j < f._nterms) { fj = f._terms[j]; } }
         Q = Qnew;
-        if (hh != 0.0) { h[k++] = hh; }
-      }
-    }
+        if (hh != 0.0) { h[k++] = hh; } } }
 
     while (i < _nterms) {
       //Two_Sum(Q, ti, Qnew, hh);
-      {
-        final Hilo ts = Hilo.twoSum(Q, ti);Qnew = ts.hi(); hh = ts.lo();
-      }
+      { final Hilo ts = Hilo.twoSum(Q, ti);
+        Qnew = ts.hi(); hh = ts.lo(); }
       // original code goes of the end of _terms[], but value never used
       i++;
       if (i < _nterms) { ti = _terms[i]; }
       Q = Qnew;
-      if (hh != 0.0) { h[k++] = hh; }
-    }
+      if (hh != 0.0) { h[k++] = hh; } }
 
     while (j < f._nterms) {
       //Two_Sum(Q, fj, Qnew, hh);
-      {
-        final Hilo ts = Hilo.twoSum(Q, fj);Qnew = ts.hi(); hh = ts.lo();
-      }
+      { final Hilo ts = Hilo.twoSum(Q, fj);
+        Qnew = ts.hi(); hh = ts.lo(); }
       //---------------------------
       // original code goes of the end of f._terms[], but value never
       // used
       j++;
       if (j < f._nterms) { fj = f._terms[j]; }
       Q = Qnew;
-      if (hh != 0.0) { h[k++] = hh; }
-    }
+      if (hh != 0.0) { h[k++] = hh; } }
 
     if ((Q != 0.0) || (k == 0)) { h[k++] = Q; }
 
-    return new XDouble(k, h);
-  }
+    return new XDouble(k, h); }
 
   //--------------------------------------------------------------------
   /** Multiply an expansion by a scalar, eliminating zero components from
@@ -242,12 +223,12 @@ public final class XDouble {
     // TODO: check this. COuld it be _nterms+1?
     final double[] h = new double[_nterms * 2];
     //Split(b, bhi, blo);
-    c = (SPLITTER * b); abig = (c - b);
+    c = (Hilo.SPLIT * b); abig = (c - b);
     bhi = c - abig;
     blo = b - bhi;
     //------------------------------------------------
     //Two_Product_Presplit(e[0], b, bhi, blo, Q, hh);
-    Q = (_terms[0] * b); c = (SPLITTER * _terms[0]);
+    Q = (_terms[0] * b); c = (Hilo.SPLIT * _terms[0]);
     abig = (c - _terms[0]); ahi = c - abig; alo = _terms[0] - ahi;
     err1 = Q - (ahi * bhi); err2 = err1 - (alo * bhi);
     err3 = err2 - (ahi * blo); hh = (alo * blo) - err3;
@@ -258,7 +239,7 @@ public final class XDouble {
       ti = _terms[i];
       //Two_Product_Presplit(ti, b, bhi, blo, product1, product0);
       //Two_Sum(Q, product0, sum, hh);
-      product1 = (ti * b); c = (SPLITTER * ti);
+      product1 = (ti * b); c = (Hilo.SPLIT * ti);
       abig = (c - ti); ahi = c - abig; alo = ti - ahi;
       err1 = product1 - (ahi * bhi); err2 = err1 - (alo * bhi);
       err3 = err2 - (ahi * blo); product0 = (alo * blo) - err3;
@@ -278,10 +259,7 @@ public final class XDouble {
   }
 
   //--------------------------------------------------------------------
-  // TODO: would a more accurate sum help anything?
-
-  /**
-   * Produce a one-word estimate of an expansion's value.
+  /** Produce a one-word estimate of an expansion's value.
    * <br>
    * See either version of Shewchuk's paper for details.
    */
@@ -289,8 +267,7 @@ public final class XDouble {
   public final double estimate () {
     double Q = _terms[0];
     for (int i = 1; i < _nterms; i++) { Q += _terms[i]; }
-    return Q;
-  }
+    return Q; }
 
   //--------------------------------------------------------------------
   // private construction
