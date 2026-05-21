@@ -14,7 +14,7 @@ import mop.java.Classes;
 
 /** Constructor methods for mop.java.numbers.predicates.Predicates/BiPredicate closures on
  * sets and operations.
- *
+ * <br>
  * Universal algebra approach: binary, unary, nullary ops
  * plus 'laws' involving universal quantifiers impose
  * constraint on ops. No existential quantifiers as in traditional
@@ -22,21 +22,20 @@ import mop.java.Classes;
  * quantified predicate approximately, using generator, but no easy
  * way to even approximately determine the truth of 'there exists'
  * statements.
- *
- * See https://en.wikipedia.org/wiki/Universal_algebra
- *
- * https://en.wikipedia.org/wiki/Outline_of_algebraic_structures
- *
+ * <br>
+ * See <a href="https://en.wikipedia.org/wiki/Universal_algebra"></a>
+ * <a href="https://en.wikipedia.org/wiki/Outline_of_algebraic_structures></a>
+ * <br>
  * (TODO: will need a 'TriPredicate' for affine spaces, etc.).
- *
+ * <br>
  * Constants and class (static) methods only;
  * no instance state or methods.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2021-05-31
+ * @version 2026-05-21
  */
 
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked","unused"})
 public final class Laws {
 
   //--------------------------------------------------------------
@@ -142,14 +141,14 @@ public final class Laws {
           "identity:" + identity + " not in " + elements;
         final Object l = operation.apply(identity,a);
         final boolean ll = eq.test(a,l);
-        assert ll :
-          "(" + operation + " " + identity + " " + a + ")"
-          + " -> " + l;
+//        assert ll :
+//          "(" + operation + " " + identity + " " + a + ")"
+//          + " -> " + l;
         final Object r = operation.apply(a,identity);
         final boolean rr = eq.test(a,r);
-        assert ll :
-          "(" + operation + " " + identity + " " + a + ")"
-          + " -> " + l;
+//        assert rr :
+//          "(" + operation + " " + identity + " " + a + ")"
+//          + " -> " + l;
         return ll && rr; } }
     return new Identity(); }
 
@@ -339,7 +338,6 @@ public final class Laws {
           multiply.apply(a,c));
         final boolean pass = equal.test(left,right);
         if (! pass) {
-          if (! pass) {
             System.out.println();
             System.out.println("mul=" + multiply);
             System.out.println("add=" + add);
@@ -351,7 +349,6 @@ public final class Laws {
               + " != " + Classes.className(right));
             System.out.println("a*(b+c)    =" + left);
             System.out.println("(a*b)+(a*c)=" + right);}
-        }
         return pass; } }
     return new Distributive(); }
 
@@ -550,8 +547,7 @@ public final class Laws {
       @Override
       public final boolean test (final Map<Set,Supplier> generators) {
         final Supplier scalarSamples = generators.get(scalars);
-        assert null != scalarSamples :
-          generators.toString() + "\n" + scalars;
+        assert null != scalarSamples : generators + "\n" + scalars;
         final Supplier elementSamples = generators.get(elements);
         assert null != elementSamples;
         final Object a = scalarSamples.get();

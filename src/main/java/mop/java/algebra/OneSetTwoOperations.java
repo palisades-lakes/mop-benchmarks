@@ -12,9 +12,9 @@ import com.google.common.collect.ImmutableList;
 /** Ring-like structures
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2022-10-30
+ * @version 2026-05-21
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings("unused")
 public final class OneSetTwoOperations extends Structure {
 
   // Two operations:
@@ -79,26 +79,24 @@ public final class OneSetTwoOperations extends Structure {
 
   @Override
   public boolean equals (final Object obj) {
-    if (this == obj) {
-      return true;
-    }
+    if (this == obj) { return true; }
     if ((obj == null) || (getClass() != obj.getClass())) {
-      return false;
-    }
+      return false; }
     final OneSetTwoOperations other = (OneSetTwoOperations) obj;
-    if (! Objects.equals(add(),other.add()) || ! Objects.equals(
-      additiveIdentity(),other.additiveIdentity()) || ! Objects.equals(
-      additiveInverse(),other.additiveInverse()) || ! Objects.equals(multiply(),other.multiply())) {
+    if (! Objects.equals(add(),other.add()) ||
+      ! Objects.equals(additiveIdentity(),other.additiveIdentity()) ||
+      ! Objects.equals(additiveInverse(),other.additiveInverse()) ||
+      ! Objects.equals(multiply(),other.multiply())) {
       return false; }
     if (! Objects.equals(
       multiplicativeIdentity(),other.multiplicativeIdentity())) {
       return false; }
-    if (! Objects.equals
-      (multiplicativeInverse(),other.multiplicativeInverse())) {
-      return false; }
-    if (! Objects.equals(elements(),other.elements())) {
-      return false; }
-    return true; }
+    if (Objects.equals
+                 (multiplicativeInverse(),
+                  other.multiplicativeInverse())) {
+      return Objects.equals(elements(), other.elements());
+    }
+  return false; }
 
   @Override
   public final String toString () {
@@ -167,10 +165,10 @@ public final class OneSetTwoOperations extends Structure {
 
   public static final OneSetTwoOperations
   semiring (final BinaryOperator add,
-        final Object additiveIdentity,
-        final BinaryOperator multiply,
-        final Object multiplicativeIdentity,
-        final Set elements) {
+            final Object additiveIdentity,
+            final BinaryOperator multiply,
+            final Object multiplicativeIdentity,
+            final Set elements) {
     return make(
       add,additiveIdentity,null,
       multiply,multiplicativeIdentity,null,
@@ -200,10 +198,10 @@ public final class OneSetTwoOperations extends Structure {
 
   public static final OneSetTwoOperations
   commutativeSemiring (final BinaryOperator add,
-                   final Object additiveIdentity,
-                   final BinaryOperator multiply,
-                   final Object multiplicativeIdentity,
-                   final Set elements) {
+                       final Object additiveIdentity,
+                       final BinaryOperator multiply,
+                       final Object multiplicativeIdentity,
+                       final Set elements) {
     return make(
       add,additiveIdentity,null,
       multiply,multiplicativeIdentity,null,

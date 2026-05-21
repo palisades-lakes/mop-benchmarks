@@ -76,8 +76,8 @@ package mop.java.numbers;
 public final class XDouble {
 
   private final int _nterms;
-  /**
-   * Non-overlapping doubles, highest order term last.
+
+  /** Non-overlapping doubles, highest order term last.
    */
   private final double[] _terms;
 
@@ -95,16 +95,13 @@ public final class XDouble {
   static {
     assert (0 > "17".compareTo(System.getProperty("java.version")))
       : "Java: " + System.getProperty("java.version") +
-      " not supported";
-  }
+      " not supported"; }
 
   //--------------------------------------------------------------------
   // TODO: can this be derived from Double constants?
 
   private static final double EPSILON = 0x1.0p-53;
 
-  //--------------------------------------------------------------------
-  // class methods
   //--------------------------------------------------------------------
   /** Sum two expansions, eliminating zero components from the output
    * expansion.
@@ -117,10 +114,10 @@ public final class XDouble {
    * nonoverlapping, h will be also.) Does NOT maintain the
    * nonoverlapping or nonadjacent properties.
    * <br>
-   * Was: fast_expansion_sum_zeroelim
+   * Was: fast_expansion_sum_zeroelim in predicates.c
    */
 
-  public final XDouble sum (final XDouble f) {
+  public final XDouble add (final XDouble f) {
     final double[] h = new double[_nterms + f._nterms];
     double Q;
     double Qnew;
@@ -194,6 +191,13 @@ public final class XDouble {
     if ((Q != 0.0) || (k == 0)) { h[k++] = Q; }
 
     return new XDouble(k, h); }
+
+  //--------------------------------------------------------------------
+
+  public final XDouble negate () {
+    final double[] h = new double[_nterms];
+    for (int i=0;i<_nterms;i++) { h[i] = -_terms[i]; }
+    return new XDouble(_nterms, h); }
 
   //--------------------------------------------------------------------
   /** Multiply an expansion by a scalar, eliminating zero components from
@@ -277,8 +281,13 @@ public final class XDouble {
                    final double[] terms) {
     assert terms.length <= nterms;
     _nterms = nterms;
-    _terms = terms;
-  }
+    _terms = terms; }
+
+  public static final XDouble ZERO
+    = new XDouble(0,new double[0]);
+
+  public static final XDouble valueOf (final double x) {
+    return new XDouble(1,new double[]{x}); }
 
   //-------------------------------------------------------------------
 } // end class
