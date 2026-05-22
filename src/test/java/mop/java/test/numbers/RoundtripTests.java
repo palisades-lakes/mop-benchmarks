@@ -11,7 +11,7 @@ import java.util.List;
 
 import clojure.lang.Numbers;
 import clojure.lang.Ratio;
-import mop.java.numbers.DD;
+import mop.java.numbers.Hilo;
 import org.apache.commons.math3.fraction.BigFraction;
 import org.junit.jupiter.api.Test;
 
@@ -33,7 +33,7 @@ import mop.java.accumulators.EFloatAccumulator;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-05-08
+ * @version 2026-05-22
  */
 
 public final class RoundtripTests {
@@ -270,19 +270,19 @@ public final class RoundtripTests {
   //    return true; }
 
   //--------------------------------------------------------------
-  /** DD should be able to represent any double exactly.
+  /** Hilo should be able to represent any double exactly.
    */
 
-  private static final boolean double2DD2Double () {
+  private static final boolean double2Hilo2Double () {
     for (final Generator g : List.of(
       finiteDoubles(), subnormalDoubles(), normalDoubles())) {
       for (int i=0;i<TRYS;i++) {
         final double x = g.nextDouble();
-        final DD f = DD.valueOf(x);
+        final Hilo f = Hilo.valueOf(x);
         final double xf = f.doubleValue();
         if (x != xf) {
           System.out.println("\n\n" +
-                               "DD.doubleValue:" + Doubles.isNormal(x) +"\n" +
+                               "Hilo.doubleValue:" + Doubles.isNormal(x) +"\n" +
                                x + "\n" +
                                xf + "\n\n" +
                                Double.toHexString(x) + "\n" +
@@ -400,7 +400,7 @@ public final class RoundtripTests {
   @Test
   public final void roundTripTest () {
 
-    assertTrue(double2DD2Double());
+    assertTrue(double2Hilo2Double());
     assertTrue(double2RF2Double());
     assertTrue(double2BigDecimal2Double());
     assertTrue(double2ERational2Double());

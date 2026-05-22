@@ -85,6 +85,8 @@ public final class Numbers implements Set {
   public static final double doubleValue (final Object x) {
     if (x instanceof Hilo) {
       return ((Hilo) x).doubleValue(); }
+    if (x instanceof XDouble) {
+      return ((XDouble) x).doubleValue(); }
     if (x instanceof BigFloat) {
       return ((BigFloat) x).doubleValue(); }
     if (x instanceof RationalFloat) {
@@ -98,6 +100,8 @@ public final class Numbers implements Set {
   public static float floatValue (final Object x) {
     if (x instanceof Hilo) {
       return ((Hilo) x).floatValue(); }
+    if (x instanceof XDouble) {
+      return ((XDouble) x).floatValue(); }
     if (x instanceof BigFloat) {
       return ((BigFloat) x).floatValue(); }
     if (x instanceof RationalFloat) {

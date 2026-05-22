@@ -296,13 +296,37 @@ public record Hilo (double hi, double lo)
 
   public static final Hilo fastTwoSum (final double a,
                                        final double b) {
-    assert Math.abs(a) >= Math.abs(b);
+    assert Math.abs(a) >= Math.abs(b) :
+    "fastTwoSum(" +
+      Double.toHexString(a) + ", " +
+      Double.toHexString(b) + ")";
     final double x = (a + b);
     //Fast_Two_Sum_Tail(a, b, x, y)
     final double bvirt = x - a;
     final double y = b - bvirt;
-    return new Hilo(x, y);
-  }
+    return new Hilo(x, y); }
+
+  public static final Hilo split (final double a) {
+    final double c = SPLIT * a;
+    final double abig = (c - a);
+    final double ahi = c - abig;
+    final double alo = a - ahi;
+    return new Hilo(ahi, alo);  }
+
+  // Two_Product_Presplit() is Two_Product() where one of the inputs has
+  //  already been split.  Avoids redundant splitting.
+  @SuppressWarnings("unused")
+  public static final Hilo twoProductPresplit (final double a,
+                                               final double b,
+                                               final Hilo bhilo) {
+    final double x = a * b;
+    final Hilo ahilo = split(a);
+    final double err1 = x - (ahilo.hi * bhilo.hi);
+    final double err2 = err1 - (ahilo.lo * bhilo.hi);
+    final double err3 = err2 - (ahilo.hi * bhilo.lo);
+    final double y = (ahilo.lo * bhilo.lo) - err3;
+    return new Hilo(x, y); }
+
 
   public static final Hilo valueOf (final double a) {
     return new Hilo(a, 0.0);  }

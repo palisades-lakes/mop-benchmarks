@@ -69,11 +69,11 @@ package mop.java.numbers;
  *   even <code>BigInteger</code> to extend range.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-05-20
+ * @version 2026-05-22
  */
 
 @SuppressWarnings("unused")
-public final class XDouble {
+public final class XDouble implements Comparable<XDouble> {
 
   private final int _nterms;
 
@@ -85,6 +85,22 @@ public final class XDouble {
 //    assert _nterms >= i;
 //    return _terms[i];
 //  }
+
+  //-------------------------------------------------------------------
+  // Comparable<Hilo>
+  //-------------------------------------------------------------------
+  // TODO: reverse order of terms? Most significant first?
+
+  @Override
+  public final int compareTo (final XDouble other) {
+    int i = this._nterms;
+    int j = other._nterms;
+    while (--i >= 0 && --j >= 0) {
+      final double a = _terms[j];
+      final double b = other._terms[j];
+      if (a < b) { return -1; }
+      if (a > b) { return 1; } }
+    return 0; }
 
   //--------------------------------------------------------------------
   // require IEEE 754
@@ -101,6 +117,25 @@ public final class XDouble {
   // TODO: can this be derived from Double constants?
 
   private static final double EPSILON = 0x1.0p-53;
+
+  // grow_expansion_zeroelim
+  // TODO: would it make sense to implement add(XDouble) by calling this?
+  public final XDouble add (final double b) {
+    final int elen = _nterms;
+    final double[] h = new double[elen+1];
+    int hindex = 0;
+    double Q = b;
+    for (int eindex = 0; eindex < elen; eindex++) {
+      double enow = _terms[eindex];
+      //Two_Sum(Q, enow, Qnew, hh);
+      double hh, Qnew;
+      { final Hilo fts = Hilo.twoSum(Q,enow);
+        Qnew = fts.hi(); hh = fts.lo(); }
+      Q = Qnew;
+      if (hh != 0.0) { h[hindex++] = hh; } }
+    if ((Q != 0.0) || (hindex == 0)) { h[hindex++] = Q; }
+
+    return new XDouble(hindex, h); }
 
   //--------------------------------------------------------------------
   /** Sum two expansions, eliminating zero components from the output
@@ -199,6 +234,14 @@ public final class XDouble {
     for (int i=0;i<_nterms;i++) { h[i] = -_terms[i]; }
     return new XDouble(_nterms, h); }
 
+  public final XDouble abs () {
+    final double hi = _terms[_nterms - 1];
+    if ((! Double.isFinite(hi)) || (hi >= 0)) { return this; }
+    return negate(); }
+
+  public final XDouble subtract (final XDouble f) {
+    return add(f.negate());  }
+
   //--------------------------------------------------------------------
   /** Multiply an expansion by a scalar, eliminating zero components from
    * the output expansion.
@@ -209,6 +252,8 @@ public final class XDouble {
    * (as with IEEE 754), maintains the strongly nonoverlapping and
    * nonadjacent properties as well.  (That is, if e has one of these
    * properties, so will h.)
+   * <br>
+   * was scale_expansion() in predicates.c
    */
 
   public final XDouble scale (final double b) {
@@ -225,7 +270,7 @@ public final class XDouble {
     double ahi, alo, bhi, blo;
     double err1, err2, err3;
     // TODO: check this. COuld it be _nterms+1?
-    final double[] h = new double[_nterms * 2];
+    final double[] h = new double[_nterms + 1];
     //Split(b, bhi, blo);
     c = (Hilo.SPLIT * b); abig = (c - b);
     bhi = c - abig;
@@ -256,13 +301,10 @@ public final class XDouble {
       Q = (product1 + sum); bvirt = Q - product1;
       hh = sum - bvirt;
       //------------------------------------------------------
-      if (hh != 0) { h[k++] = hh; }
-    }
+      if (hh != 0) { h[k++] = hh; } }
     if ((Q != 0.0) || (k == 0)) { h[k++] = Q; }
-    return new XDouble(k, h);
-  }
-
-  //--------------------------------------------------------------------
+    return new XDouble(k-1, h);
+  }  //--------------------------------------------------------------------
   /** Produce a one-word estimate of an expansion's value.
    * <br>
    * See either version of Shewchuk's paper for details.
@@ -273,21 +315,45 @@ public final class XDouble {
     for (int i = 1; i < _nterms; i++) { Q += _terms[i]; }
     return Q; }
 
+  // TODO: might be different from Shewchuk's estimate
+  public final double doubleValue () { return estimate(); }
+
+  // TODO: might be different from Shewchuk's estimate
+  public final float floatValue () { return (float) doubleValue(); }
+
   //--------------------------------------------------------------------
   // private construction
   //--------------------------------------------------------------------
 
   private XDouble (final int nterms,
                    final double[] terms) {
-    assert terms.length <= nterms;
+    assert terms.length >= nterms : terms.length + " <= " + nterms;
     _nterms = nterms;
     _terms = terms; }
 
-  public static final XDouble ZERO
-    = new XDouble(0,new double[0]);
-
+  // add requires at least 2 terms, larger magnitude 2nd
   public static final XDouble valueOf (final double x) {
-    return new XDouble(1,new double[]{x}); }
+    return new XDouble(2,new double[]{0.0, x,}); }
+
+  public static final XDouble ZERO = valueOf(0.0);
+
+  public static final XDouble NaN = valueOf(Double.NaN );
+
+  public static final XDouble POSITIVE_INFINITY =
+    valueOf(Double.POSITIVE_INFINITY);
+
+  public static final XDouble NEGATIVE_INFINITY =
+    valueOf(Double.NEGATIVE_INFINITY);
+
+  // TODO: better way to do this, or to generate high precision values
+  //  directly
+//  public static final XDouble valueOf (final BigFloat bf) {
+//    double a = bf.doubleValue();
+//    XDouble x = valueOf(a);
+//    if (! Double.isFinite(a)) { return x; }
+//    while (0.0 != (a = bf.add(-a).doubleValue())) {
+//      x = x.add(a); }
+//    return x; }
 
   //-------------------------------------------------------------------
 } // end class
