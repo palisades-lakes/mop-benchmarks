@@ -33,7 +33,7 @@ public final class XDoubles implements Set {
   // operations for algebraic structures over XDoubles.
   //--------------------------------------------------------------
 
-    public final BinaryOperator<XDouble> adder () {
+  public final BinaryOperator<XDouble> adder () {
     return new BinaryOperator<> () {
       @Override
       public final String toString () { return "XDouble.add()"; }
@@ -157,7 +157,13 @@ public final class XDoubles implements Set {
       public Object next () {
         final boolean edge = choose.sample() > dp;
         if (edge) { return edgeCases.sample(); }
-        return XDouble.valueOf(g.nextDouble()); } }; }
+        final XDouble a = XDouble.valueOf(g.nextDouble());
+        final XDouble b = XDouble.valueOf(g.nextDouble());
+        return a.add(b).add(b);
+//        final XDouble c = XDouble.valueOf(g.nextDouble());
+//        final XDouble d = XDouble.valueOf(g.nextDouble());
+//        return a.add(b).add(b).add(c).add(d);
+      } }; }
 
   // Is this characteristic of most inputs?
   public static final Generator

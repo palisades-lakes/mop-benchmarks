@@ -282,9 +282,9 @@ public final class XDouble implements Comparable<XDouble> {
   // #define Two_One_Diff(a1, a0, b, x2, x1, x0) \
   //  Two_Diff(a0, b , _i, x0); \
   //  Two_Sum( a1, _i, x2, x1)
-  private static final double[] twoOneDiff(final double ahi,
-                                           final double alo,
-                                           final double b) {
+  private static final double[] twoOneDiff (final double ahi,
+                                            final double alo,
+                                            final double b) {
     final Hilo ix0 = Hilo.twoDiff(alo, b);
     final Hilo x2x1 = Hilo.twoSum(ahi, ix0.hi());
     return new double[] {ix0.lo(), x2x1.lo(), x2x1.hi(), }; }
@@ -314,7 +314,7 @@ public final class XDouble implements Comparable<XDouble> {
     return unsafe(DoubleArrayList.from(lo, hi)); }
 
   public static final XDouble crossProduct (final double[] a,
-                                           final double[]  b) {
+                                            final double[]  b) {
     final XDouble axby = twoProduct(a[0], b[1]);
     final XDouble bxay = twoProduct(b[0], a[1]);
     return axby.subtract(bxay); }
