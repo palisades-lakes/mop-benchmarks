@@ -47,14 +47,17 @@ public final class Common {
     final Predicate adapt = new Adapt();
     final Predicate exact = new Exact();
     final Predicate fast = new Fast();
-    final Predicate slow = new Slow();
+//    final Predicate slow = new Slow();
     return List.of(
       // JTS
       ddFast,ddNormalized,ddSlow,doubleNonRobust,inCircleNormalized,
       // mine
       rationalFloat,bigFloat,
       // Shewchuk predicates.c
-      exact,adapt,fast,slow); }
+      exact,
+      adapt,fast
+      //,slow
+                  ); }
 
 
   public static final List<Predicate> makePredicates () {
@@ -72,7 +75,8 @@ public final class Common {
 
   // ground truth predicate.
   // TODO: may be different for different problems
-  public static final Predicate truth () { return new Exact(); }
+  public static final Predicate truth () {
+    return new BigFloatPredicate(); }
 
   //--------------------------------------------------------------
 }

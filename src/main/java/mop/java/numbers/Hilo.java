@@ -167,19 +167,19 @@ public record Hilo (double hi, double lo)
     return divide(y, 0.0); }
 
   public final Hilo divide (final double yhi, final double ylo) {
-     double hc, tc, hy, ty, C, c, U, u;
-     C = hi / yhi; c = SPLIT * C; hc = c - C; u = SPLIT * yhi;
-     hc = c - hc;
-     tc = C - hc; hy = u - yhi; U = C * yhi; hy = u - hy;
-     ty = yhi - hy;
-     u = (((hc * hy - U) + hc * ty) + tc * hy) + tc * ty;
-     c = ((((hi - U) - u) + lo) - C * ylo) / yhi;
-     u = C + c;
-     return twoSum(u, (C - u) + c); }
+    double hc, tc, hy, ty, C, c, U, u;
+    C = hi / yhi; c = SPLIT * C; hc = c - C; u = SPLIT * yhi;
+    hc = c - hc;
+    tc = C - hc; hy = u - yhi; U = C * yhi; hy = u - hy;
+    ty = yhi - hy;
+    u = (((hc * hy - U) + hc * ty) + tc * hy) + tc * ty;
+    c = ((((hi - U) - u) + lo) - C * ylo) / yhi;
+    u = C + c;
+    return twoSum(u, (C - u) + c); }
 
   @Override
   public final Hilo divide (final Hilo y) {
-   return divide(y.hi, y.lo); }
+    return divide(y.hi, y.lo); }
 
   @Override
   public final Hilo invert () {
@@ -257,15 +257,15 @@ public record Hilo (double hi, double lo)
   // construction
   //--------------------------------------------------------------------
   /** A <code>DD</code>> uses a representation containing two double-precision
-  * values. A number x is represented as a pair of doubles, x.hi and
-  * x.lo, such that the number represented by x is x.hi + x.lo, where
-  * <pre>
-  *    |x.lo| &lt;= 0.5 * ulp(x.hi)
-  * </pre>
-  * and ulp(y) means "unit in the last place of y". The basic
-  * arithmetic
-  * operations are implemented using convenient properties of IEEE-754
-  * floating-point arithmetic.
+   * values. A number x is represented as a pair of doubles, x.hi and
+   * x.lo, such that the number represented by x is x.hi + x.lo, where
+   * <pre>
+   *    |x.lo| &lt;= 0.5 * ulp(x.hi)
+   * </pre>
+   * and ulp(y) means "unit in the last place of y". The basic
+   * arithmetic
+   * operations are implemented using convenient properties of IEEE-754
+   * floating-point arithmetic.
    */
 
   private final boolean checkUlp (final double s, final double t) {
@@ -297,36 +297,88 @@ public record Hilo (double hi, double lo)
   public static final Hilo fastTwoSum (final double a,
                                        final double b) {
     assert Math.abs(a) >= Math.abs(b) :
-    "fastTwoSum(" +
-      Double.toHexString(a) + ", " +
-      Double.toHexString(b) + ")";
+      "fastTwoSum(" +
+        Double.toHexString(a) + ", " +
+        Double.toHexString(b) + ")";
     final double x = (a + b);
     //Fast_Two_Sum_Tail(a, b, x, y)
     final double bvirt = x - a;
     final double y = b - bvirt;
     return new Hilo(x, y); }
 
-  public static final Hilo split (final double a) {
-    final double c = SPLIT * a;
-    final double abig = (c - a);
-    final double ahi = c - abig;
-    final double alo = a - ahi;
-    return new Hilo(ahi, alo);  }
+  public static final Hilo twoDiff (final double a, final double b) {
+    final double x = (a - b);
+    //Two_Diff_Tail(a, b, x, y)
+    final double bvirt = (a - x);
+    final double avirt = x + bvirt;
+    final double bround = bvirt - b;
+    final double around = a - avirt;
+    final double y = around + bround;
+    return new Hilo(x, y); }
+
+  // TODO: move to Expansion or XDouble
+  // returns double[3]
+  // #define Two_One_Diff(a1, a0, b, x2, x1, x0) \
+  //  Two_Diff(a0, b , _i, x0); \
+  //  Two_Sum( a1, _i, x2, x1)
+//  public static final double[] twoOneDiff(final double ahi,
+//                                          final double alo,
+//                                          final double b) {
+//    final Hilo ix0 = twoDiff(alo, b);
+//    final Hilo x2x1 = twoSum(ahi, ix0.hi());
+//    return new double[] {ix0.lo(), x2x1.lo(), x2x1.hi(), }; }
+
+  // TODO: move to Expansion or XDouble
+  // returns double[4]
+  // Two_Two_Diff(axby1, axby0, bxay1, bxay0,
+  //              ab[3], ab[2], ab[1], ab[0]);
+//  public static final double[] twoTwoDiff (final Hilo a,
+//                                           final Hilo b) {
+//    // Two_One_Diff(a1, a0, b0, _j, _0, x0);
+//    final double[] x00j = twoOneDiff(a.hi(),a.lo(),b.lo());
+//    // Two_One_Diff(_j, _0, b.hi(), x3, x2, x1)
+//    final double[] x123 = twoOneDiff(x00j[2],x00j[1],b.hi);
+//    return new double[] { x00j[0],x123[0],x123[1],x123[2], };  }
+
+  // Shewchuk version
+//  public static final Hilo twoProduct (final double a,
+//                                       final double b) {
+//    final double x = (a * b);
+//    //Two_Product_Tail(a, b, x, y)
+//    // TODO: inline to avoid instance creation?
+//    final double ca = SPLIT * a;
+//    final double abig = (ca - a);
+//    final double ahi = ca - abig;
+//    final double alo = a - ahi;
+//    final double cb = SPLIT * b;
+//    final double bbig = (cb - b);
+//    final double bhi = cb - bbig;
+//    final double blo = b - bhi;
+//    final double err1 = x - (ahi * bhi);
+//    final double err2 = err1 - (alo * bhi);
+//    final double err3 = err2 - (ahi * blo);
+//    final double y = (alo * blo) - err3;
+//    return new Hilo(x, y); }
+
+  // FMA version
+  public static final Hilo twoProduct (final double a,
+                                       final double b) {
+    final double x = (a * b);
+    final double y = Math.fma(a,b,-x);
+    return new Hilo(x, y); }
 
   // Two_Product_Presplit() is Two_Product() where one of the inputs has
   //  already been split.  Avoids redundant splitting.
-  @SuppressWarnings("unused")
-  public static final Hilo twoProductPresplit (final double a,
-                                               final double b,
-                                               final Hilo bhilo) {
-    final double x = a * b;
-    final Hilo ahilo = split(a);
-    final double err1 = x - (ahilo.hi * bhilo.hi);
-    final double err2 = err1 - (ahilo.lo * bhilo.hi);
-    final double err3 = err2 - (ahilo.hi * bhilo.lo);
-    final double y = (ahilo.lo * bhilo.lo) - err3;
-    return new Hilo(x, y); }
-
+//  public static final Hilo twoProductPresplit (final double a,
+//                                               final double b,
+//                                               final Hilo bhilo) {
+//    final double x = a * b;
+//    final Hilo ahilo = split(a);
+//    final double err1 = x - (ahilo.hi * bhilo.hi);
+//    final double err2 = err1 - (ahilo.lo * bhilo.hi);
+//    final double err3 = err2 - (ahilo.hi * bhilo.lo);
+//    final double y = (ahilo.lo * bhilo.lo) - err3;
+//    return new Hilo(x, y); }
 
   public static final Hilo valueOf (final double a) {
     return new Hilo(a, 0.0);  }

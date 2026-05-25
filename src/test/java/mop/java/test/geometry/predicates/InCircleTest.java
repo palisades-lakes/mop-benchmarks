@@ -1,6 +1,10 @@
 package mop.java.test.geometry.predicates;
 
 import mop.java.geometry.predicates.Predicate;
+import mop.java.numbers.Doubles;
+import mop.java.prng.Generator;
+import mop.java.prng.PRNG;
+import org.apache.commons.rng.UniformRandomProvider;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -8,15 +12,13 @@ import java.util.Arrays;
 import java.util.List;
 
 //----------------------------------------------------------------
-
-/**
- * Common code for geometry predicate tests.
+/** Common code for geometry predicate tests.
  * <pre>
  * mvn -Dtest=mop.java.test.geometry.predicates.InCircleTest test
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-05-19
+ * @version 2026-05-24
  */
 
 public final class InCircleTest {
@@ -30,6 +32,7 @@ public final class InCircleTest {
                                           final double[] p1,
                                           final double[] p2,
                                           final double[] p3) {
+    final double in = pred.incircle(p0, p1, p2, p3);
     final StringBuilder msg = new StringBuilder(
       "\ninCircle(" +
         Arrays.toString(p0) + "," +
@@ -37,10 +40,9 @@ public final class InCircleTest {
         Arrays.toString(p2) + "," +
         Arrays.toString(p3) + ")" +
         "\ngold=" + gold +
-        ", truth=\n" + Double.toHexString(truth) +
-        "\npred=" + pred +
-        " -> \n" + Double.toHexString(
-        pred.incircle(p0, p1, p2,p3)));
+        ", truth= " + Double.toHexString(truth) +
+        "\npred=" + pred + " -> " + Double.toHexString(in));
+    msg.append("\ndiff=").append(Double.toHexString(truth-in));
     for (final Predicate p : predicates) {
       msg.append("\n").append(p).append(" ->\n")
          .append(Double.toHexString(p.incircle(p0, p1, p2,p3))); }
@@ -89,18 +91,17 @@ public final class InCircleTest {
   //--------------------------------------------------------------
   // 2026-05-21: failing, may be Expansion rounding to double?
 
-//  @Test
-//  public final void laplaceTest () {
-//    final List<Predicate> predicates =Common.inCirclePredicates();
-//    final int n = 12;
-//    final UniformRandomProvider urp =
-//      PRNG.well44497b("seeds/Well44497b-2019-01-05.txt");
-//    final Generator laplaceGenerator =
-//      Doubles.laplaceGenerator(n,2,urp,0.0,1.0);
-//    final double[][] p = (double[][]) laplaceGenerator.next();
-//    for (int i = 0; i < n-3; i++) {
-//      System.out.println(i);
-//      inCircle(predicates, p[i], p[i+1], p[i+2], p[i+3]);} }
+  @Test
+  public final void laplaceTest () {
+    final List<Predicate> predicates =Common.inCirclePredicates();
+    final int n = 12;
+    final UniformRandomProvider urp =
+      PRNG.well44497b("seeds/Well44497b-2019-01-05.txt");
+    final Generator laplaceGenerator =
+      Doubles.laplaceGenerator(n, 2, urp, 0.0, 1.0);
+    final double[][] p = (double[][]) laplaceGenerator.next();
+    for (int i = 0; i < n-3; i++) {
+      inCircle(predicates, p[i], p[i+1], p[i+2], p[i+3]);} }
   //--------------------------------------------------------------
 }
 //--------------------------------------------------------------

@@ -1,7 +1,8 @@
 package mop.java.test.numbers;
 
 import mop.java.benchmarks.accumulate.Common;
-import mop.java.numbers.*;
+import mop.java.numbers.Numbers;
+import mop.java.numbers.XDouble;
 import org.junit.jupiter.api.Test;
 
 import java.util.function.BinaryOperator;
@@ -22,7 +23,8 @@ public final class XDoubleTest {
 
 //  private static final int TRYS = 257;
 
-  private static final BinaryOperator dist = (q0,q1) -> ((XDouble) q0).subtract((XDouble) q1).abs();
+  private static final BinaryOperator dist =
+    (q0,q1) -> ((XDouble) q0).subtract((XDouble) q1).abs();
 
   @SuppressWarnings({ "static-method" })
   @Test
@@ -65,14 +67,13 @@ public final class XDoubleTest {
     //Debug.DEBUG=false;
 
     Common.doubleRoundingTests(
-      null,
-      XDouble::valueOf,
-      Numbers::doubleValue,dist,
+      null, XDouble::valueOf, Numbers::doubleValue, dist,
       Object::toString, Common::compareTo, Common::compareTo);
 
     Common.floatRoundingTests(
-      null,XDouble::valueOf,Numbers::floatValue,dist,
+      null, XDouble::valueOf,Numbers::floatValue,dist,
       Object::toString, Common::compareTo, Common::compareTo);
+
     //Debug.DEBUG=false;
   }
 

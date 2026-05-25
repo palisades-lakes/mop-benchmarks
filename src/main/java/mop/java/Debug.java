@@ -7,13 +7,14 @@ import java.io.PrintStream;
  * configuration needed by java logging libraries.
  * Intended only for use during development;
  * no Debug.* references should persist in 'production' code.
- *
+ * <br>
  * Static methods only; no state.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2024-01-16
+ * @version 2026-05-24
  */
 
+@SuppressWarnings("unused")
 public final class Debug {
 
   public static boolean DEBUG = false;
@@ -33,7 +34,15 @@ public final class Debug {
       Long.toHexString(Double.doubleToLongBits(x))
       .toUpperCase(); }
 
-  //--------------------------------------------------------------
+  // TODO: wrapping/truncating long arrays
+  public static final String toHexString (final double[] x) {
+    final StringBuilder sb = new StringBuilder("[");
+    for (final double v : x) {
+      sb.append(Double.toHexString(v)); sb.append(" "); }
+    sb.replace(sb.length()-1, sb.length(), "]");
+    return sb.toString(); }
+
+//--------------------------------------------------------------
 //  /** hex string for <code>int[]</code> interpreted as
 //   * little endian unsigned words of a large int. */
 //
@@ -74,28 +83,26 @@ public final class Debug {
 
   public static final void printf (final String format,
                                    final boolean arg) {
-    if (DEBUG) { OUT.printf(format,Boolean.valueOf(arg)); } }
+    if (DEBUG) { OUT.printf(format, arg); } }
 
   //--------------------------------------------------------------
 
   public static final void printf (final String format,
                                    final int arg) {
-    if (DEBUG) { OUT.printf(format,Integer.valueOf(arg)); } }
+    if (DEBUG) { OUT.printf(format, arg); } }
 
   //--------------------------------------------------------------
 
   public static final void printf (final String format,
                                    final double arg) {
-    if (DEBUG) { OUT.printf(format,Double.valueOf(arg)); } }
+    if (DEBUG) { OUT.printf(format, arg); } }
 
   //--------------------------------------------------------------
 
   public static final void printf (final String format,
                                    final double arg0,
                                    final double arg1) {
-    if (DEBUG) {
-      OUT.printf(format,
-        Double.valueOf(arg0), Double.valueOf(arg1)); } }
+    if (DEBUG) { OUT.printf(format, arg0, arg1); } }
 
   //--------------------------------------------------------------
   // disable constructor
@@ -104,7 +111,6 @@ public final class Debug {
   private Debug () {
     throw new UnsupportedOperationException(
       "can't instantiate " + getClass()); }
-
 
   //--------------------------------------------------------------
 }

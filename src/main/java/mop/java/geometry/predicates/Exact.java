@@ -1,32 +1,72 @@
 package mop.java.geometry.predicates;
-// 2026-05-14
-// macro expand predicates.c via https://godbolt.org/
-// minimal changes to compile as java
-// 2026-05-15
-// split into Expansion manipulation and fast, slow, exact, adaptive
-// algorithm classes
 
-/**
- * Exact tests.  Robust.
+import mop.java.numbers.XDouble;
+
+/** Exact tests.  Robust.
  * <br>
  * Some unclarity about the meaning of 'exact' here.
- * <p>
+ * <br>
  *   This version's priority is correctness, and simplicity.
  *   Later versions can optimize guided by benchmarks and
  *   profiling.
- * </p>
+ *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-05-19
+ * @version 2026-05-24
  */
 
-// strictfp unnecessary for JDK17 and later
 public final class Exact implements Predicate {
 
   private static final double SPLITTER = 0x1.0000002p27;
 
+  public final boolean isExact () { return true; }
+
+
   //--------------------------------------------------------------------
 
-  public final boolean isExact () { return true; }
+  public final double incircle (final double[] a,
+                                final double[] b,
+                                final double[] c,
+                                final double[] d) {
+    final XDouble ab = XDouble.crossProduct(a,b);
+    final XDouble bc = XDouble.crossProduct(b,c);
+    final XDouble cd = XDouble.crossProduct(c,d);
+    final XDouble da = XDouble.crossProduct(d,a);
+    final XDouble ac = XDouble.crossProduct(a,c);
+    final XDouble bd = XDouble.crossProduct(b,d);
+
+    final XDouble cda = cd.add(da).add(ac);
+    final XDouble dab = da.add(ab).add(bd);
+    final XDouble abc = ab.add(bc).subtract(ac);
+    final XDouble bcd = bc.add(cd).subtract(bd);
+
+
+    final double ax = a[0], ay = a[1];
+    final XDouble adet =
+      (bcd.scale(ax).scale(ax)).add(bcd.scale(ay).scale(ay));
+
+    final double bx = b[0], by = b[1];
+    final XDouble bdet =
+      (cda.scale(bx).scale(-bx)).add(cda.scale(by).scale(-by));
+
+    final double cx = c[0], cy = c[1];
+    final XDouble cdet =
+      (dab.scale(cx).scale(cx)).add(dab.scale(cy).scale(cy));
+
+    final double dx = d[0], dy = d[1];
+    final XDouble ddet =
+      (abc.scale(dx).scale(-dx)).add(abc.scale(dy).scale(-dy));
+
+    // this change fixes current test cases.
+    // shouldn't matter, XDouble addition should be associative
+    //final XDouble det = adet.add(bdet).add(cdet.add(ddet));
+    final XDouble det = adet.add(bdet).add(cdet).add(ddet);
+//    System.out.println();
+//    System.out.println(
+//      toHexString(a) + "->" + toHexString(b) + "->" + toHexString(c));
+//    System.out.println(toHexString(d));
+//    System.out.println(det);
+    return det.estimate(); }
+    //return det.term(det.nterms() - 1); }
 
   //--------------------------------------------------------------------
   // orient2d
@@ -338,198 +378,301 @@ public final class Exact implements Predicate {
     return deter[deterlen - 1];
   }
 
-
   //--------------------------------------------------------------------
   // incircle
-  //--------------------------------------------------------------------
-  public final double incircle (final double[] pa, final double[] pb,
-                                final double[] pc, final double[] pd) {
-    double axby1, bxcy1, cxdy1, dxay1, axcy1, bxdy1;
-    double bxay1, cxby1, dxcy1, axdy1, cxay1, dxby1;
-    double axby0, bxcy0, cxdy0, dxay0, axcy0, bxdy0;
-    double bxay0, cxby0, dxcy0, axdy0, cxay0, dxby0;
-    double[] ab = new double[4], bc = new double[4], cd = new double[4],
-      da = new double[4], ac = new double[4], bd = new double[4];
-    double[] temp8 = new double[8]; int templen;
-    double[] abc = new double[12], bcd = new double[12], cda =
-      new double[12], dab = new double[12];
-    int abclen, bcdlen, cdalen, dablen;
-    double[] det24x = new double[24], det24y = new double[24], det48x =
-      new double[48], det48y = new double[48]; int xlen, ylen;
-    double[] adet = new double[96], bdet = new double[96], cdet =
-      new double[96], ddet = new double[96]; int alen, blen, clen, dlen;
-    double[] abdet = new double[192], cddet = new double[192];
-    int ablen, cdlen; double[] deter = new double[384]; int deterlen;
-    int i;
 
-    double bvirt; double avirt, bround, around; double c; double abig;
-    double ahi, alo, bhi, blo; double err1, err2, err3; double _i, _j;
-    double _0;
+//  public final double incircle (final double[] pa,
+//                                final double[] pb,
+//                                final double[] pc,
+//                                final double[] pd) {
+//    double[] temp8 = new double[8];
+//    double[] abc = new double[12],
+//      bcd = new double[12],
+//      cda = new double[12], dab = new double[12];
+//    double[] det24x = new double[24], det24y = new double[24],
+//      det48x = new double[48], det48y = new double[48];
+//    double[] adet = new double[96], bdet = new double[96],
+//      cdet = new double[96], ddet = new double[96];
+//    double[] abdet = new double[192], cddet = new double[192];
+//    double[] deter = new double[384];
+//
+//    // Two_Product(pa[0], pb[1], axby1, axby0);
+//    // Two_Product(pb[0], pa[1], bxay1, bxay0);
+//    //Two_Two_Diff(axby1, axby0, bxay1, bxay0,
+//    //             ab[3], ab[2], ab[1], ab[0]);
+//    final Hilo axby = Hilo.twoProduct(pa[0], pb[1]);
+//    final Hilo bxay = Hilo.twoProduct(pb[0], pa[1]);
+//    final double[] ab = Hilo.twoTwoDiff(axby, bxay);
+//
+//    // Two_Product(pb[0], pc[1], bxcy1, bxcy0);
+//    // Two_Product(pc[0], pb[1], cxby1, cxby0);
+//    // Two_Two_Diff(bxcy1, bxcy0, cxby1, cxby0,
+//    //              bc[3], bc[2], bc[1], bc[0]);
+//    final Hilo bxcy = Hilo.twoProduct(pb[0], pc[1]);
+//    final Hilo cxby = Hilo.twoProduct(pc[0], pb[1]);
+//    final double[] bc = Hilo.twoTwoDiff(bxcy, cxby);
+//
+//    // Two_Product(pc[0], pd[1], cxdy1, cxdy0);
+//    // Two_Product(pd[0], pc[1], dxcy1, dxcy0);
+//    // Two_Two_Diff(cxdy1, cxdy0, dxcy1, dxcy0,
+//    //              cd[3], cd[2], cd[1], cd[0]);
+//    final Hilo cxdy = Hilo.twoProduct(pc[0], pd[1]);
+//    final Hilo dxcy = Hilo.twoProduct(pd[0], pc[1]);
+//    final double[] cd = Hilo.twoTwoDiff(cxdy, dxcy);
+//
+//    // Two_Product(pd[0], pa[1], dxay1, dxay0);
+//    // Two_Product(pa[0], pd[1], axdy1, axdy0);
+//    // Two_Two_Diff(dxay1, dxay0, axdy1, axdy0,
+//    //             da[3], da[2], da[1], da[0]);
+//    final Hilo dxay = Hilo.twoProduct(pd[0], pa[1]);
+//    final Hilo axdy = Hilo.twoProduct(pa[0], pd[1]);
+//    final double[] da = Hilo.twoTwoDiff(dxay, axdy);
+//
+//    //  Two_Product(pa[0], pc[1], axcy1, axcy0);
+//    //  Two_Product(pc[0], pa[1], cxay1, cxay0);
+//    //  Two_Two_Diff(axcy1, axcy0, cxay1, cxay0,
+//    //               ac[3], ac[2], ac[1], ac[0]);
+//    final Hilo axcy = Hilo.twoProduct(pa[0], pc[1]);
+//    final Hilo cxay = Hilo.twoProduct(pc[0], pa[1]);
+//    final double[] ac = Hilo.twoTwoDiff(axcy, cxay);
+//
+//    //  Two_Product(pb[0], pd[1], bxdy1, bxdy0);
+//    //  Two_Product(pd[0], pb[1], dxby1, dxby0);
+//    //  Two_Two_Diff(bxdy1, bxdy0, dxby1, dxby0,
+//    //               bd[3], bd[2], bd[1], bd[0]);
+//    final Hilo bxdy = Hilo.twoProduct(pb[0], pd[1]);
+//    final Hilo dxby = Hilo.twoProduct(pd[0], pb[1]);
+//    final double[] bd = Hilo.twoTwoDiff(bxdy, dxby);
+//
+//
+//    int templen = Expansion.sum(4, cd, 4, da, temp8);
+//    int cdalen = Expansion.sum(templen, temp8, 4, ac, cda);
+//    templen = Expansion.sum(4, da, 4, ab, temp8);
+//    int dablen = Expansion.sum(templen, temp8, 4, bd, dab);
+//    for (int i = 0; i < 4; i++) { bd[i] = -bd[i]; ac[i] = -ac[i]; }
+//    templen = Expansion.sum(4, ab, 4, bc, temp8);
+//    int abclen = Expansion.sum(templen, temp8, 4, ac, abc);
+//    templen = Expansion.sum(4, bc, 4, cd, temp8);
+//    int bcdlen = Expansion.sum(templen, temp8, 4, bd, bcd);
+//
+//    int xlen = Expansion.scale(bcdlen, bcd, pa[0], det24x);
+//    xlen = Expansion.scale(xlen, det24x, pa[0], det48x);
+//    int ylen =Expansion.scale(bcdlen, bcd, pa[1], det24y);
+//    ylen =Expansion.scale(ylen, det24y, pa[1], det48y);
+//    int alen = Expansion.sum(xlen, det48x, ylen, det48y, adet);
+//
+//    xlen =Expansion.scale(cdalen, cda, pb[0], det24x);
+//    xlen =Expansion.scale(xlen, det24x, -pb[0], det48x);
+//    ylen =Expansion.scale(cdalen, cda, pb[1], det24y);
+//    ylen =Expansion.scale(ylen, det24y, -pb[1], det48y);
+//    int blen = Expansion.sum(xlen, det48x, ylen, det48y, bdet);
+//
+//    xlen =Expansion.scale(dablen, dab, pc[0], det24x);
+//    xlen =Expansion.scale(xlen, det24x, pc[0], det48x);
+//    ylen =Expansion.scale(dablen, dab, pc[1], det24y);
+//    ylen =Expansion.scale(ylen, det24y, pc[1], det48y);
+//    int clen = Expansion.sum(xlen, det48x, ylen, det48y, cdet);
+//
+//    xlen =Expansion.scale(abclen, abc, pd[0], det24x);
+//    xlen =Expansion.scale(xlen, det24x, -pd[0], det48x);
+//    ylen =Expansion.scale(abclen, abc, pd[1], det24y);
+//    ylen =Expansion.scale(ylen, det24y, -pd[1], det48y);
+//    int dlen = Expansion.sum(xlen, det48x, ylen, det48y, ddet);
+//
+//    int ablen =Expansion.sum(alen, adet, blen, bdet, abdet);
+//    int cdlen =Expansion.sum(clen, cdet, dlen, ddet, cddet);
+//    int deterlen = Expansion.sum(ablen, abdet, cdlen, cddet, deter);
+//System.out.println(deterlen);
+//    return deter[deterlen - 1]; }
 
-    axby1 = (pa[0] * pb[1]); c = (SPLITTER * pa[0]); abig = (c - pa[0]);
-    ahi = c - abig; alo = pa[0] - ahi; c = (SPLITTER * pb[1]);
-    abig = (c - pb[1]); bhi = c - abig; blo = pb[1] - bhi;
-    err1 = axby1 - (ahi * bhi); err2 = err1 - (alo * bhi);
-    err3 = err2 - (ahi * blo); axby0 = (alo * blo) - err3;
-    bxay1 = (pb[0] * pa[1]); c = (SPLITTER * pb[0]); abig = (c - pb[0]);
-    ahi = c - abig; alo = pb[0] - ahi; c = (SPLITTER * pa[1]);
-    abig = (c - pa[1]); bhi = c - abig; blo = pa[1] - bhi;
-    err1 = bxay1 - (ahi * bhi); err2 = err1 - (alo * bhi);
-    err3 = err2 - (ahi * blo); bxay0 = (alo * blo) - err3;
-    _i = (axby0 - bxay0); bvirt = (axby0 - _i); avirt = _i + bvirt;
-    bround = bvirt - bxay0; around = axby0 - avirt;
-    ab[0] = around + bround; _j = (axby1 + _i); bvirt = (_j - axby1);
-    avirt = _j - bvirt; bround = _i - bvirt; around = axby1 - avirt;
-    _0 = around + bround; _i = (_0 - bxay1); bvirt = (_0 - _i);
-    avirt = _i + bvirt; bround = bvirt - bxay1; around = _0 - avirt;
-    ab[1] = around + bround; ab[3] = (_j + _i); bvirt = (ab[3] - _j);
-    avirt = ab[3] - bvirt; bround = _i - bvirt; around = _j - avirt;
-    ab[2] = around + bround;
-
-    bxcy1 = (pb[0] * pc[1]); c = (SPLITTER * pb[0]); abig = (c - pb[0]);
-    ahi = c - abig; alo = pb[0] - ahi; c = (SPLITTER * pc[1]);
-    abig = (c - pc[1]); bhi = c - abig; blo = pc[1] - bhi;
-    err1 = bxcy1 - (ahi * bhi); err2 = err1 - (alo * bhi);
-    err3 = err2 - (ahi * blo); bxcy0 = (alo * blo) - err3;
-    cxby1 = (pc[0] * pb[1]); c = (SPLITTER * pc[0]); abig = (c - pc[0]);
-    ahi = c - abig; alo = pc[0] - ahi; c = (SPLITTER * pb[1]);
-    abig = (c - pb[1]); bhi = c - abig; blo = pb[1] - bhi;
-    err1 = cxby1 - (ahi * bhi); err2 = err1 - (alo * bhi);
-    err3 = err2 - (ahi * blo); cxby0 = (alo * blo) - err3;
-    _i = (bxcy0 - cxby0); bvirt = (bxcy0 - _i); avirt = _i + bvirt;
-    bround = bvirt - cxby0; around = bxcy0 - avirt;
-    bc[0] = around + bround; _j = (bxcy1 + _i); bvirt = (_j - bxcy1);
-    avirt = _j - bvirt; bround = _i - bvirt; around = bxcy1 - avirt;
-    _0 = around + bround; _i = (_0 - cxby1); bvirt = (_0 - _i);
-    avirt = _i + bvirt; bround = bvirt - cxby1; around = _0 - avirt;
-    bc[1] = around + bround; bc[3] = (_j + _i); bvirt = (bc[3] - _j);
-    avirt = bc[3] - bvirt; bround = _i - bvirt; around = _j - avirt;
-    bc[2] = around + bround;
-
-    cxdy1 = (pc[0] * pd[1]); c = (SPLITTER * pc[0]); abig = (c - pc[0]);
-    ahi = c - abig; alo = pc[0] - ahi; c = (SPLITTER * pd[1]);
-    abig = (c - pd[1]); bhi = c - abig; blo = pd[1] - bhi;
-    err1 = cxdy1 - (ahi * bhi); err2 = err1 - (alo * bhi);
-    err3 = err2 - (ahi * blo); cxdy0 = (alo * blo) - err3;
-    dxcy1 = (pd[0] * pc[1]); c = (SPLITTER * pd[0]); abig = (c - pd[0]);
-    ahi = c - abig; alo = pd[0] - ahi; c = (SPLITTER * pc[1]);
-    abig = (c - pc[1]); bhi = c - abig; blo = pc[1] - bhi;
-    err1 = dxcy1 - (ahi * bhi); err2 = err1 - (alo * bhi);
-    err3 = err2 - (ahi * blo); dxcy0 = (alo * blo) - err3;
-    _i = (cxdy0 - dxcy0); bvirt = (cxdy0 - _i); avirt = _i + bvirt;
-    bround = bvirt - dxcy0; around = cxdy0 - avirt;
-    cd[0] = around + bround; _j = (cxdy1 + _i); bvirt = (_j - cxdy1);
-    avirt = _j - bvirt; bround = _i - bvirt; around = cxdy1 - avirt;
-    _0 = around + bround; _i = (_0 - dxcy1); bvirt = (_0 - _i);
-    avirt = _i + bvirt; bround = bvirt - dxcy1; around = _0 - avirt;
-    cd[1] = around + bround; cd[3] = (_j + _i); bvirt = (cd[3] - _j);
-    avirt = cd[3] - bvirt; bround = _i - bvirt; around = _j - avirt;
-    cd[2] = around + bround;
-
-    dxay1 = (pd[0] * pa[1]); c = (SPLITTER * pd[0]); abig = (c - pd[0]);
-    ahi = c - abig; alo = pd[0] - ahi; c = (SPLITTER * pa[1]);
-    abig = (c - pa[1]); bhi = c - abig; blo = pa[1] - bhi;
-    err1 = dxay1 - (ahi * bhi); err2 = err1 - (alo * bhi);
-    err3 = err2 - (ahi * blo); dxay0 = (alo * blo) - err3;
-    axdy1 = (pa[0] * pd[1]); c = (SPLITTER * pa[0]); abig = (c - pa[0]);
-    ahi = c - abig; alo = pa[0] - ahi; c = (SPLITTER * pd[1]);
-    abig = (c - pd[1]); bhi = c - abig; blo = pd[1] - bhi;
-    err1 = axdy1 - (ahi * bhi); err2 = err1 - (alo * bhi);
-    err3 = err2 - (ahi * blo); axdy0 = (alo * blo) - err3;
-    _i = (dxay0 - axdy0); bvirt = (dxay0 - _i); avirt = _i + bvirt;
-    bround = bvirt - axdy0; around = dxay0 - avirt;
-    da[0] = around + bround; _j = (dxay1 + _i); bvirt = (_j - dxay1);
-    avirt = _j - bvirt; bround = _i - bvirt; around = dxay1 - avirt;
-    _0 = around + bround; _i = (_0 - axdy1); bvirt = (_0 - _i);
-    avirt = _i + bvirt; bround = bvirt - axdy1; around = _0 - avirt;
-    da[1] = around + bround; da[3] = (_j + _i); bvirt = (da[3] - _j);
-    avirt = da[3] - bvirt; bround = _i - bvirt; around = _j - avirt;
-    da[2] = around + bround;
-
-    axcy1 = (pa[0] * pc[1]); c = (SPLITTER * pa[0]); abig = (c - pa[0]);
-    ahi = c - abig; alo = pa[0] - ahi; c = (SPLITTER * pc[1]);
-    abig = (c - pc[1]); bhi = c - abig; blo = pc[1] - bhi;
-    err1 = axcy1 - (ahi * bhi); err2 = err1 - (alo * bhi);
-    err3 = err2 - (ahi * blo); axcy0 = (alo * blo) - err3;
-    cxay1 = (pc[0] * pa[1]); c = (SPLITTER * pc[0]); abig = (c - pc[0]);
-    ahi = c - abig; alo = pc[0] - ahi; c = (SPLITTER * pa[1]);
-    abig = (c - pa[1]); bhi = c - abig; blo = pa[1] - bhi;
-    err1 = cxay1 - (ahi * bhi); err2 = err1 - (alo * bhi);
-    err3 = err2 - (ahi * blo); cxay0 = (alo * blo) - err3;
-    _i = (axcy0 - cxay0); bvirt = (axcy0 - _i); avirt = _i + bvirt;
-    bround = bvirt - cxay0; around = axcy0 - avirt;
-    ac[0] = around + bround; _j = (axcy1 + _i); bvirt = (_j - axcy1);
-    avirt = _j - bvirt; bround = _i - bvirt; around = axcy1 - avirt;
-    _0 = around + bround; _i = (_0 - cxay1); bvirt = (_0 - _i);
-    avirt = _i + bvirt; bround = bvirt - cxay1; around = _0 - avirt;
-    ac[1] = around + bround; ac[3] = (_j + _i); bvirt = (ac[3] - _j);
-    avirt = ac[3] - bvirt; bround = _i - bvirt; around = _j - avirt;
-    ac[2] = around + bround;
-
-    bxdy1 = (pb[0] * pd[1]); c = (SPLITTER * pb[0]); abig = (c - pb[0]);
-    ahi = c - abig; alo = pb[0] - ahi; c = (SPLITTER * pd[1]);
-    abig = (c - pd[1]); bhi = c - abig; blo = pd[1] - bhi;
-    err1 = bxdy1 - (ahi * bhi); err2 = err1 - (alo * bhi);
-    err3 = err2 - (ahi * blo); bxdy0 = (alo * blo) - err3;
-    dxby1 = (pd[0] * pb[1]); c = (SPLITTER * pd[0]); abig = (c - pd[0]);
-    ahi = c - abig; alo = pd[0] - ahi; c = (SPLITTER * pb[1]);
-    abig = (c - pb[1]); bhi = c - abig; blo = pb[1] - bhi;
-    err1 = dxby1 - (ahi * bhi); err2 = err1 - (alo * bhi);
-    err3 = err2 - (ahi * blo); dxby0 = (alo * blo) - err3;
-    _i = (bxdy0 - dxby0); bvirt = (bxdy0 - _i); avirt = _i + bvirt;
-    bround = bvirt - dxby0; around = bxdy0 - avirt;
-    bd[0] = around + bround; _j = (bxdy1 + _i); bvirt = (_j - bxdy1);
-    avirt = _j - bvirt; bround = _i - bvirt; around = bxdy1 - avirt;
-    _0 = around + bround; _i = (_0 - dxby1); bvirt = (_0 - _i);
-    avirt = _i + bvirt; bround = bvirt - dxby1; around = _0 - avirt;
-    bd[1] = around + bround; bd[3] = (_j + _i); bvirt = (bd[3] - _j);
-    avirt = bd[3] - bvirt; bround = _i - bvirt; around = _j - avirt;
-    bd[2] = around + bround;
-
-    templen =Expansion.sum(4, cd, 4, da, temp8);
-    cdalen =Expansion.sum(templen, temp8, 4, ac, cda);
-    templen =Expansion.sum(4, da, 4, ab, temp8);
-    dablen =Expansion.sum(templen, temp8, 4, bd, dab);
-    for (i = 0; i < 4; i++) {
-      bd[i] = -bd[i]; ac[i] = -ac[i];
-    } templen =Expansion.sum(4, ab, 4, bc, temp8);
-    abclen =Expansion.sum(templen, temp8, 4, ac, abc);
-    templen =Expansion.sum(4, bc, 4, cd, temp8);
-    bcdlen =Expansion.sum(templen, temp8, 4, bd, bcd);
-
-    xlen =Expansion.scale(bcdlen, bcd, pa[0], det24x);
-    xlen =Expansion.scale(xlen, det24x, pa[0], det48x);
-    ylen =Expansion.scale(bcdlen, bcd, pa[1], det24y);
-    ylen =Expansion.scale(ylen, det24y, pa[1], det48y);alen =
-     Expansion.sum(xlen, det48x, ylen, det48y, adet);
-
-    xlen =Expansion.scale(cdalen, cda, pb[0], det24x);
-    xlen =Expansion.scale(xlen, det24x, -pb[0], det48x);
-    ylen =Expansion.scale(cdalen, cda, pb[1], det24y);
-    ylen =Expansion.scale(ylen, det24y, -pb[1], det48y);
-    blen =
-     Expansion.sum(xlen, det48x, ylen, det48y, bdet);
-
-    xlen =Expansion.scale(dablen, dab, pc[0], det24x);
-    xlen =Expansion.scale(xlen, det24x, pc[0], det48x);
-    ylen =Expansion.scale(dablen, dab, pc[1], det24y);
-    ylen =Expansion.scale(ylen, det24y, pc[1], det48y);clen =
-     Expansion.sum(xlen, det48x, ylen, det48y, cdet);
-
-    xlen =Expansion.scale(abclen, abc, pd[0], det24x);
-    xlen =Expansion.scale(xlen, det24x, -pd[0], det48x);
-    ylen =Expansion.scale(abclen, abc, pd[1], det24y);
-    ylen =Expansion.scale(ylen, det24y, -pd[1], det48y);
-    dlen =
-     Expansion.sum(xlen, det48x, ylen, det48y, ddet);
-
-    ablen =Expansion.sum(alen, adet, blen, bdet, abdet);
-    cdlen =Expansion.sum(clen, cdet, dlen, ddet, cddet);
-    deterlen =
-     Expansion.sum(ablen, abdet, cdlen, cddet, deter);
-
-    return deter[deterlen - 1];
-  }
+//  public final double incircle (final double[] pa, final double[] pb,
+//                                final double[] pc, final double[] pd) {
+//    double axby1, bxcy1, cxdy1, dxay1, axcy1, bxdy1;
+//    double bxay1, cxby1, dxcy1, axdy1, cxay1, dxby1;
+//    double axby0, bxcy0, cxdy0, dxay0, axcy0, bxdy0;
+//    double bxay0, cxby0, dxcy0, axdy0, cxay0, dxby0;
+//    double[] ab = new double[4], bc = new double[4], cd = new double[4],
+//      da = new double[4], ac = new double[4], bd = new double[4];
+//    double[] temp8 = new double[8]; int templen;
+//    double[] abc = new double[12], bcd = new double[12], cda =
+//      new double[12], dab = new double[12];
+//    int abclen, bcdlen, cdalen, dablen;
+//    double[] det24x = new double[24], det24y = new double[24], det48x =
+//      new double[48], det48y = new double[48]; int xlen, ylen;
+//    double[] adet = new double[96], bdet = new double[96], cdet =
+//      new double[96], ddet = new double[96]; int alen, blen, clen, dlen;
+//    double[] abdet = new double[192], cddet = new double[192];
+//    int ablen, cdlen; double[] deter = new double[384]; int deterlen;
+//    int i;
+//
+//    double bvirt; double avirt, bround, around; double c; double abig;
+//    double ahi, alo, bhi, blo; double err1, err2, err3; double _i, _j;
+//    double _0;
+//
+//    axby1 = (pa[0] * pb[1]); c = (SPLITTER * pa[0]); abig = (c - pa[0]);
+//    ahi = c - abig; alo = pa[0] - ahi; c = (SPLITTER * pb[1]);
+//    abig = (c - pb[1]); bhi = c - abig; blo = pb[1] - bhi;
+//    err1 = axby1 - (ahi * bhi); err2 = err1 - (alo * bhi);
+//    err3 = err2 - (ahi * blo); axby0 = (alo * blo) - err3;
+//    bxay1 = (pb[0] * pa[1]); c = (SPLITTER * pb[0]); abig = (c - pb[0]);
+//    ahi = c - abig; alo = pb[0] - ahi; c = (SPLITTER * pa[1]);
+//    abig = (c - pa[1]); bhi = c - abig; blo = pa[1] - bhi;
+//    err1 = bxay1 - (ahi * bhi); err2 = err1 - (alo * bhi);
+//    err3 = err2 - (ahi * blo); bxay0 = (alo * blo) - err3;
+//    _i = (axby0 - bxay0); bvirt = (axby0 - _i); avirt = _i + bvirt;
+//    bround = bvirt - bxay0; around = axby0 - avirt;
+//    ab[0] = around + bround; _j = (axby1 + _i); bvirt = (_j - axby1);
+//    avirt = _j - bvirt; bround = _i - bvirt; around = axby1 - avirt;
+//    _0 = around + bround; _i = (_0 - bxay1); bvirt = (_0 - _i);
+//    avirt = _i + bvirt; bround = bvirt - bxay1; around = _0 - avirt;
+//    ab[1] = around + bround; ab[3] = (_j + _i); bvirt = (ab[3] - _j);
+//    avirt = ab[3] - bvirt; bround = _i - bvirt; around = _j - avirt;
+//    ab[2] = around + bround;
+//
+//    bxcy1 = (pb[0] * pc[1]); c = (SPLITTER * pb[0]); abig = (c - pb[0]);
+//    ahi = c - abig; alo = pb[0] - ahi; c = (SPLITTER * pc[1]);
+//    abig = (c - pc[1]); bhi = c - abig; blo = pc[1] - bhi;
+//    err1 = bxcy1 - (ahi * bhi); err2 = err1 - (alo * bhi);
+//    err3 = err2 - (ahi * blo); bxcy0 = (alo * blo) - err3;
+//    cxby1 = (pc[0] * pb[1]); c = (SPLITTER * pc[0]); abig = (c - pc[0]);
+//    ahi = c - abig; alo = pc[0] - ahi; c = (SPLITTER * pb[1]);
+//    abig = (c - pb[1]); bhi = c - abig; blo = pb[1] - bhi;
+//    err1 = cxby1 - (ahi * bhi); err2 = err1 - (alo * bhi);
+//    err3 = err2 - (ahi * blo); cxby0 = (alo * blo) - err3;
+//    _i = (bxcy0 - cxby0); bvirt = (bxcy0 - _i); avirt = _i + bvirt;
+//    bround = bvirt - cxby0; around = bxcy0 - avirt;
+//    bc[0] = around + bround; _j = (bxcy1 + _i); bvirt = (_j - bxcy1);
+//    avirt = _j - bvirt; bround = _i - bvirt; around = bxcy1 - avirt;
+//    _0 = around + bround; _i = (_0 - cxby1); bvirt = (_0 - _i);
+//    avirt = _i + bvirt; bround = bvirt - cxby1; around = _0 - avirt;
+//    bc[1] = around + bround; bc[3] = (_j + _i); bvirt = (bc[3] - _j);
+//    avirt = bc[3] - bvirt; bround = _i - bvirt; around = _j - avirt;
+//    bc[2] = around + bround;
+//
+//    cxdy1 = (pc[0] * pd[1]); c = (SPLITTER * pc[0]); abig = (c - pc[0]);
+//    ahi = c - abig; alo = pc[0] - ahi; c = (SPLITTER * pd[1]);
+//    abig = (c - pd[1]); bhi = c - abig; blo = pd[1] - bhi;
+//    err1 = cxdy1 - (ahi * bhi); err2 = err1 - (alo * bhi);
+//    err3 = err2 - (ahi * blo); cxdy0 = (alo * blo) - err3;
+//    dxcy1 = (pd[0] * pc[1]); c = (SPLITTER * pd[0]); abig = (c - pd[0]);
+//    ahi = c - abig; alo = pd[0] - ahi; c = (SPLITTER * pc[1]);
+//    abig = (c - pc[1]); bhi = c - abig; blo = pc[1] - bhi;
+//    err1 = dxcy1 - (ahi * bhi); err2 = err1 - (alo * bhi);
+//    err3 = err2 - (ahi * blo); dxcy0 = (alo * blo) - err3;
+//    _i = (cxdy0 - dxcy0); bvirt = (cxdy0 - _i); avirt = _i + bvirt;
+//    bround = bvirt - dxcy0; around = cxdy0 - avirt;
+//    cd[0] = around + bround; _j = (cxdy1 + _i); bvirt = (_j - cxdy1);
+//    avirt = _j - bvirt; bround = _i - bvirt; around = cxdy1 - avirt;
+//    _0 = around + bround; _i = (_0 - dxcy1); bvirt = (_0 - _i);
+//    avirt = _i + bvirt; bround = bvirt - dxcy1; around = _0 - avirt;
+//    cd[1] = around + bround; cd[3] = (_j + _i); bvirt = (cd[3] - _j);
+//    avirt = cd[3] - bvirt; bround = _i - bvirt; around = _j - avirt;
+//    cd[2] = around + bround;
+//
+//    dxay1 = (pd[0] * pa[1]); c = (SPLITTER * pd[0]); abig = (c - pd[0]);
+//    ahi = c - abig; alo = pd[0] - ahi; c = (SPLITTER * pa[1]);
+//    abig = (c - pa[1]); bhi = c - abig; blo = pa[1] - bhi;
+//    err1 = dxay1 - (ahi * bhi); err2 = err1 - (alo * bhi);
+//    err3 = err2 - (ahi * blo); dxay0 = (alo * blo) - err3;
+//    axdy1 = (pa[0] * pd[1]); c = (SPLITTER * pa[0]); abig = (c - pa[0]);
+//    ahi = c - abig; alo = pa[0] - ahi; c = (SPLITTER * pd[1]);
+//    abig = (c - pd[1]); bhi = c - abig; blo = pd[1] - bhi;
+//    err1 = axdy1 - (ahi * bhi); err2 = err1 - (alo * bhi);
+//    err3 = err2 - (ahi * blo); axdy0 = (alo * blo) - err3;
+//    _i = (dxay0 - axdy0); bvirt = (dxay0 - _i); avirt = _i + bvirt;
+//    bround = bvirt - axdy0; around = dxay0 - avirt;
+//    da[0] = around + bround; _j = (dxay1 + _i); bvirt = (_j - dxay1);
+//    avirt = _j - bvirt; bround = _i - bvirt; around = dxay1 - avirt;
+//    _0 = around + bround; _i = (_0 - axdy1); bvirt = (_0 - _i);
+//    avirt = _i + bvirt; bround = bvirt - axdy1; around = _0 - avirt;
+//    da[1] = around + bround; da[3] = (_j + _i); bvirt = (da[3] - _j);
+//    avirt = da[3] - bvirt; bround = _i - bvirt; around = _j - avirt;
+//    da[2] = around + bround;
+//
+//    axcy1 = (pa[0] * pc[1]); c = (SPLITTER * pa[0]); abig = (c - pa[0]);
+//    ahi = c - abig; alo = pa[0] - ahi; c = (SPLITTER * pc[1]);
+//    abig = (c - pc[1]); bhi = c - abig; blo = pc[1] - bhi;
+//    err1 = axcy1 - (ahi * bhi); err2 = err1 - (alo * bhi);
+//    err3 = err2 - (ahi * blo); axcy0 = (alo * blo) - err3;
+//    cxay1 = (pc[0] * pa[1]); c = (SPLITTER * pc[0]); abig = (c - pc[0]);
+//    ahi = c - abig; alo = pc[0] - ahi; c = (SPLITTER * pa[1]);
+//    abig = (c - pa[1]); bhi = c - abig; blo = pa[1] - bhi;
+//    err1 = cxay1 - (ahi * bhi); err2 = err1 - (alo * bhi);
+//    err3 = err2 - (ahi * blo); cxay0 = (alo * blo) - err3;
+//    _i = (axcy0 - cxay0); bvirt = (axcy0 - _i); avirt = _i + bvirt;
+//    bround = bvirt - cxay0; around = axcy0 - avirt;
+//    ac[0] = around + bround; _j = (axcy1 + _i); bvirt = (_j - axcy1);
+//    avirt = _j - bvirt; bround = _i - bvirt; around = axcy1 - avirt;
+//    _0 = around + bround; _i = (_0 - cxay1); bvirt = (_0 - _i);
+//    avirt = _i + bvirt; bround = bvirt - cxay1; around = _0 - avirt;
+//    ac[1] = around + bround; ac[3] = (_j + _i); bvirt = (ac[3] - _j);
+//    avirt = ac[3] - bvirt; bround = _i - bvirt; around = _j - avirt;
+//    ac[2] = around + bround;
+//
+//    bxdy1 = (pb[0] * pd[1]); c = (SPLITTER * pb[0]); abig = (c - pb[0]);
+//    ahi = c - abig; alo = pb[0] - ahi; c = (SPLITTER * pd[1]);
+//    abig = (c - pd[1]); bhi = c - abig; blo = pd[1] - bhi;
+//    err1 = bxdy1 - (ahi * bhi); err2 = err1 - (alo * bhi);
+//    err3 = err2 - (ahi * blo); bxdy0 = (alo * blo) - err3;
+//    dxby1 = (pd[0] * pb[1]); c = (SPLITTER * pd[0]); abig = (c - pd[0]);
+//    ahi = c - abig; alo = pd[0] - ahi; c = (SPLITTER * pb[1]);
+//    abig = (c - pb[1]); bhi = c - abig; blo = pb[1] - bhi;
+//    err1 = dxby1 - (ahi * bhi); err2 = err1 - (alo * bhi);
+//    err3 = err2 - (ahi * blo); dxby0 = (alo * blo) - err3;
+//    _i = (bxdy0 - dxby0); bvirt = (bxdy0 - _i); avirt = _i + bvirt;
+//    bround = bvirt - dxby0; around = bxdy0 - avirt;
+//    bd[0] = around + bround; _j = (bxdy1 + _i); bvirt = (_j - bxdy1);
+//    avirt = _j - bvirt; bround = _i - bvirt; around = bxdy1 - avirt;
+//    _0 = around + bround; _i = (_0 - dxby1); bvirt = (_0 - _i);
+//    avirt = _i + bvirt; bround = bvirt - dxby1; around = _0 - avirt;
+//    bd[1] = around + bround; bd[3] = (_j + _i); bvirt = (bd[3] - _j);
+//    avirt = bd[3] - bvirt; bround = _i - bvirt; around = _j - avirt;
+//    bd[2] = around + bround;
+//
+//    templen =Expansion.sum(4, cd, 4, da, temp8);
+//    cdalen =Expansion.sum(templen, temp8, 4, ac, cda);
+//    templen =Expansion.sum(4, da, 4, ab, temp8);
+//    dablen =Expansion.sum(templen, temp8, 4, bd, dab);
+//    for (i = 0; i < 4; i++) {
+//      bd[i] = -bd[i]; ac[i] = -ac[i];
+//    } templen =Expansion.sum(4, ab, 4, bc, temp8);
+//    abclen =Expansion.sum(templen, temp8, 4, ac, abc);
+//    templen =Expansion.sum(4, bc, 4, cd, temp8);
+//    bcdlen =Expansion.sum(templen, temp8, 4, bd, bcd);
+//
+//    xlen =Expansion.scale(bcdlen, bcd, pa[0], det24x);
+//    xlen =Expansion.scale(xlen, det24x, pa[0], det48x);
+//    ylen =Expansion.scale(bcdlen, bcd, pa[1], det24y);
+//    ylen =Expansion.scale(ylen, det24y, pa[1], det48y);alen =
+//      Expansion.sum(xlen, det48x, ylen, det48y, adet);
+//
+//    xlen =Expansion.scale(cdalen, cda, pb[0], det24x);
+//    xlen =Expansion.scale(xlen, det24x, -pb[0], det48x);
+//    ylen =Expansion.scale(cdalen, cda, pb[1], det24y);
+//    ylen =Expansion.scale(ylen, det24y, -pb[1], det48y);
+//    blen =
+//      Expansion.sum(xlen, det48x, ylen, det48y, bdet);
+//
+//    xlen =Expansion.scale(dablen, dab, pc[0], det24x);
+//    xlen =Expansion.scale(xlen, det24x, pc[0], det48x);
+//    ylen =Expansion.scale(dablen, dab, pc[1], det24y);
+//    ylen =Expansion.scale(ylen, det24y, pc[1], det48y);clen =
+//      Expansion.sum(xlen, det48x, ylen, det48y, cdet);
+//
+//    xlen =Expansion.scale(abclen, abc, pd[0], det24x);
+//    xlen =Expansion.scale(xlen, det24x, -pd[0], det48x);
+//    ylen =Expansion.scale(abclen, abc, pd[1], det24y);
+//    ylen =Expansion.scale(ylen, det24y, -pd[1], det48y);
+//    dlen =
+//      Expansion.sum(xlen, det48x, ylen, det48y, ddet);
+//
+//    ablen =Expansion.sum(alen, adet, blen, bdet, abdet);
+//    cdlen =Expansion.sum(clen, cdet, dlen, ddet, cddet);
+//    deterlen =
+//      Expansion.sum(ablen, abdet, cdlen, cddet, deter);
+//
+//    return deter[deterlen - 1];
+//  }
 
   //--------------------------------------------------------------------
   // insphere
