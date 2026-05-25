@@ -14,7 +14,7 @@ import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
 import org.apache.commons.rng.UniformRandomProvider;
-import org.apache.commons.rng.sampling.ListSampler;
+import org.apache.commons.rng.sampling.ArraySampler;
 import org.apache.commons.rng.sampling.distribution.AhrensDieterExponentialSampler;
 import org.apache.commons.rng.sampling.distribution.ContinuousSampler;
 import org.apache.commons.rng.sampling.distribution.ContinuousUniformSampler;
@@ -36,8 +36,9 @@ import mop.java.prng.PRNG;
 /** Utilities for <code>double</code>, <code>double[]</code>.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2024-01-16
+ * @version 2024-05-24
  */
+@SuppressWarnings("unused")
 public final class Doubles implements Set {
 
   //--------------------------------------------------------------
@@ -202,7 +203,7 @@ public final class Doubles implements Set {
 
   //--------------------------------------------------------------
   // TODO: change exponent ranges so that significand can be taken
-  // as its actual value?
+  //  as its actual value?
 
   /**
    * @param sign sign bit, must be 0 or 1
@@ -275,8 +276,7 @@ public final class Doubles implements Set {
     final long e = ((long) be) << STORED_SIGNIFICAND_BITS;
     final long t = significand & STORED_SIGNIFICAND_MASK;
     //assert (0L == (s & e & t));
-    final double x = longBitsToDouble(s | e | t);
-    return x; }
+    return longBitsToDouble(s | e | t); }
 
   public static final double
   unsafeMergeBits (final int sign,
@@ -287,8 +287,7 @@ public final class Doubles implements Set {
       (EXPONENT_BITS + STORED_SIGNIFICAND_BITS);
     final long e = ((long) be) << STORED_SIGNIFICAND_BITS;
     final long t = significand & STORED_SIGNIFICAND_MASK;
-    final double x = longBitsToDouble(s | e | t);
-    return x; }
+    return longBitsToDouble(s | e | t); }
 
   //--------------------------------------------------------------
   /** Adjust exponent from viewing signifcand as an integer
@@ -345,8 +344,7 @@ public final class Doubles implements Set {
     final long e =
       Numbers.unsigned(be) << STORED_SIGNIFICAND_BITS;
     final long t = significand & STORED_SIGNIFICAND_MASK;
-    final double x = longBitsToDouble(s | e | t);
-    return x; }
+    return longBitsToDouble(s | e | t); }
 
   //--------------------------------------------------------------
   /**
@@ -402,7 +400,7 @@ public final class Doubles implements Set {
                             final Double q1) {
     //assert null != q0;
     //assert null != q1;
-    return Double.valueOf(q0.doubleValue() + q1.doubleValue()); }
+    return q0 + q1; }
 
   public final BinaryOperator<Double> adder () {
     return new BinaryOperator<> () {
@@ -415,7 +413,7 @@ public final class Doubles implements Set {
 
   //--------------------------------------------------------------
 
-  private static final Double ZERO = Double.valueOf(0.0);
+  private static final Double ZERO = 0.0;
 
   @SuppressWarnings("static-method")
   public final Double additiveIdentity () { return ZERO; }
@@ -427,7 +425,7 @@ public final class Doubles implements Set {
   @SuppressWarnings("static-method")
   private final Double negate (final Double q) {
     //assert null != q;
-    return  Double.valueOf(- q.doubleValue()); }
+    return -q; }
 
   public final UnaryOperator<Double> additiveInverse () {
     return new UnaryOperator<> () {
@@ -444,7 +442,7 @@ public final class Doubles implements Set {
                                  final Double q1) {
     //assert null != q0;
     //assert null != q1;
-    return Double.valueOf(q0.doubleValue() * q1.doubleValue()); }
+    return q0 * q1; }
 
   public final BinaryOperator<Double> multiplier () {
     return new BinaryOperator<>() {
@@ -457,7 +455,7 @@ public final class Doubles implements Set {
 
   //--------------------------------------------------------------
 
-  private static final Double ONE = Double.valueOf(1.0);
+  private static final Double ONE = 1.0;
 
   @SuppressWarnings("static-method")
   public final Double multiplicativeIdentity () { return ONE; }
@@ -467,10 +465,10 @@ public final class Doubles implements Set {
   @SuppressWarnings("static-method")
   private final Double reciprocal (final Double q) {
     //assert null != q;
-    final double z = q.doubleValue();
+    final double z = q;
     // only a partial inverse
     if (0.0 == z) { return null; }
-    return Double.valueOf(1.0/z);  }
+    return 1.0 / z;  }
 
   public final UnaryOperator<Double> multiplicativeInverse () {
     return new UnaryOperator<> () {
@@ -509,11 +507,7 @@ public final class Doubles implements Set {
 
   @Override
   public final BiPredicate equivalence () {
-    return new BiPredicate<Double,Double>() {
-      @Override
-      public final boolean test (final Double q0,
-                                 final Double q1) {
-        return Doubles.this.equals(q0,q1); } }; }
+    return (BiPredicate<Double, Double>) Doubles.this::equals; }
 
   //--------------------------------------------------------------
 
@@ -521,10 +515,7 @@ public final class Doubles implements Set {
   public final Supplier generator (final Map options) {
     final UniformRandomProvider urp = Set.urp(options);
     final Generator g = finiteGenerator(urp);
-    return
-      new Supplier () {
-      @Override
-      public final Object get () { return g.next(); } }; }
+    return g::next; }
 
   //--------------------------------------------------------------
   // Object methods
@@ -552,8 +543,7 @@ public final class Doubles implements Set {
    * (with high enough probability).
    */
   public static final int deMax (final int dim) {
-    final int d = Double.MAX_EXPONENT - Ints.ceilLog2(dim);
-    return d; }
+    return Double.MAX_EXPONENT - Ints.ceilLog2(dim); }
 
   private static final Generator
   arrayGenerator (final int n,
@@ -586,8 +576,8 @@ public final class Doubles implements Set {
   private static final double[] concatenate (final double[] x0,
                                              final double[] x1) {
     final double[] x = new double[x0.length + x1.length];
-    for (int i=0;i<x0.length;i++) { x[i] = x0[i]; }
-    for (int i=0;i<x1.length;i++) { x[i+x0.length] = x1[i]; }
+    System.arraycopy(x0, 0, x, 0, x0.length);
+    System.arraycopy(x1, 0, x, x0.length, x1.length);
     return x; }
 
   private static final double[] minus (final double[] x) {
@@ -615,7 +605,7 @@ public final class Doubles implements Set {
   private static double[] shuffle (final double[] x,
                                    final UniformRandomProvider urp) {
     final double[] y = Arrays.copyOf(x,x.length);
-    ListSampler.shuffle(urp,Arrays.asList(y));
+    ArraySampler.shuffle(urp, y);
     return y; }
 
   /** Shuffles the output of <code>g</code>.
@@ -819,8 +809,7 @@ public final class Doubles implements Set {
           if ((Double.isFinite(x)) && (! isNormal(x))) {
             return x; } } }
       @Override
-      public final Object next () {
-        return Double.valueOf(nextDouble()); } }; }
+      public final Object next () { return nextDouble(); } }; }
 
   public static final Generator
   subnormalGenerator (final UniformRandomProvider urp) {
@@ -841,8 +830,6 @@ public final class Doubles implements Set {
   /** Discretely uniform over 'normal' doubles,
    *  as opposed to 'subnormal' doubles.
    *  em>Not gaussian!</em>
-   * @param urp
-   * @param eMax
    */
 
   public static final Generator
@@ -859,7 +846,7 @@ public final class Doubles implements Set {
             return x; } } }
       @Override
       public final Object next () {
-        return Double.valueOf(nextDouble()); } }; }
+        return nextDouble(); } }; }
 
   public static final Generator
   normalGenerator (final UniformRandomProvider urp) {
@@ -890,8 +877,7 @@ public final class Doubles implements Set {
           final double x = d.nextDouble();
           if (Double.isFinite(x)) { return x; } } }
       @Override
-      public final Object next () {
-        return Double.valueOf(nextDouble()); } }; }
+      public final Object next () { return nextDouble(); } }; }
 
   public static final Generator
   finiteGenerator (final UniformRandomProvider urp) {
@@ -948,11 +934,9 @@ public final class Doubles implements Set {
           t = u; }
         else {
           t = u + MIN_NORMAL_SIGNIFICAND; }
-        final double x = unsafeMergeBits(s,e,t);
-        return x;}
+        return unsafeMergeBits(s, e, t);}
       @Override
-      public final Object next () {
-        return Double.valueOf(nextDouble()); } }; }
+      public final Object next () { return nextDouble(); } }; }
 
   public static final Generator
   generator (final UniformRandomProvider urp,
@@ -1015,7 +999,7 @@ public final class Doubles implements Set {
   public static double[] sampleDoubles (final Generator g,
                                         final UniformRandomProvider urp) {
     final double[] x = zeroSum((double[]) g.next());
-    ListSampler.shuffle(urp,Arrays.asList(x));
+    ArraySampler.shuffle(urp,x);
     return x; }
 
   public static double[][] sampleDoubles (final int dim,

@@ -58,14 +58,14 @@ public final class XDoubles implements Set {
   // scalar multiplication
   //--------------------------------------------------------------
 
-  public final BiFunction<XDouble,Double,XDouble> scaler () {
+  public final BiFunction<Double,XDouble,XDouble> scaler () {
 
     return new BiFunction<> () {
       @Override
       public final String toString () { return "XDouble.scale()"; }
       @Override
-      public final XDouble apply (final XDouble q, final Double s) {
-        return q.scale(s); } }; }
+      public final XDouble apply (final Double q, final XDouble s) {
+        return s.scale(q); } }; }
 
   //--------------------------------------------------------------
   // Set methods
@@ -178,7 +178,7 @@ public final class XDoubles implements Set {
   public static final Generator
   generator (final int n,
              final UniformRandomProvider urp) {
-    return new GeneratorBase ("rationalGenerator:" + n) {
+    return new GeneratorBase ("XDoubleGenerator:" + n) {
       final Generator g = generator(urp);
       @Override
       public final Object next () {
@@ -220,8 +220,11 @@ public final class XDoubles implements Set {
 
   //--------------------------------------------------------------
 
-  public static final OneSetOneOperation ADDITIVE_MAGMA =
-    OneSetOneOperation.magma(get().adder(),get());
+  public static final OneSetOneOperation ADDITION_MONOID =
+    OneSetOneOperation.commutativeMonoid(
+      get().adder(),
+      get(),
+      get().additiveIdentity());
 
   public static final TwoSetsOneOperation FLOATING_POINT_SPACE =
     TwoSetsOneOperation.floatingPointSpace(

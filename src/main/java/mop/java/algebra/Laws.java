@@ -620,15 +620,12 @@ public final class Laws {
 
   public static final ImmutableList
   floatingPointSpace (final BiFunction scale,
-                      final OneSetOneOperation elements,
-                      final OneSetTwoOperations scalars) {
+                      final Set elements,
+                      final Set scalars) {
     final ImmutableList.Builder b = ImmutableList.builder();
-    final Set e = elements.elements();
-    final Set s = scalars.elements();
-    b.add(
-      closed(e,s,scale));
-    b.addAll(elements.laws());
-    b.addAll(scalars.laws());
+    b.add(closed(elements,scalars,scale));
+//    b.addAll(elements.laws());
+//    b.addAll(scalars.laws());
     return b.build(); }
 
   //--------------------------------------------------------------

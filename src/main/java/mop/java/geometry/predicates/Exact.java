@@ -27,6 +27,7 @@ public final class Exact implements Predicate {
                                 final double[] b,
                                 final double[] c,
                                 final double[] d) {
+
     final XDouble ab = XDouble.crossProduct(a,b);
     final XDouble bc = XDouble.crossProduct(b,c);
     final XDouble cd = XDouble.crossProduct(c,d);

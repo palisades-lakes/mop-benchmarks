@@ -56,6 +56,9 @@ public final class AlgebraicStructureTests {
   public final void tests () {
 
     //Debug.DEBUG=false;
+    structureTests(XDoubles.ADDITION_MONOID,TRYS);
+    structureTests(XDoubles.FLOATING_POINT_SPACE,TRYS);
+
     structureTests(Hilos.ADDITIVE_MAGMA,TRYS);
     structureTests(Hilos.MULTIPLICATIVE_MAGMA,TRYS);
     structureTests(Hilos.FLOATING_POINT,TRYS);

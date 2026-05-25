@@ -90,9 +90,10 @@ public final class TwoSetsOneOperation extends Structure {
       return false;
     }
     final TwoSetsOneOperation other = (TwoSetsOneOperation) obj;
-    if (! Objects.equals(scale(),other.scale()) || ! Objects.equals(elements(),other.elements()) || ! Objects.equals(scalars(),other.scalars())) {
-      return false; }
-    return true; }
+    return Objects.equals(scale(), other.scale()) &&
+      Objects.equals(elements(), other.elements()) &&
+      Objects.equals(scalars(),other.scalars());
+  }
 
   @Override
   public final String toString () {
@@ -136,6 +137,7 @@ public final class TwoSetsOneOperation extends Structure {
    * scalars.
    */
 
+  @SuppressWarnings("unused")
   public static final TwoSetsOneOperation
   linearSpaceLike (final BiFunction multiply,
                    final Set elements,
@@ -155,17 +157,17 @@ public final class TwoSetsOneOperation extends Structure {
    */
 
   public static final TwoSetsOneOperation
-  floatingPointSpace (final BiFunction multiply,
+  floatingPointSpace (final BiFunction scale,
                       final Set elements,
                       final Set scalars) {
     return make(
-      multiply,
+      scale,
       elements,
       scalars,
       Laws.floatingPointSpace(
-        multiply,
-        (OneSetOneOperation) elements,
-        (OneSetTwoOperations) scalars)); }
+        scale,
+        elements,
+         scalars)); }
 
   //--------------------------------------------------------------
 }
