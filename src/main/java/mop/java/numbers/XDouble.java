@@ -243,7 +243,7 @@ public final class XDouble implements Comparable<XDouble> {
   // TODO: cleanup non-finite cases
   public final XDouble subtract (final XDouble b) {
     if (isNaN() || b.isNaN()) { return NaN; }
-    if (isZero()) { return b; }
+    if (isZero()) { return b.negate(); }
     if (b.isZero()) { return this; }
     if (isPositiveInfinity()) {
       if (b.isPositiveInfinity()) { return NaN; }
@@ -272,14 +272,16 @@ public final class XDouble implements Comparable<XDouble> {
   public final boolean isZero () { return terms().isEmpty(); }
 
   //--------------------------------------------------------------------
+  // additive inverse
+  //--------------------------------------------------------------------
 
   public final XDouble negate () {
     if (isZero()) { return ZERO; }
     if (isNaN()) { return NaN; }
     if (isPositiveInfinity()) { return NEGATIVE_INFINITY; }
     if (isNegativeInfinity()) { return POSITIVE_INFINITY; }
-    final DoubleArrayList h = new DoubleArrayList(nterms());
-    for (int i=0;i<nterms();i++) { h.add(-term(i)); }
+    final DoubleArrayList h = terms().clone();
+    for (int i=0;i<nterms();i++) {  h.set(i,-h.get(i)); }
     return unsafe(h); }
 
   // TODO: correct isPositive
@@ -326,6 +328,18 @@ public final class XDouble implements Comparable<XDouble> {
       result = result.add(ab.hi());
       result = result.add(ab.lo()); }
     return result; }
+
+  //--------------------------------------------------------------------
+  // TODO: check if this is different from scale(2.0)?
+
+  public final XDouble fast2x () {
+    if (isZero()) { return ZERO; }
+    if (isNaN()) { return NaN; }
+    if (isPositiveInfinity()) { return POSITIVE_INFINITY; }
+    if (isNegativeInfinity()) { return NEGATIVE_INFINITY; }
+    final DoubleArrayList x2 = terms().clone();
+    for  (int i=0;i<nterms();i++) { x2.set(i,2*x2.get(i)); }
+    return unsafe(x2); }
 
   //--------------------------------------------------------------------
   /** See either version of Shewchuk's paper for details.
@@ -438,7 +452,7 @@ public final class XDouble implements Comparable<XDouble> {
     return unsafe(DoubleArrayList.from(lo, hi)); }
 
   public static final XDouble crossProduct (final double[] a,
-                                            final double[]  b) {
+                                            final double[] b) {
     final XDouble axby = twoProduct(a[0], b[1]);
     final XDouble bxay = twoProduct(b[0], a[1]);
     return axby.subtract(bxay); }

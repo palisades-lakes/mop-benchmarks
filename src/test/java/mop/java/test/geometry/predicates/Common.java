@@ -47,7 +47,7 @@ public final class Common {
     final Predicate adapt = new Adapt();
     final Predicate exact = new Exact();
     final Predicate fast = new Fast();
-//    final Predicate slow = new Slow();
+    final Predicate slow = new Slow();
     return List.of(
       // JTS
       ddFast,ddNormalized,ddSlow,doubleNonRobust,inCircleNormalized,
@@ -56,7 +56,7 @@ public final class Common {
       // Shewchuk predicates.c
       exact,
       adapt,fast
-      //,slow
+      ,slow
                   ); }
 
 

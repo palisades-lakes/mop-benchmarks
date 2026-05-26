@@ -1,6 +1,7 @@
 package mop.java.test.geometry.predicates;
 
 import mop.java.geometry.predicates.Predicate;
+import mop.java.geometry.predicates.Slow;
 import mop.java.numbers.Doubles;
 import mop.java.prng.Generator;
 import mop.java.prng.PRNG;
@@ -24,6 +25,24 @@ import java.util.List;
 public final class InCircleTest {
 
   //--------------------------------------------------------------
+  private static final String debugMsg (final double truth,
+                                          final Predicate gold,
+                                          final Predicate pred,
+                                          final double[] p0,
+                                          final double[] p1,
+                                          final double[] p2,
+                                          final double[] p3) {
+    final double in = pred.incircle(p0, p1, p2, p3);
+    final String msg = "\ninCircle(" +
+      Arrays.toString(p0) + "," +
+      Arrays.toString(p1) + "," +
+      Arrays.toString(p2) + "," +
+      Arrays.toString(p3) + ")" +
+      "\ngold=" + gold + " -> " + Double.toHexString(truth) +
+      "\npred=" + pred + " -> " + Double.toHexString(
+      in) + "\ndiff=" + Double.toHexString(truth - in);
+    return msg + "\n"; }
+
   private static final String failureMsg (final double truth,
                                           final Predicate gold,
                                           final Predicate pred,
@@ -39,8 +58,7 @@ public final class InCircleTest {
         Arrays.toString(p1) + "," +
         Arrays.toString(p2) + "," +
         Arrays.toString(p3) + ")" +
-        "\ngold=" + gold +
-        ", truth= " + Double.toHexString(truth) +
+        "\ngold=" + gold + " -> " + Double.toHexString(truth) +
         "\npred=" + pred + " -> " + Double.toHexString(in));
     msg.append("\ndiff=").append(Double.toHexString(truth-in));
     for (final Predicate p : predicates) {
@@ -59,6 +77,8 @@ public final class InCircleTest {
     final double trueInc = gold.incircle(p0, p1, p2, p3);
     for (final Predicate p : predicates) {
       final double inc = p.incircle(p0, p1, p2, p3);
+      if (p instanceof Slow) {
+        System.out.println(debugMsg(trueInc,gold,p,p0,p1,p2,p3)); }
       if (p.isExact()) {
         // with delta=0.0 handles +0 vs -0 'correctly'
         Assertions.assertEquals(
@@ -79,7 +99,7 @@ public final class InCircleTest {
     final double[] p3 = new double[] { -1.0, -1.0, };
     final double[] p4 = new double[] { 1.0, -1.0, };
 
-    final List<Predicate> predicates =Common.inCirclePredicates();
+    final List<Predicate> predicates = Common.inCirclePredicates();
     inCircle(predicates, p1, p2, p3, p0);
     inCircle(predicates, p1, p2, p3, p4);
     inCircle(predicates, p1, p2, p3, p1);

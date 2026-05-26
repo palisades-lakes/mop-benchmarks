@@ -2563,9 +2563,7 @@ REAL *pd;
   xxlen = scale_expansion_zeroelim(xlen, detx, adx, detxx);
   xtlen = scale_expansion_zeroelim(temp16len, temp16, adxtail, detxt);
   xxtlen = scale_expansion_zeroelim(xtlen, detxt, adx, detxxt);
-  for (i = 0; i < xxtlen; i++) {
-    detxxt[i] *= 2.0;
-  }
+  for (i = 0; i < xxtlen; i++) { detxxt[i] *= 2.0; }
   xtxtlen = scale_expansion_zeroelim(xtlen, detxt, adxtail, detxtxt);
   x1len = fast_expansion_sum_zeroelim(xxlen, detxx, xxtlen, detxxt, x1);
   x2len = fast_expansion_sum_zeroelim(x1len, x1, xtxtlen, detxtxt, x2);
@@ -2574,9 +2572,7 @@ REAL *pd;
   yylen = scale_expansion_zeroelim(ylen, dety, ady, detyy);
   ytlen = scale_expansion_zeroelim(temp16len, temp16, adytail, detyt);
   yytlen = scale_expansion_zeroelim(ytlen, detyt, ady, detyyt);
-  for (i = 0; i < yytlen; i++) {
-    detyyt[i] *= 2.0;
-  }
+  for (i = 0; i < yytlen; i++) { detyyt[i] *= 2.0; }
   ytytlen = scale_expansion_zeroelim(ytlen, detyt, adytail, detytyt);
   y1len = fast_expansion_sum_zeroelim(yylen, detyy, yytlen, detyyt, y1);
   y2len = fast_expansion_sum_zeroelim(y1len, y1, ytytlen, detytyt, y2);
@@ -2590,9 +2586,7 @@ REAL *pd;
   xxlen = scale_expansion_zeroelim(xlen, detx, bdx, detxx);
   xtlen = scale_expansion_zeroelim(temp16len, temp16, bdxtail, detxt);
   xxtlen = scale_expansion_zeroelim(xtlen, detxt, bdx, detxxt);
-  for (i = 0; i < xxtlen; i++) {
-    detxxt[i] *= 2.0;
-  }
+  for (i = 0; i < xxtlen; i++) { detxxt[i] *= 2.0; }
   xtxtlen = scale_expansion_zeroelim(xtlen, detxt, bdxtail, detxtxt);
   x1len = fast_expansion_sum_zeroelim(xxlen, detxx, xxtlen, detxxt, x1);
   x2len = fast_expansion_sum_zeroelim(x1len, x1, xtxtlen, detxtxt, x2);

@@ -7,6 +7,7 @@ package mop.java.geometry.predicates;
 // algorithm classes
 
 import mop.java.numbers.Hilo;
+import mop.java.numbers.XDouble;
 
 import static mop.java.geometry.predicates.Expansion.*;
 
@@ -94,159 +95,65 @@ public final class Slow implements Predicate {
   //--------------------------------------------------------------------
   // incircle
   //--------------------------------------------------------------------
-  public final double incircle (final double[] pa, final double[] pb,
-                                final double[] pc, final double[] pd) {
-    double axby7, bxcy7, axcy7, bxay7, cxby7, cxay7;
-    double axby[8], bxcy[8], axcy[8], bxay[8], cxby[8], cxay[8];
-    double temp16[16];
-    int temp16len;
-    double detx[32], detxx[64], detxt[32], detxxt[64], detxtxt[64];
-    int xlen, xxlen, xtlen, xxtlen, xtxtlen;
-    double x1[128], x2[192];
-    int x1len, x2len;
-    double dety[32], detyy[64], detyt[32], detyyt[64], detytyt[64];
-    int ylen, yylen, ytlen, yytlen, ytytlen;
-    double y1[128], y2[192];
-    int y1len, y2len;
-    double adet[384], bdet[384], cdet[384], abdet[768], deter[1152];
-    int alen, blen, clen, ablen, deterlen;
-    int i;
 
-    double bvirt;
-    double avirt, bround, around;
-    double c;
-    double abig;
-    double a0hi, a0lo, a1hi, a1lo, bhi, blo;
-    double err1, err2, err3;
-    double _i, _j, _k, _l, _m, _n;
-    double _0, _1, _2;
+  private static final XDouble det (final Hilo ax,
+                                    final Hilo ay,
+                                    final Hilo bx,
+                                    final Hilo by,
+                                    final Hilo cx,
+                                    final Hilo cy) {
 
-    final Hilo adx = Hilo.twoDiff(pa[0], pd[0]);
-    final Hilo ady = Hilo.twoDiff(pa[1], pd[1]);
-    final Hilo bdx = Hilo.twoDiff(pb[0], pd[0]);
-    final Hilo bdy = Hilo.twoDiff(pb[1], pd[1]);
-    final Hilo cdx = Hilo.twoDiff(pc[0], pd[0]);
-    final Hilo cdy = Hilo.twoDiff(pc[1], pd[1]);
+    final XDouble axby = XDouble.twoTwoProduct(ax, by);
+    final XDouble bxay = XDouble.twoTwoProduct(bx, ay);
+    final XDouble sum = axby.subtract(bxay);
 
-    Two_Two_Product(adx, adx.lo(), bdy, bdy.lo(),
-                    axby7, axby[6], axby[5], axby[4],
-                    axby[3], axby[2], axby[1], axby[0]);
-    axby[7] = axby7;
-    negate = -ady;
-    negate.lo() = -ady.lo();
-    Two_Two_Product(bdx, bdx.lo(), negate, negate.lo(),
-                    bxay7, bxay[6], bxay[5], bxay[4],
-                    bxay[3], bxay[2], bxay[1], bxay[0]);
-    bxay[7] = bxay7;
-    Two_Two_Product(bdx, bdx.lo(), cdy, cdy.lo(),
-                    bxcy7, bxcy[6], bxcy[5], bxcy[4],
-                    bxcy[3], bxcy[2], bxcy[1], bxcy[0]);
-    bxcy[7] = bxcy7;
-    negate = -bdy;
-    negate.lo() = -bdy.lo();
-    Two_Two_Product(cdx, cdx.lo(), negate, negate.lo(),
-                    cxby7, cxby[6], cxby[5], cxby[4],
-                    cxby[3], cxby[2], cxby[1], cxby[0]);
-    cxby[7] = cxby7;
-    Two_Two_Product(cdx, cdx.lo(), ady, ady.lo(),
-                    cxay7, cxay[6], cxay[5], cxay[4],
-                    cxay[3], cxay[2], cxay[1], cxay[0]);
-    cxay[7] = cxay7;
-    negate = -cdy;
-    negate.lo() = -cdy.lo();
-    Two_Two_Product(adx, adx.lo(), negate, negate.lo(),
-                    axcy7, axcy[6], axcy[5], axcy[4],
-                    axcy[3], axcy[2], axcy[1], axcy[0]);
-    axcy[7] = axcy7;
+    final XDouble sxhihi = sum.scale(cx.hi()).scale(cx.hi());
+    final XDouble sxlo = sum.scale(cx.lo());
+    // TODO: guess simple loop works because exact if 2x
+    //  could implement a faster exponent add version for powers of 2?
+    final XDouble sxlohi2 = sxlo.scale(cx.hi()).fast2x();
+    //for (i = 0; i < xxtlen; i++) { detxxt[i] *= 2.0; }
+    final XDouble sxlolo = sxlo.scale(cx.lo());
+    final XDouble detx = sxhihi.add(sxlohi2).add(sxlolo);
 
+    final XDouble syhihi = sum.scale(cy.hi()).scale(cy.hi());
+    final XDouble sylo = sum.scale(cy.lo());
+    final XDouble sylohi2 = sylo.scale(cy.hi()).fast2x();
+    //for (i = 0; i < yytlen; i++) { detyyt[i] *= 2.0; }
+    final XDouble sylolo = sylo.scale(cy.lo());
+    final XDouble dety = syhihi.add(sylohi2).add(sylolo);
 
-    temp16len = add(8, bxcy, 8, cxby, temp16);
+    return detx.add(dety); }
 
-    xlen = scale(temp16len, temp16, adx, detx);
-    xxlen = scale(xlen, detx, adx, detxx);
-    xtlen = scale(temp16len, temp16, adx.lo(), detxt);
-    xxtlen = scale(xtlen, detxt, adx, detxxt);
-    for (i = 0; i < xxtlen; i++) {
-      detxxt[i] *= 2.0;
-    }
-    xtxtlen = scale(xtlen, detxt, adx.lo(), detxtxt);
-    x1len = add(xxlen, detxx, xxtlen, detxxt, x1);
-    x2len = add(x1len, x1, xtxtlen, detxtxt, x2);
+  //--------------------------------------------------------------------
+  /** signed distance of <code>pd</code> from the circumcircle thru
+   * <code>pa,pb,pc</code>, negative means outside.
+   */
 
-    ylen = scale(temp16len, temp16, ady, dety);
-    yylen = scale(ylen, dety, ady, detyy);
-    ytlen = scale(temp16len, temp16, ady.lo(), detyt);
-    yytlen = scale(ytlen, detyt, ady, detyyt);
-    for (i = 0; i < yytlen; i++) {
-      detyyt[i] *= 2.0;
-    }
-    ytytlen = scale(ytlen, detyt, ady.lo(), detytyt);
-    y1len = add(yylen, detyy, yytlen, detyyt, y1);
-    y2len = add(y1len, y1, ytytlen, detytyt, y2);
+  public final double incircle (final double[] pa,
+                                final double[] pb,
+                                final double[] pc,
+                                final double[] pd) {
 
-    alen = add(x2len, x2, y2len, y2, adet);
+    final Hilo ax = Hilo.twoDiff(pa[0], pd[0]);
+    final Hilo ay = Hilo.twoDiff(pa[1], pd[1]);
+    final Hilo bx = Hilo.twoDiff(pb[0], pd[0]);
+    final Hilo by = Hilo.twoDiff(pb[1], pd[1]);
+    final Hilo cx = Hilo.twoDiff(pc[0], pd[0]);
+    final Hilo cy = Hilo.twoDiff(pc[1], pd[1]);
 
+    final XDouble adet = det(bx,by,cx,cy,ax,ay);
+    final XDouble bdet = det(cx,cy,ax,ay,bx,by);
+    final XDouble cdet = det(ax,ay,bx,by,cx,cy);
 
-    temp16len = add(8, cxay, 8, axcy, temp16);
-
-    xlen = scale(temp16len, temp16, bdx, detx);
-    xxlen = scale(xlen, detx, bdx, detxx);
-    xtlen = scale(temp16len, temp16, bdx.lo(), detxt);
-    xxtlen = scale(xtlen, detxt, bdx, detxxt);
-    for (i = 0; i < xxtlen; i++) {
-      detxxt[i] *= 2.0;
-    }
-    xtxtlen = scale(xtlen, detxt, bdx.lo(), detxtxt);
-    x1len = add(xxlen, detxx, xxtlen, detxxt, x1);
-    x2len = add(x1len, x1, xtxtlen, detxtxt, x2);
-
-    ylen = scale(temp16len, temp16, bdy, dety);
-    yylen = scale(ylen, dety, bdy, detyy);
-    ytlen = scale(temp16len, temp16, bdy.lo(), detyt);
-    yytlen = scale(ytlen, detyt, bdy, detyyt);
-    for (i = 0; i < yytlen; i++) {
-      detyyt[i] *= 2.0;
-    }
-    ytytlen = scale(ytlen, detyt, bdy.lo(), detytyt);
-    y1len = add(yylen, detyy, yytlen, detyyt, y1);
-    y2len = add(y1len, y1, ytytlen, detytyt, y2);
-
-    blen = add(x2len, x2, y2len, y2, bdet);
-
-
-    temp16len = add(8, axby, 8, bxay, temp16);
-
-    xlen = scale(temp16len, temp16, cdx, detx);
-    xxlen = scale(xlen, detx, cdx, detxx);
-    xtlen = scale(temp16len, temp16, cdx.lo(), detxt);
-    xxtlen = scale(xtlen, detxt, cdx, detxxt);
-    for (i = 0; i < xxtlen; i++) {
-      detxxt[i] *= 2.0;
-    }
-    xtxtlen = scale(xtlen, detxt, cdx.lo(), detxtxt);
-    x1len = add(xxlen, detxx, xxtlen, detxxt, x1);
-    x2len = add(x1len, x1, xtxtlen, detxtxt, x2);
-
-    ylen = scale(temp16len, temp16, cdy, dety);
-    yylen = scale(ylen, dety, cdy, detyy);
-    ytlen = scale(temp16len, temp16, cdy.lo(), detyt);
-    yytlen = scale(ytlen, detyt, cdy, detyyt);
-    for (i = 0; i < yytlen; i++) {
-      detyyt[i] *= 2.0;
-    }
-    ytytlen = scale(ytlen, detyt, cdy.lo(), detytyt);
-    y1len = add(yylen, detyy, yytlen, detyyt, y1);
-    y2len = add(y1len, y1, ytytlen, detytyt, y2);
-
-    clen = add(x2len, x2, y2len, y2, cdet);
-
-    ablen = add(alen, adet, blen, bdet, abdet);
-    deterlen = add(ablen, abdet, clen, cdet, deter);
-
-    return deter[deterlen - 1];
+    final XDouble deter = cdet.add(bdet).add(adet);
+    return deter.doubleValue();
+    //return deter.estimate();
+    //return deter.term(deter.nterms()-1);
   }
-}
 
+// from macro expanded C code:
+//
 //  public final double incircle (final double[] pa, final double[] pb,
 //                                final double[] pc, final double[] pd) {
 //    double adx, bdx, cdx, ady, bdy, cdy;
