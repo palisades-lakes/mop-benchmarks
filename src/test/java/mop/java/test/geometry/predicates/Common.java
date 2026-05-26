@@ -59,7 +59,6 @@ public final class Common {
       ,slow
                   ); }
 
-
   public static final List<Predicate> makePredicates () {
     final Predicate bigFloat = new BigFloatPredicate();
     final Predicate rationalFloat = new RationalFloatPredicate();

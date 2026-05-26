@@ -81,7 +81,7 @@ import com.carrotsearch.hppc.procedures.DoubleProcedure;
  *   even <code>BigInteger</code> to extend range.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-05-25
+ * @version 2026-05-26
  */
 
 //@SuppressWarnings("unused")
@@ -121,8 +121,9 @@ public final class XDouble implements Comparable<XDouble> {
   public final String toString () {
     final StringBuilder sb = new StringBuilder("XD(");
     forEach(x -> { sb.append(Double.toHexString(x)); sb.append(", ");});
-    sb.deleteCharAt(sb.length()-1);
-    sb.deleteCharAt(sb.length()-1);
+    if (nterms()>0) {
+      sb.deleteCharAt(sb.length()-1);
+      sb.deleteCharAt(sb.length()-1); }
     sb.append(")");
     return sb.toString(); }
 
@@ -182,6 +183,7 @@ public final class XDouble implements Comparable<XDouble> {
     return isFinite(terms()); }
 
   //--------------------------------------------------------------------
+  //  int grow_expansion_zeroelim(elen, e, b, h)
 
   public final XDouble add (final double b) {
     if (0.0==b) { return this; }
@@ -199,13 +201,13 @@ public final class XDouble implements Comparable<XDouble> {
     if (Double.NEGATIVE_INFINITY==b) { return NEGATIVE_INFINITY; }
     final DoubleArrayList sum =
       new DoubleArrayList(nterms()+1);
-    double r = b;
+    double Q = b;
     for (int i = 0; i < nterms(); i++) {
-      final Hilo fts = Hilo.twoSum(term(i),r);
-      final double s = fts.lo();
-      r = fts.hi();
-      if (s != 0.0) { sum.add(s); } }
-    if (r != 0.0) { sum.add(r); }
+      final Hilo fts = Hilo.twoSum(Q,term(i));
+      Q = fts.hi();
+      final double hh = fts.lo();
+      if (hh != 0.0) { sum.add(hh); } }
+    if (Q != 0.0)  { sum.add(Q); }
     assert isFinite(sum);
     return unsafe(sum); }
 
@@ -214,8 +216,6 @@ public final class XDouble implements Comparable<XDouble> {
    * <br>
    * TODO: optimize based on long version of Shewchuk's paper and
    *   fast_expansion_sum_zeroelim in predicates.c
-   * <br>
-   * TODO: cleanup non-finite cases
    */
 
   public final XDouble add (final XDouble b) {
@@ -233,18 +233,15 @@ public final class XDouble implements Comparable<XDouble> {
     if (b.isNegativeInfinity()) { return NEGATIVE_INFINITY; }
     // both are finite
     XDouble sum = this;
-    for (int i = 0; i < b.nterms(); i++) {
-      assert sum.isFinite();
-      sum = sum.add(b.term(i)); }
+    for (int i = 0; i < b.nterms(); i++) { sum = sum.add(b.term(i)); }
     assert sum.isFinite();
     return sum; }
 
   // TODO: modify add to avoid instance creation
-  // TODO: cleanup non-finite cases
   public final XDouble subtract (final XDouble b) {
-    if (isNaN() || b.isNaN()) { return NaN; }
     if (isZero()) { return b.negate(); }
     if (b.isZero()) { return this; }
+    if (isNaN() || b.isNaN()) { return NaN; }
     if (isPositiveInfinity()) {
       if (b.isPositiveInfinity()) { return NaN; }
       return POSITIVE_INFINITY; }
@@ -257,7 +254,6 @@ public final class XDouble implements Comparable<XDouble> {
     // both are finite
     XDouble sum = this;
     for (int i = 0; i < b.nterms(); i++) { sum = sum.add(-b.term(i)); }
-    assert null != sum;
     assert sum.isFinite();
     return sum; }
 
@@ -374,15 +370,29 @@ public final class XDouble implements Comparable<XDouble> {
   // private construction
   //--------------------------------------------------------------------
 
-  private static final boolean
-  increasingNonOverlapping (final DoubleArrayList t) {
+//  private static final boolean
+//  increasingNonOverlapping (final DoubleArrayList t) {
+//    for (int i=0;i<t.size()-1;i++) {
+//      if ((2*Math.abs(t.get(i))) >= Math.ulp(t.get(i+1))) {
+//        return false; } }
+//    return true; }
+
+  private static final void
+  assertIncreasingNonOverlapping (final DoubleArrayList t) {
     for (int i=0;i<t.size()-1;i++) {
-      if ((2*Math.abs(t.get(i+1))) <= Math.ulp(t.get(i))) {
-        return false; } }
-    return true; }
+      final double a = Math.abs(t.get(i));
+      final double u = 0.5*Math.ulp(t.get(i+1));
+      assert (a < u) :
+        "\n" + t + "\n" +
+          i + " : " + "\n" +
+          Double.toHexString(a) +
+          " >= " + Double.toHexString(u) + "\n" +
+          Double.toHexString(t.get(i+1)) + ", " +
+          Double.toHexString(t.get(i)) + "\n" +
+          Hilo.twoSum(t.get(i+1),t.get(i)); } }
 
   private XDouble (final DoubleArrayList terms) {
-    assert increasingNonOverlapping(terms) : terms;
+    assertIncreasingNonOverlapping(terms);
     // DANGER: terms is mutable!!!!
     _terms = terms; }
 
@@ -443,13 +453,24 @@ public final class XDouble implements Comparable<XDouble> {
 //    if (terms.isEmpty()) { return ZERO; }
 //    return unsafe(terms); }
 
+  public static final XDouble twoSum (final double a, final double b) {
+    final double x = (a + b);
+    //Two_Sum_Tail(a, b, x, y);
+    final double bvirt = (x - a);
+    final double avirt = x - bvirt;
+    final double bround = b - bvirt;
+    final double around = a - avirt;
+    final double y = around + bround;
+    return unsafe(DoubleArrayList.from(y, x)); }
+
   // FMA version
   public static final XDouble twoProduct (final double a,
                                           final double b) {
     final double hi = (a * b);
     final double lo = Math.fma(a,b,-hi);
     if (0.0==hi)  { return ZERO; }
-    return unsafe(DoubleArrayList.from(lo, hi)); }
+    // enforce ulp constraint
+    return twoSum(hi,lo); }
 
   public static final XDouble crossProduct (final double[] a,
                                             final double[] b) {

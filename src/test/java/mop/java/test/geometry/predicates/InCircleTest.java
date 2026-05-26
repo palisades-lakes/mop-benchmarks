@@ -19,31 +19,32 @@ import java.util.List;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-05-24
+ * @version 2026-05-26
  */
 
 public final class InCircleTest {
 
   //--------------------------------------------------------------
   private static final String debugMsg (final double truth,
+                                          final double check,
                                           final Predicate gold,
                                           final Predicate pred,
                                           final double[] p0,
                                           final double[] p1,
                                           final double[] p2,
                                           final double[] p3) {
-    final double in = pred.incircle(p0, p1, p2, p3);
     final String msg = "\ninCircle(" +
       Arrays.toString(p0) + "," +
       Arrays.toString(p1) + "," +
       Arrays.toString(p2) + "," +
       Arrays.toString(p3) + ")" +
       "\ngold=" + gold + " -> " + Double.toHexString(truth) +
-      "\npred=" + pred + " -> " + Double.toHexString(
-      in) + "\ndiff=" + Double.toHexString(truth - in);
+      "\npred=" + pred + " -> " + Double.toHexString(check) +
+      "\ndiff=" + Double.toHexString(truth - check);
     return msg + "\n"; }
 
   private static final String failureMsg (final double truth,
+                                          final double check,
                                           final Predicate gold,
                                           final Predicate pred,
                                           final List<Predicate> predicates,
@@ -51,7 +52,6 @@ public final class InCircleTest {
                                           final double[] p1,
                                           final double[] p2,
                                           final double[] p3) {
-    final double in = pred.incircle(p0, p1, p2, p3);
     final StringBuilder msg = new StringBuilder(
       "\ninCircle(" +
         Arrays.toString(p0) + "," +
@@ -59,8 +59,8 @@ public final class InCircleTest {
         Arrays.toString(p2) + "," +
         Arrays.toString(p3) + ")" +
         "\ngold=" + gold + " -> " + Double.toHexString(truth) +
-        "\npred=" + pred + " -> " + Double.toHexString(in));
-    msg.append("\ndiff=").append(Double.toHexString(truth-in));
+        "\npred=" + pred + " -> " + Double.toHexString(check));
+    msg.append("\ndiff=").append(Double.toHexString(truth-check));
     for (final Predicate p : predicates) {
       msg.append("\n").append(p).append(" ->\n")
          .append(Double.toHexString(p.incircle(p0, p1, p2,p3))); }
@@ -78,16 +78,16 @@ public final class InCircleTest {
     for (final Predicate p : predicates) {
       final double inc = p.incircle(p0, p1, p2, p3);
       if (p instanceof Slow) {
-        System.out.println(debugMsg(trueInc,gold,p,p0,p1,p2,p3)); }
+        System.out.println(debugMsg(trueInc,inc,gold,p,p0,p1,p2,p3)); }
       if (p.isExact()) {
         // with delta=0.0 handles +0 vs -0 'correctly'
         Assertions.assertEquals(
           trueInc, inc, 0.0,
-          failureMsg(trueInc,gold,p,predicates,p0,p1,p2,p3)); }
+          failureMsg(trueInc,inc,gold,p,predicates,p0,p1,p2,p3)); }
       else {
         Assertions.assertEquals(
           Math.signum(trueInc), Math.signum(inc), 0.0,
-          failureMsg(trueInc,gold,p,predicates,p0,p1,p2,p3)); } } }
+          failureMsg(trueInc,inc,gold,p,predicates,p0,p1,p2,p3)); } } }
 
   //--------------------------------------------------------------
 

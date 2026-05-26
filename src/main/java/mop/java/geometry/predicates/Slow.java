@@ -82,7 +82,7 @@ import static mop.java.geometry.predicates.Expansion.*;
  *   even <code>BigInteger</code> to extend range.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-05-25
+ * @version 2026-05-26
  */
 
 // strictfp unnecessary for JDK17 and later
@@ -142,14 +142,15 @@ public final class Slow implements Predicate {
     final Hilo cx = Hilo.twoDiff(pc[0], pd[0]);
     final Hilo cy = Hilo.twoDiff(pc[1], pd[1]);
 
-    final XDouble adet = det(bx,by,cx,cy,ax,ay);
-    final XDouble bdet = det(cx,cy,ax,ay,bx,by);
-    final XDouble cdet = det(ax,ay,bx,by,cx,cy);
+    final XDouble ad = det(bx,by,cx,cy,ax,ay);
+    final XDouble bd = det(cx,cy,ax,ay,bx,by);
+    final XDouble cd = det(ax,ay,bx,by,cx,cy);
 
-    final XDouble deter = cdet.add(bdet).add(adet);
-    return deter.doubleValue();
-    //return deter.estimate();
-    //return deter.term(deter.nterms()-1);
+    final XDouble d = cd.add(bd).add(ad);
+    //new Throwable().printStackTrace(System.out);
+    System.out.println(d);
+    return d.doubleValue();
+//    return d.estimate();
   }
 
 // from macro expanded C code:

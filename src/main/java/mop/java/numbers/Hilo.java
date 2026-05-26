@@ -9,7 +9,7 @@ import java.io.Serializable;
  * <a href="https://github.com/locationtech/jts/blob/master/modules/core/src/main/java/org/locationtech/jts/math/DD.java">
  *  org.locationtech.jts.math.DD</a>
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-05-25
+ * @version 2026-05-26
  */
 
 public record Hilo (double hi, double lo)
@@ -19,7 +19,7 @@ public record Hilo (double hi, double lo)
   //  java.lang.Double 'interface'
   //-------------------------------------------------------------------
 
-  public static final Hilo NaN = new Hilo(Double.NaN, Double.NaN);
+  public static final Hilo NaN = new Hilo(Double.NaN, 0.0);
 
   public static final Hilo POSITIVE_INFINITY =
     new Hilo(Double.POSITIVE_INFINITY, 0.0);
@@ -277,6 +277,8 @@ public record Hilo (double hi, double lo)
    * @see <a href="https://en.wikipedia.org/wiki/2Sum"Fast2Sum</a>
    */
   public Hilo {
+    // TODO: implement correct test for non-overlapping!
+    //  split output violates this
     assert checkUlp(hi, lo) :
       "\nLow order term too large:" +
         "\nhi= " + Double.toHexString(hi) +
@@ -286,7 +288,6 @@ public record Hilo (double hi, double lo)
 
   public static final Hilo twoSum (final double a, final double b) {
     final double x = (a + b);
-    //Two_Sum_Tail(a, b, x, y);
     final double bvirt = (x - a);
     final double avirt = x - bvirt;
     final double bround = b - bvirt;
@@ -369,7 +370,9 @@ public record Hilo (double hi, double lo)
     final double lo = a - hi;
     // TODO: call twoSum to enforce ulp constraint?
     //  or replace ulp constraint --- is non-overlapping different?
-    return new Hilo(hi,lo); }
+    return twoSum(hi,lo);
+//    return new Hilo(hi,lo);
+  }
 
   //  #define Two_Product_2Presplit(a, ahi, alo, b, bhi, blo, x, y) \
   //  x = (REAL) (a * b); \
