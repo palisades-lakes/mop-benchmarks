@@ -3,7 +3,16 @@ package mop.java.numbers;
 import com.carrotsearch.hppc.DoubleArrayList;
 import com.carrotsearch.hppc.procedures.DoubleProcedure;
 
-/**
+/** NOTE: Different sequences of terms can represent the same rational
+ * number, so <code>equals()</code>, etc., need to take that into
+ * account. Shewchuk's versions of round to double
+ * (either naive sum of doubles, or just the highest order term)
+ * depend * on the specific terms, and thus are is not consistent for
+ * different representations of the same rational.
+ * <br>
+ * TODO: is there a way to standardize the terms to be unique
+ *  for a given rational value and round correctly.
+ * <br>
  * Adaptive precision floating point based on:
  * <ul>
  * <li><a href="https://www.cs.cmu.edu/~quake/robust.html">
@@ -72,15 +81,16 @@ import com.carrotsearch.hppc.procedures.DoubleProcedure;
  *   even <code>BigInteger</code> to extend range.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-05-22
+ * @version 2026-05-25
  */
 
-@SuppressWarnings("unused")
+//@SuppressWarnings("unused")
 public final class XDouble implements Comparable<XDouble> {
 
   /** Non-overlapping doubles, lowest order term first.
    */
   private final DoubleArrayList _terms;
+  private final DoubleArrayList terms () { return _terms; }
 
   public final int nterms () { return _terms.size(); }
   public final double term (final int i) { return _terms.get(i); }
@@ -90,22 +100,26 @@ public final class XDouble implements Comparable<XDouble> {
   //-------------------------------------------------------------------
 
   public final void forEach (final DoubleProcedure dp) {
-    _terms.forEach(dp); }
+    terms().forEach(dp); }
 
   //-------------------------------------------------------------------
   // Object
   //-------------------------------------------------------------------
+  // Note: convert to BigFloat to get (my) expected behavior, so very
+  // inefficient!
+  // TODO: find some faster way to get 'correct' behavior.
 
-  public final int hashCode () { return _terms.hashCode(); }
+  public final int hashCode () {
+    return bigFloatValue().hashCode(); }
 
   public final boolean equals (final Object o) {
     if  (o == this) { return true; }
     if (o == null) { return false; }
     if (! (o instanceof XDouble)) { return false; }
-    return _terms.equals(((XDouble) o)._terms); }
+    return bigFloatValue().equals(((XDouble) o).bigFloatValue()); }
 
   public final String toString () {
-    final StringBuilder sb = new StringBuilder("XDouble(");
+    final StringBuilder sb = new StringBuilder("XD(");
     forEach(x -> { sb.append(Double.toHexString(x)); sb.append(", ");});
     sb.deleteCharAt(sb.length()-1);
     sb.deleteCharAt(sb.length()-1);
@@ -118,25 +132,7 @@ public final class XDouble implements Comparable<XDouble> {
 
   @Override
   public final int compareTo (final XDouble that) {
-    int i=nterms()-1;
-    int j=that.nterms()-1;
-    while (i>=0 && j>=0) {
-      final double a = term(i);
-      final double b = that.term(i);
-      if (a < b) { return -1; }
-      if (a > b) { return 1; }
-      i--; j--; }
-    while (i>=0) {
-      final double a = term(i);
-      if (a < 0.0) { return -1; }
-      if (a > 0.0) { return 1; }
-      i--; }
-    while (j>=0) {
-      final double b = that.term(i);
-      if (0.0 < b) { return -1; }
-      if (0.0 > b) { return 1; }
-      j--; }
-    return 0; }
+    return bigFloatValue().compareTo(that.bigFloatValue()); }
 
   //--------------------------------------------------------------------
   // require IEEE 754
@@ -150,8 +146,57 @@ public final class XDouble implements Comparable<XDouble> {
       " not supported"; }
 
   //--------------------------------------------------------------------
+  // finite, non-finite rational values
+  //--------------------------------------------------------------------
+
+  public static final XDouble NaN = valueOf(Double.NaN);
+
+  public final boolean isNaN () {
+    return (1 == nterms()) && Double.isNaN(term(0)); }
+
+  // TODO: is this correct?
+  public final boolean isPositive () {
+    return (1 <= nterms()) && (0.0 < term(nterms()-1)); }
+
+  public final boolean isNegative () {
+    return (1 <= nterms()) && (0.0 > term(nterms()-1)); }
+
+  public static final XDouble POSITIVE_INFINITY =
+    valueOf(Double.POSITIVE_INFINITY);
+
+  public final boolean isPositiveInfinity () {
+    return (1 == nterms()) && (Double.POSITIVE_INFINITY==term(0)); }
+
+  public static final XDouble NEGATIVE_INFINITY =
+    valueOf(Double.NEGATIVE_INFINITY);
+
+  public final boolean isNegativeInfinity () {
+    return (1 == nterms()) && (Double.NEGATIVE_INFINITY==term(0)); }
+
+  public static final boolean isFinite (final DoubleArrayList terms) {
+    for (int i = 0; i < terms.size()-1; ++i) {
+      if (! Double.isFinite(terms.get(i))) { return false; } }
+    return true; }
+
+  public final boolean isFinite () {
+    return isFinite(terms()); }
+
+  //--------------------------------------------------------------------
 
   public final XDouble add (final double b) {
+    if (0.0==b) { return this; }
+    if (Double.isNaN(b) || isNaN()) { return NaN; }
+    if (isPositiveInfinity()) {
+      if (Double.isFinite(b) || (Double.POSITIVE_INFINITY==b)) {
+        return POSITIVE_INFINITY; }
+      return NaN; }
+    if (isNegativeInfinity()) {
+      if (Double.isFinite(b) || (Double.NEGATIVE_INFINITY==b)) {
+        return NEGATIVE_INFINITY; }
+      return NaN; }
+    assert isFinite();
+    if (Double.POSITIVE_INFINITY==b) { return POSITIVE_INFINITY; }
+    if (Double.NEGATIVE_INFINITY==b) { return NEGATIVE_INFINITY; }
     final DoubleArrayList sum =
       new DoubleArrayList(nterms()+1);
     double r = b;
@@ -161,53 +206,126 @@ public final class XDouble implements Comparable<XDouble> {
       r = fts.hi();
       if (s != 0.0) { sum.add(s); } }
     if (r != 0.0) { sum.add(r); }
-    if (sum.isEmpty()) { return ZERO; }
-    return new XDouble(sum); }
+    assert isFinite(sum);
+    return unsafe(sum); }
 
   //--------------------------------------------------------------------
   /** To start, just call add(double) iteratively.
    * <br>
    * TODO: optimize based on long version of Shewchuk's paper and
    *   fast_expansion_sum_zeroelim in predicates.c
+   * <br>
+   * TODO: cleanup non-finite cases
    */
 
   public final XDouble add (final XDouble b) {
+    if (isZero()) { return b; }
+    if (b.isZero()) { return this; }
+    if (isNaN() || b.isNaN()) { return NaN; }
+    if (isPositiveInfinity()) {
+      if (b.isNegativeInfinity()) { return NaN; }
+      return POSITIVE_INFINITY; }
+    if (isNegativeInfinity()) {
+      if (b.isPositiveInfinity()) { return NaN; }
+      return NEGATIVE_INFINITY; }
+    // this is finite
+    if (b.isPositiveInfinity()) { return POSITIVE_INFINITY; }
+    if (b.isNegativeInfinity()) { return NEGATIVE_INFINITY; }
+    // both are finite
     XDouble sum = this;
-    for (int i = 0; i < b.nterms(); i++) { sum = sum.add(b.term(i)); }
+    for (int i = 0; i < b.nterms(); i++) {
+      assert sum.isFinite();
+      sum = sum.add(b.term(i)); }
+    assert sum.isFinite();
     return sum; }
 
   // TODO: modify add to avoid instance creation
+  // TODO: cleanup non-finite cases
   public final XDouble subtract (final XDouble b) {
+    if (isNaN() || b.isNaN()) { return NaN; }
+    if (isZero()) { return b; }
+    if (b.isZero()) { return this; }
+    if (isPositiveInfinity()) {
+      if (b.isPositiveInfinity()) { return NaN; }
+      return POSITIVE_INFINITY; }
+    if (isNegativeInfinity()) {
+      if (b.isNegativeInfinity()) { return NaN; }
+      return NEGATIVE_INFINITY; }
+    // this is finite
+    if (b.isPositiveInfinity()) { return NEGATIVE_INFINITY; }
+    if (b.isNegativeInfinity()) { return POSITIVE_INFINITY; }
+    // both are finite
     XDouble sum = this;
     for (int i = 0; i < b.nterms(); i++) { sum = sum.add(-b.term(i)); }
+    assert null != sum;
+    assert sum.isFinite();
     return sum; }
+
+  //--------------------------------------------------------------------
+  // additive identity
+  //--------------------------------------------------------------------
+  // empty terms for ZERO
+
+  public static final XDouble ZERO =
+    new XDouble(new DoubleArrayList(0));
+
+  public final boolean isZero () { return terms().isEmpty(); }
 
   //--------------------------------------------------------------------
 
   public final XDouble negate () {
+    if (isZero()) { return ZERO; }
+    if (isNaN()) { return NaN; }
+    if (isPositiveInfinity()) { return NEGATIVE_INFINITY; }
+    if (isNegativeInfinity()) { return POSITIVE_INFINITY; }
     final DoubleArrayList h = new DoubleArrayList(nterms());
     for (int i=0;i<nterms();i++) { h.add(-term(i)); }
     return unsafe(h); }
 
+  // TODO: correct isPositive
   public final XDouble abs () {
-    final double hi = term(nterms()-1);
-    if (Double.isNaN(hi)) { return this; }
-    if (hi >= 0) { return this; }
+    if (isNaN()) { return NaN; }
+    if (isZero()) { return ZERO; }
+    if (isPositive()) { return this; }
     return negate(); }
 
   //--------------------------------------------------------------------
+  // scalar multiplication
+  //--------------------------------------------------------------------
+  // TODO: translate Shewchuk code to more efficient version
+  // TODO: cleanup non-finite cases
 
   public final XDouble scale (final double b) {
     if (0.0==b) { return ZERO; }
     if (1.0==b) { return this; }
-    if (ZERO.equals(this)) { return this; }
-    final DoubleArrayList hi = new DoubleArrayList(nterms());
-    final DoubleArrayList lo = new DoubleArrayList(nterms());
+    if (Double.isNaN(b)) { return NaN; }
+    if (isZero()) { return ZERO; }
+    if (isNaN()) { return NaN; }
+    if (Double.POSITIVE_INFINITY == b) {
+      if (isPositive()) { return POSITIVE_INFINITY; }
+      if (isNegative()) { return NEGATIVE_INFINITY; }
+      return NaN; }
+    if (Double.NEGATIVE_INFINITY == b) {
+      if (isPositive()) { return NEGATIVE_INFINITY; }
+      if (isNegative()) { return POSITIVE_INFINITY; }
+      return NaN; }
+    assert Double.isFinite(b);
+    if (isPositiveInfinity()) {
+      if (0.0<b) { return POSITIVE_INFINITY; }
+      if (0.0>b) { return NEGATIVE_INFINITY; }
+      return NaN; }
+    if (isNegativeInfinity()) {
+      if (0.0<b) { return NEGATIVE_INFINITY; }
+      if (0.0>b) { return POSITIVE_INFINITY; }
+      return NaN; }
+    assert isFinite() : "\n" + this;
+    XDouble result = ZERO;
     for  (int i=0;i<nterms();i++) {
       final Hilo ab = Hilo.twoProduct(term(i),b);
-      hi.add(ab.hi());
-      lo.add(ab.lo()); }
-    return unsafe(hi).add(unsafe(lo)); }
+      if (ab.isNaN()) { return NaN; }
+      result = result.add(ab.hi());
+      result = result.add(ab.lo()); }
+    return result; }
 
   //--------------------------------------------------------------------
   /** See either version of Shewchuk's paper for details.
@@ -220,10 +338,23 @@ public final class XDouble implements Comparable<XDouble> {
     return sum; }
 
   // TODO: might be different from Shewchuk's estimate
-  public final double doubleValue () { return estimate(); }
+  public final double doubleValue () {
+    return bigFloatValue().doubleValue(); }
 
   // TODO: might be different from Shewchuk's estimate
-  public final float floatValue () { return (float) doubleValue(); }
+  public final float floatValue () {
+    return bigFloatValue().floatValue(); }
+
+  //--------------------------------------------------------------------
+  // TODO: isZero, isFinite, isNaN methods
+  //  This is used a lot, so look into how to make it faster
+  //  (or unnecessary).
+
+  public final BigFloat bigFloatValue () {
+    if (isZero()) { return BigFloat.ZERO; }
+    BigFloat sum = BigFloat.valueOf(term(0));
+    for (int i = 1; i < nterms(); i++) { sum = sum.add(term(i)); }
+    return sum; }
 
   //--------------------------------------------------------------------
   // private construction
@@ -237,36 +368,29 @@ public final class XDouble implements Comparable<XDouble> {
     return true; }
 
   private XDouble (final DoubleArrayList terms) {
-    assert (! terms.isEmpty()) : terms;
     assert increasingNonOverlapping(terms) : terms;
     // DANGER: terms is mutable!!!!
     _terms = terms; }
 
   private static final XDouble unsafe (final DoubleArrayList terms) {
     terms.removeAll(0.0);
-    if (terms.isEmpty()) { return ZERO; }
+    if (terms.isEmpty()) { assert null != ZERO; return ZERO; }
     return new XDouble(terms); }
 
-  private static final XDouble safe (final DoubleArrayList terms) {
-    return unsafe(terms.clone()); }
+  // Not really safe unless non-overlapping is enforced
+//  private static final XDouble safe (final DoubleArrayList terms) {
+//    return unsafe(terms.clone()); }
 
   public static final XDouble valueOf (final double x) {
     return unsafe(DoubleArrayList.from(x)); }
 
+  public static final XDouble valueOf (final double x0,
+                                       final double x1) {
+    final Hilo xx = Hilo.twoSum(x0,x1);
+    return unsafe(DoubleArrayList.from(xx.lo(),xx.hi())); }
+
   public static final XDouble valueOf (final Hilo x) {
     return unsafe(DoubleArrayList.from(x.lo(),x.hi())); }
-
-  // TODO: empty terms for ZERO?
-  public static final XDouble ZERO =
-    new XDouble(DoubleArrayList.from(0.0));
-
-  public static final XDouble NaN = valueOf(Double.NaN);
-
-  public static final XDouble POSITIVE_INFINITY =
-    valueOf(Double.POSITIVE_INFINITY);
-
-  public static final XDouble NEGATIVE_INFINITY =
-    valueOf(Double.NEGATIVE_INFINITY);
 
   // TODO: better way to do this, or to generate high precision values
   //  directly
@@ -282,28 +406,28 @@ public final class XDouble implements Comparable<XDouble> {
   // #define Two_One_Diff(a1, a0, b, x2, x1, x0) \
   //  Two_Diff(a0, b , _i, x0); \
   //  Two_Sum( a1, _i, x2, x1)
-  private static final double[] twoOneDiff (final double ahi,
-                                            final double alo,
-                                            final double b) {
-    final Hilo ix0 = Hilo.twoDiff(alo, b);
-    final Hilo x2x1 = Hilo.twoSum(ahi, ix0.hi());
-    return new double[] {ix0.lo(), x2x1.lo(), x2x1.hi(), }; }
+//  private static final double[] twoOneDiff (final double ahi,
+//                                            final double alo,
+//                                            final double b) {
+//    final Hilo ix0 = Hilo.twoDiff(alo, b);
+//    final Hilo x2x1 = Hilo.twoSum(ahi, ix0.hi());
+//    return new double[] {ix0.lo(), x2x1.lo(), x2x1.hi(), }; }
 
   // Two_Two_Diff(axby1, axby0, bxay1, bxay0,
   //              ab[3], ab[2], ab[1], ab[0]);
 
-  public static final XDouble twoTwoDiff (final Hilo a,
-                                          final Hilo b) {
-    // Two_One_Diff(a1, a0, b0, _j, _0, x0);
-    final double[] x00j = twoOneDiff(a.hi(),a.lo(),b.lo());
-    // Two_One_Diff(_j, _0, b.hi(), x3, x2, x1)
-    final double[] x123 = twoOneDiff(x00j[2],x00j[1],b.hi());
-    final DoubleArrayList terms = new DoubleArrayList(4);
-    if (0.0!=x00j[0]) { terms.add(x00j[0]); }
-    for (int i=1;i<x123.length;i++) {
-      if (0.0!= x123[i]) { terms.add(x123[i]); }  }
-    if (terms.isEmpty()) { return ZERO; }
-    return unsafe(terms); }
+//  public static final XDouble twoTwoDiff (final Hilo a,
+//                                          final Hilo b) {
+//    // Two_One_Diff(a1, a0, b0, _j, _0, x0);
+//    final double[] x00j = twoOneDiff(a.hi(),a.lo(),b.lo());
+//    // Two_One_Diff(_j, _0, b.hi(), x3, x2, x1)
+//    final double[] x123 = twoOneDiff(x00j[2],x00j[1],b.hi());
+//    final DoubleArrayList terms = new DoubleArrayList(4);
+//    if (0.0!=x00j[0]) { terms.add(x00j[0]); }
+//    for (int i=1;i<x123.length;i++) {
+//      if (0.0!= x123[i]) { terms.add(x123[i]); }  }
+//    if (terms.isEmpty()) { return ZERO; }
+//    return unsafe(terms); }
 
   // FMA version
   public static final XDouble twoProduct (final double a,

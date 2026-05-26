@@ -364,6 +364,7 @@ public record Hilo (double hi, double lo)
   public static final Hilo twoProduct (final double a,
                                        final double b) {
     final double x = (a * b);
+    if (! Double.isFinite(x)) { return new Hilo(x,0.0); }
     final double y = Math.fma(a,b,-x);
     return new Hilo(x, y); }
 

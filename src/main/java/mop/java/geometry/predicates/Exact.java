@@ -66,7 +66,7 @@ public final class Exact implements Predicate {
 //      toHexString(a) + "->" + toHexString(b) + "->" + toHexString(c));
 //    System.out.println(toHexString(d));
 //    System.out.println(det);
-    return det.estimate(); }
+    return det.doubleValue(); }
     //return det.term(det.nterms() - 1); }
 
   //--------------------------------------------------------------------

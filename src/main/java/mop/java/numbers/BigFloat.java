@@ -18,6 +18,8 @@ import static mop.java.numbers.Numbers.loBit;
 @SuppressWarnings("unused")
 public final class BigFloat implements Ringlike<BigFloat> {
 
+  // TODO: infinite and NaN  representations and singletons.
+
   //--------------------------------------------------------------
   // instance fields and methods
   //--------------------------------------------------------------
