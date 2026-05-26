@@ -9,7 +9,7 @@ import java.io.Serializable;
  * <a href="https://github.com/locationtech/jts/blob/master/modules/core/src/main/java/org/locationtech/jts/math/DD.java">
  *  org.locationtech.jts.math.DD</a>
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-05-21
+ * @version 2026-05-25
  */
 
 public record Hilo (double hi, double lo)
@@ -113,7 +113,7 @@ public record Hilo (double hi, double lo)
   // Ringlike multiplication
   //--------------------------------------------------------------------
 
-  static final double SPLIT = 1.0 + 0x1.0p27;
+  private static final double SPLIT = 1.0 + 0x1.0p27;
 
   public final Hilo multiply (final double yhi, final double ylo) {
     // TODO: check whether all these edge cases are necessary
@@ -359,6 +359,39 @@ public record Hilo (double hi, double lo)
 //    final double err3 = err2 - (ahi * blo);
 //    final double y = (alo * blo) - err3;
 //    return new Hilo(x, y); }
+
+  /** Theorem 17 in Shewchuk.
+   */
+  public static final Hilo split (final double a) {
+    final double c = SPLIT * a;
+    final double big = c - a;
+    final double hi = c - big;
+    final double lo = a - hi;
+    // TODO: call twoSum to enforce ulp constraint?
+    //  or replace ulp constraint --- is non-overlapping different?
+    return new Hilo(hi,lo); }
+
+  //  #define Two_Product_2Presplit(a, ahi, alo, b, bhi, blo, x, y) \
+  //  x = (REAL) (a * b); \
+  //  err1 = x - (ahi * bhi); \
+  //  err2 = err1 - (alo * bhi); \
+  //  err3 = err2 - (ahi * blo); \
+  //  y = (alo * blo) - err3
+
+  // TODO: is this worth the complexity? CHeck whether ahilo and bhilo
+  //  are used anywhere else.
+  public static final Hilo twoProduct2Presplit (final double a,
+                                                  final Hilo ahilo,
+                                                  final double b,
+                                                  final Hilo bhilo) {
+    final double x = a * b;
+    final double err1 = x - (ahilo.hi() * bhilo.hi());
+    final double err2 = err1 - (ahilo.lo() * bhilo.hi());
+    final double err3 = err2 - (ahilo.hi() * bhilo.lo());
+    final double y = (ahilo.lo() * bhilo.lo()) - err3;
+    // TODO: call twoSum to enforce ulp constraint?
+    //  or replace ulp constraint --- is non-overlapping different?
+    return new Hilo(x,y); }
 
   // FMA version
   public static final Hilo twoProduct (final double a,

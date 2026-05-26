@@ -12,7 +12,7 @@ import static mop.java.numbers.Numbers.loBit;
  * <code>int</code> exponent.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-05-21
+ * @version 2026-05-25
  */
 
 @SuppressWarnings("unused")

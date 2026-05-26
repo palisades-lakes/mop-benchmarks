@@ -443,6 +443,72 @@ public final class XDouble implements Comparable<XDouble> {
     final XDouble bxay = twoProduct(b[0], a[1]);
     return axby.subtract(bxay); }
 
+//  #define Two_Two_Product(a1, a0, b1, b0, x7, x6, x5, x4, x3, x2, x1, x0) \
+//  Split(a0, a0hi, a0lo); \
+//  Split(b0, bhi, blo); \
+//  Two_Product_2Presplit(a0, a0hi, a0lo, b0, bhi, blo, _i, x0); \
+//  Split(a1, a1hi, a1lo); \
+//  Two_Product_2Presplit(a1, a1hi, a1lo, b0, bhi, blo, _j, _0); \
+//  Two_Sum(_i, _0, _k, _1); \
+//  Fast_Two_Sum(_j, _k, _l, _2); \
+//  Split(b1, bhi, blo); \
+//  Two_Product_2Presplit(a0, a0hi, a0lo, b1, bhi, blo, _i, _0); \
+//  Two_Sum(_1, _0, _k, x1); \
+//  Two_Sum(_2, _k, _j, _1); \
+//  Two_Sum(_l, _j, _m, _2); \
+//  Two_Product_2Presplit(a1, a1hi, a1lo, b1, bhi, blo, _j, _0); \
+//  Two_Sum(_i, _0, _n, _0); \
+//  Two_Sum(_1, _0, _i, x2); \
+//  Two_Sum(_2, _i, _k, _1); \
+//  Two_Sum(_m, _k, _l, _2); \
+//  Two_Sum(_j, _n, _k, _0); \
+//  Two_Sum(_1, _0, _j, x3); \
+//  Two_Sum(_2, _j, _i, _1); \(
+//  Two_Sum(_l, _i, _m, _2); \
+//  Two_Sum(_1, _k, _i, x4); \
+//  Two_Sum(_2, _i, _k, x5); \
+//  Two_Sum(_m, _k, x7, x6)
+
+  public static final XDouble twoTwoProduct (final Hilo a,
+                                             final Hilo b) {
+    final Hilo a1 = Hilo.split(a.hi());
+    final Hilo a0 = Hilo.split(a.lo());
+    final Hilo b1 = Hilo.split(b.hi());
+    final Hilo b0 = Hilo.split(b.lo());
+
+    final Hilo _ix0 = Hilo.twoProduct2Presplit(a.lo(),a0,b.lo(),b0);
+
+    Hilo _j_0 = Hilo.twoProduct2Presplit(a.hi(),a1,b.lo(),b0);
+    Hilo _k_1 = Hilo.twoSum(_ix0.hi(), _j_0.lo());
+    Hilo _l_2 = Hilo.fastTwoSum(_j_0.hi(), _k_1.hi());
+
+    final Hilo _i_0 = Hilo.twoProduct2Presplit(a.lo(),a0,b.hi(),b1);
+    final Hilo _kx1 = Hilo.twoSum(_k_1.lo(), _i_0.lo());
+    final Hilo _j_1 = Hilo.twoSum(_l_2.lo(), _kx1.hi());
+    Hilo _m_2 = Hilo.twoSum(_l_2.hi(), _j_1.hi());
+
+    _j_0 = Hilo.twoProduct2Presplit(a.hi(),a1,b.hi(),b1);
+    final Hilo _n_0 = Hilo.twoSum(_i_0.hi(),_j_0.lo());
+    final Hilo _ix2 = Hilo.twoSum(_j_1.lo(),_n_0.lo());
+    _k_1 = Hilo.twoSum(_m_2.lo(),_ix2.hi());
+    _l_2 = Hilo.twoSum(_m_2.hi(),_k_1.hi());
+    final Hilo _k_0 = Hilo.twoSum(_j_0.hi(),_n_0.hi());
+    final Hilo _jx3 = Hilo.twoSum(_k_1.lo(),_k_0.lo());
+    final Hilo _i_1 = Hilo.twoSum(_l_2.hi(),_jx3.hi());
+    _m_2 = Hilo.twoSum(_l_2.hi(), _i_1.hi());
+    final Hilo _ix4 = Hilo.twoSum(_i_1.lo(),_k_0.hi());
+    final Hilo _kx5 = Hilo.twoSum(_l_2.lo(),_ix4.hi());
+    final Hilo x7x6 = Hilo.twoSum(_m_2.hi(),_kx5.hi());
+
+    return unsafe(DoubleArrayList.from(
+      _ix0.lo(),
+      _kx1.lo(),
+      _ix2.lo(),
+      _jx3.lo(),
+      _ix4.lo(),
+      _kx5.lo(),
+      x7x6.lo(),
+      x7x6.hi())); }
 
   //-------------------------------------------------------------------
 } // end class

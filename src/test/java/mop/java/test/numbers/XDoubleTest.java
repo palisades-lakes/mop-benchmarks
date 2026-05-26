@@ -16,7 +16,7 @@ import java.util.function.BinaryOperator;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-05-24
+ * @version 2026-05-25
  */
 
 public final class XDoubleTest {
