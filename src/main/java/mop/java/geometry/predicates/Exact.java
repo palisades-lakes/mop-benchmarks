@@ -40,7 +40,6 @@ public final class Exact implements Predicate {
     final XDouble abc = ab.add(bc).subtract(ac);
     final XDouble bcd = bc.add(cd).subtract(bd);
 
-
     final double ax = a[0], ay = a[1];
     final XDouble adet =
       (bcd.scale(ax).scale(ax)).add(bcd.scale(ay).scale(ay));

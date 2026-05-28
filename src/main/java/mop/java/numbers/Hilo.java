@@ -29,13 +29,16 @@ public record Hilo (double hi, double lo)
 
   public final boolean isNaN () {
     // TODO: what about lo? Constrain both to be NaN?
-    return Double.isNaN(hi); }
+    return Double.isNaN(hi);
+  }
 
   public final boolean isFinite () {
-    return Double.isFinite(hi) && Double.isFinite(lo); }
+    return Double.isFinite(hi) && Double.isFinite(lo);
+  }
 
   public final boolean isNegative () {
-    return hi < 0.0 || (hi == 0.0 && lo < 0.0); }
+    return hi < 0.0 || (hi == 0.0 && lo < 0.0);
+  }
 
   //--------------------------------------------------------------------
   // Ringlike addition
@@ -50,7 +53,8 @@ public record Hilo (double hi, double lo)
     final double f = s + lo;
     final double H = S + f;
     final double h = f + (S - H);
-    return twoSum(H + h, h + (H - hi)); }
+    return twoSum(H + h, h + (H - hi));
+  }
 
   private final Hilo add (final double yhi, double ylo) {
     final double S = hi + yhi;
@@ -67,25 +71,30 @@ public record Hilo (double hi, double lo)
     e = t + h;
     final double zhi = H + e;
     final double zlo = e + (H - zhi);
-    return twoSum(zhi, zlo); }
+    return twoSum(zhi, zlo);
+  }
 
   @Override
   public final Hilo add (final Hilo y) {
-    return add(y.hi,y.lo); }
+    return add(y.hi, y.lo);
+  }
 
   //--------------------------------------------------------------------
 
   public final Hilo subtract (final double y) { return add(-y); }
 
   @Override
-  public final Hilo subtract (final Hilo y) { return add(-y.hi, -y.lo); }
+  public final Hilo subtract (final Hilo y) {
+    return add(-y.hi, -y.lo);
+  }
 
   //--------------------------------------------------------------------
 
   @Override
   public final Hilo negate () {
     // TODO: sum probably not necessary
-    return twoSum(-hi, -lo); }
+    return twoSum(-hi, -lo);
+  }
 
   //--------------------------------------------------------------------
 
@@ -96,18 +105,20 @@ public record Hilo (double hi, double lo)
 
   // TODO: shouldn't need to check lo
   @Override
-  public final boolean isZero () { return hi==0.0 && lo==0.0; }
+  public final boolean isZero () { return hi == 0.0 && lo == 0.0; }
 
   @Override
   public final Hilo abs () {
     if (isNaN()) { return NaN; }
     // TODO: is sum necessary?
     if (isNegative()) { return twoSum(-hi, -lo); }
-    return this; }
+    return this;
+  }
 
   @Override
   public final Hilo absDiff (final Hilo y) {
-    return subtract(y).abs(); }
+    return subtract(y).abs();
+  }
 
   //--------------------------------------------------------------------
   // Ringlike multiplication
@@ -118,16 +129,17 @@ public record Hilo (double hi, double lo)
   public final Hilo multiply (final double yhi, final double ylo) {
     // TODO: check whether all these edge cases are necessary
     if (ZERO.equals(this)) { return ZERO; }
-    if ((0.0==yhi) && (0.0==ylo)) { return ZERO; }
+    if ((0.0 == yhi) && (0.0 == ylo)) { return ZERO; }
     if (ONE.equals(this)) { return twoSum(yhi, ylo); }
-    if ((1.0==yhi) && (0.0==ylo)) { return this; }
+    if ((1.0 == yhi) && (0.0 == ylo)) { return this; }
     if (isNaN()) { return NaN; }
-    if (Double.isNaN(yhi)) {return NaN; }
-    assert ! Double.isNaN(ylo) : toHexString();
+    if (Double.isNaN(yhi)) { return NaN; }
+    assert !Double.isNaN(ylo) : toHexString();
     final double hiTest = hi * yhi;
     // TODO: is this right? safe to ignore lo and ylo?
     if (Double.isInfinite(hiTest)) {
-      return (0 < hiTest) ? POSITIVE_INFINITY : NEGATIVE_INFINITY; }
+      return (0 < hiTest) ? POSITIVE_INFINITY : NEGATIVE_INFINITY;
+    }
     double C = SPLIT * hi;
     double hx = C - hi;
     double c = SPLIT * yhi;
@@ -146,15 +158,18 @@ public record Hilo (double hi, double lo)
     final double zhi = C + c;
     hx = C - zhi;
     final double zlo = c + hx;
-    return twoSum(zhi, zlo); }
+    return twoSum(zhi, zlo);
+  }
 
   public final Hilo multiply (final double y) {
     // TODO: optimize simple double case
-    return multiply(y, 0.0); }
+    return multiply(y, 0.0);
+  }
 
   @Override
   public final Hilo multiply (final Hilo that) {
-    return multiply(that.hi, that.lo); }
+    return multiply(that.hi, that.lo);
+  }
 
   @Override
   public final Hilo square () { return multiply(this); }
@@ -164,22 +179,31 @@ public record Hilo (double hi, double lo)
   public final Hilo divide (final double y) {
     if (Double.isNaN(y)) { return NaN; }
     // TODO: optimize single double case
-    return divide(y, 0.0); }
+    return divide(y, 0.0);
+  }
 
   public final Hilo divide (final double yhi, final double ylo) {
     double hc, tc, hy, ty, C, c, U, u;
-    C = hi / yhi; c = SPLIT * C; hc = c - C; u = SPLIT * yhi;
+    C = hi / yhi;
+    c = SPLIT * C;
+    hc = c - C;
+    u = SPLIT * yhi;
     hc = c - hc;
-    tc = C - hc; hy = u - yhi; U = C * yhi; hy = u - hy;
+    tc = C - hc;
+    hy = u - yhi;
+    U = C * yhi;
+    hy = u - hy;
     ty = yhi - hy;
     u = (((hc * hy - U) + hc * ty) + tc * hy) + tc * ty;
     c = ((((hi - U) - u) + lo) - C * ylo) / yhi;
     u = C + c;
-    return twoSum(u, (C - u) + c); }
+    return twoSum(u, (C - u) + c);
+  }
 
   @Override
   public final Hilo divide (final Hilo y) {
-    return divide(y.hi, y.lo); }
+    return divide(y.hi, y.lo);
+  }
 
   @Override
   public final Hilo invert () {
@@ -189,14 +213,19 @@ public record Hilo (double hi, double lo)
     c = SPLIT * C;
     hc = c - C;
     u = SPLIT * hi;
-    hc = c - hc; tc = C - hc; hy = u - hi; U = C * hi; hy = u - hy;
+    hc = c - hc;
+    tc = C - hc;
+    hy = u - hi;
+    U = C * hi;
+    hy = u - hy;
     ty = hi - hy;
     u = (((hc * hy - U) + hc * ty) + tc * hy) + tc * ty;
     c = ((((1.0 - U) - u)) - C * lo) / hi;
 
     double zhi = C + c;
     double zlo = (C - zhi) + c;
-    return twoSum(zhi, zlo); }
+    return twoSum(zhi, zlo);
+  }
 
   //-------------------------------------------------------------------
 
@@ -213,7 +242,9 @@ public record Hilo (double hi, double lo)
   //-------------------------------------------------------------------
 
   public final double doubleValue () { return hi + lo; }
+
   public final float floatValue () { return (float) doubleValue(); }
+
   public final int intValue () { return (int) doubleValue(); }
 
   //-------------------------------------------------------------------
@@ -224,31 +255,37 @@ public record Hilo (double hi, double lo)
   public final int compareTo (final Hilo other) {
     if (hi < other.hi) { return -1; }
     if (hi > other.hi) { return 1; }
-    return Double.compare(lo, other.lo); }
+    return Double.compare(lo, other.lo);
+  }
 
   //-------------------------------------------------------------------
   // Object methods
   //-------------------------------------------------------------------
   @Override
   public final boolean equals (final Object that) {
-    if (! (that instanceof Hilo(double hi1, double lo1))) {
-      return false; }
-    return hi == hi1 && lo == lo1;  }
+    if (!(that instanceof Hilo(double hi1, double lo1))) {
+      return false;
+    }
+    return hi == hi1 && lo == lo1;
+  }
 
   @Override
   public final int hashCode () {
     int h = 17;
-    h = (31*h) + Double.hashCode(hi);
-    h = (31*h) + Double.hashCode(lo);
-    return h; }
+    h = (31 * h) + Double.hashCode(hi);
+    h = (31 * h) + Double.hashCode(lo);
+    return h;
+  }
 
-  /** Two terms via <code>Double.toHexString(double)</code>,
-   * lossless roundtrips.
+  /**
+   * Two terms via <code>Double.toHexString(double)</code>, lossless
+   * roundtrips.
    */
   public final String toHexString () {
     return "Hilo("
       + Double.toHexString(hi) + " + "
-      + Double.toHexString(lo) + ")"; }
+      + Double.toHexString(lo) + ")";
+  }
 
   @Override
   public final String toString () { return toHexString(); }
@@ -256,24 +293,29 @@ public record Hilo (double hi, double lo)
   //--------------------------------------------------------------------
   // construction
   //--------------------------------------------------------------------
-  /** A <code>DD</code>> uses a representation containing two double-precision
-   * values. A number x is represented as a pair of doubles, x.hi and
-   * x.lo, such that the number represented by x is x.hi + x.lo, where
+
+  /**
+   * A <code>DD</code>> uses a representation containing two
+   * double-precision values. A number x is represented as a pair of
+   * doubles, x.hi and x.lo, such that the number represented by x is
+   * x.hi + x.lo, where
    * <pre>
    *    |x.lo| &lt;= 0.5 * ulp(x.hi)
    * </pre>
    * and ulp(y) means "unit in the last place of y". The basic
-   * arithmetic
-   * operations are implemented using convenient properties of IEEE-754
-   * floating-point arithmetic.
+   * arithmetic operations are implemented using convenient properties
+   * of IEEE-754 floating-point arithmetic.
    */
 
   private final boolean checkUlp (final double s, final double t) {
     // reverse test to handle NaN
-    return ! ((2*Math.abs(t)) > Math.ulp(s)); }
+    return !((2 * Math.abs(t)) > Math.ulp(s));
+  }
 
-  /** Enforce <pre>hi = a + b</pre>, <pre>lo = hi - (a + b)</pre>
-   * so that <pre>|lo| &lt;= 0.5 * ulp(hi)</pre>.
+  /**
+   * Enforce <pre>hi = a + b</pre>, <pre>lo = hi - (a + b)</pre> so
+   * that <pre>|lo| &lt;= 0.5 * ulp(hi)</pre>.
+   *
    * @see <a href="https://en.wikipedia.org/wiki/2Sum"Fast2Sum</a>
    */
   public Hilo {
@@ -293,7 +335,8 @@ public record Hilo (double hi, double lo)
     final double bround = b - bvirt;
     final double around = a - avirt;
     final double y = around + bround;
-    return new Hilo(x,y); }
+    return new Hilo(x, y);
+  }
 
   public static final Hilo fastTwoSum (final double a,
                                        final double b) {
@@ -305,9 +348,13 @@ public record Hilo (double hi, double lo)
     //Fast_Two_Sum_Tail(a, b, x, y)
     final double bvirt = x - a;
     final double y = b - bvirt;
-    return new Hilo(x, y); }
+    return new Hilo(x, y);
+  }
 
-  public static final Hilo twoDiff (final double a, final double b) {
+  @SuppressWarnings("unused")
+  public static final Hilo twoDiff (final double a,
+                                    final double b) {
+//    return twoSum(a, -b);
     final double x = (a - b);
     //Two_Diff_Tail(a, b, x, y)
     final double bvirt = (a - x);
@@ -315,7 +362,8 @@ public record Hilo (double hi, double lo)
     final double bround = bvirt - b;
     final double around = a - avirt;
     final double y = around + bround;
-    return new Hilo(x, y); }
+    return new Hilo(x, y);
+  }
 
   // TODO: move to Expansion or XDouble
   // returns double[3]
@@ -342,26 +390,8 @@ public record Hilo (double hi, double lo)
 //    return new double[] { x00j[0],x123[0],x123[1],x123[2], };  }
 
   // Shewchuk version
-//  public static final Hilo twoProduct (final double a,
-//                                       final double b) {
-//    final double x = (a * b);
-//    //Two_Product_Tail(a, b, x, y)
-//    // TODO: inline to avoid instance creation?
-//    final double ca = SPLIT * a;
-//    final double abig = (ca - a);
-//    final double ahi = ca - abig;
-//    final double alo = a - ahi;
-//    final double cb = SPLIT * b;
-//    final double bbig = (cb - b);
-//    final double bhi = cb - bbig;
-//    final double blo = b - bhi;
-//    final double err1 = x - (ahi * bhi);
-//    final double err2 = err1 - (alo * bhi);
-//    final double err3 = err2 - (ahi * blo);
-//    final double y = (alo * blo) - err3;
-//    return new Hilo(x, y); }
-
-  /** Theorem 17 in Shewchuk.
+  /**
+   * Theorem 17 in Shewchuk.
    */
   public static final Hilo split (final double a) {
     final double c = SPLIT * a;
@@ -370,9 +400,33 @@ public record Hilo (double hi, double lo)
     final double lo = a - hi;
     // TODO: call twoSum to enforce ulp constraint?
     //  or replace ulp constraint --- is non-overlapping different?
-    return twoSum(hi,lo);
+    return twoSum(hi, lo);
 //    return new Hilo(hi,lo);
   }
+
+//#define Two_Product_Presplit(a, b, bhi, blo, x, y) \
+//  x = (REAL) (a * b); \
+//  Split(a, ahi, alo); \
+//  err1 = x - (ahi * bhi); \
+//  err2 = err1 - (alo * bhi); \
+//  err3 = err2 - (ahi * blo); \
+//  y = (alo * blo) - err3
+
+  // TODO: call twoProduct2PreSplit?
+  @SuppressWarnings("unused")
+  public static final Hilo twoProductPresplit (final double a,
+                                               final double b,
+                                               final Hilo bhilo) {
+
+    final double x = a * b;
+
+    final Hilo ahilo = split (a);
+    final double err1 = x - (ahilo.hi() * bhilo.hi());
+    final double err2 = err1 - (ahilo.lo() * bhilo.hi());
+    final double err3 = err2 - (ahilo.hi() * bhilo.lo());
+    final double y = (ahilo.lo() * bhilo.lo()) - err3;
+
+    return new Hilo(x,y);}
 
   //  #define Two_Product_2Presplit(a, ahi, alo, b, bhi, blo, x, y) \
   //  x = (REAL) (a * b); \
@@ -384,9 +438,9 @@ public record Hilo (double hi, double lo)
   // TODO: is this worth the complexity? CHeck whether ahilo and bhilo
   //  are used anywhere else.
   public static final Hilo twoProduct2Presplit (final double a,
-                                                  final Hilo ahilo,
-                                                  final double b,
-                                                  final Hilo bhilo) {
+                                                final Hilo ahilo,
+                                                final double b,
+                                                final Hilo bhilo) {
     final double x = a * b;
     final double err1 = x - (ahilo.hi() * bhilo.hi());
     final double err2 = err1 - (ahilo.lo() * bhilo.hi());
@@ -396,25 +450,48 @@ public record Hilo (double hi, double lo)
     //  or replace ulp constraint --- is non-overlapping different?
     return new Hilo(x,y); }
 
-  // FMA version
+  // modular predicates.c version: breaks Exact.incircle()
+//  public static final Hilo twoProduct (final double a,
+//                                       final double b) {
+//    final double x = (a * b);
+//    //Two_Product_Tail(a, b, x, y)
+//    // TODO: inline to avoid instance creation?
+//    //   call twoProductPresplit?
+//    final Hilo ahilo = split(a);
+//    final Hilo bhilo = split(b);
+//    final double err1 = x - (ahilo.hi() * bhilo.hi());
+//    final double err2 = err1 - (ahilo.lo() * bhilo.hi());
+//    final double err3 = err2 - (ahilo.hi() * bhilo.lo());
+//    final double y = (ahilo.lo() * bhilo.lo()) - err3;
+//    return new Hilo(x, y); }
+
   public static final Hilo twoProduct (final double a,
                                        final double b) {
     final double x = (a * b);
-    if (! Double.isFinite(x)) { return new Hilo(x,0.0); }
-    final double y = Math.fma(a,b,-x);
+    //Two_Product_Tail(a, b, x, y)
+    // TODO: inline to avoid instance creation?
+    //   call twoProductPresplit?
+    final double ca = SPLIT * a;
+    final double abig = (ca - a);
+    final double ahi = ca - abig;
+    final double alo = a - ahi;
+    final double cb = SPLIT * b;
+    final double bbig = (cb - b);
+    final double bhi = cb - bbig;
+    final double blo = b - bhi;
+    final double err1 = x - (ahi * bhi);
+    final double err2 = err1 - (alo * bhi);
+    final double err3 = err2 - (ahi * blo);
+    final double y = (alo * blo) - err3;
     return new Hilo(x, y); }
 
-  // Two_Product_Presplit() is Two_Product() where one of the inputs has
-  //  already been split.  Avoids redundant splitting.
-//  public static final Hilo twoProductPresplit (final double a,
-//                                               final double b,
-//                                               final Hilo bhilo) {
-//    final double x = a * b;
-//    final Hilo ahilo = split(a);
-//    final double err1 = x - (ahilo.hi * bhilo.hi);
-//    final double err2 = err1 - (ahilo.lo * bhilo.hi);
-//    final double err3 = err2 - (ahilo.hi * bhilo.lo);
-//    final double y = (ahilo.lo * bhilo.lo) - err3;
+
+  // FMA version
+//  public static final Hilo twoProduct (final double a,
+//                                       final double b) {
+//    final double x = (a * b);
+//    if (! Double.isFinite(x)) { return new Hilo(x,0.0); }
+//    final double y = Math.fma(a,b,-x);
 //    return new Hilo(x, y); }
 
   public static final Hilo valueOf (final double a) {

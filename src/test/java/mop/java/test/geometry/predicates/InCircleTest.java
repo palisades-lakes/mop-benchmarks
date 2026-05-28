@@ -26,13 +26,13 @@ public final class InCircleTest {
 
   //--------------------------------------------------------------
   private static final String debugMsg (final double truth,
-                                          final double check,
-                                          final Predicate gold,
-                                          final Predicate pred,
-                                          final double[] p0,
-                                          final double[] p1,
-                                          final double[] p2,
-                                          final double[] p3) {
+                                        final double check,
+                                        final Predicate gold,
+                                        final Predicate pred,
+                                        final double[] p0,
+                                        final double[] p1,
+                                        final double[] p2,
+                                        final double[] p3) {
     final String msg = "\ninCircle(" +
       Arrays.toString(p0) + "," +
       Arrays.toString(p1) + "," +
@@ -40,7 +40,8 @@ public final class InCircleTest {
       Arrays.toString(p3) + ")" +
       "\ngold=" + gold + " -> " + Double.toHexString(truth) +
       "\npred=" + pred + " -> " + Double.toHexString(check) +
-      "\ndiff=" + Double.toHexString(truth - check);
+      "\ndiff=" + Double.toHexString(truth - check) +
+      "\nulp=" + Double.toHexString(Math.ulp(truth));
     return msg + "\n"; }
 
   private static final String failureMsg (final double truth,
@@ -61,6 +62,7 @@ public final class InCircleTest {
         "\ngold=" + gold + " -> " + Double.toHexString(truth) +
         "\npred=" + pred + " -> " + Double.toHexString(check));
     msg.append("\ndiff=").append(Double.toHexString(truth-check));
+    msg.append("\nulp=").append(Double.toHexString(Math.ulp(truth)));
     for (final Predicate p : predicates) {
       msg.append("\n").append(p).append(" ->\n")
          .append(Double.toHexString(p.incircle(p0, p1, p2,p3))); }

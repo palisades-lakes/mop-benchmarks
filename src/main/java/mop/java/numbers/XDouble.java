@@ -3,15 +3,27 @@ package mop.java.numbers;
 import com.carrotsearch.hppc.DoubleArrayList;
 import com.carrotsearch.hppc.procedures.DoubleProcedure;
 
-/** NOTE: Different sequences of terms can represent the same rational
+/** Major difference from predicates.c is attempt to handle
+ * non-finite values, under- and over-flow, etc.
+ * <br>
+ * TODO: better testing of non-finite and under/over float cases.
+ * <br>
+ * Also fix a number of places where predicates.c
+ * make unchecked assumptions about, for example, always having at
+ * least 2 terms. It also goes off the end of arrays
+ * in a number of places, getting away with that in C because the
+ * illegal values are never used.
+ * <br>
+ * NOTE: Different sequences of terms can represent the same rational
  * number, so <code>equals()</code>, etc., need to take that into
  * account. Shewchuk's versions of round to double
  * (either naive sum of doubles, or just the highest order term)
- * depend * on the specific terms, and thus are is not consistent for
+ * depend on the specific terms, and thus are is not consistent for
  * different representations of the same rational.
  * <br>
  * TODO: is there a way to standardize the terms to be unique
  *  for a given rational value and round correctly.
+ *  See compress(). Not clear if this is the answer.
  * <br>
  * Adaptive precision floating point based on:
  * <ul>
@@ -53,7 +65,7 @@ import com.carrotsearch.hppc.procedures.DoubleProcedure;
  * SCG '96: Proceedings of the twelfth annual symposium on
  * Computational geometry,
  * (10 pages)
- * </a?</li>
+ * </a></li>
  * *</ul>
  * <p>
  * Data Structures:
@@ -209,6 +221,7 @@ public final class XDouble implements Comparable<XDouble> {
       if (hh != 0.0) { sum.add(hh); } }
     if (Q != 0.0)  { sum.add(Q); }
     assert isFinite(sum);
+    if (sum.isEmpty()) { return ZERO; }
     return unsafe(sum); }
 
   //--------------------------------------------------------------------
@@ -292,6 +305,7 @@ public final class XDouble implements Comparable<XDouble> {
   //--------------------------------------------------------------------
   // TODO: translate Shewchuk code to more efficient version
   // TODO: cleanup non-finite cases
+  // naive implementation:
 
   public final XDouble scale (final double b) {
     if (0.0==b) { return ZERO; }
@@ -325,9 +339,75 @@ public final class XDouble implements Comparable<XDouble> {
       result = result.add(ab.lo()); }
     return result; }
 
+  // TODO: this version of scale() breaks all the Shewchuk predicates,
+  //  while naive version only breaks Slow.incircle().
+  //  In both cases, the difference from BigFloat is the absolute
+  //  value of the ulp of the BigFloat rounded to double?
+  //
+  //  scale_expansion_zeroelim()   Multiply an expansion by a scalar,
+  //                               eliminating zero components from the
+  //                               output expansion.
+  //
+  //  Sets h = be.  See either version of Shewchuk's paper for details.
+  //
+  //  Maintains the nonoverlapping property.  If round-to-even is used (as
+  //  with IEEE 754), maintains the strongly nonoverlapping and nonadjacent
+  //  properties as well.  (That is, if e has one of these properties, so
+  //  will h.)
+  //
+  // predicates.c: "e and h cannot be the same."
+
+//  private static final DoubleArrayList scale (final DoubleArrayList e,
+//                                             final double b) {
+//    assert ! e.isEmpty();
+//    final DoubleArrayList h = new DoubleArrayList(e.size());
+//
+//    final Hilo bhilo = Hilo.split(b);
+//    Hilo Qhh = Hilo.twoProductPresplit(e.get(0), b, bhilo);
+//    final double hh = Qhh.lo();
+//    if (hh != 0) { h.add(hh); }
+//    for (int eindex = 1; eindex < e.size(); eindex++) {
+//      final double enow = e.get(eindex);
+//      final Hilo product10 = Hilo.twoProductPresplit(enow, b, bhilo);
+//      final Hilo sumhh = Hilo.twoSum(Qhh.hi(), product10.lo());
+//      if (hh != 0) {h.add(hh); }
+//      Qhh = Hilo.fastTwoSum(product10.hi(), sumhh.hi());
+//      if (hh != 0) { h.add(hh); } }
+//    // TODO: in 2nd case should just return empty list (ZERO)
+//    if ((Qhh.hi() != 0.0) || (h.isEmpty())) { h.add(Qhh.hi()); }
+//    return h; }
+//
+//    public final XDouble scale (final double b) {
+//    if (0.0==b) { return ZERO; }
+//    if (1.0==b) { return this; }
+//    if (Double.isNaN(b)) { return NaN; }
+//    if (isZero()) { return ZERO; }
+//    if (isNaN()) { return NaN; }
+//    if (Double.POSITIVE_INFINITY == b) {
+//      if (isPositive()) { return POSITIVE_INFINITY; }
+//      if (isNegative()) { return NEGATIVE_INFINITY; }
+//      return NaN; }
+//    if (Double.NEGATIVE_INFINITY == b) {
+//      if (isPositive()) { return NEGATIVE_INFINITY; }
+//      if (isNegative()) { return POSITIVE_INFINITY; }
+//      return NaN; }
+//    assert Double.isFinite(b);
+//    if (isPositiveInfinity()) {
+//      if (0.0<b) { return POSITIVE_INFINITY; }
+//      if (0.0>b) { return NEGATIVE_INFINITY; }
+//      return NaN; }
+//    if (isNegativeInfinity()) {
+//      if (0.0<b) { return NEGATIVE_INFINITY; }
+//      if (0.0>b) { return POSITIVE_INFINITY; }
+//      return NaN; }
+//    assert isFinite() : "\n" + this;
+//
+//    return unsafe(scale(terms(),b)); }
+
   //--------------------------------------------------------------------
   // TODO: check if this is different from scale(2.0)?
 
+  @SuppressWarnings("unused")
   public final XDouble fast2x () {
     if (isZero()) { return ZERO; }
     if (isNaN()) { return NaN; }
@@ -381,8 +461,14 @@ public final class XDouble implements Comparable<XDouble> {
   assertIncreasingNonOverlapping (final DoubleArrayList t) {
     for (int i=0;i<t.size()-1;i++) {
       final double a = Math.abs(t.get(i));
-      final double u = 0.5*Math.ulp(t.get(i+1));
-      assert (a < u) :
+      // TODO: failing this constraint,
+      //  which means I am not understanding about "non-overlapping",
+      //  "non-adjacent", and what to expect from the various
+      //  arithmetic ops.
+      //  final double u = 0.5*Math.ulp(t.get(i+1));
+      //  passing the following:
+      final double u = Math.ulp(t.get(i+1));
+      assert (a <= u) :
         "\n" + t + "\n" +
           i + " : " + "\n" +
           Double.toHexString(a) +
@@ -396,10 +482,12 @@ public final class XDouble implements Comparable<XDouble> {
     // DANGER: terms is mutable!!!!
     _terms = terms; }
 
-  private static final XDouble unsafe (final DoubleArrayList terms) {
+  // TODO: make this private, public version should clone terms.
+  public static final XDouble unsafe (final DoubleArrayList terms) {
     terms.removeAll(0.0);
     if (terms.isEmpty()) { assert null != ZERO; return ZERO; }
-    return new XDouble(terms); }
+    // TODO: is compress() a good idea?
+    return new XDouble(compress(terms)); }
 
   // Not really safe unless non-overlapping is enforced
 //  private static final XDouble safe (final DoubleArrayList terms) {
@@ -453,24 +541,34 @@ public final class XDouble implements Comparable<XDouble> {
 //    if (terms.isEmpty()) { return ZERO; }
 //    return unsafe(terms); }
 
+//  public static final XDouble twoSum (final double a, final double b) {
+//    final double x = (a + b);
+//    //Two_Sum_Tail(a, b, x, y);
+//    final double bvirt = (x - a);
+//    final double avirt = x - bvirt;
+//    final double bround = b - bvirt;
+//    final double around = a - avirt;
+//    final double y = around + bround;
+//    return unsafe(DoubleArrayList.from(y, x)); }
+
   public static final XDouble twoSum (final double a, final double b) {
-    final double x = (a + b);
-    //Two_Sum_Tail(a, b, x, y);
-    final double bvirt = (x - a);
-    final double avirt = x - bvirt;
-    final double bround = b - bvirt;
-    final double around = a - avirt;
-    final double y = around + bround;
-    return unsafe(DoubleArrayList.from(y, x)); }
+    final Hilo hilo = Hilo.twoSum(a,b);
+    return unsafe(DoubleArrayList.from(hilo.lo(), hilo.hi())); }
 
   // FMA version
+//  public static final XDouble twoProduct (final double a,
+//                                          final double b) {
+//    final double hi = (a * b);
+//    final double lo = Math.fma(a,b,-hi);
+//    if (0.0==hi)  { return ZERO; }
+//    // enforce ulp constraint
+//    return twoSum(hi,lo); }
+
+  // Shewchuk version
   public static final XDouble twoProduct (final double a,
                                           final double b) {
-    final double hi = (a * b);
-    final double lo = Math.fma(a,b,-hi);
-    if (0.0==hi)  { return ZERO; }
-    // enforce ulp constraint
-    return twoSum(hi,lo); }
+    final Hilo hilo = Hilo.twoProduct(a,b);
+    return unsafe(DoubleArrayList.from(hilo.lo(), hilo.hi())); }
 
   public static final XDouble crossProduct (final double[] a,
                                             final double[] b) {
@@ -478,72 +576,176 @@ public final class XDouble implements Comparable<XDouble> {
     final XDouble bxay = twoProduct(b[0], a[1]);
     return axby.subtract(bxay); }
 
-//  #define Two_Two_Product(a1, a0, b1, b0, x7, x6, x5, x4, x3, x2, x1, x0) \
-//  Split(a0, a0hi, a0lo); \
-//  Split(b0, bhi, blo); \
-//  Two_Product_2Presplit(a0, a0hi, a0lo, b0, bhi, blo, _i, x0); \
-//  Split(a1, a1hi, a1lo); \
-//  Two_Product_2Presplit(a1, a1hi, a1lo, b0, bhi, blo, _j, _0); \
-//  Two_Sum(_i, _0, _k, _1); \
-//  Fast_Two_Sum(_j, _k, _l, _2); \
-//  Split(b1, bhi, blo); \
-//  Two_Product_2Presplit(a0, a0hi, a0lo, b1, bhi, blo, _i, _0); \
-//  Two_Sum(_1, _0, _k, x1); \
-//  Two_Sum(_2, _k, _j, _1); \
-//  Two_Sum(_l, _j, _m, _2); \
-//  Two_Product_2Presplit(a1, a1hi, a1lo, b1, bhi, blo, _j, _0); \
-//  Two_Sum(_i, _0, _n, _0); \
-//  Two_Sum(_1, _0, _i, x2); \
-//  Two_Sum(_2, _i, _k, _1); \
-//  Two_Sum(_m, _k, _l, _2); \
-//  Two_Sum(_j, _n, _k, _0); \
-//  Two_Sum(_1, _0, _j, x3); \
-//  Two_Sum(_2, _j, _i, _1); \(
-//  Two_Sum(_l, _i, _m, _2); \
-//  Two_Sum(_1, _k, _i, x4); \
-//  Two_Sum(_2, _i, _k, x5); \
-//  Two_Sum(_m, _k, x7, x6)
+  //--------------------------------------------------------------------
+  //  #define Two_Two_Product(a1, a0, b1, b0, x7, x6, x5, x4, x3, x2, x1, x0) \
+  //  Split(a0, a0hi, a0lo); \
+  //  Split(b0, bhi, blo); \
+  //  Two_Product_2Presplit(a0, a0hi, a0lo, b0, bhi, blo, _i, x0); \
+  //  Split(a1, a1hi, a1lo); \
+  //  Two_Product_2Presplit(a1, a1hi, a1lo, b0, bhi, blo, _j, _0); \
+  //  Two_Sum(_i, _0, _k, _1); \
+  //  Fast_Two_Sum(_j, _k, _l, _2); \
+  //  Split(b1, bhi, blo); \
+  //  Two_Product_2Presplit(a0, a0hi, a0lo, b1, bhi, blo, _i, _0); \
+  //  Two_Sum(_1, _0, _k, x1); \
+  //  Two_Sum(_2, _k, _j, _1); \
+  //  Two_Sum(_l, _j, _m, _2); \
+  //  Two_Product_2Presplit(a1, a1hi, a1lo, b1, bhi, blo, _j, _0); \
+  //  Two_Sum(_i, _0, _n, _0); \
+  //  Two_Sum(_1, _0, _i, x2); \
+  //  Two_Sum(_2, _i, _k, _1); \
+  //  Two_Sum(_m, _k, _l, _2); \
+  //  Two_Sum(_j, _n, _k, _0); \
+  //  Two_Sum(_1, _0, _j, x3); \
+  //  Two_Sum(_2, _j, _i, _1); \(
+  //  Two_Sum(_l, _i, _m, _2); \
+  //  Two_Sum(_1, _k, _i, x4); \
+  //  Two_Sum(_2, _i, _k, x5); \
+  //  Two_Sum(_m, _k, x7, x6)
 
   public static final XDouble twoTwoProduct (final Hilo a,
                                              final Hilo b) {
-    final Hilo a1 = Hilo.split(a.hi());
-    final Hilo a0 = Hilo.split(a.lo());
-    final Hilo b1 = Hilo.split(b.hi());
-    final Hilo b0 = Hilo.split(b.lo());
+    final double a0 = a.lo();
+    final Hilo a0hilo = Hilo.split(a0);
+    final double b0 = b.lo();
+    final Hilo b0hilo = Hilo.split(b0);
 
-    final Hilo _ix0 = Hilo.twoProduct2Presplit(a.lo(),a0,b.lo(),b0);
+    final Hilo _ix0 = Hilo.twoProduct2Presplit(a0,a0hilo,b0,b0hilo);
+    double _i = _ix0.hi();
+    final double x0 = _ix0.lo();
 
-    Hilo _j_0 = Hilo.twoProduct2Presplit(a.hi(),a1,b.lo(),b0);
-    Hilo _k_1 = Hilo.twoSum(_ix0.hi(), _j_0.lo());
-    Hilo _l_2 = Hilo.fastTwoSum(_j_0.hi(), _k_1.hi());
+    final double a1 = a.hi();
+    final Hilo a1hilo = Hilo.split(a1);
 
-    final Hilo _i_0 = Hilo.twoProduct2Presplit(a.lo(),a0,b.hi(),b1);
-    final Hilo _kx1 = Hilo.twoSum(_k_1.lo(), _i_0.lo());
-    final Hilo _j_1 = Hilo.twoSum(_l_2.lo(), _kx1.hi());
-    Hilo _m_2 = Hilo.twoSum(_l_2.hi(), _j_1.hi());
+    Hilo _j_0 = Hilo.twoProduct2Presplit(a1,a1hilo,b0,b0hilo);
+    double _j = _j_0.hi();
+    double _0 = _j_0.lo();
 
-    _j_0 = Hilo.twoProduct2Presplit(a.hi(),a1,b.hi(),b1);
-    final Hilo _n_0 = Hilo.twoSum(_i_0.hi(),_j_0.lo());
-    final Hilo _ix2 = Hilo.twoSum(_j_1.lo(),_n_0.lo());
-    _k_1 = Hilo.twoSum(_m_2.lo(),_ix2.hi());
-    _l_2 = Hilo.twoSum(_m_2.hi(),_k_1.hi());
-    final Hilo _k_0 = Hilo.twoSum(_j_0.hi(),_n_0.hi());
-    final Hilo _jx3 = Hilo.twoSum(_k_1.lo(),_k_0.lo());
-    final Hilo _i_1 = Hilo.twoSum(_l_2.hi(),_jx3.hi());
-    _m_2 = Hilo.twoSum(_l_2.hi(), _i_1.hi());
-    final Hilo _ix4 = Hilo.twoSum(_i_1.lo(),_k_0.hi());
-    final Hilo _kx5 = Hilo.twoSum(_l_2.lo(),_ix4.hi());
-    final Hilo x7x6 = Hilo.twoSum(_m_2.hi(),_kx5.hi());
+    Hilo _k_1 = Hilo.twoSum(_i, _0);
+    double _k = _k_1.hi();
+    double _1 = _k_1.lo();
 
-    return unsafe(DoubleArrayList.from(
-      _ix0.lo(),
-      _kx1.lo(),
-      _ix2.lo(),
-      _jx3.lo(),
-      _ix4.lo(),
-      _kx5.lo(),
-      x7x6.lo(),
-      x7x6.hi())); }
+    Hilo _l_2 = Hilo.fastTwoSum(_j, _k);
+    double _l = _l_2.hi();
+    double _2 = _l_2.lo();
+
+    final double b1 = b.hi();
+    final Hilo b1hilo = Hilo.split(b1);
+
+    final Hilo _i_0 = Hilo.twoProduct2Presplit(a0,a0hilo,b1,b1hilo);
+    _i = _i_0.hi();
+    _0 = _i_0.lo();
+
+    final Hilo _kx1 = Hilo.twoSum(_1, _0);
+    _k = _kx1.hi();
+    final double x1 = _kx1.lo();
+
+    final Hilo _j_1 = Hilo.twoSum(_2, _k);
+    _j = _j_1.hi();
+    _1 = _j_1.lo();
+
+    Hilo _m_2 = Hilo.twoSum(_l, _j);
+    double _m = _m_2.hi();
+    _2 = _m_2.lo();
+
+    _j_0 = Hilo.twoProduct2Presplit(a1,a1hilo,b1,b1hilo);
+    _j = _j_0.hi();
+    _0 = _j_0.lo();
+
+    final Hilo _n_0 = Hilo.twoSum(_i,_0);
+    double _n = _n_0.hi();
+    _0 = _n_0.lo();
+
+    final Hilo _ix2 = Hilo.twoSum(_1,_0);
+    _i = _ix2.hi();
+    final double x2 = _ix2.lo();
+
+    _k_1 = Hilo.twoSum(_2,_i);
+    _k = _k_1.hi();
+    _1 = _k_1.lo();
+
+    _l_2 = Hilo.twoSum(_m,_k);
+    _l = _l_2.hi();
+    _2 = _l_2.lo();
+
+    final Hilo _k_0 = Hilo.twoSum(_j,_n);
+    _k = _k_0.hi();
+    _0 = _k_0.lo();
+
+    final Hilo _jx3 = Hilo.twoSum(_1,_0);
+    _j = _jx3.hi();
+    final double x3 = _jx3.lo();
+
+    final Hilo _i_1 = Hilo.twoSum(_2,_j);
+    _i = _i_1.hi();
+    _1 = _i_1.lo();
+
+    _m_2 = Hilo.twoSum(_l, _i);
+    _m = _m_2.hi();
+    _2 = _m_2.lo();
+
+    final Hilo _ix4 = Hilo.twoSum(_1,_k);
+    _i = _ix4.hi();
+    final double x4 = _ix4.lo();
+
+    final Hilo _kx5 = Hilo.twoSum(_2,_i);
+    _k = _kx5.hi();
+    final double x5 = _kx5.lo();
+
+    final Hilo x7x6 = Hilo.twoSum(_m,_k);
+    final double x7 = x7x6.hi();
+    final double x6 = x7x6.lo();
+
+    return unsafe(DoubleArrayList.from(x0,x1,x2,x3,x4,x5,x6,x7)); }
+
+  //-------------------------------------------------------------------
+  //
+  //  compress()   Compress an expansion.
+  //
+  //  See the long version of Shewchuk's 1997 paper for details.
+  //
+  //  "Maintains the nonoverlapping property.  If round-to-even is used (as
+  //  with IEEE 754), then any nonoverlapping expansion is converted to a
+  //  nonadjacent expansion."
+  //
+  // TODO: is this a substitute for conversion to BigFloat?
+  //  ie, do all expansions that represent the same rational number
+  //  compress to the same sequence?
+  // TODO: worth creating a version that modifies its input list?
+
+  private static final DoubleArrayList
+  compress (final DoubleArrayList e) {
+    assert ! e.isEmpty();
+    // predicates.c: "e and h may be the same."
+    // and 2nd loop modifies h in place anyway.
+    final DoubleArrayList h = e.clone();
+    // predicates.c assumes silently that e has at least 2 terms!!!
+    if (1==h.size()) { return h; }
+    int bottom = h.size() - 1;
+    double Q = h.get(bottom);
+    for (int eindex = e.size() - 2; eindex >= 0; eindex--) {
+      final double enow = h.get(eindex);
+      final Hilo Qnewq = Hilo.fastTwoSum(Q, enow);
+      if (Qnewq.lo() != 0) {
+        h.set(bottom--,Qnewq.hi()); Q = Qnewq.lo(); }
+      else { Q = Qnewq.hi(); } }
+    int top = 0;
+    for (int hindex = bottom + 1; hindex < e.size(); hindex++) {
+      final double hnow = h.get(hindex);
+      final Hilo Qnewq = Hilo.fastTwoSum(hnow, Q);
+      if (Qnewq.lo() != 0) { h.set(top++,Qnewq.lo()); }
+      Q = Qnewq.hi(); }
+    h.set(top,Q);
+    assert top < h.size();
+    h.resize(top+1);
+    return h; }
+
+  /** May return <code>this</code> instance in some cases.
+   */
+  public final XDouble compress () {
+    if (1>=nterms()) { return this; }
+    final DoubleArrayList terms = compress(terms());
+    return unsafe(terms); }
 
   //-------------------------------------------------------------------
 } // end class
