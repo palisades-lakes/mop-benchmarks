@@ -9,7 +9,7 @@ import java.io.Serializable;
  * <a href="https://github.com/locationtech/jts/blob/master/modules/core/src/main/java/org/locationtech/jts/math/DD.java">
  *  org.locationtech.jts.math.DD</a>
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-05-26
+ * @version 2026-05-28
  */
 
 public record Hilo (double hi, double lo)

@@ -19,7 +19,7 @@ import java.util.List;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-05-26
+ * @version 2026-05-28
  */
 
 public final class InCircleTest {

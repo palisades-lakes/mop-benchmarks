@@ -93,7 +93,7 @@ import com.carrotsearch.hppc.procedures.DoubleProcedure;
  *   even <code>BigInteger</code> to extend range.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-05-26
+ * @version 2026-05-28
  */
 
 //@SuppressWarnings("unused")
