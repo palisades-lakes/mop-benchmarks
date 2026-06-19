@@ -65,7 +65,7 @@ public final class InCircleTest {
     msg.append("\nulp=").append(Double.toHexString(Math.ulp(truth)));
     for (final Predicate p : predicates) {
       msg.append("\n").append(p).append(" ->\n")
-         .append(Double.toHexString(p.incircle(p0, p1, p2,p3))); }
+         .append(Double.toHexString(p.incircle(p0, p1, p2, p3))); }
     return msg + "\n"; }
 
   //--------------------------------------------------------------
