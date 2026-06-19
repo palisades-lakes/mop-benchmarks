@@ -97,37 +97,37 @@ public final class Slow implements Predicate {
   // incircle
   //--------------------------------------------------------------------
 
-  private static final XDouble det (final Hilo ax,
-                                    final Hilo ay,
-                                    final Hilo bx,
-                                    final Hilo by,
-                                    final Hilo cx,
-                                    final Hilo cy) {
-
-    final XDouble axby = XDouble.twoTwoProduct(ax, by);
-    final XDouble bxay = XDouble.twoTwoProduct(bx, ay);
-    final XDouble sum = axby.subtract(bxay);
-
-    final XDouble sxhihi = sum.scale(cx.hi()).scale(cx.hi());
-    final XDouble sxlo = sum.scale(cx.lo());
-    // TODO: guess simple loop works because exact if 2x
-    //  could implement a faster exponent add version for powers of 2?
-    //  for (i = 0; i < xxtlen; i++) { detxxt[i] *= 2.0; }
-    final XDouble sxlohi2 = sxlo.scale(cx.hi()).fast2x();
-    //final XDouble sxlohi2 = sxlo.scale(cx.hi()).scale(2.0);
-    final XDouble sxlolo = sxlo.scale(cx.lo());
-    final XDouble detx = sxhihi.add(sxlohi2).add(sxlolo);
-
-    final XDouble syhihi = sum.scale(cy.hi()).scale(cy.hi());
-    final XDouble sylo = sum.scale(cy.lo());
-    //for (i = 0; i < yytlen; i++) { detyyt[i] *= 2.0; }
-    final XDouble sylohi2 = sylo.scale(cy.hi()).fast2x();
-    //final XDouble sylohi2 = sylo.scale(cy.hi()).scale(2.0);
-    //for (i = 0; i < yytlen; i++) { detyyt[i] *= 2.0; }
-    final XDouble sylolo = sylo.scale(cy.lo());
-    final XDouble dety = syhihi.add(sylohi2).add(sylolo);
-
-    return detx.add(dety); }
+//  private static final XDouble det (final Hilo ax,
+//                                    final Hilo ay,
+//                                    final Hilo bx,
+//                                    final Hilo by,
+//                                    final Hilo cx,
+//                                    final Hilo cy) {
+//
+//    final XDouble axby = XDouble.twoTwoProduct(ax, by);
+//    final XDouble bxay = XDouble.twoTwoProduct(bx, ay);
+//    final XDouble sum = axby.subtract(bxay);
+//
+//    final XDouble sxhihi = sum.scale(cx.hi()).scale(cx.hi());
+//    final XDouble sxlo = sum.scale(cx.lo());
+//    // TODO: guess simple loop works because exact if 2x
+//    //  could implement a faster exponent add version for powers of 2?
+//    //  for (i = 0; i < xxtlen; i++) { detxxt[i] *= 2.0; }
+//    final XDouble sxlohi2 = sxlo.scale(cx.hi()).fast2x();
+//    //final XDouble sxlohi2 = sxlo.scale(cx.hi()).scale(2.0);
+//    final XDouble sxlolo = sxlo.scale(cx.lo());
+//    final XDouble detx = sxhihi.add(sxlohi2).add(sxlolo);
+//
+//    final XDouble syhihi = sum.scale(cy.hi()).scale(cy.hi());
+//    final XDouble sylo = sum.scale(cy.lo());
+//    //for (i = 0; i < yytlen; i++) { detyyt[i] *= 2.0; }
+//    final XDouble sylohi2 = sylo.scale(cy.hi()).fast2x();
+//    //final XDouble sylohi2 = sylo.scale(cy.hi()).scale(2.0);
+//    //for (i = 0; i < yytlen; i++) { detyyt[i] *= 2.0; }
+//    final XDouble sylolo = sylo.scale(cy.lo());
+//    final XDouble dety = syhihi.add(sylohi2).add(sylolo);
+//
+//    return detx.add(dety); }
 
   //--------------------------------------------------------------------
 //  /** signed distance of <code>pd</code> from the circumcircle thru
@@ -159,524 +159,503 @@ public final class Slow implements Predicate {
 
 // from macro expanded C code:
 
-  public final double incircle (final double[] pa,
-                                final double[] pb,
-                                final double[] pc,
-                                final double[] pd) {
-    double negate, negatetail;
-    double axby7, bxcy7, axcy7, bxay7, cxby7, cxay7;
-    double[] axby = new double[8], bxcy = new double[8],
-      axcy = new double[8], bxay = new double[8],
-      cxby = new double[8], cxay = new double[8];
-    double[] temp16 = new double[16];
-    int temp16len;
-    double[] detx = new double[32], detxx = new double[64],
-      detxt = new double[32], detxxt = new double[64],
-      detxtxt = new double[64];
-    int xlen, xxlen, xtlen, xxtlen, xtxtlen;
-    double[] x1 = new double[128], x2 = new double[192];
-    int x1len, x2len;
-    double[] dety = new double[32], detyy = new double[64],
-      detyt = new double[32], detyyt = new double[64],
-      detytyt = new double[64];
-    int ylen, yylen, ytlen, yytlen, ytytlen;
-    double[] y1 = new double[128], y2 = new double[192];
-    int y1len, y2len;
-    double[] adet = new double[384], bdet = new double[384],
-      cdet = new double[384], abdet = new double[768],
-      deter = new double[1152];
-    int alen, blen, clen, ablen;
-      @SuppressWarnings("unused")
-      int deterlen;
-      int i;
+public final double incircle (final double[] pa,
+                              final double[] pb,
+                              final double[] pc,
+                              final double[] pd) {
+  double negate, negatetail;
+  double axby7, bxcy7, axcy7, bxay7, cxby7, cxay7;
+  double[] bxcy = new double[8],
+    axcy = new double[8], bxay = new double[8],
+    cxby = new double[8], cxay = new double[8];
+  double[] temp16 = new double[16];
+  int temp16len;
+  double[] detx = new double[32], detxx = new double[64],
+    detxt = new double[32], detxxt = new double[64],
+    detxtxt = new double[64];
+  int xlen, xxlen, xtlen, xxtlen, xtxtlen;
+  double[] x1 = new double[128], x2 = new double[192];
+  int x1len, x2len;
+  double[] dety = new double[32], detyy = new double[64],
+    detyt = new double[32], detyyt = new double[64],
+    detytyt = new double[64];
+  int ylen, yylen, ytlen, yytlen, ytytlen;
+  double[] y1 = new double[128], y2 = new double[192];
+  int y1len, y2len;
+  double[] adet = new double[384], bdet = new double[384],
+    cdet = new double[384], abdet = new double[768],
+    deter = new double[1152];
+  int alen, blen, clen, ablen;
+  @SuppressWarnings("unused")
+  int deterlen;
+  int i;
 
-    double bvirt; double avirt, bround, around;
-    double c;
-    double abig;
-    double err1, err2, err3;
-    double _j, _k, _l, _m, _n;
-    double _0, _1, _2;
+  double bvirt; double avirt, bround, around;
+  double c;
+  double abig;
+  double err1, err2, err3;
 
-    final Hilo ax = Hilo.twoDiff(pa[0], pd[0]);
-    final double adx = ax.hi();
-    final double adxtail = ax.lo();
+  final Hilo ax = Hilo.twoDiff(pa[0], pd[0]);
+  final double adx = ax.hi();
+  final double adxtail = ax.lo();
 
-    final Hilo ay = Hilo.twoDiff(pa[1], pd[1]);
-    final double ady = ay.hi();
-    final double adytail = ay.lo();
+  final Hilo ay = Hilo.twoDiff(pa[1], pd[1]);
+  final double ady = ay.hi();
+  final double adytail = ay.lo();
 
-    final Hilo bx = Hilo.twoDiff(pb[0], pd[0]);
-    final double bdx = bx.hi();
-    final double bdxtail = bx.lo();
+  final Hilo bx = Hilo.twoDiff(pb[0], pd[0]);
+  final double bdx = bx.hi();
+  final double bdxtail = bx.lo();
 
-    final Hilo by = Hilo.twoDiff(pb[1], pd[1]);
-    final double bdy = by.hi();
-    final double bdytail = by.lo();
+  final Hilo by = Hilo.twoDiff(pb[1], pd[1]);
+  final double bdy = by.hi();
+  final double bdytail = by.lo();
 
-    final Hilo cx = Hilo.twoDiff(pc[0], pd[0]);
-    final double cdx = cx.hi();
-    final double cdxtail = cx.lo();
+  final Hilo cx = Hilo.twoDiff(pc[0], pd[0]);
+  final double cdx = cx.hi();
+  final double cdxtail = cx.lo();
 
-    final Hilo cy = Hilo.twoDiff(pc[1], pd[1]);
-    final double cdy = cy.hi();
-    final double cdytail = cy.lo();
+  final Hilo cy = Hilo.twoDiff(pc[1], pd[1]);
+  final double cdy = cy.hi();
+  final double cdytail = cy.lo();
 
+  Hilo a0hilo, bhilo, a1hilo;
+  double _i, _j, _0, _k, _1, _2, _l, _m, _n ;
+  double[] axby;
 //    Two_Two_Product(adx, adxtail, bdy, bdytail,
 //                    axby7, axby[6], axby[5], axby[4],
 //                    axby[3], axby[2], axby[1], axby[0]);
 //    axby[7] = axby7;
-//    negate = -ady;
-//    negatetail = -adytail;
 
-    Hilo a0hilo = Hilo.split(adxtail);
-    double a0hi = a0hilo.hi();
-    double a0lo = a0hilo.lo();
+  axby = XDouble.twoTwoProduct(ax,by);
 
-    final Hilo b0hilo = Hilo.split(bdytail);
-    double bhi = b0hilo.hi();
-    double blo = b0hilo.lo();
+//  a0hilo = Hilo.split(adxtail);
+//  final Hilo b0hilo = Hilo.split(bdytail);
+//
+//  final Hilo _ix0 = Hilo.twoProduct2Presplit(adxtail,a0hilo,bdytail,b0hilo);
+//  double _i = _ix0.hi();
+//  axby = new double[8];
+//  axby[0] = _ix0.lo();
+//
+//  Hilo a1hilo = Hilo.split(adx);
+//  Hilo _j_0 = Hilo.twoProduct2Presplit(adx,a1hilo,bdytail,b0hilo);
+//  double _j = _j_0.hi();
+//  double _0 = _j_0.lo();
+//
+//  Hilo _k_1 = Hilo.twoSum(_i,_0); double _k = _k_1.hi(); double _1 = _k_1.lo();
+//  Hilo _l_2 = Hilo.fastTwoSum(_j,_k); double _l = _l_2.hi(); double _2 = _l_2.lo();
+//
+//  Hilo bhilo = Hilo.split(bdy);
+//  final Hilo _i_0 = Hilo.twoProduct2Presplit(adxtail,a0hilo,bdy,bhilo);
+//  _i = _i_0.hi(); _0 = _i_0.lo();
+//
+//  final Hilo _kx1 = Hilo.twoSum(_1,_0); _k = _kx1.hi(); axby[1] = _kx1.lo();
+//  final Hilo _j_1 = Hilo.twoSum(_2,_k); _j = _j_1.hi(); _1 = _j_1.lo();
+//  Hilo _m_2 = Hilo.twoSum(_l,_j); double _m = _m_2.hi(); _2 = _m_2.lo();
+//
+//  _j_0 = Hilo.twoProduct2Presplit(adx,a1hilo,bdy,bhilo);
+//  _j = _j_0.hi(); _0 = _j_0.lo();
+//
+//  final Hilo _n_0 = Hilo.twoSum(_i,_0); double _n = _n_0.hi(); _0 = _n_0.lo();
+//  final Hilo _i2 = Hilo.twoSum(_1,_0); _i = _i2.hi(); axby[2] = _i2.lo();
+//  _k_1 = Hilo.twoSum(_2,_i); _k = _k_1.hi(); _1 = _k_1.lo();
+//  _l_2 = Hilo.twoSum(_m,_k); _l = _l_2.hi(); _2 = _l_2.lo();
+//  final Hilo _k_0 = Hilo.twoSum(_j,_n); _k = _k_0.hi(); _0 = _k_0.lo();
+//  final Hilo _j3 = Hilo.twoSum(_1,_0); _j = _j3.hi(); axby[3] = _j3.lo();
+//  final Hilo _i_1 = Hilo.twoSum(_2,_j); _i = _i_1.hi(); _1 = _i_1.lo();
+//  _m_2 = Hilo.twoSum(_l,_i); _m = _m_2.hi(); _2 = _m_2.lo();
+//  final Hilo _i4 = Hilo.twoSum(_1,_k); _i = _i4.hi(); axby[4] = _i4.lo();
+//  final Hilo _k5 = Hilo.twoSum(_2,_i);
+//  _k = _k5.hi(); axby[5] = _k5.lo();
+//  final Hilo axby76 = Hilo.twoSum(_m,_k);
+//  axby[7] = axby76.hi();
+//  axby[6] = axby76.lo();
 
-    final Hilo _ix0 = Hilo.twoProduct2Presplit(adxtail,a0hilo,bdytail,b0hilo);
-    double _i = _ix0.hi();
-    axby[0] = _ix0.lo();
+  //-----------------------------
 
-    Hilo a1hilo = Hilo.split(adx);
-    double a1hi = a1hilo.hi();
-    double a1lo = a1hilo.lo();
+  negate = -ady; negatetail = -adytail;
 
-    _j = (adx * bdytail);
-    err1 = _j - (a1hi * bhi);
-    err2 = err1 - (a1lo * bhi);
-    err3 = err2 - (a1hi * blo);
-    _0 = (a1lo * blo) - err3; _k = (_i + _0); bvirt = (_k - _i);
-    avirt = _k - bvirt; bround = _0 - bvirt; around = _i - avirt;
-    _1 = around + bround; _l = (_j + _k); bvirt = _l - _j;
-    _2 = _k - bvirt;
+  //-----------------------------
+  a0hilo = Hilo.split(bdxtail); double a0hi = a0hilo.hi(); double a0lo = a0hilo.lo();
 
-    Hilo bhilo = Hilo.split(bdy);
-    bhi = bhilo.hi();
-    blo = bhilo.lo();
+  bhilo = Hilo.split(negatetail);
+  double bhi = bhilo.hi(); double blo = bhilo.lo();
 
-    _i = (adxtail * bdy);
-    err1 = _i - (a0hi * bhi); err2 = err1 - (a0lo * bhi);
-    err3 = err2 - (a0hi * blo); _0 = (a0lo * blo) - err3;
-    _k = (_1 + _0); bvirt = (_k - _1); avirt = _k - bvirt;
-    bround = _0 - bvirt; around = _1 - avirt; axby[1] = around + bround;
-    _j = (_2 + _k); bvirt = (_j - _2); avirt = _j - bvirt;
-    bround = _k - bvirt; around = _2 - avirt; _1 = around + bround;
-    _m = (_l + _j); bvirt = (_m - _l); avirt = _m - bvirt;
-    bround = _j - bvirt; around = _l - avirt; _2 = around + bround;
-    _j = (adx * bdy); err1 = _j - (a1hi * bhi);
-    err2 = err1 - (a1lo * bhi); err3 = err2 - (a1hi * blo);
-    _0 = (a1lo * blo) - err3; _n = (_i + _0); bvirt = (_n - _i);
-    avirt = _n - bvirt; bround = _0 - bvirt; around = _i - avirt;
-    _0 = around + bround; _i = (_1 + _0); bvirt = (_i - _1);
-    avirt = _i - bvirt; bround = _0 - bvirt; around = _1 - avirt;
-    axby[2] = around + bround; _k = (_2 + _i); bvirt = (_k - _2);
-    avirt = _k - bvirt; bround = _i - bvirt; around = _2 - avirt;
-    _1 = around + bround; _l = (_m + _k); bvirt = (_l - _m);
-    avirt = _l - bvirt; bround = _k - bvirt; around = _m - avirt;
-    _2 = around + bround; _k = (_j + _n); bvirt = (_k - _j);
-    avirt = _k - bvirt; bround = _n - bvirt; around = _j - avirt;
-    _0 = around + bround; _j = (_1 + _0); bvirt = (_j - _1);
-    avirt = _j - bvirt; bround = _0 - bvirt; around = _1 - avirt;
-    axby[3] = around + bround; _i = (_2 + _j); bvirt = (_i - _2);
-    avirt = _i - bvirt; bround = _j - bvirt; around = _2 - avirt;
-    _1 = around + bround; _m = (_l + _i); bvirt = (_m - _l);
-    avirt = _m - bvirt; bround = _i - bvirt; around = _l - avirt;
-    _2 = around + bround; _i = (_1 + _k); bvirt = (_i - _1);
-    avirt = _i - bvirt; bround = _k - bvirt; around = _1 - avirt;
-    axby[4] = around + bround; _k = (_2 + _i); bvirt = (_k - _2);
-    avirt = _k - bvirt; bround = _i - bvirt; around = _2 - avirt;
-    axby[5] = around + bround; axby7 = (_m + _k); bvirt = (axby7 - _m);
-    avirt = axby7 - bvirt; bround = _k - bvirt; around = _m - avirt;
-    axby[6] = around + bround;
-    axby[7] = axby7; negate = -ady; negatetail = -adytail;
+  _i = (bdxtail * negatetail); err1 = _i - (a0hi * bhi);
+  err2 = err1 - (a0lo * bhi); err3 = err2 - (a0hi * blo);
+  bxay[0] = (a0lo * blo) - err3;
 
-    a0hilo = Hilo.split(bdxtail);
-    a0hi = a0hilo.hi();
-    a0lo = a0hilo.lo();
+  a1hilo = Hilo.split(bdx); double a1hi = a1hilo.hi(); double a1lo = a1hilo.lo();
 
-    bhilo = Hilo.split(negatetail);
-    bhi = bhilo.hi();
-    blo = bhilo.lo();
+   _j = (bdx * negatetail); err1 = _j - (a1hi * bhi);
+  err2 = err1 - (a1lo * bhi); err3 = err2 - (a1hi * blo);
+   _0 = (a1lo * blo) - err3;
+   _k = (_i + _0); bvirt = (_k - _i);
+  avirt = _k - bvirt; bround = _0 - bvirt; around = _i - avirt;
+   _1 = around + bround;
+   _l = (_j + _k); bvirt = _l - _j;
+   _2 = _k - bvirt;
 
-    _i = (bdxtail * negatetail); err1 = _i - (a0hi * bhi);
-    err2 = err1 - (a0lo * bhi); err3 = err2 - (a0hi * blo);
-    bxay[0] = (a0lo * blo) - err3;
+  bhilo = Hilo.split(negate); bhi = bhilo.hi(); blo = bhilo.lo();
 
-    a1hilo = Hilo.split(bdx);
-    a1hi = a1hilo.hi();
-    a1lo = a1hilo.lo();
+  _i = (bdxtail * negate);
+  err1 = _i - (a0hi * bhi); err2 = err1 - (a0lo * bhi);
+  err3 = err2 - (a0hi * blo); _0 = (a0lo * blo) - err3;
+  _k = (_1 + _0); bvirt = (_k - _1); avirt = _k - bvirt;
+  bround = _0 - bvirt; around = _1 - avirt; bxay[1] = around + bround;
+  _j = (_2 + _k); bvirt = (_j - _2); avirt = _j - bvirt;
+  bround = _k - bvirt; around = _2 - avirt; _1 = around + bround;
+   _m = (_l + _j); bvirt = (_m - _l); avirt = _m - bvirt;
+  bround = _j - bvirt; around = _l - avirt; _2 = around + bround;
+  _j = (bdx * negate); err1 = _j - (a1hi * bhi);
+  err2 = err1 - (a1lo * bhi); err3 = err2 - (a1hi * blo);
+  _0 = (a1lo * blo) - err3;
+   _n = (_i + _0); bvirt = (_n - _i);
+  avirt = _n - bvirt; bround = _0 - bvirt; around = _i - avirt;
+  _0 = around + bround; _i = (_1 + _0); bvirt = (_i - _1);
+  avirt = _i - bvirt; bround = _0 - bvirt; around = _1 - avirt;
+  bxay[2] = around + bround; _k = (_2 + _i); bvirt = (_k - _2);
+  avirt = _k - bvirt; bround = _i - bvirt; around = _2 - avirt;
+  _1 = around + bround; _l = (_m + _k); bvirt = (_l - _m);
+  avirt = _l - bvirt; bround = _k - bvirt; around = _m - avirt;
+  _2 = around + bround; _k = (_j + _n); bvirt = (_k - _j);
+  avirt = _k - bvirt; bround = _n - bvirt; around = _j - avirt;
+  _0 = around + bround; _j = (_1 + _0); bvirt = (_j - _1);
+  avirt = _j - bvirt; bround = _0 - bvirt; around = _1 - avirt;
+  bxay[3] = around + bround; _i = (_2 + _j); bvirt = (_i - _2);
+  avirt = _i - bvirt; bround = _j - bvirt; around = _2 - avirt;
+  _1 = around + bround; _m = (_l + _i); bvirt = (_m - _l);
+  avirt = _m - bvirt; bround = _i - bvirt; around = _l - avirt;
+  _2 = around + bround; _i = (_1 + _k); bvirt = (_i - _1);
+  avirt = _i - bvirt; bround = _k - bvirt; around = _1 - avirt;
+  bxay[4] = around + bround; _k = (_2 + _i); bvirt = (_k - _2);
+  avirt = _k - bvirt; bround = _i - bvirt; around = _2 - avirt;
+  bxay[5] = around + bround; bxay7 = (_m + _k); bvirt = (bxay7 - _m);
+  avirt = bxay7 - bvirt; bround = _k - bvirt; around = _m - avirt;
+  bxay[6] = around + bround; bxay[7] = bxay7;
 
-    _j = (bdx * negatetail); err1 = _j - (a1hi * bhi);
-    err2 = err1 - (a1lo * bhi); err3 = err2 - (a1hi * blo);
-    _0 = (a1lo * blo) - err3; _k = (_i + _0); bvirt = (_k - _i);
-    avirt = _k - bvirt; bround = _0 - bvirt; around = _i - avirt;
-    _1 = around + bround; _l = (_j + _k); bvirt = _l - _j;
-    _2 = _k - bvirt;
+  a0hilo = Hilo.split(bdxtail);
+  a0hi = a0hilo.hi();
+  a0lo = a0hilo.lo();
 
-    bhilo = Hilo.split(negate);
-    bhi = bhilo.hi();
-    blo = bhilo.lo();
+  bhilo = Hilo.split(cdytail);
+  bhi = bhilo.hi();
+  blo = bhilo.lo();
 
-    _i = (bdxtail * negate);
-    err1 = _i - (a0hi * bhi); err2 = err1 - (a0lo * bhi);
-    err3 = err2 - (a0hi * blo); _0 = (a0lo * blo) - err3;
-    _k = (_1 + _0); bvirt = (_k - _1); avirt = _k - bvirt;
-    bround = _0 - bvirt; around = _1 - avirt; bxay[1] = around + bround;
-    _j = (_2 + _k); bvirt = (_j - _2); avirt = _j - bvirt;
-    bround = _k - bvirt; around = _2 - avirt; _1 = around + bround;
-    _m = (_l + _j); bvirt = (_m - _l); avirt = _m - bvirt;
-    bround = _j - bvirt; around = _l - avirt; _2 = around + bround;
-    _j = (bdx * negate); err1 = _j - (a1hi * bhi);
-    err2 = err1 - (a1lo * bhi); err3 = err2 - (a1hi * blo);
-    _0 = (a1lo * blo) - err3; _n = (_i + _0); bvirt = (_n - _i);
-    avirt = _n - bvirt; bround = _0 - bvirt; around = _i - avirt;
-    _0 = around + bround; _i = (_1 + _0); bvirt = (_i - _1);
-    avirt = _i - bvirt; bround = _0 - bvirt; around = _1 - avirt;
-    bxay[2] = around + bround; _k = (_2 + _i); bvirt = (_k - _2);
-    avirt = _k - bvirt; bround = _i - bvirt; around = _2 - avirt;
-    _1 = around + bround; _l = (_m + _k); bvirt = (_l - _m);
-    avirt = _l - bvirt; bround = _k - bvirt; around = _m - avirt;
-    _2 = around + bround; _k = (_j + _n); bvirt = (_k - _j);
-    avirt = _k - bvirt; bround = _n - bvirt; around = _j - avirt;
-    _0 = around + bround; _j = (_1 + _0); bvirt = (_j - _1);
-    avirt = _j - bvirt; bround = _0 - bvirt; around = _1 - avirt;
-    bxay[3] = around + bround; _i = (_2 + _j); bvirt = (_i - _2);
-    avirt = _i - bvirt; bround = _j - bvirt; around = _2 - avirt;
-    _1 = around + bround; _m = (_l + _i); bvirt = (_m - _l);
-    avirt = _m - bvirt; bround = _i - bvirt; around = _l - avirt;
-    _2 = around + bround; _i = (_1 + _k); bvirt = (_i - _1);
-    avirt = _i - bvirt; bround = _k - bvirt; around = _1 - avirt;
-    bxay[4] = around + bround; _k = (_2 + _i); bvirt = (_k - _2);
-    avirt = _k - bvirt; bround = _i - bvirt; around = _2 - avirt;
-    bxay[5] = around + bround; bxay7 = (_m + _k); bvirt = (bxay7 - _m);
-    avirt = bxay7 - bvirt; bround = _k - bvirt; around = _m - avirt;
-    bxay[6] = around + bround; bxay[7] = bxay7;
+  _i = (bdxtail * cdytail); err1 = _i - (a0hi * bhi);
+  err2 = err1 - (a0lo * bhi); err3 = err2 - (a0hi * blo);
+  bxcy[0] = (a0lo * blo) - err3;
 
-    a0hilo = Hilo.split(bdxtail);
-    a0hi = a0hilo.hi();
-    a0lo = a0hilo.lo();
+  a1hilo = Hilo.split(bdx);
+  a1hi = a1hilo.hi();
+  a1lo = a1hilo.lo();
 
-    bhilo = Hilo.split(cdytail);
-    bhi = bhilo.hi();
-    blo = bhilo.lo();
+  _j = (bdx * cdytail); err1 = _j - (a1hi * bhi);
+  err2 = err1 - (a1lo * bhi); err3 = err2 - (a1hi * blo);
+  _0 = (a1lo * blo) - err3; _k = (_i + _0); bvirt = (_k - _i);
+  avirt = _k - bvirt; bround = _0 - bvirt; around = _i - avirt;
+  _1 = around + bround; _l = (_j + _k); bvirt = _l - _j;
+  _2 = _k - bvirt;
 
-    _i = (bdxtail * cdytail); err1 = _i - (a0hi * bhi);
-    err2 = err1 - (a0lo * bhi); err3 = err2 - (a0hi * blo);
-    bxcy[0] = (a0lo * blo) - err3;
+  bhilo = Hilo.split(cdy);
+  bhi = bhilo.hi();
+  blo = bhilo.lo();
 
-    a1hilo = Hilo.split(bdx);
-    a1hi = a1hilo.hi();
-    a1lo = a1hilo.lo();
+  _i = (bdxtail * cdy);
+  err1 = _i - (a0hi * bhi); err2 = err1 - (a0lo * bhi);
+  err3 = err2 - (a0hi * blo); _0 = (a0lo * blo) - err3;
+  _k = (_1 + _0); bvirt = (_k - _1); avirt = _k - bvirt;
+  bround = _0 - bvirt; around = _1 - avirt; bxcy[1] = around + bround;
+  _j = (_2 + _k); bvirt = (_j - _2); avirt = _j - bvirt;
+  bround = _k - bvirt; around = _2 - avirt; _1 = around + bround;
+  _m = (_l + _j); bvirt = (_m - _l); avirt = _m - bvirt;
+  bround = _j - bvirt; around = _l - avirt; _2 = around + bround;
+  _j = (bdx * cdy); err1 = _j - (a1hi * bhi);
+  err2 = err1 - (a1lo * bhi); err3 = err2 - (a1hi * blo);
+  _0 = (a1lo * blo) - err3; _n = (_i + _0); bvirt = (_n - _i);
+  avirt = _n - bvirt; bround = _0 - bvirt; around = _i - avirt;
+  _0 = around + bround; _i = (_1 + _0); bvirt = (_i - _1);
+  avirt = _i - bvirt; bround = _0 - bvirt; around = _1 - avirt;
+  bxcy[2] = around + bround; _k = (_2 + _i); bvirt = (_k - _2);
+  avirt = _k - bvirt; bround = _i - bvirt; around = _2 - avirt;
+  _1 = around + bround; _l = (_m + _k); bvirt = (_l - _m);
+  avirt = _l - bvirt; bround = _k - bvirt; around = _m - avirt;
+  _2 = around + bround; _k = (_j + _n); bvirt = (_k - _j);
+  avirt = _k - bvirt; bround = _n - bvirt; around = _j - avirt;
+  _0 = around + bround; _j = (_1 + _0); bvirt = (_j - _1);
+  avirt = _j - bvirt; bround = _0 - bvirt; around = _1 - avirt;
+  bxcy[3] = around + bround; _i = (_2 + _j); bvirt = (_i - _2);
+  avirt = _i - bvirt; bround = _j - bvirt; around = _2 - avirt;
+  _1 = around + bround; _m = (_l + _i); bvirt = (_m - _l);
+  avirt = _m - bvirt; bround = _i - bvirt; around = _l - avirt;
+  _2 = around + bround; _i = (_1 + _k); bvirt = (_i - _1);
+  avirt = _i - bvirt; bround = _k - bvirt; around = _1 - avirt;
+  bxcy[4] = around + bround; _k = (_2 + _i); bvirt = (_k - _2);
+  avirt = _k - bvirt; bround = _i - bvirt; around = _2 - avirt;
+  bxcy[5] = around + bround; bxcy7 = (_m + _k); bvirt = (bxcy7 - _m);
+  avirt = bxcy7 - bvirt; bround = _k - bvirt; around = _m - avirt;
+  bxcy[6] = around + bround; bxcy[7] = bxcy7; negate = -bdy;
+  negatetail = -bdytail;
 
-    _j = (bdx * cdytail); err1 = _j - (a1hi * bhi);
-    err2 = err1 - (a1lo * bhi); err3 = err2 - (a1hi * blo);
-    _0 = (a1lo * blo) - err3; _k = (_i + _0); bvirt = (_k - _i);
-    avirt = _k - bvirt; bround = _0 - bvirt; around = _i - avirt;
-    _1 = around + bround; _l = (_j + _k); bvirt = _l - _j;
-    _2 = _k - bvirt;
+  a0hilo = Hilo.split(cdxtail);
+  a0hi = a0hilo.hi();
+  a0lo = a0hilo.lo();
 
-    bhilo = Hilo.split(cdy);
-    bhi = bhilo.hi();
-    blo = bhilo.lo();
+  bhilo = Hilo.split(negatetail);
+  bhi = bhilo.hi();
+  blo = bhilo.lo();
 
-    _i = (bdxtail * cdy);
-    err1 = _i - (a0hi * bhi); err2 = err1 - (a0lo * bhi);
-    err3 = err2 - (a0hi * blo); _0 = (a0lo * blo) - err3;
-    _k = (_1 + _0); bvirt = (_k - _1); avirt = _k - bvirt;
-    bround = _0 - bvirt; around = _1 - avirt; bxcy[1] = around + bround;
-    _j = (_2 + _k); bvirt = (_j - _2); avirt = _j - bvirt;
-    bround = _k - bvirt; around = _2 - avirt; _1 = around + bround;
-    _m = (_l + _j); bvirt = (_m - _l); avirt = _m - bvirt;
-    bround = _j - bvirt; around = _l - avirt; _2 = around + bround;
-    _j = (bdx * cdy); err1 = _j - (a1hi * bhi);
-    err2 = err1 - (a1lo * bhi); err3 = err2 - (a1hi * blo);
-    _0 = (a1lo * blo) - err3; _n = (_i + _0); bvirt = (_n - _i);
-    avirt = _n - bvirt; bround = _0 - bvirt; around = _i - avirt;
-    _0 = around + bround; _i = (_1 + _0); bvirt = (_i - _1);
-    avirt = _i - bvirt; bround = _0 - bvirt; around = _1 - avirt;
-    bxcy[2] = around + bround; _k = (_2 + _i); bvirt = (_k - _2);
-    avirt = _k - bvirt; bround = _i - bvirt; around = _2 - avirt;
-    _1 = around + bround; _l = (_m + _k); bvirt = (_l - _m);
-    avirt = _l - bvirt; bround = _k - bvirt; around = _m - avirt;
-    _2 = around + bround; _k = (_j + _n); bvirt = (_k - _j);
-    avirt = _k - bvirt; bround = _n - bvirt; around = _j - avirt;
-    _0 = around + bround; _j = (_1 + _0); bvirt = (_j - _1);
-    avirt = _j - bvirt; bround = _0 - bvirt; around = _1 - avirt;
-    bxcy[3] = around + bround; _i = (_2 + _j); bvirt = (_i - _2);
-    avirt = _i - bvirt; bround = _j - bvirt; around = _2 - avirt;
-    _1 = around + bround; _m = (_l + _i); bvirt = (_m - _l);
-    avirt = _m - bvirt; bround = _i - bvirt; around = _l - avirt;
-    _2 = around + bround; _i = (_1 + _k); bvirt = (_i - _1);
-    avirt = _i - bvirt; bround = _k - bvirt; around = _1 - avirt;
-    bxcy[4] = around + bround; _k = (_2 + _i); bvirt = (_k - _2);
-    avirt = _k - bvirt; bround = _i - bvirt; around = _2 - avirt;
-    bxcy[5] = around + bround; bxcy7 = (_m + _k); bvirt = (bxcy7 - _m);
-    avirt = bxcy7 - bvirt; bround = _k - bvirt; around = _m - avirt;
-    bxcy[6] = around + bround; bxcy[7] = bxcy7; negate = -bdy;
-    negatetail = -bdytail;
+  _i = (cdxtail * negatetail); err1 = _i - (a0hi * bhi);
+  err2 = err1 - (a0lo * bhi); err3 = err2 - (a0hi * blo);
+  cxby[0] = (a0lo * blo) - err3;
 
-    a0hilo = Hilo.split(cdxtail);
-    a0hi = a0hilo.hi();
-    a0lo = a0hilo.lo();
+  a1hilo = Hilo.split(cdx);
+  a1hi = a1hilo.hi();
+  a1lo = a1hilo.lo();
 
-    bhilo = Hilo.split(negatetail);
-    bhi = bhilo.hi();
-    blo = bhilo.lo();
+  _j = (cdx * negatetail); err1 = _j - (a1hi * bhi);
+  err2 = err1 - (a1lo * bhi); err3 = err2 - (a1hi * blo);
+  _0 = (a1lo * blo) - err3; _k = (_i + _0); bvirt = (_k - _i);
+  avirt = _k - bvirt; bround = _0 - bvirt; around = _i - avirt;
+  _1 = around + bround; _l = (_j + _k); bvirt = _l - _j;
+  _2 = _k - bvirt;
 
-    _i = (cdxtail * negatetail); err1 = _i - (a0hi * bhi);
-    err2 = err1 - (a0lo * bhi); err3 = err2 - (a0hi * blo);
-    cxby[0] = (a0lo * blo) - err3;
+  bhilo = Hilo.split(negate);
+  bhi = bhilo.hi();
+  blo = bhilo.lo();
 
-    a1hilo = Hilo.split(cdx);
-    a1hi = a1hilo.hi();
-    a1lo = a1hilo.lo();
+  _i = (cdxtail * negate);
+  err1 = _i - (a0hi * bhi); err2 = err1 - (a0lo * bhi);
+  err3 = err2 - (a0hi * blo); _0 = (a0lo * blo) - err3;
+  _k = (_1 + _0); bvirt = (_k - _1); avirt = _k - bvirt;
+  bround = _0 - bvirt; around = _1 - avirt; cxby[1] = around + bround;
+  _j = (_2 + _k); bvirt = (_j - _2); avirt = _j - bvirt;
+  bround = _k - bvirt; around = _2 - avirt; _1 = around + bround;
+  _m = (_l + _j); bvirt = (_m - _l); avirt = _m - bvirt;
+  bround = _j - bvirt; around = _l - avirt; _2 = around + bround;
+  _j = (cdx * negate); err1 = _j - (a1hi * bhi);
+  err2 = err1 - (a1lo * bhi); err3 = err2 - (a1hi * blo);
+  _0 = (a1lo * blo) - err3; _n = (_i + _0); bvirt = (_n - _i);
+  avirt = _n - bvirt; bround = _0 - bvirt; around = _i - avirt;
+  _0 = around + bround; _i = (_1 + _0); bvirt = (_i - _1);
+  avirt = _i - bvirt; bround = _0 - bvirt; around = _1 - avirt;
+  cxby[2] = around + bround; _k = (_2 + _i); bvirt = (_k - _2);
+  avirt = _k - bvirt; bround = _i - bvirt; around = _2 - avirt;
+  _1 = around + bround; _l = (_m + _k); bvirt = (_l - _m);
+  avirt = _l - bvirt; bround = _k - bvirt; around = _m - avirt;
+  _2 = around + bround; _k = (_j + _n); bvirt = (_k - _j);
+  avirt = _k - bvirt; bround = _n - bvirt; around = _j - avirt;
+  _0 = around + bround; _j = (_1 + _0); bvirt = (_j - _1);
+  avirt = _j - bvirt; bround = _0 - bvirt; around = _1 - avirt;
+  cxby[3] = around + bround; _i = (_2 + _j); bvirt = (_i - _2);
+  avirt = _i - bvirt; bround = _j - bvirt; around = _2 - avirt;
+  _1 = around + bround; _m = (_l + _i); bvirt = (_m - _l);
+  avirt = _m - bvirt; bround = _i - bvirt; around = _l - avirt;
+  _2 = around + bround; _i = (_1 + _k); bvirt = (_i - _1);
+  avirt = _i - bvirt; bround = _k - bvirt; around = _1 - avirt;
+  cxby[4] = around + bround; _k = (_2 + _i); bvirt = (_k - _2);
+  avirt = _k - bvirt; bround = _i - bvirt; around = _2 - avirt;
+  cxby[5] = around + bround; cxby7 = (_m + _k); bvirt = (cxby7 - _m);
+  avirt = cxby7 - bvirt; bround = _k - bvirt; around = _m - avirt;
+  cxby[6] = around + bround; cxby[7] = cxby7;
 
-    _j = (cdx * negatetail); err1 = _j - (a1hi * bhi);
-    err2 = err1 - (a1lo * bhi); err3 = err2 - (a1hi * blo);
-    _0 = (a1lo * blo) - err3; _k = (_i + _0); bvirt = (_k - _i);
-    avirt = _k - bvirt; bround = _0 - bvirt; around = _i - avirt;
-    _1 = around + bround; _l = (_j + _k); bvirt = _l - _j;
-    _2 = _k - bvirt;
+  a0hilo = Hilo.split(cdxtail);
+  a0hi = a0hilo.hi();
+  a0lo = a0hilo.lo();
 
-    bhilo = Hilo.split(negate);
-    bhi = bhilo.hi();
-    blo = bhilo.lo();
+  bhilo = Hilo.split(adytail);
+  bhi = bhilo.hi();
+  blo = bhilo.lo();
 
-    _i = (cdxtail * negate);
-    err1 = _i - (a0hi * bhi); err2 = err1 - (a0lo * bhi);
-    err3 = err2 - (a0hi * blo); _0 = (a0lo * blo) - err3;
-    _k = (_1 + _0); bvirt = (_k - _1); avirt = _k - bvirt;
-    bround = _0 - bvirt; around = _1 - avirt; cxby[1] = around + bround;
-    _j = (_2 + _k); bvirt = (_j - _2); avirt = _j - bvirt;
-    bround = _k - bvirt; around = _2 - avirt; _1 = around + bround;
-    _m = (_l + _j); bvirt = (_m - _l); avirt = _m - bvirt;
-    bround = _j - bvirt; around = _l - avirt; _2 = around + bround;
-    _j = (cdx * negate); err1 = _j - (a1hi * bhi);
-    err2 = err1 - (a1lo * bhi); err3 = err2 - (a1hi * blo);
-    _0 = (a1lo * blo) - err3; _n = (_i + _0); bvirt = (_n - _i);
-    avirt = _n - bvirt; bround = _0 - bvirt; around = _i - avirt;
-    _0 = around + bround; _i = (_1 + _0); bvirt = (_i - _1);
-    avirt = _i - bvirt; bround = _0 - bvirt; around = _1 - avirt;
-    cxby[2] = around + bround; _k = (_2 + _i); bvirt = (_k - _2);
-    avirt = _k - bvirt; bround = _i - bvirt; around = _2 - avirt;
-    _1 = around + bround; _l = (_m + _k); bvirt = (_l - _m);
-    avirt = _l - bvirt; bround = _k - bvirt; around = _m - avirt;
-    _2 = around + bround; _k = (_j + _n); bvirt = (_k - _j);
-    avirt = _k - bvirt; bround = _n - bvirt; around = _j - avirt;
-    _0 = around + bround; _j = (_1 + _0); bvirt = (_j - _1);
-    avirt = _j - bvirt; bround = _0 - bvirt; around = _1 - avirt;
-    cxby[3] = around + bround; _i = (_2 + _j); bvirt = (_i - _2);
-    avirt = _i - bvirt; bround = _j - bvirt; around = _2 - avirt;
-    _1 = around + bround; _m = (_l + _i); bvirt = (_m - _l);
-    avirt = _m - bvirt; bround = _i - bvirt; around = _l - avirt;
-    _2 = around + bround; _i = (_1 + _k); bvirt = (_i - _1);
-    avirt = _i - bvirt; bround = _k - bvirt; around = _1 - avirt;
-    cxby[4] = around + bround; _k = (_2 + _i); bvirt = (_k - _2);
-    avirt = _k - bvirt; bround = _i - bvirt; around = _2 - avirt;
-    cxby[5] = around + bround; cxby7 = (_m + _k); bvirt = (cxby7 - _m);
-    avirt = cxby7 - bvirt; bround = _k - bvirt; around = _m - avirt;
-    cxby[6] = around + bround; cxby[7] = cxby7;
+  _i = (cdxtail * adytail); err1 = _i - (a0hi * bhi);
+  err2 = err1 - (a0lo * bhi); err3 = err2 - (a0hi * blo);
+  cxay[0] = (a0lo * blo) - err3;
 
-    a0hilo = Hilo.split(cdxtail);
-    a0hi = a0hilo.hi();
-    a0lo = a0hilo.lo();
+  a1hilo = Hilo.split(cdx);
+  a1hi = a1hilo.hi();
+  a1lo = a1hilo.lo();
 
-    bhilo = Hilo.split(adytail);
-    bhi = bhilo.hi();
-    blo = bhilo.lo();
+  _j = (cdx * adytail); err1 = _j - (a1hi * bhi);
+  err2 = err1 - (a1lo * bhi); err3 = err2 - (a1hi * blo);
+  _0 = (a1lo * blo) - err3; _k = (_i + _0); bvirt = (_k - _i);
+  avirt = _k - bvirt; bround = _0 - bvirt; around = _i - avirt;
+  _1 = around + bround; _l = (_j + _k); bvirt = _l - _j;
+  _2 = _k - bvirt;
 
-    _i = (cdxtail * adytail); err1 = _i - (a0hi * bhi);
-    err2 = err1 - (a0lo * bhi); err3 = err2 - (a0hi * blo);
-    cxay[0] = (a0lo * blo) - err3;
+  bhilo = Hilo.split(ady);
+  bhi = bhilo.hi();
+  blo = bhilo.lo();
 
-    a1hilo = Hilo.split(cdx);
-    a1hi = a1hilo.hi();
-    a1lo = a1hilo.lo();
+  _i = (cdxtail * ady);
+  err1 = _i - (a0hi * bhi); err2 = err1 - (a0lo * bhi);
+  err3 = err2 - (a0hi * blo); _0 = (a0lo * blo) - err3;
+  _k = (_1 + _0); bvirt = (_k - _1); avirt = _k - bvirt;
+  bround = _0 - bvirt; around = _1 - avirt; cxay[1] = around + bround;
+  _j = (_2 + _k); bvirt = (_j - _2); avirt = _j - bvirt;
+  bround = _k - bvirt; around = _2 - avirt; _1 = around + bround;
+  _m = (_l + _j); bvirt = (_m - _l); avirt = _m - bvirt;
+  bround = _j - bvirt; around = _l - avirt; _2 = around + bround;
+  _j = (cdx * ady); err1 = _j - (a1hi * bhi);
+  err2 = err1 - (a1lo * bhi); err3 = err2 - (a1hi * blo);
+  _0 = (a1lo * blo) - err3; _n = (_i + _0); bvirt = (_n - _i);
+  avirt = _n - bvirt; bround = _0 - bvirt; around = _i - avirt;
+  _0 = around + bround; _i = (_1 + _0); bvirt = (_i - _1);
+  avirt = _i - bvirt; bround = _0 - bvirt; around = _1 - avirt;
+  cxay[2] = around + bround; _k = (_2 + _i); bvirt = (_k - _2);
+  avirt = _k - bvirt; bround = _i - bvirt; around = _2 - avirt;
+  _1 = around + bround; _l = (_m + _k); bvirt = (_l - _m);
+  avirt = _l - bvirt; bround = _k - bvirt; around = _m - avirt;
+  _2 = around + bround; _k = (_j + _n); bvirt = (_k - _j);
+  avirt = _k - bvirt; bround = _n - bvirt; around = _j - avirt;
+  _0 = around + bround; _j = (_1 + _0); bvirt = (_j - _1);
+  avirt = _j - bvirt; bround = _0 - bvirt; around = _1 - avirt;
+  cxay[3] = around + bround; _i = (_2 + _j); bvirt = (_i - _2);
+  avirt = _i - bvirt; bround = _j - bvirt; around = _2 - avirt;
+  _1 = around + bround; _m = (_l + _i); bvirt = (_m - _l);
+  avirt = _m - bvirt; bround = _i - bvirt; around = _l - avirt;
+  _2 = around + bround; _i = (_1 + _k); bvirt = (_i - _1);
+  avirt = _i - bvirt; bround = _k - bvirt; around = _1 - avirt;
+  cxay[4] = around + bround; _k = (_2 + _i); bvirt = (_k - _2);
+  avirt = _k - bvirt; bround = _i - bvirt; around = _2 - avirt;
+  cxay[5] = around + bround; cxay7 = (_m + _k); bvirt = (cxay7 - _m);
+  avirt = cxay7 - bvirt; bround = _k - bvirt; around = _m - avirt;
+  cxay[6] = around + bround; cxay[7] = cxay7; negate = -cdy;
+  negatetail = -cdytail;
 
-    _j = (cdx * adytail); err1 = _j - (a1hi * bhi);
-    err2 = err1 - (a1lo * bhi); err3 = err2 - (a1hi * blo);
-    _0 = (a1lo * blo) - err3; _k = (_i + _0); bvirt = (_k - _i);
-    avirt = _k - bvirt; bround = _0 - bvirt; around = _i - avirt;
-    _1 = around + bround; _l = (_j + _k); bvirt = _l - _j;
-    _2 = _k - bvirt;
+  a0hilo = Hilo.split(adxtail);
+  a0hi = a0hilo.hi();
+  a0lo = a0hilo.lo();
 
-    bhilo = Hilo.split(ady);
-    bhi = bhilo.hi();
-    blo = bhilo.lo();
+  bhilo = Hilo.split(negatetail);
+  bhi = bhilo.hi();
+  blo = bhilo.lo();
 
-    _i = (cdxtail * ady);
-    err1 = _i - (a0hi * bhi); err2 = err1 - (a0lo * bhi);
-    err3 = err2 - (a0hi * blo); _0 = (a0lo * blo) - err3;
-    _k = (_1 + _0); bvirt = (_k - _1); avirt = _k - bvirt;
-    bround = _0 - bvirt; around = _1 - avirt; cxay[1] = around + bround;
-    _j = (_2 + _k); bvirt = (_j - _2); avirt = _j - bvirt;
-    bround = _k - bvirt; around = _2 - avirt; _1 = around + bround;
-    _m = (_l + _j); bvirt = (_m - _l); avirt = _m - bvirt;
-    bround = _j - bvirt; around = _l - avirt; _2 = around + bround;
-    _j = (cdx * ady); err1 = _j - (a1hi * bhi);
-    err2 = err1 - (a1lo * bhi); err3 = err2 - (a1hi * blo);
-    _0 = (a1lo * blo) - err3; _n = (_i + _0); bvirt = (_n - _i);
-    avirt = _n - bvirt; bround = _0 - bvirt; around = _i - avirt;
-    _0 = around + bround; _i = (_1 + _0); bvirt = (_i - _1);
-    avirt = _i - bvirt; bround = _0 - bvirt; around = _1 - avirt;
-    cxay[2] = around + bround; _k = (_2 + _i); bvirt = (_k - _2);
-    avirt = _k - bvirt; bround = _i - bvirt; around = _2 - avirt;
-    _1 = around + bround; _l = (_m + _k); bvirt = (_l - _m);
-    avirt = _l - bvirt; bround = _k - bvirt; around = _m - avirt;
-    _2 = around + bround; _k = (_j + _n); bvirt = (_k - _j);
-    avirt = _k - bvirt; bround = _n - bvirt; around = _j - avirt;
-    _0 = around + bround; _j = (_1 + _0); bvirt = (_j - _1);
-    avirt = _j - bvirt; bround = _0 - bvirt; around = _1 - avirt;
-    cxay[3] = around + bround; _i = (_2 + _j); bvirt = (_i - _2);
-    avirt = _i - bvirt; bround = _j - bvirt; around = _2 - avirt;
-    _1 = around + bround; _m = (_l + _i); bvirt = (_m - _l);
-    avirt = _m - bvirt; bround = _i - bvirt; around = _l - avirt;
-    _2 = around + bround; _i = (_1 + _k); bvirt = (_i - _1);
-    avirt = _i - bvirt; bround = _k - bvirt; around = _1 - avirt;
-    cxay[4] = around + bround; _k = (_2 + _i); bvirt = (_k - _2);
-    avirt = _k - bvirt; bround = _i - bvirt; around = _2 - avirt;
-    cxay[5] = around + bround; cxay7 = (_m + _k); bvirt = (cxay7 - _m);
-    avirt = cxay7 - bvirt; bround = _k - bvirt; around = _m - avirt;
-    cxay[6] = around + bround; cxay[7] = cxay7; negate = -cdy;
-    negatetail = -cdytail;
+  _i = (adxtail * negatetail); err1 = _i - (a0hi * bhi);
+  err2 = err1 - (a0lo * bhi); err3 = err2 - (a0hi * blo);
+  axcy[0] = (a0lo * blo) - err3;
 
-    a0hilo = Hilo.split(adxtail);
-    a0hi = a0hilo.hi();
-    a0lo = a0hilo.lo();
+  a1hilo = Hilo.split(adx);
+  a1hi = a1hilo.hi();
+  a1lo = a1hilo.lo();
 
-    bhilo = Hilo.split(negatetail);
-    bhi = bhilo.hi();
-    blo = bhilo.lo();
+  _j = (adx * negatetail); err1 = _j - (a1hi * bhi);
+  err2 = err1 - (a1lo * bhi); err3 = err2 - (a1hi * blo);
+  _0 = (a1lo * blo) - err3; _k = (_i + _0); bvirt = (_k - _i);
+  avirt = _k - bvirt; bround = _0 - bvirt; around = _i - avirt;
+  _1 = around + bround; _l = (_j + _k); bvirt = _l - _j;
+  _2 = _k - bvirt;
 
-    _i = (adxtail * negatetail); err1 = _i - (a0hi * bhi);
-    err2 = err1 - (a0lo * bhi); err3 = err2 - (a0hi * blo);
-    axcy[0] = (a0lo * blo) - err3;
+  bhilo = Hilo.split(negate);
+  bhi = bhilo.hi();
+  blo = bhilo.lo();
 
-    a1hilo = Hilo.split(adx);
-    a1hi = a1hilo.hi();
-    a1lo = a1hilo.lo();
+  _i = (adxtail * negate);
+  err1 = _i - (a0hi * bhi); err2 = err1 - (a0lo * bhi);
+  err3 = err2 - (a0hi * blo); _0 = (a0lo * blo) - err3;
+  _k = (_1 + _0); bvirt = (_k - _1); avirt = _k - bvirt;
+  bround = _0 - bvirt; around = _1 - avirt; axcy[1] = around + bround;
+  _j = (_2 + _k); bvirt = (_j - _2); avirt = _j - bvirt;
+  bround = _k - bvirt; around = _2 - avirt; _1 = around + bround;
+  _m = (_l + _j); bvirt = (_m - _l); avirt = _m - bvirt;
+  bround = _j - bvirt; around = _l - avirt; _2 = around + bround;
+  _j = (adx * negate); err1 = _j - (a1hi * bhi);
+  err2 = err1 - (a1lo * bhi); err3 = err2 - (a1hi * blo);
+  _0 = (a1lo * blo) - err3; _n = (_i + _0); bvirt = (_n - _i);
+  avirt = _n - bvirt; bround = _0 - bvirt; around = _i - avirt;
+  _0 = around + bround; _i = (_1 + _0); bvirt = (_i - _1);
+  avirt = _i - bvirt; bround = _0 - bvirt; around = _1 - avirt;
+  axcy[2] = around + bround; _k = (_2 + _i); bvirt = (_k - _2);
+  avirt = _k - bvirt; bround = _i - bvirt; around = _2 - avirt;
+  _1 = around + bround; _l = (_m + _k); bvirt = (_l - _m);
+  avirt = _l - bvirt; bround = _k - bvirt; around = _m - avirt;
+  _2 = around + bround; _k = (_j + _n); bvirt = (_k - _j);
+  avirt = _k - bvirt; bround = _n - bvirt; around = _j - avirt;
+  _0 = around + bround; _j = (_1 + _0); bvirt = (_j - _1);
+  avirt = _j - bvirt; bround = _0 - bvirt; around = _1 - avirt;
+  axcy[3] = around + bround; _i = (_2 + _j); bvirt = (_i - _2);
+  avirt = _i - bvirt; bround = _j - bvirt; around = _2 - avirt;
+  _1 = around + bround; _m = (_l + _i); bvirt = (_m - _l);
+  avirt = _m - bvirt; bround = _i - bvirt; around = _l - avirt;
+  _2 = around + bround; _i = (_1 + _k); bvirt = (_i - _1);
+  avirt = _i - bvirt; bround = _k - bvirt; around = _1 - avirt;
+  axcy[4] = around + bround; _k = (_2 + _i); bvirt = (_k - _2);
+  avirt = _k - bvirt; bround = _i - bvirt; around = _2 - avirt;
+  axcy[5] = around + bround; axcy7 = (_m + _k); bvirt = (axcy7 - _m);
+  avirt = axcy7 - bvirt; bround = _k - bvirt; around = _m - avirt;
+  axcy[6] = around + bround; axcy[7] = axcy7;
 
-    _j = (adx * negatetail); err1 = _j - (a1hi * bhi);
-    err2 = err1 - (a1lo * bhi); err3 = err2 - (a1hi * blo);
-    _0 = (a1lo * blo) - err3; _k = (_i + _0); bvirt = (_k - _i);
-    avirt = _k - bvirt; bround = _0 - bvirt; around = _i - avirt;
-    _1 = around + bround; _l = (_j + _k); bvirt = _l - _j;
-    _2 = _k - bvirt;
+  temp16len = sum(8, bxcy, 8, cxby, temp16);
 
-    bhilo = Hilo.split(negate);
-    bhi = bhilo.hi();
-    blo = bhilo.lo();
+  xlen = scale(temp16len, temp16, adx, detx);
+  xxlen = scale(xlen, detx, adx, detxx);
+  xtlen = scale(temp16len, temp16, adxtail, detxt);
+  xxtlen = scale(xtlen, detxt, adx, detxxt);
+  for (i = 0; i < xxtlen; i++) { detxxt[i] *= 2.0; }
+  xtxtlen = scale(xtlen, detxt, adxtail, detxtxt);
+  x1len = sum(xxlen, detxx, xxtlen, detxxt, x1);
+  x2len = sum(x1len, x1, xtxtlen, detxtxt, x2);
 
-    _i = (adxtail * negate);
-    err1 = _i - (a0hi * bhi); err2 = err1 - (a0lo * bhi);
-    err3 = err2 - (a0hi * blo); _0 = (a0lo * blo) - err3;
-    _k = (_1 + _0); bvirt = (_k - _1); avirt = _k - bvirt;
-    bround = _0 - bvirt; around = _1 - avirt; axcy[1] = around + bround;
-    _j = (_2 + _k); bvirt = (_j - _2); avirt = _j - bvirt;
-    bround = _k - bvirt; around = _2 - avirt; _1 = around + bround;
-    _m = (_l + _j); bvirt = (_m - _l); avirt = _m - bvirt;
-    bround = _j - bvirt; around = _l - avirt; _2 = around + bround;
-    _j = (adx * negate); err1 = _j - (a1hi * bhi);
-    err2 = err1 - (a1lo * bhi); err3 = err2 - (a1hi * blo);
-    _0 = (a1lo * blo) - err3; _n = (_i + _0); bvirt = (_n - _i);
-    avirt = _n - bvirt; bround = _0 - bvirt; around = _i - avirt;
-    _0 = around + bround; _i = (_1 + _0); bvirt = (_i - _1);
-    avirt = _i - bvirt; bround = _0 - bvirt; around = _1 - avirt;
-    axcy[2] = around + bround; _k = (_2 + _i); bvirt = (_k - _2);
-    avirt = _k - bvirt; bround = _i - bvirt; around = _2 - avirt;
-    _1 = around + bround; _l = (_m + _k); bvirt = (_l - _m);
-    avirt = _l - bvirt; bround = _k - bvirt; around = _m - avirt;
-    _2 = around + bround; _k = (_j + _n); bvirt = (_k - _j);
-    avirt = _k - bvirt; bround = _n - bvirt; around = _j - avirt;
-    _0 = around + bround; _j = (_1 + _0); bvirt = (_j - _1);
-    avirt = _j - bvirt; bround = _0 - bvirt; around = _1 - avirt;
-    axcy[3] = around + bround; _i = (_2 + _j); bvirt = (_i - _2);
-    avirt = _i - bvirt; bround = _j - bvirt; around = _2 - avirt;
-    _1 = around + bround; _m = (_l + _i); bvirt = (_m - _l);
-    avirt = _m - bvirt; bround = _i - bvirt; around = _l - avirt;
-    _2 = around + bround; _i = (_1 + _k); bvirt = (_i - _1);
-    avirt = _i - bvirt; bround = _k - bvirt; around = _1 - avirt;
-    axcy[4] = around + bround; _k = (_2 + _i); bvirt = (_k - _2);
-    avirt = _k - bvirt; bround = _i - bvirt; around = _2 - avirt;
-    axcy[5] = around + bround; axcy7 = (_m + _k); bvirt = (axcy7 - _m);
-    avirt = axcy7 - bvirt; bround = _k - bvirt; around = _m - avirt;
-    axcy[6] = around + bround; axcy[7] = axcy7;
+  ylen = scale(temp16len, temp16, ady, dety);
+  yylen = scale(ylen, dety, ady, detyy);
+  ytlen = scale(temp16len, temp16, adytail, detyt);
+  yytlen = scale(ytlen, detyt, ady, detyyt);
+  for (i = 0; i < yytlen; i++) { detyyt[i] *= 2.0; }
+  ytytlen = scale(ytlen, detyt, adytail, detytyt);
+  y1len = sum(yylen, detyy, yytlen, detyyt, y1);
+  y2len = sum(y1len, y1, ytytlen, detytyt, y2);
 
-    temp16len = sum(8, bxcy, 8, cxby, temp16);
+  alen = sum(x2len, x2, y2len, y2, adet);
 
-    xlen = scale(temp16len, temp16, adx, detx);
-    xxlen = scale(xlen, detx, adx, detxx);
-    xtlen = scale(temp16len, temp16, adxtail, detxt);
-    xxtlen = scale(xtlen, detxt, adx, detxxt);
-    for (i = 0; i < xxtlen; i++) { detxxt[i] *= 2.0; }
-    xtxtlen = scale(xtlen, detxt, adxtail, detxtxt);
-    x1len = sum(xxlen, detxx, xxtlen, detxxt, x1);
-    x2len = sum(x1len, x1, xtxtlen, detxtxt, x2);
+  temp16len = sum(8, cxay, 8, axcy, temp16);
 
-    ylen = scale(temp16len, temp16, ady, dety);
-    yylen = scale(ylen, dety, ady, detyy);
-    ytlen = scale(temp16len, temp16, adytail, detyt);
-    yytlen = scale(ytlen, detyt, ady, detyyt);
-    for (i = 0; i < yytlen; i++) { detyyt[i] *= 2.0; }
-    ytytlen = scale(ytlen, detyt, adytail, detytyt);
-    y1len = sum(yylen, detyy, yytlen, detyyt, y1);
-    y2len = sum(y1len, y1, ytytlen, detytyt, y2);
+  xlen = scale(temp16len, temp16, bdx, detx);
+  xxlen = scale(xlen, detx, bdx, detxx);
+  xtlen = scale(temp16len, temp16, bdxtail, detxt);
+  xxtlen = scale(xtlen, detxt, bdx, detxxt);
+  for (i = 0; i < xxtlen; i++) { detxxt[i] *= 2.0; }
+  xtxtlen = scale(xtlen, detxt, bdxtail, detxtxt);
+  x1len = sum(xxlen, detxx, xxtlen, detxxt, x1);
+  x2len = sum(x1len, x1, xtxtlen, detxtxt, x2);
 
-    alen = sum(x2len, x2, y2len, y2, adet);
+  ylen = scale(temp16len, temp16, bdy, dety);
+  yylen = scale(ylen, dety, bdy, detyy);
+  ytlen = scale(temp16len, temp16, bdytail, detyt);
+  yytlen = scale(ytlen, detyt, bdy, detyyt);
+  for (i = 0; i < yytlen; i++) { detyyt[i] *= 2.0; }
+  ytytlen = scale(ytlen, detyt, bdytail, detytyt);
+  y1len = sum(yylen, detyy, yytlen, detyyt, y1);
+  y2len = sum(y1len, y1, ytytlen, detytyt, y2);
 
-    temp16len = sum(8, cxay, 8, axcy, temp16);
+  blen = sum(x2len, x2, y2len, y2, bdet);
 
-    xlen = scale(temp16len, temp16, bdx, detx);
-    xxlen = scale(xlen, detx, bdx, detxx);
-    xtlen = scale(temp16len, temp16, bdxtail, detxt);
-    xxtlen = scale(xtlen, detxt, bdx, detxxt);
-    for (i = 0; i < xxtlen; i++) { detxxt[i] *= 2.0; }
-    xtxtlen = scale(xtlen, detxt, bdxtail, detxtxt);
-    x1len = sum(xxlen, detxx, xxtlen, detxxt, x1);
-    x2len = sum(x1len, x1, xtxtlen, detxtxt, x2);
+  temp16len = sum(8, axby, 8, bxay, temp16);
 
-    ylen = scale(temp16len, temp16, bdy, dety);
-    yylen = scale(ylen, dety, bdy, detyy);
-    ytlen = scale(temp16len, temp16, bdytail, detyt);
-    yytlen = scale(ytlen, detyt, bdy, detyyt);
-    for (i = 0; i < yytlen; i++) { detyyt[i] *= 2.0; }
-    ytytlen = scale(ytlen, detyt, bdytail, detytyt);
-    y1len = sum(yylen, detyy, yytlen, detyyt, y1);
-    y2len = sum(y1len, y1, ytytlen, detytyt, y2);
+  xlen = scale(temp16len, temp16, cdx, detx);
+  xxlen = scale(xlen, detx, cdx, detxx);
+  xtlen = scale(temp16len, temp16, cdxtail, detxt);
+  xxtlen = scale(xtlen, detxt, cdx, detxxt);
+  for (i = 0; i < xxtlen; i++) { detxxt[i] *= 2.0; }
+  xtxtlen = scale(xtlen, detxt, cdxtail, detxtxt);
+  x1len = sum(xxlen, detxx, xxtlen, detxxt, x1);
+  x2len = sum(x1len, x1, xtxtlen, detxtxt, x2);
 
-    blen = sum(x2len, x2, y2len, y2, bdet);
+  ylen = scale(temp16len, temp16, cdy, dety);
+  yylen = scale(ylen, dety, cdy, detyy);
+  ytlen = scale(temp16len, temp16, cdytail, detyt);
+  yytlen = scale(ytlen, detyt, cdy, detyyt);
+  for (i = 0; i < yytlen; i++) { detyyt[i] *= 2.0; }
+  ytytlen = scale(ytlen, detyt, cdytail, detytyt);
+  y1len = sum(yylen, detyy, yytlen, detyyt, y1);
+  y2len = sum(y1len, y1, ytytlen, detytyt, y2);
 
-    temp16len = sum(8, axby, 8, bxay, temp16);
+  clen = sum(x2len, x2, y2len, y2, cdet);
 
-    xlen = scale(temp16len, temp16, cdx, detx);
-    xxlen = scale(xlen, detx, cdx, detxx);
-    xtlen = scale(temp16len, temp16, cdxtail, detxt);
-    xxtlen = scale(xtlen, detxt, cdx, detxxt);
-    for (i = 0; i < xxtlen; i++) { detxxt[i] *= 2.0; }
-    xtxtlen = scale(xtlen, detxt, cdxtail, detxtxt);
-    x1len = sum(xxlen, detxx, xxtlen, detxxt, x1);
-    x2len = sum(x1len, x1, xtxtlen, detxtxt, x2);
-
-    ylen = scale(temp16len, temp16, cdy, dety);
-    yylen = scale(ylen, dety, cdy, detyy);
-    ytlen = scale(temp16len, temp16, cdytail, detyt);
-    yytlen = scale(ytlen, detyt, cdy, detyyt);
-    for (i = 0; i < yytlen; i++) { detyyt[i] *= 2.0; }
-    ytytlen = scale(ytlen, detyt, cdytail, detytyt);
-    y1len = sum(yylen, detyy, yytlen, detyyt, y1);
-    y2len = sum(y1len, y1, ytytlen, detytyt, y2);
-
-    clen = sum(x2len, x2, y2len, y2, cdet);
-
-    ablen = sum(alen, adet, blen, bdet, abdet);
-    deterlen = sum(ablen, abdet, clen, cdet, deter);
+  ablen = sum(alen, adet, blen, bdet, abdet);
+  deterlen = sum(ablen, abdet, clen, cdet, deter);
 //    return deter[deterlen - 1];
-    // TODO: this is ignoring deterlen!
-    final XDouble det = XDouble.unsafe(DoubleArrayList.from(deter));
-    return det.doubleValue(); }
+  // TODO: this is ignoring deterlen!
+  final XDouble det = XDouble.unsafe(DoubleArrayList.from(deter));
+  return det.doubleValue(); }
 
   //--------------------------------------------------------------------
   // orient2d

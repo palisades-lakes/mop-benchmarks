@@ -98,37 +98,37 @@ public final class SlowMacro implements Predicate {
   // incircle
   //--------------------------------------------------------------------
 
-  private static final XDouble det (final Hilo ax,
-                                    final Hilo ay,
-                                    final Hilo bx,
-                                    final Hilo by,
-                                    final Hilo cx,
-                                    final Hilo cy) {
-
-    final XDouble axby = XDouble.twoTwoProduct(ax, by);
-    final XDouble bxay = XDouble.twoTwoProduct(bx, ay);
-    final XDouble sum = axby.subtract(bxay);
-
-    final XDouble sxhihi = sum.scale(cx.hi()).scale(cx.hi());
-    final XDouble sxlo = sum.scale(cx.lo());
-    // TODO: guess simple loop works because exact if 2x
-    //  could implement a faster exponent add version for powers of 2?
-    //  for (i = 0; i < xxtlen; i++) { detxxt[i] *= 2.0; }
-    final XDouble sxlohi2 = sxlo.scale(cx.hi()).fast2x();
-    //final XDouble sxlohi2 = sxlo.scale(cx.hi()).scale(2.0);
-    final XDouble sxlolo = sxlo.scale(cx.lo());
-    final XDouble detx = sxhihi.add(sxlohi2).add(sxlolo);
-
-    final XDouble syhihi = sum.scale(cy.hi()).scale(cy.hi());
-    final XDouble sylo = sum.scale(cy.lo());
-    //for (i = 0; i < yytlen; i++) { detyyt[i] *= 2.0; }
-    final XDouble sylohi2 = sylo.scale(cy.hi()).fast2x();
-    //final XDouble sylohi2 = sylo.scale(cy.hi()).scale(2.0);
-    //for (i = 0; i < yytlen; i++) { detyyt[i] *= 2.0; }
-    final XDouble sylolo = sylo.scale(cy.lo());
-    final XDouble dety = syhihi.add(sylohi2).add(sylolo);
-
-    return detx.add(dety); }
+//  private static final XDouble det (final Hilo ax,
+//                                    final Hilo ay,
+//                                    final Hilo bx,
+//                                    final Hilo by,
+//                                    final Hilo cx,
+//                                    final Hilo cy) {
+//
+//    final XDouble axby = XDouble.twoTwoProduct(ax, by);
+//    final XDouble bxay = XDouble.twoTwoProduct(bx, ay);
+//    final XDouble sum = axby.subtract(bxay);
+//
+//    final XDouble sxhihi = sum.scale(cx.hi()).scale(cx.hi());
+//    final XDouble sxlo = sum.scale(cx.lo());
+//    // TODO: guess simple loop works because exact if 2x
+//    //  could implement a faster exponent add version for powers of 2?
+//    //  for (i = 0; i < xxtlen; i++) { detxxt[i] *= 2.0; }
+//    final XDouble sxlohi2 = sxlo.scale(cx.hi()).fast2x();
+//    //final XDouble sxlohi2 = sxlo.scale(cx.hi()).scale(2.0);
+//    final XDouble sxlolo = sxlo.scale(cx.lo());
+//    final XDouble detx = sxhihi.add(sxlohi2).add(sxlolo);
+//
+//    final XDouble syhihi = sum.scale(cy.hi()).scale(cy.hi());
+//    final XDouble sylo = sum.scale(cy.lo());
+//    //for (i = 0; i < yytlen; i++) { detyyt[i] *= 2.0; }
+//    final XDouble sylohi2 = sylo.scale(cy.hi()).fast2x();
+//    //final XDouble sylohi2 = sylo.scale(cy.hi()).scale(2.0);
+//    //for (i = 0; i < yytlen; i++) { detyyt[i] *= 2.0; }
+//    final XDouble sylolo = sylo.scale(cy.lo());
+//    final XDouble dety = syhihi.add(sylohi2).add(sylolo);
+//
+//    return detx.add(dety); }
 
   //--------------------------------------------------------------------
 //  /** signed distance of <code>pd</code> from the circumcircle thru

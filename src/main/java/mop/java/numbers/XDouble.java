@@ -447,6 +447,11 @@ public final class XDouble implements Comparable<XDouble> {
     return sum; }
 
   //--------------------------------------------------------------------
+  /** Copy the terms to an array. */
+
+  public final double[] toArray () { return terms().toArray(); }
+
+  //--------------------------------------------------------------------
   // private construction
   //--------------------------------------------------------------------
 
@@ -603,101 +608,150 @@ public final class XDouble implements Comparable<XDouble> {
   //  Two_Sum(_2, _i, _k, x5); \
   //  Two_Sum(_m, _k, x7, x6)
 
-  public static final XDouble twoTwoProduct (final Hilo a,
-                                             final Hilo b) {
-    final double a0 = a.lo();
-    final Hilo a0hilo = Hilo.split(a0);
-    final double b0 = b.lo();
-    final Hilo b0hilo = Hilo.split(b0);
+  public static final double[] twoTwoProduct (final Hilo a,
+                                              final Hilo b) {
+    final double[] axby = new double[8];
+    final double adxtail = a.lo();
+    final double bdytail = b.lo();
+    final double adx = a.hi();
+    final double bdy = b.hi();
+    Hilo a0hilo = Hilo.split(adxtail);
+    final Hilo b0hilo = Hilo.split(bdytail);
 
-    final Hilo _ix0 = Hilo.twoProduct2Presplit(a0,a0hilo,b0,b0hilo);
+    final Hilo _ix0 = Hilo.twoProduct2Presplit(adxtail,a0hilo,bdytail,b0hilo);
     double _i = _ix0.hi();
-    final double x0 = _ix0.lo();
+    axby[0] = _ix0.lo();
 
-    final double a1 = a.hi();
-    final Hilo a1hilo = Hilo.split(a1);
-
-    Hilo _j_0 = Hilo.twoProduct2Presplit(a1,a1hilo,b0,b0hilo);
+    Hilo a1hilo = Hilo.split(adx);
+    Hilo _j_0 = Hilo.twoProduct2Presplit(adx,a1hilo,bdytail,b0hilo);
     double _j = _j_0.hi();
     double _0 = _j_0.lo();
 
-    Hilo _k_1 = Hilo.twoSum(_i, _0);
-    double _k = _k_1.hi();
-    double _1 = _k_1.lo();
+    Hilo _k_1 = Hilo.twoSum(_i,_0); double _k = _k_1.hi(); double _1 = _k_1.lo();
+    Hilo _l_2 = Hilo.fastTwoSum(_j,_k); double _l = _l_2.hi(); double _2 = _l_2.lo();
 
-    Hilo _l_2 = Hilo.fastTwoSum(_j, _k);
-    double _l = _l_2.hi();
-    double _2 = _l_2.lo();
+    Hilo bhilo = Hilo.split(bdy);
+    final Hilo _i_0 = Hilo.twoProduct2Presplit(adxtail,a0hilo,bdy,bhilo);
+    _i = _i_0.hi(); _0 = _i_0.lo();
 
-    final double b1 = b.hi();
-    final Hilo b1hilo = Hilo.split(b1);
+    final Hilo _kx1 = Hilo.twoSum(_1,_0); _k = _kx1.hi(); axby[1] = _kx1.lo();
+    final Hilo _j_1 = Hilo.twoSum(_2,_k); _j = _j_1.hi(); _1 = _j_1.lo();
+    Hilo _m_2 = Hilo.twoSum(_l,_j); double _m = _m_2.hi(); _2 = _m_2.lo();
 
-    final Hilo _i_0 = Hilo.twoProduct2Presplit(a0,a0hilo,b1,b1hilo);
-    _i = _i_0.hi();
-    _0 = _i_0.lo();
+    _j_0 = Hilo.twoProduct2Presplit(adx,a1hilo,bdy,bhilo);
+    _j = _j_0.hi(); _0 = _j_0.lo();
 
-    final Hilo _kx1 = Hilo.twoSum(_1, _0);
-    _k = _kx1.hi();
-    final double x1 = _kx1.lo();
+    final Hilo _n_0 = Hilo.twoSum(_i,_0); double _n = _n_0.hi(); _0 = _n_0.lo();
+    final Hilo _i2 = Hilo.twoSum(_1,_0); _i = _i2.hi(); axby[2] = _i2.lo();
+    _k_1 = Hilo.twoSum(_2,_i); _k = _k_1.hi(); _1 = _k_1.lo();
+    _l_2 = Hilo.twoSum(_m,_k); _l = _l_2.hi(); _2 = _l_2.lo();
+    final Hilo _k_0 = Hilo.twoSum(_j,_n); _k = _k_0.hi(); _0 = _k_0.lo();
+    final Hilo _j3 = Hilo.twoSum(_1,_0); _j = _j3.hi(); axby[3] = _j3.lo();
+    final Hilo _i_1 = Hilo.twoSum(_2,_j); _i = _i_1.hi(); _1 = _i_1.lo();
+    _m_2 = Hilo.twoSum(_l,_i); _m = _m_2.hi(); _2 = _m_2.lo();
+    final Hilo _i4 = Hilo.twoSum(_1,_k); _i = _i4.hi(); axby[4] = _i4.lo();
+    final Hilo _k5 = Hilo.twoSum(_2,_i);
+    _k = _k5.hi(); axby[5] = _k5.lo();
+    final Hilo axby76 = Hilo.twoSum(_m,_k);
+    axby[7] = axby76.hi();
+    axby[6] = axby76.lo();
 
-    final Hilo _j_1 = Hilo.twoSum(_2, _k);
-    _j = _j_1.hi();
-    _1 = _j_1.lo();
+    return axby; }
 
-    Hilo _m_2 = Hilo.twoSum(_l, _j);
-    double _m = _m_2.hi();
-    _2 = _m_2.lo();
-
-    _j_0 = Hilo.twoProduct2Presplit(a1,a1hilo,b1,b1hilo);
-    _j = _j_0.hi();
-    _0 = _j_0.lo();
-
-    final Hilo _n_0 = Hilo.twoSum(_i,_0);
-    double _n = _n_0.hi();
-    _0 = _n_0.lo();
-
-    final Hilo _ix2 = Hilo.twoSum(_1,_0);
-    _i = _ix2.hi();
-    final double x2 = _ix2.lo();
-
-    _k_1 = Hilo.twoSum(_2,_i);
-    _k = _k_1.hi();
-    _1 = _k_1.lo();
-
-    _l_2 = Hilo.twoSum(_m,_k);
-    _l = _l_2.hi();
-    _2 = _l_2.lo();
-
-    final Hilo _k_0 = Hilo.twoSum(_j,_n);
-    _k = _k_0.hi();
-    _0 = _k_0.lo();
-
-    final Hilo _jx3 = Hilo.twoSum(_1,_0);
-    _j = _jx3.hi();
-    final double x3 = _jx3.lo();
-
-    final Hilo _i_1 = Hilo.twoSum(_2,_j);
-    _i = _i_1.hi();
-    _1 = _i_1.lo();
-
-    _m_2 = Hilo.twoSum(_l, _i);
-    _m = _m_2.hi();
-    _2 = _m_2.lo();
-
-    final Hilo _ix4 = Hilo.twoSum(_1,_k);
-    _i = _ix4.hi();
-    final double x4 = _ix4.lo();
-
-    final Hilo _kx5 = Hilo.twoSum(_2,_i);
-    _k = _kx5.hi();
-    final double x5 = _kx5.lo();
-
-    final Hilo x7x6 = Hilo.twoSum(_m,_k);
-    final double x7 = x7x6.hi();
-    final double x6 = x7x6.lo();
-
-    return unsafe(DoubleArrayList.from(x0,x1,x2,x3,x4,x5,x6,x7)); }
-
+//  public static final XDouble twoTwoProduct (final Hilo a,
+//                                             final Hilo b) {
+//    final double a0 = a.lo();
+//    final Hilo a0hilo = Hilo.split(a0);
+//    final double b0 = b.lo();
+//    final Hilo b0hilo = Hilo.split(b0);
+//
+//    final Hilo _ix0 = Hilo.twoProduct2Presplit(a0,a0hilo,b0,b0hilo);
+//    double _i = _ix0.hi();
+//    final double x0 = _ix0.lo();
+//
+//    final double a1 = a.hi();
+//    final Hilo a1hilo = Hilo.split(a1);
+//
+//    Hilo _j_0 = Hilo.twoProduct2Presplit(a1,a1hilo,b0,b0hilo);
+//    double _j = _j_0.hi();
+//    double _0 = _j_0.lo();
+//
+//    Hilo _k_1 = Hilo.twoSum(_i, _0);
+//    double _k = _k_1.hi();
+//    double _1 = _k_1.lo();
+//
+//    Hilo _l_2 = Hilo.fastTwoSum(_j, _k);
+//    double _l = _l_2.hi();
+//    double _2 = _l_2.lo();
+//
+//    final double b1 = b.hi();
+//    final Hilo b1hilo = Hilo.split(b1);
+//
+//    final Hilo _i_0 = Hilo.twoProduct2Presplit(a0,a0hilo,b1,b1hilo);
+//    _i = _i_0.hi();
+//    _0 = _i_0.lo();
+//
+//    final Hilo _kx1 = Hilo.twoSum(_1, _0);
+//    _k = _kx1.hi();
+//    final double x1 = _kx1.lo();
+//
+//    final Hilo _j_1 = Hilo.twoSum(_2, _k);
+//    _j = _j_1.hi();
+//    _1 = _j_1.lo();
+//
+//    Hilo _m_2 = Hilo.twoSum(_l, _j);
+//    double _m = _m_2.hi();
+//    _2 = _m_2.lo();
+//
+//    _j_0 = Hilo.twoProduct2Presplit(a1,a1hilo,b1,b1hilo);
+//    _j = _j_0.hi();
+//    _0 = _j_0.lo();
+//
+//    final Hilo _n_0 = Hilo.twoSum(_i,_0);
+//    double _n = _n_0.hi();
+//    _0 = _n_0.lo();
+//
+//    final Hilo _ix2 = Hilo.twoSum(_1,_0);
+//    _i = _ix2.hi();
+//    final double x2 = _ix2.lo();
+//
+//    _k_1 = Hilo.twoSum(_2,_i);
+//    _k = _k_1.hi();
+//    _1 = _k_1.lo();
+//
+//    _l_2 = Hilo.twoSum(_m,_k);
+//    _l = _l_2.hi();
+//    _2 = _l_2.lo();
+//
+//    final Hilo _k_0 = Hilo.twoSum(_j,_n);
+//    _k = _k_0.hi();
+//    _0 = _k_0.lo();
+//
+//    final Hilo _jx3 = Hilo.twoSum(_1,_0);
+//    _j = _jx3.hi();
+//    final double x3 = _jx3.lo();
+//
+//    final Hilo _i_1 = Hilo.twoSum(_2,_j);
+//    _i = _i_1.hi();
+//    _1 = _i_1.lo();
+//
+//    _m_2 = Hilo.twoSum(_l, _i);
+//    _m = _m_2.hi();
+//    _2 = _m_2.lo();
+//
+//    final Hilo _ix4 = Hilo.twoSum(_1,_k);
+//    _i = _ix4.hi();
+//    final double x4 = _ix4.lo();
+//
+//    final Hilo _kx5 = Hilo.twoSum(_2,_i);
+//    _k = _kx5.hi();
+//    final double x5 = _kx5.lo();
+//
+//    final Hilo x7x6 = Hilo.twoSum(_m,_k);
+//    final double x7 = x7x6.hi();
+//    final double x6 = x7x6.lo();
+//
+//    return unsafe(DoubleArrayList.from(x0,x1,x2,x3,x4,x5,x6,x7)); }
   //-------------------------------------------------------------------
   //
   //  compress()   Compress an expansion.
