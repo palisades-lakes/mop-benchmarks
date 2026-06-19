@@ -62,8 +62,9 @@ import static mop.java.geometry.predicates.Expansion.*;
  * <a href="https://github.com/carrotsearch/hppc">hppc</a>
  * </p>
  * <p>
- * This version's priority is correctness, and simplicity.
- * Later versions can optimize guided by benchmarks and profiling.
+ *   This version's priority is correctness, and simplicity.
+ *   Later versions can optimize guided by benchmarks and
+ *   profiling.
  * </p>
  * <p>
  *   Basic idea: a finite subset of the rationals is represented
@@ -87,7 +88,7 @@ import static mop.java.geometry.predicates.Expansion.*;
 
 // strictfp unnecessary for JDK17 and later
 @SuppressWarnings("unused")
-public final class Slow implements Predicate {
+public final class SlowMacro implements Predicate {
 
   //--------------------------------------------------------------------
 
@@ -154,110 +155,71 @@ public final class Slow implements Predicate {
 //    //new Throwable().printStackTrace(System.out);
 //    System.out.println(d);
 //    return d.doubleValue();
-////    return d.estimate();
+  ////    return d.estimate();
 //  }
 
 // from macro expanded C code:
 
-  public final double incircle (final double[] pa,
-                                final double[] pb,
-                                final double[] pc,
-                                final double[] pd) {
+  public final double incircle (final double[] pa, final double[] pb,
+                                final double[] pc, final double[] pd) {
+    double adx, bdx, cdx, ady, bdy, cdy;
+    double adxtail, bdxtail, cdxtail; double adytail, bdytail, cdytail;
     double negate, negatetail;
     double axby7, bxcy7, axcy7, bxay7, cxby7, cxay7;
-    double[] axby = new double[8], bxcy = new double[8],
-      axcy = new double[8], bxay = new double[8],
-      cxby = new double[8], cxay = new double[8];
-    double[] temp16 = new double[16];
-    int temp16len;
-    double[] detx = new double[32], detxx = new double[64],
-      detxt = new double[32], detxxt = new double[64],
-      detxtxt = new double[64];
+    double[] axby = new double[8], bxcy = new double[8], axcy =
+      new double[8], bxay = new double[8], cxby = new double[8], cxay =
+      new double[8]; double[] temp16 = new double[16]; int temp16len;
+    double[] detx = new double[32], detxx = new double[64], detxt =
+      new double[32], detxxt = new double[64], detxtxt = new double[64];
     int xlen, xxlen, xtlen, xxtlen, xtxtlen;
     double[] x1 = new double[128], x2 = new double[192];
     int x1len, x2len;
-    double[] dety = new double[32], detyy = new double[64],
-      detyt = new double[32], detyyt = new double[64],
-      detytyt = new double[64];
+    double[] dety = new double[32], detyy = new double[64], detyt =
+      new double[32], detyyt = new double[64], detytyt = new double[64];
     int ylen, yylen, ytlen, yytlen, ytytlen;
     double[] y1 = new double[128], y2 = new double[192];
     int y1len, y2len;
-    double[] adet = new double[384], bdet = new double[384],
-      cdet = new double[384], abdet = new double[768],
-      deter = new double[1152];
-    int alen, blen, clen, ablen;
-      @SuppressWarnings("unused")
-      int deterlen;
-      int i;
+    double[] adet = new double[384], bdet = new double[384], cdet =
+      new double[384], abdet = new double[768], deter =
+      new double[1152]; int alen, blen, clen, ablen;
+    @SuppressWarnings("unused")
+    int deterlen;
+    int i;
 
-    double bvirt; double avirt, bround, around;
-    double c;
-    double abig;
-    double err1, err2, err3;
-    double _j, _k, _l, _m, _n;
-    double _0, _1, _2;
+    double bvirt; double avirt, bround, around; double c; double abig;
+    double a0hi, a0lo, a1hi, a1lo, bhi, blo; double err1, err2, err3;
+    double _i, _j, _k, _l, _m, _n; double _0, _1, _2;
 
-    final Hilo ax = Hilo.twoDiff(pa[0], pd[0]);
-    final double adx = ax.hi();
-    final double adxtail = ax.lo();
+    adx = (pa[0] - pd[0]); bvirt = (pa[0] - adx); avirt = adx + bvirt;
+    bround = bvirt - pd[0]; around = pa[0] - avirt;
+    adxtail = around + bround; ady = (pa[1] - pd[1]);
+    bvirt = (pa[1] - ady); avirt = ady + bvirt; bround = bvirt - pd[1];
+    around = pa[1] - avirt; adytail = around + bround;
+    bdx = (pb[0] - pd[0]); bvirt = (pb[0] - bdx); avirt = bdx + bvirt;
+    bround = bvirt - pd[0]; around = pb[0] - avirt;
+    bdxtail = around + bround; bdy = (pb[1] - pd[1]);
+    bvirt = (pb[1] - bdy); avirt = bdy + bvirt; bround = bvirt - pd[1];
+    around = pb[1] - avirt; bdytail = around + bround;
+    cdx = (pc[0] - pd[0]); bvirt = (pc[0] - cdx); avirt = cdx + bvirt;
+    bround = bvirt - pd[0]; around = pc[0] - avirt;
+    cdxtail = around + bround; cdy = (pc[1] - pd[1]);
+    bvirt = (pc[1] - cdy); avirt = cdy + bvirt; bround = bvirt - pd[1];
+    around = pc[1] - avirt; cdytail = around + bround;
 
-    final Hilo ay = Hilo.twoDiff(pa[1], pd[1]);
-    final double ady = ay.hi();
-    final double adytail = ay.lo();
-
-    final Hilo bx = Hilo.twoDiff(pb[0], pd[0]);
-    final double bdx = bx.hi();
-    final double bdxtail = bx.lo();
-
-    final Hilo by = Hilo.twoDiff(pb[1], pd[1]);
-    final double bdy = by.hi();
-    final double bdytail = by.lo();
-
-    final Hilo cx = Hilo.twoDiff(pc[0], pd[0]);
-    final double cdx = cx.hi();
-    final double cdxtail = cx.lo();
-
-    final Hilo cy = Hilo.twoDiff(pc[1], pd[1]);
-    final double cdy = cy.hi();
-    final double cdytail = cy.lo();
-
-//    Two_Two_Product(adx, adxtail, bdy, bdytail,
-//                    axby7, axby[6], axby[5], axby[4],
-//                    axby[3], axby[2], axby[1], axby[0]);
-//    axby[7] = axby7;
-//    negate = -ady;
-//    negatetail = -adytail;
-
-    Hilo a0hilo = Hilo.split(adxtail);
-    double a0hi = a0hilo.hi();
-    double a0lo = a0hilo.lo();
-
-    final Hilo b0hilo = Hilo.split(bdytail);
-    double bhi = b0hilo.hi();
-    double blo = b0hilo.lo();
-
-    final Hilo _ix0 = Hilo.twoProduct2Presplit(adxtail,a0hilo,bdytail,b0hilo);
-    double _i = _ix0.hi();
-    axby[0] = _ix0.lo();
-
-    Hilo a1hilo = Hilo.split(adx);
-    double a1hi = a1hilo.hi();
-    double a1lo = a1hilo.lo();
-
-    _j = (adx * bdytail);
-    err1 = _j - (a1hi * bhi);
-    err2 = err1 - (a1lo * bhi);
-    err3 = err2 - (a1hi * blo);
+    c = (SPLITTER * adxtail); abig = (c - adxtail); a0hi = c - abig;
+    a0lo = adxtail - a0hi; c = (SPLITTER * bdytail);
+    abig = (c - bdytail); bhi = c - abig; blo = bdytail - bhi;
+    _i = (adxtail * bdytail); err1 = _i - (a0hi * bhi);
+    err2 = err1 - (a0lo * bhi); err3 = err2 - (a0hi * blo);
+    axby[0] = (a0lo * blo) - err3; c = (SPLITTER * adx);
+    abig = (c - adx); a1hi = c - abig; a1lo = adx - a1hi;
+    _j = (adx * bdytail); err1 = _j - (a1hi * bhi);
+    err2 = err1 - (a1lo * bhi); err3 = err2 - (a1hi * blo);
     _0 = (a1lo * blo) - err3; _k = (_i + _0); bvirt = (_k - _i);
     avirt = _k - bvirt; bround = _0 - bvirt; around = _i - avirt;
     _1 = around + bround; _l = (_j + _k); bvirt = _l - _j;
-    _2 = _k - bvirt;
-
-    Hilo bhilo = Hilo.split(bdy);
-    bhi = bhilo.hi();
-    blo = bhilo.lo();
-
-    _i = (adxtail * bdy);
+    _2 = _k - bvirt; c = (SPLITTER * bdy); abig = (c - bdy);
+    bhi = c - abig; blo = bdy - bhi; _i = (adxtail * bdy);
     err1 = _i - (a0hi * bhi); err2 = err1 - (a0lo * bhi);
     err3 = err2 - (a0hi * blo); _0 = (a0lo * blo) - err3;
     _k = (_1 + _0); bvirt = (_k - _1); avirt = _k - bvirt;
@@ -290,37 +252,23 @@ public final class Slow implements Predicate {
     avirt = _k - bvirt; bround = _i - bvirt; around = _2 - avirt;
     axby[5] = around + bround; axby7 = (_m + _k); bvirt = (axby7 - _m);
     avirt = axby7 - bvirt; bround = _k - bvirt; around = _m - avirt;
-    axby[6] = around + bround;
-    axby[7] = axby7; negate = -ady; negatetail = -adytail;
+    axby[6] = around + bround
 
-    a0hilo = Hilo.split(bdxtail);
-    a0hi = a0hilo.hi();
-    a0lo = a0hilo.lo();
-
-    bhilo = Hilo.split(negatetail);
-    bhi = bhilo.hi();
-    blo = bhilo.lo();
-
+    ; axby[7] = axby7; negate = -ady; negatetail = -adytail;
+    c = (SPLITTER * bdxtail); abig = (c - bdxtail); a0hi = c - abig;
+    a0lo = bdxtail - a0hi; c = (SPLITTER * negatetail);
+    abig = (c - negatetail); bhi = c - abig; blo = negatetail - bhi;
     _i = (bdxtail * negatetail); err1 = _i - (a0hi * bhi);
     err2 = err1 - (a0lo * bhi); err3 = err2 - (a0hi * blo);
-    bxay[0] = (a0lo * blo) - err3;
-
-    a1hilo = Hilo.split(bdx);
-    a1hi = a1hilo.hi();
-    a1lo = a1hilo.lo();
-
+    bxay[0] = (a0lo * blo) - err3; c = (SPLITTER * bdx);
+    abig = (c - bdx); a1hi = c - abig; a1lo = bdx - a1hi;
     _j = (bdx * negatetail); err1 = _j - (a1hi * bhi);
     err2 = err1 - (a1lo * bhi); err3 = err2 - (a1hi * blo);
     _0 = (a1lo * blo) - err3; _k = (_i + _0); bvirt = (_k - _i);
     avirt = _k - bvirt; bround = _0 - bvirt; around = _i - avirt;
     _1 = around + bround; _l = (_j + _k); bvirt = _l - _j;
-    _2 = _k - bvirt;
-
-    bhilo = Hilo.split(negate);
-    bhi = bhilo.hi();
-    blo = bhilo.lo();
-
-    _i = (bdxtail * negate);
+    _2 = _k - bvirt; c = (SPLITTER * negate); abig = (c - negate);
+    bhi = c - abig; blo = negate - bhi; _i = (bdxtail * negate);
     err1 = _i - (a0hi * bhi); err2 = err1 - (a0lo * bhi);
     err3 = err2 - (a0hi * blo); _0 = (a0lo * blo) - err3;
     _k = (_1 + _0); bvirt = (_k - _1); avirt = _k - bvirt;
@@ -353,36 +301,22 @@ public final class Slow implements Predicate {
     avirt = _k - bvirt; bround = _i - bvirt; around = _2 - avirt;
     bxay[5] = around + bround; bxay7 = (_m + _k); bvirt = (bxay7 - _m);
     avirt = bxay7 - bvirt; bround = _k - bvirt; around = _m - avirt;
-    bxay[6] = around + bround; bxay[7] = bxay7;
+    bxay[6] = around + bround
 
-    a0hilo = Hilo.split(bdxtail);
-    a0hi = a0hilo.hi();
-    a0lo = a0hilo.lo();
-
-    bhilo = Hilo.split(cdytail);
-    bhi = bhilo.hi();
-    blo = bhilo.lo();
-
+    ; bxay[7] = bxay7; c = (SPLITTER * bdxtail); abig = (c - bdxtail);
+    a0hi = c - abig; a0lo = bdxtail - a0hi; c = (SPLITTER * cdytail);
+    abig = (c - cdytail); bhi = c - abig; blo = cdytail - bhi;
     _i = (bdxtail * cdytail); err1 = _i - (a0hi * bhi);
     err2 = err1 - (a0lo * bhi); err3 = err2 - (a0hi * blo);
-    bxcy[0] = (a0lo * blo) - err3;
-
-    a1hilo = Hilo.split(bdx);
-    a1hi = a1hilo.hi();
-    a1lo = a1hilo.lo();
-
+    bxcy[0] = (a0lo * blo) - err3; c = (SPLITTER * bdx);
+    abig = (c - bdx); a1hi = c - abig; a1lo = bdx - a1hi;
     _j = (bdx * cdytail); err1 = _j - (a1hi * bhi);
     err2 = err1 - (a1lo * bhi); err3 = err2 - (a1hi * blo);
     _0 = (a1lo * blo) - err3; _k = (_i + _0); bvirt = (_k - _i);
     avirt = _k - bvirt; bround = _0 - bvirt; around = _i - avirt;
     _1 = around + bround; _l = (_j + _k); bvirt = _l - _j;
-    _2 = _k - bvirt;
-
-    bhilo = Hilo.split(cdy);
-    bhi = bhilo.hi();
-    blo = bhilo.lo();
-
-    _i = (bdxtail * cdy);
+    _2 = _k - bvirt; c = (SPLITTER * cdy); abig = (c - cdy);
+    bhi = c - abig; blo = cdy - bhi; _i = (bdxtail * cdy);
     err1 = _i - (a0hi * bhi); err2 = err1 - (a0lo * bhi);
     err3 = err2 - (a0hi * blo); _0 = (a0lo * blo) - err3;
     _k = (_1 + _0); bvirt = (_k - _1); avirt = _k - bvirt;
@@ -415,37 +349,23 @@ public final class Slow implements Predicate {
     avirt = _k - bvirt; bround = _i - bvirt; around = _2 - avirt;
     bxcy[5] = around + bround; bxcy7 = (_m + _k); bvirt = (bxcy7 - _m);
     avirt = bxcy7 - bvirt; bround = _k - bvirt; around = _m - avirt;
-    bxcy[6] = around + bround; bxcy[7] = bxcy7; negate = -bdy;
-    negatetail = -bdytail;
+    bxcy[6] = around + bround
 
-    a0hilo = Hilo.split(cdxtail);
-    a0hi = a0hilo.hi();
-    a0lo = a0hilo.lo();
-
-    bhilo = Hilo.split(negatetail);
-    bhi = bhilo.hi();
-    blo = bhilo.lo();
-
+    ; bxcy[7] = bxcy7; negate = -bdy; negatetail = -bdytail;
+    c = (SPLITTER * cdxtail); abig = (c - cdxtail); a0hi = c - abig;
+    a0lo = cdxtail - a0hi; c = (SPLITTER * negatetail);
+    abig = (c - negatetail); bhi = c - abig; blo = negatetail - bhi;
     _i = (cdxtail * negatetail); err1 = _i - (a0hi * bhi);
     err2 = err1 - (a0lo * bhi); err3 = err2 - (a0hi * blo);
-    cxby[0] = (a0lo * blo) - err3;
-
-    a1hilo = Hilo.split(cdx);
-    a1hi = a1hilo.hi();
-    a1lo = a1hilo.lo();
-
+    cxby[0] = (a0lo * blo) - err3; c = (SPLITTER * cdx);
+    abig = (c - cdx); a1hi = c - abig; a1lo = cdx - a1hi;
     _j = (cdx * negatetail); err1 = _j - (a1hi * bhi);
     err2 = err1 - (a1lo * bhi); err3 = err2 - (a1hi * blo);
     _0 = (a1lo * blo) - err3; _k = (_i + _0); bvirt = (_k - _i);
     avirt = _k - bvirt; bround = _0 - bvirt; around = _i - avirt;
     _1 = around + bround; _l = (_j + _k); bvirt = _l - _j;
-    _2 = _k - bvirt;
-
-    bhilo = Hilo.split(negate);
-    bhi = bhilo.hi();
-    blo = bhilo.lo();
-
-    _i = (cdxtail * negate);
+    _2 = _k - bvirt; c = (SPLITTER * negate); abig = (c - negate);
+    bhi = c - abig; blo = negate - bhi; _i = (cdxtail * negate);
     err1 = _i - (a0hi * bhi); err2 = err1 - (a0lo * bhi);
     err3 = err2 - (a0hi * blo); _0 = (a0lo * blo) - err3;
     _k = (_1 + _0); bvirt = (_k - _1); avirt = _k - bvirt;
@@ -478,36 +398,22 @@ public final class Slow implements Predicate {
     avirt = _k - bvirt; bround = _i - bvirt; around = _2 - avirt;
     cxby[5] = around + bround; cxby7 = (_m + _k); bvirt = (cxby7 - _m);
     avirt = cxby7 - bvirt; bround = _k - bvirt; around = _m - avirt;
-    cxby[6] = around + bround; cxby[7] = cxby7;
+    cxby[6] = around + bround
 
-    a0hilo = Hilo.split(cdxtail);
-    a0hi = a0hilo.hi();
-    a0lo = a0hilo.lo();
-
-    bhilo = Hilo.split(adytail);
-    bhi = bhilo.hi();
-    blo = bhilo.lo();
-
+    ; cxby[7] = cxby7; c = (SPLITTER * cdxtail); abig = (c - cdxtail);
+    a0hi = c - abig; a0lo = cdxtail - a0hi; c = (SPLITTER * adytail);
+    abig = (c - adytail); bhi = c - abig; blo = adytail - bhi;
     _i = (cdxtail * adytail); err1 = _i - (a0hi * bhi);
     err2 = err1 - (a0lo * bhi); err3 = err2 - (a0hi * blo);
-    cxay[0] = (a0lo * blo) - err3;
-
-    a1hilo = Hilo.split(cdx);
-    a1hi = a1hilo.hi();
-    a1lo = a1hilo.lo();
-
+    cxay[0] = (a0lo * blo) - err3; c = (SPLITTER * cdx);
+    abig = (c - cdx); a1hi = c - abig; a1lo = cdx - a1hi;
     _j = (cdx * adytail); err1 = _j - (a1hi * bhi);
     err2 = err1 - (a1lo * bhi); err3 = err2 - (a1hi * blo);
     _0 = (a1lo * blo) - err3; _k = (_i + _0); bvirt = (_k - _i);
     avirt = _k - bvirt; bround = _0 - bvirt; around = _i - avirt;
     _1 = around + bround; _l = (_j + _k); bvirt = _l - _j;
-    _2 = _k - bvirt;
-
-    bhilo = Hilo.split(ady);
-    bhi = bhilo.hi();
-    blo = bhilo.lo();
-
-    _i = (cdxtail * ady);
+    _2 = _k - bvirt; c = (SPLITTER * ady); abig = (c - ady);
+    bhi = c - abig; blo = ady - bhi; _i = (cdxtail * ady);
     err1 = _i - (a0hi * bhi); err2 = err1 - (a0lo * bhi);
     err3 = err2 - (a0hi * blo); _0 = (a0lo * blo) - err3;
     _k = (_1 + _0); bvirt = (_k - _1); avirt = _k - bvirt;
@@ -540,37 +446,23 @@ public final class Slow implements Predicate {
     avirt = _k - bvirt; bround = _i - bvirt; around = _2 - avirt;
     cxay[5] = around + bround; cxay7 = (_m + _k); bvirt = (cxay7 - _m);
     avirt = cxay7 - bvirt; bround = _k - bvirt; around = _m - avirt;
-    cxay[6] = around + bround; cxay[7] = cxay7; negate = -cdy;
-    negatetail = -cdytail;
+    cxay[6] = around + bround
 
-    a0hilo = Hilo.split(adxtail);
-    a0hi = a0hilo.hi();
-    a0lo = a0hilo.lo();
-
-    bhilo = Hilo.split(negatetail);
-    bhi = bhilo.hi();
-    blo = bhilo.lo();
-
+    ; cxay[7] = cxay7; negate = -cdy; negatetail = -cdytail;
+    c = (SPLITTER * adxtail); abig = (c - adxtail); a0hi = c - abig;
+    a0lo = adxtail - a0hi; c = (SPLITTER * negatetail);
+    abig = (c - negatetail); bhi = c - abig; blo = negatetail - bhi;
     _i = (adxtail * negatetail); err1 = _i - (a0hi * bhi);
     err2 = err1 - (a0lo * bhi); err3 = err2 - (a0hi * blo);
-    axcy[0] = (a0lo * blo) - err3;
-
-    a1hilo = Hilo.split(adx);
-    a1hi = a1hilo.hi();
-    a1lo = a1hilo.lo();
-
+    axcy[0] = (a0lo * blo) - err3; c = (SPLITTER * adx);
+    abig = (c - adx); a1hi = c - abig; a1lo = adx - a1hi;
     _j = (adx * negatetail); err1 = _j - (a1hi * bhi);
     err2 = err1 - (a1lo * bhi); err3 = err2 - (a1hi * blo);
     _0 = (a1lo * blo) - err3; _k = (_i + _0); bvirt = (_k - _i);
     avirt = _k - bvirt; bround = _0 - bvirt; around = _i - avirt;
     _1 = around + bround; _l = (_j + _k); bvirt = _l - _j;
-    _2 = _k - bvirt;
-
-    bhilo = Hilo.split(negate);
-    bhi = bhilo.hi();
-    blo = bhilo.lo();
-
-    _i = (adxtail * negate);
+    _2 = _k - bvirt; c = (SPLITTER * negate); abig = (c - negate);
+    bhi = c - abig; blo = negate - bhi; _i = (adxtail * negate);
     err1 = _i - (a0hi * bhi); err2 = err1 - (a0lo * bhi);
     err3 = err2 - (a0hi * blo); _0 = (a0lo * blo) - err3;
     _k = (_1 + _0); bvirt = (_k - _1); avirt = _k - bvirt;
@@ -603,7 +495,9 @@ public final class Slow implements Predicate {
     avirt = _k - bvirt; bround = _i - bvirt; around = _2 - avirt;
     axcy[5] = around + bround; axcy7 = (_m + _k); bvirt = (axcy7 - _m);
     avirt = axcy7 - bvirt; bround = _k - bvirt; around = _m - avirt;
-    axcy[6] = around + bround; axcy[7] = axcy7;
+    axcy[6] = around + bround
+
+    ; axcy[7] = axcy7;
 
     temp16len = sum(8, bxcy, 8, cxby, temp16);
 
@@ -611,19 +505,27 @@ public final class Slow implements Predicate {
     xxlen = scale(xlen, detx, adx, detxx);
     xtlen = scale(temp16len, temp16, adxtail, detxt);
     xxtlen = scale(xtlen, detxt, adx, detxxt);
-    for (i = 0; i < xxtlen; i++) { detxxt[i] *= 2.0; }
+    for (i = 0; i < xxtlen; i++) {
+      detxxt[i] *= 2.0;
+    }
     xtxtlen = scale(xtlen, detxt, adxtail, detxtxt);
-    x1len = sum(xxlen, detxx, xxtlen, detxxt, x1);
-    x2len = sum(x1len, x1, xtxtlen, detxtxt, x2);
+    x1len =
+      sum(xxlen, detxx, xxtlen, detxxt, x1);
+    x2len =
+      sum(x1len, x1, xtxtlen, detxtxt, x2);
 
     ylen = scale(temp16len, temp16, ady, dety);
     yylen = scale(ylen, dety, ady, detyy);
     ytlen = scale(temp16len, temp16, adytail, detyt);
     yytlen = scale(ytlen, detyt, ady, detyyt);
-    for (i = 0; i < yytlen; i++) { detyyt[i] *= 2.0; }
+    for (i = 0; i < yytlen; i++) {
+      detyyt[i] *= 2.0;
+    }
     ytytlen = scale(ytlen, detyt, adytail, detytyt);
-    y1len = sum(yylen, detyy, yytlen, detyyt, y1);
-    y2len = sum(y1len, y1, ytytlen, detytyt, y2);
+    y1len =
+      sum(yylen, detyy, yytlen, detyyt, y1);
+    y2len =
+      sum(y1len, y1, ytytlen, detytyt, y2);
 
     alen = sum(x2len, x2, y2len, y2, adet);
 
@@ -633,19 +535,27 @@ public final class Slow implements Predicate {
     xxlen = scale(xlen, detx, bdx, detxx);
     xtlen = scale(temp16len, temp16, bdxtail, detxt);
     xxtlen = scale(xtlen, detxt, bdx, detxxt);
-    for (i = 0; i < xxtlen; i++) { detxxt[i] *= 2.0; }
+    for (i = 0; i < xxtlen; i++) {
+      detxxt[i] *= 2.0;
+    }
     xtxtlen = scale(xtlen, detxt, bdxtail, detxtxt);
-    x1len = sum(xxlen, detxx, xxtlen, detxxt, x1);
-    x2len = sum(x1len, x1, xtxtlen, detxtxt, x2);
+    x1len =
+      sum(xxlen, detxx, xxtlen, detxxt, x1);
+    x2len =
+      sum(x1len, x1, xtxtlen, detxtxt, x2);
 
     ylen = scale(temp16len, temp16, bdy, dety);
     yylen = scale(ylen, dety, bdy, detyy);
     ytlen = scale(temp16len, temp16, bdytail, detyt);
     yytlen = scale(ytlen, detyt, bdy, detyyt);
-    for (i = 0; i < yytlen; i++) { detyyt[i] *= 2.0; }
+    for (i = 0; i < yytlen; i++) {
+      detyyt[i] *= 2.0;
+    }
     ytytlen = scale(ytlen, detyt, bdytail, detytyt);
-    y1len = sum(yylen, detyy, yytlen, detyyt, y1);
-    y2len = sum(y1len, y1, ytytlen, detytyt, y2);
+    y1len =
+      sum(yylen, detyy, yytlen, detyyt, y1);
+    y2len =
+      sum(y1len, y1, ytytlen, detytyt, y2);
 
     blen = sum(x2len, x2, y2len, y2, bdet);
 
@@ -655,19 +565,27 @@ public final class Slow implements Predicate {
     xxlen = scale(xlen, detx, cdx, detxx);
     xtlen = scale(temp16len, temp16, cdxtail, detxt);
     xxtlen = scale(xtlen, detxt, cdx, detxxt);
-    for (i = 0; i < xxtlen; i++) { detxxt[i] *= 2.0; }
+    for (i = 0; i < xxtlen; i++) {
+      detxxt[i] *= 2.0;
+    }
     xtxtlen = scale(xtlen, detxt, cdxtail, detxtxt);
-    x1len = sum(xxlen, detxx, xxtlen, detxxt, x1);
-    x2len = sum(x1len, x1, xtxtlen, detxtxt, x2);
+    x1len =
+      sum(xxlen, detxx, xxtlen, detxxt, x1);
+    x2len =
+      sum(x1len, x1, xtxtlen, detxtxt, x2);
 
     ylen = scale(temp16len, temp16, cdy, dety);
     yylen = scale(ylen, dety, cdy, detyy);
     ytlen = scale(temp16len, temp16, cdytail, detyt);
     yytlen = scale(ytlen, detyt, cdy, detyyt);
-    for (i = 0; i < yytlen; i++) { detyyt[i] *= 2.0; }
+    for (i = 0; i < yytlen; i++) {
+      detyyt[i] *= 2.0;
+    }
     ytytlen = scale(ytlen, detyt, cdytail, detytyt);
-    y1len = sum(yylen, detyy, yytlen, detyyt, y1);
-    y2len = sum(y1len, y1, ytytlen, detytyt, y2);
+    y1len =
+      sum(yylen, detyy, yytlen, detyyt, y1);
+    y2len =
+      sum(y1len, y1, ytytlen, detytyt, y2);
 
     clen = sum(x2len, x2, y2len, y2, cdet);
 
@@ -705,24 +623,18 @@ public final class Slow implements Predicate {
     around = pb[1] - avirt; bcytail = around + bround;
 
     c = (SPLITTER * acxtail); abig = (c - acxtail); a0hi = c - abig;
-    a0lo = acxtail - a0hi;
-
-    c = (SPLITTER * bcytail);
+    a0lo = acxtail - a0hi; c = (SPLITTER * bcytail);
     abig = (c - bcytail); bhi = c - abig; blo = bcytail - bhi;
     _i = (acxtail * bcytail); err1 = _i - (a0hi * bhi);
     err2 = err1 - (a0lo * bhi); err3 = err2 - (a0hi * blo);
-    axby[0] = (a0lo * blo) - err3;
-
-    c = (SPLITTER * acx);
+    axby[0] = (a0lo * blo) - err3; c = (SPLITTER * acx);
     abig = (c - acx); a1hi = c - abig; a1lo = acx - a1hi;
     _j = (acx * bcytail); err1 = _j - (a1hi * bhi);
     err2 = err1 - (a1lo * bhi); err3 = err2 - (a1hi * blo);
     _0 = (a1lo * blo) - err3; _k = (_i + _0); bvirt = (_k - _i);
     avirt = _k - bvirt; bround = _0 - bvirt; around = _i - avirt;
     _1 = around + bround; _l = (_j + _k); bvirt = _l - _j;
-    _2 = _k - bvirt;
-
-    c = (SPLITTER * bcy); abig = (c - bcy);
+    _2 = _k - bvirt; c = (SPLITTER * bcy); abig = (c - bcy);
     bhi = c - abig; blo = bcy - bhi; _i = (acxtail * bcy);
     err1 = _i - (a0hi * bhi); err2 = err1 - (a0lo * bhi);
     err3 = err2 - (a0hi * blo); _0 = (a0lo * blo) - err3;
@@ -757,16 +669,12 @@ public final class Slow implements Predicate {
     axby[5] = around + bround; axby7 = (_m + _k); bvirt = (axby7 - _m);
     avirt = axby7 - bvirt; bround = _k - bvirt; around = _m - avirt;
     axby[6] = around + bround; axby[7] = axby7; negate = -acy;
-    negatetail = -acytail;
-
-    c = (SPLITTER * bcxtail);
+    negatetail = -acytail; c = (SPLITTER * bcxtail);
     abig = (c - bcxtail); a0hi = c - abig; a0lo = bcxtail - a0hi;
-
     c = (SPLITTER * negatetail); abig = (c - negatetail);
     bhi = c - abig; blo = negatetail - bhi; _i = (bcxtail * negatetail);
     err1 = _i - (a0hi * bhi); err2 = err1 - (a0lo * bhi);
     err3 = err2 - (a0hi * blo); bxay[0] = (a0lo * blo) - err3;
-
     c = (SPLITTER * bcx); abig = (c - bcx); a1hi = c - abig;
     a1lo = bcx - a1hi; _j = (bcx * negatetail);
     err1 = _j - (a1hi * bhi); err2 = err1 - (a1lo * bhi);
@@ -774,7 +682,6 @@ public final class Slow implements Predicate {
     _k = (_i + _0); bvirt = (_k - _i); avirt = _k - bvirt;
     bround = _0 - bvirt; around = _i - avirt; _1 = around + bround;
     _l = (_j + _k); bvirt = _l - _j; _2 = _k - bvirt;
-
     c = (SPLITTER * negate); abig = (c - negate); bhi = c - abig;
     blo = negate - bhi; _i = (bcxtail * negate);
     err1 = _i - (a0hi * bhi); err2 = err1 - (a0lo * bhi);
@@ -864,24 +771,18 @@ public final class Slow implements Predicate {
     cdztail = around + bround;
 
     c = (SPLITTER * adxtail); abig = (c - adxtail); a0hi = c - abig;
-    a0lo = adxtail - a0hi;
-
-    c = (SPLITTER * bdytail);
+    a0lo = adxtail - a0hi; c = (SPLITTER * bdytail);
     abig = (c - bdytail); bhi = c - abig; blo = bdytail - bhi;
     _i = (adxtail * bdytail); err1 = _i - (a0hi * bhi);
     err2 = err1 - (a0lo * bhi); err3 = err2 - (a0hi * blo);
-    axby[0] = (a0lo * blo) - err3;
-
-    c = (SPLITTER * adx);
+    axby[0] = (a0lo * blo) - err3; c = (SPLITTER * adx);
     abig = (c - adx); a1hi = c - abig; a1lo = adx - a1hi;
     _j = (adx * bdytail); err1 = _j - (a1hi * bhi);
     err2 = err1 - (a1lo * bhi); err3 = err2 - (a1hi * blo);
     _0 = (a1lo * blo) - err3; _k = (_i + _0); bvirt = (_k - _i);
     avirt = _k - bvirt; bround = _0 - bvirt; around = _i - avirt;
     _1 = around + bround; _l = (_j + _k); bvirt = _l - _j;
-    _2 = _k - bvirt;
-
-    c = (SPLITTER * bdy); abig = (c - bdy);
+    _2 = _k - bvirt; c = (SPLITTER * bdy); abig = (c - bdy);
     bhi = c - abig; blo = bdy - bhi; _i = (adxtail * bdy);
     err1 = _i - (a0hi * bhi); err2 = err1 - (a0lo * bhi);
     err3 = err2 - (a0hi * blo); _0 = (a0lo * blo) - err3;
@@ -915,27 +816,22 @@ public final class Slow implements Predicate {
     avirt = _k - bvirt; bround = _i - bvirt; around = _2 - avirt;
     axby[5] = around + bround; axby7 = (_m + _k); bvirt = (axby7 - _m);
     avirt = axby7 - bvirt; bround = _k - bvirt; around = _m - avirt;
-    axby[6] = around + bround; axby[7] = axby7; negate = -ady;
-    negatetail = -adytail;
-    c = (SPLITTER * bdxtail); abig = (c - bdxtail); a0hi = c - abig;
-    a0lo = bdxtail - a0hi;
+    axby[6] = around + bround
 
-    c = (SPLITTER * negatetail);
+    ; axby[7] = axby7; negate = -ady; negatetail = -adytail;
+    c = (SPLITTER * bdxtail); abig = (c - bdxtail); a0hi = c - abig;
+    a0lo = bdxtail - a0hi; c = (SPLITTER * negatetail);
     abig = (c - negatetail); bhi = c - abig; blo = negatetail - bhi;
     _i = (bdxtail * negatetail); err1 = _i - (a0hi * bhi);
     err2 = err1 - (a0lo * bhi); err3 = err2 - (a0hi * blo);
-    bxay[0] = (a0lo * blo) - err3;
-
-    c = (SPLITTER * bdx);
+    bxay[0] = (a0lo * blo) - err3; c = (SPLITTER * bdx);
     abig = (c - bdx); a1hi = c - abig; a1lo = bdx - a1hi;
     _j = (bdx * negatetail); err1 = _j - (a1hi * bhi);
     err2 = err1 - (a1lo * bhi); err3 = err2 - (a1hi * blo);
     _0 = (a1lo * blo) - err3; _k = (_i + _0); bvirt = (_k - _i);
     avirt = _k - bvirt; bround = _0 - bvirt; around = _i - avirt;
     _1 = around + bround; _l = (_j + _k); bvirt = _l - _j;
-    _2 = _k - bvirt;
-
-    c = (SPLITTER * negate); abig = (c - negate);
+    _2 = _k - bvirt; c = (SPLITTER * negate); abig = (c - negate);
     bhi = c - abig; blo = negate - bhi; _i = (bdxtail * negate);
     err1 = _i - (a0hi * bhi); err2 = err1 - (a0lo * bhi);
     err3 = err2 - (a0hi * blo); _0 = (a0lo * blo) - err3;
@@ -969,27 +865,21 @@ public final class Slow implements Predicate {
     avirt = _k - bvirt; bround = _i - bvirt; around = _2 - avirt;
     bxay[5] = around + bround; bxay7 = (_m + _k); bvirt = (bxay7 - _m);
     avirt = bxay7 - bvirt; bround = _k - bvirt; around = _m - avirt;
-    bxay[6] = around + bround; bxay[7] = bxay7;
+    bxay[6] = around + bround
 
-    c = (SPLITTER * bdxtail); abig = (c - bdxtail);
-    a0hi = c - abig; a0lo = bdxtail - a0hi;
-
-    c = (SPLITTER * cdytail);
+    ; bxay[7] = bxay7; c = (SPLITTER * bdxtail); abig = (c - bdxtail);
+    a0hi = c - abig; a0lo = bdxtail - a0hi; c = (SPLITTER * cdytail);
     abig = (c - cdytail); bhi = c - abig; blo = cdytail - bhi;
     _i = (bdxtail * cdytail); err1 = _i - (a0hi * bhi);
     err2 = err1 - (a0lo * bhi); err3 = err2 - (a0hi * blo);
-    bxcy[0] = (a0lo * blo) - err3;
-
-    c = (SPLITTER * bdx);
+    bxcy[0] = (a0lo * blo) - err3; c = (SPLITTER * bdx);
     abig = (c - bdx); a1hi = c - abig; a1lo = bdx - a1hi;
     _j = (bdx * cdytail); err1 = _j - (a1hi * bhi);
     err2 = err1 - (a1lo * bhi); err3 = err2 - (a1hi * blo);
     _0 = (a1lo * blo) - err3; _k = (_i + _0); bvirt = (_k - _i);
     avirt = _k - bvirt; bround = _0 - bvirt; around = _i - avirt;
     _1 = around + bround; _l = (_j + _k); bvirt = _l - _j;
-    _2 = _k - bvirt;
-
-    c = (SPLITTER * cdy); abig = (c - cdy);
+    _2 = _k - bvirt; c = (SPLITTER * cdy); abig = (c - cdy);
     bhi = c - abig; blo = cdy - bhi; _i = (bdxtail * cdy);
     err1 = _i - (a0hi * bhi); err2 = err1 - (a0lo * bhi);
     err3 = err2 - (a0hi * blo); _0 = (a0lo * blo) - err3;
@@ -1023,28 +913,22 @@ public final class Slow implements Predicate {
     avirt = _k - bvirt; bround = _i - bvirt; around = _2 - avirt;
     bxcy[5] = around + bround; bxcy7 = (_m + _k); bvirt = (bxcy7 - _m);
     avirt = bxcy7 - bvirt; bround = _k - bvirt; around = _m - avirt;
-    bxcy[6] = around + bround; bxcy[7] = bxcy7; negate = -bdy;
-    negatetail = -bdytail;
+    bxcy[6] = around + bround
 
+    ; bxcy[7] = bxcy7; negate = -bdy; negatetail = -bdytail;
     c = (SPLITTER * cdxtail); abig = (c - cdxtail); a0hi = c - abig;
-    a0lo = cdxtail - a0hi;
-
-    c = (SPLITTER * negatetail);
+    a0lo = cdxtail - a0hi; c = (SPLITTER * negatetail);
     abig = (c - negatetail); bhi = c - abig; blo = negatetail - bhi;
     _i = (cdxtail * negatetail); err1 = _i - (a0hi * bhi);
     err2 = err1 - (a0lo * bhi); err3 = err2 - (a0hi * blo);
-    cxby[0] = (a0lo * blo) - err3;
-
-    c = (SPLITTER * cdx);
+    cxby[0] = (a0lo * blo) - err3; c = (SPLITTER * cdx);
     abig = (c - cdx); a1hi = c - abig; a1lo = cdx - a1hi;
     _j = (cdx * negatetail); err1 = _j - (a1hi * bhi);
     err2 = err1 - (a1lo * bhi); err3 = err2 - (a1hi * blo);
     _0 = (a1lo * blo) - err3; _k = (_i + _0); bvirt = (_k - _i);
     avirt = _k - bvirt; bround = _0 - bvirt; around = _i - avirt;
     _1 = around + bround; _l = (_j + _k); bvirt = _l - _j;
-    _2 = _k - bvirt;
-
-    c = (SPLITTER * negate); abig = (c - negate);
+    _2 = _k - bvirt; c = (SPLITTER * negate); abig = (c - negate);
     bhi = c - abig; blo = negate - bhi; _i = (cdxtail * negate);
     err1 = _i - (a0hi * bhi); err2 = err1 - (a0lo * bhi);
     err3 = err2 - (a0hi * blo); _0 = (a0lo * blo) - err3;
@@ -1078,27 +962,21 @@ public final class Slow implements Predicate {
     avirt = _k - bvirt; bround = _i - bvirt; around = _2 - avirt;
     cxby[5] = around + bround; cxby7 = (_m + _k); bvirt = (cxby7 - _m);
     avirt = cxby7 - bvirt; bround = _k - bvirt; around = _m - avirt;
-    cxby[6] = around + bround; cxby[7] = cxby7;
+    cxby[6] = around + bround
 
-    c = (SPLITTER * cdxtail); abig = (c - cdxtail);
-    a0hi = c - abig; a0lo = cdxtail - a0hi;
-
-    c = (SPLITTER * adytail);
+    ; cxby[7] = cxby7; c = (SPLITTER * cdxtail); abig = (c - cdxtail);
+    a0hi = c - abig; a0lo = cdxtail - a0hi; c = (SPLITTER * adytail);
     abig = (c - adytail); bhi = c - abig; blo = adytail - bhi;
     _i = (cdxtail * adytail); err1 = _i - (a0hi * bhi);
     err2 = err1 - (a0lo * bhi); err3 = err2 - (a0hi * blo);
-    cxay[0] = (a0lo * blo) - err3;
-
-    c = (SPLITTER * cdx);
+    cxay[0] = (a0lo * blo) - err3; c = (SPLITTER * cdx);
     abig = (c - cdx); a1hi = c - abig; a1lo = cdx - a1hi;
     _j = (cdx * adytail); err1 = _j - (a1hi * bhi);
     err2 = err1 - (a1lo * bhi); err3 = err2 - (a1hi * blo);
     _0 = (a1lo * blo) - err3; _k = (_i + _0); bvirt = (_k - _i);
     avirt = _k - bvirt; bround = _0 - bvirt; around = _i - avirt;
     _1 = around + bround; _l = (_j + _k); bvirt = _l - _j;
-    _2 = _k - bvirt;
-
-    c = (SPLITTER * ady); abig = (c - ady);
+    _2 = _k - bvirt; c = (SPLITTER * ady); abig = (c - ady);
     bhi = c - abig; blo = ady - bhi; _i = (cdxtail * ady);
     err1 = _i - (a0hi * bhi); err2 = err1 - (a0lo * bhi);
     err3 = err2 - (a0hi * blo); _0 = (a0lo * blo) - err3;
@@ -1132,28 +1010,22 @@ public final class Slow implements Predicate {
     avirt = _k - bvirt; bround = _i - bvirt; around = _2 - avirt;
     cxay[5] = around + bround; cxay7 = (_m + _k); bvirt = (cxay7 - _m);
     avirt = cxay7 - bvirt; bround = _k - bvirt; around = _m - avirt;
-    cxay[6] = around + bround; cxay[7] = cxay7; negate = -cdy;
-    negatetail = -cdytail;
+    cxay[6] = around + bround
 
+    ; cxay[7] = cxay7; negate = -cdy; negatetail = -cdytail;
     c = (SPLITTER * adxtail); abig = (c - adxtail); a0hi = c - abig;
-    a0lo = adxtail - a0hi;
-
-    c = (SPLITTER * negatetail);
+    a0lo = adxtail - a0hi; c = (SPLITTER * negatetail);
     abig = (c - negatetail); bhi = c - abig; blo = negatetail - bhi;
     _i = (adxtail * negatetail); err1 = _i - (a0hi * bhi);
     err2 = err1 - (a0lo * bhi); err3 = err2 - (a0hi * blo);
-    axcy[0] = (a0lo * blo) - err3;
-
-    c = (SPLITTER * adx);
+    axcy[0] = (a0lo * blo) - err3; c = (SPLITTER * adx);
     abig = (c - adx); a1hi = c - abig; a1lo = adx - a1hi;
     _j = (adx * negatetail); err1 = _j - (a1hi * bhi);
     err2 = err1 - (a1lo * bhi); err3 = err2 - (a1hi * blo);
     _0 = (a1lo * blo) - err3; _k = (_i + _0); bvirt = (_k - _i);
     avirt = _k - bvirt; bround = _0 - bvirt; around = _i - avirt;
     _1 = around + bround; _l = (_j + _k); bvirt = _l - _j;
-    _2 = _k - bvirt;
-
-    c = (SPLITTER * negate); abig = (c - negate);
+    _2 = _k - bvirt; c = (SPLITTER * negate); abig = (c - negate);
     bhi = c - abig; blo = negate - bhi; _i = (adxtail * negate);
     err1 = _i - (a0hi * bhi); err2 = err1 - (a0lo * bhi);
     err3 = err2 - (a0hi * blo); _0 = (a0lo * blo) - err3;
@@ -2146,7 +2018,7 @@ public final class Slow implements Predicate {
   //--------------------------------------------------------------------
   // TODO: singleton?
 
-  public Slow () { super(); }
+  public SlowMacro () { super(); }
 
   //-------------------------------------------------------------------
 } // end class

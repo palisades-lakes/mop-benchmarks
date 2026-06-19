@@ -2531,6 +2531,7 @@ REAL *pd;
   axby[7] = axby7;
   negate = -ady;
   negatetail = -adytail;
+
   Two_Two_Product(bdx, bdxtail, negate, negatetail,
                   bxay7, bxay[6], bxay[5], bxay[4],
                   bxay[3], bxay[2], bxay[1], bxay[0]);
