@@ -442,20 +442,21 @@ public record Hilo (double hi, double lo)
   //  err3 = err2 - (ahi * blo); \
   //  y = (alo * blo) - err3
 
-  // TODO: is this worth the complexity? CHeck whether ahilo and bhilo
-  //  are used anywhere else.
+  // TODO: is this worth the complexity?
+  //  Check whether aSplit and bSplit are used anywhere else.
   public static final Hilo twoProduct2Presplit (final double a,
-                                                final Hilo ahilo,
+                                                final Hilo aSplit,
                                                 final double b,
-                                                final Hilo bhilo) {
-    final double x = a * b;
-    final double err1 = x - (ahilo.hi() * bhilo.hi());
-    final double err2 = err1 - (ahilo.lo() * bhilo.hi());
-    final double err3 = err2 - (ahilo.hi() * bhilo.lo());
-    final double y = (ahilo.lo() * bhilo.lo()) - err3;
+                                                final Hilo bSplit) {
+    final double hi = a * b;
+    final double err1 = hi - (aSplit.hi() * bSplit.hi());
+    final double err2 = err1 - (aSplit.lo() * bSplit.hi());
+    final double err3 = err2 - (aSplit.hi() * bSplit.lo());
+    final double lo = (aSplit.lo() * bSplit.lo()) - err3;
     // TODO: call twoSum to enforce ulp constraint?
     //  or replace ulp constraint --- is non-overlapping different?
-    return new Hilo(x,y); }
+    return new Hilo(hi,lo); }
+
 
   // modular predicates.c version: breaks Exact.incircle()
 //  public static final Hilo twoProduct (final double a,

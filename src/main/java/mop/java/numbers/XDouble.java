@@ -610,53 +610,45 @@ public final class XDouble implements Comparable<XDouble> {
 
   public static final double[] twoTwoProduct (final Hilo a,
                                               final Hilo b) {
-    final double[] axby = new double[8];
-    final double adxtail = a.lo();
-    final double bdytail = b.lo();
-    final double adx = a.hi();
-    final double bdy = b.hi();
-    Hilo a0hilo = Hilo.split(adxtail);
-    final Hilo b0hilo = Hilo.split(bdytail);
+    final double[] ab = new double[8];
+    final double alo = a.lo();
+    final double blo = b.lo();
+    final double ahi = a.hi();
+    final double bhi = b.hi();
+    final Hilo ahiSplit = Hilo.split(ahi);
+    final Hilo aloSplit = Hilo.split(alo);
+    final Hilo bhiSplit = Hilo.split(bhi);
+    final Hilo bloSplit = Hilo.split(blo);
+    final Hilo aloblo = Hilo.twoProduct2Presplit(alo,aloSplit,blo,bloSplit);
+    ab[0] = aloblo.lo();
+    final Hilo ahiblo = Hilo.twoProduct2Presplit(ahi,ahiSplit,blo,bloSplit);
+    Hilo _k_1 = Hilo.twoSum(aloblo.hi(),ahiblo.lo());
+    Hilo _l_2 = Hilo.fastTwoSum(ahiblo.hi(), _k_1.hi());
+    final Hilo alobhi = Hilo.twoProduct2Presplit(alo,aloSplit,bhi,bhiSplit);
+    final Hilo _kx1 = Hilo.twoSum(_k_1.lo(),alobhi.lo());
+    ab[1] = _kx1.lo();
+    final Hilo _j_1 = Hilo.twoSum(_l_2.lo(),_kx1.hi());
+    Hilo _m_2 = Hilo.twoSum(_l_2.hi(),_j_1.hi());
+    final Hilo ahibhi = Hilo.twoProduct2Presplit(ahi,ahiSplit,bhi,bhiSplit);
+    final Hilo _n_0 = Hilo.twoSum(alobhi.hi(),ahibhi.lo());
+    final Hilo _i2 = Hilo.twoSum(_j_1.lo(),_n_0.lo());
+    ab[2] = _i2.lo();
+    _k_1 = Hilo.twoSum(_m_2.lo(),_i2.hi());
+    _l_2 = Hilo.twoSum(_m_2.hi(),_k_1.hi());
+    final Hilo _k_0 = Hilo.twoSum(ahibhi.hi(),_n_0.hi());
+    final Hilo _j3 = Hilo.twoSum(_k_1.lo(), _k_0.lo());
+    ab[3] = _j3.lo();
+    final Hilo _i_1 = Hilo.twoSum(_l_2.lo(),_j3.hi());
+    _m_2 = Hilo.twoSum(_l_2.hi(),_i_1.hi());
+    final Hilo _i4 = Hilo.twoSum(_i_1.lo(),_k_0.hi());
+    ab[4] = _i4.lo();
+    final Hilo _k5 = Hilo.twoSum(_m_2.lo(),_i4.hi());
+    ab[5] = _k5.lo();
+    final Hilo ab76 = Hilo.twoSum(_m_2.hi(),_k5.hi());
+    ab[7] = ab76.hi();
+    ab[6] = ab76.lo();
 
-    final Hilo _ix0 = Hilo.twoProduct2Presplit(adxtail,a0hilo,bdytail,b0hilo);
-    double _i = _ix0.hi();
-    axby[0] = _ix0.lo();
-
-    Hilo a1hilo = Hilo.split(adx);
-    Hilo _j_0 = Hilo.twoProduct2Presplit(adx,a1hilo,bdytail,b0hilo);
-    double _j = _j_0.hi();
-    double _0 = _j_0.lo();
-
-    Hilo _k_1 = Hilo.twoSum(_i,_0); double _k = _k_1.hi(); double _1 = _k_1.lo();
-    Hilo _l_2 = Hilo.fastTwoSum(_j,_k); double _l = _l_2.hi(); double _2 = _l_2.lo();
-
-    Hilo bhilo = Hilo.split(bdy);
-    final Hilo _i_0 = Hilo.twoProduct2Presplit(adxtail,a0hilo,bdy,bhilo);
-    _i = _i_0.hi(); _0 = _i_0.lo();
-
-    final Hilo _kx1 = Hilo.twoSum(_1,_0); _k = _kx1.hi(); axby[1] = _kx1.lo();
-    final Hilo _j_1 = Hilo.twoSum(_2,_k); _j = _j_1.hi(); _1 = _j_1.lo();
-    Hilo _m_2 = Hilo.twoSum(_l,_j); double _m = _m_2.hi(); _2 = _m_2.lo();
-
-    _j_0 = Hilo.twoProduct2Presplit(adx,a1hilo,bdy,bhilo);
-    _j = _j_0.hi(); _0 = _j_0.lo();
-
-    final Hilo _n_0 = Hilo.twoSum(_i,_0); double _n = _n_0.hi(); _0 = _n_0.lo();
-    final Hilo _i2 = Hilo.twoSum(_1,_0); _i = _i2.hi(); axby[2] = _i2.lo();
-    _k_1 = Hilo.twoSum(_2,_i); _k = _k_1.hi(); _1 = _k_1.lo();
-    _l_2 = Hilo.twoSum(_m,_k); _l = _l_2.hi(); _2 = _l_2.lo();
-    final Hilo _k_0 = Hilo.twoSum(_j,_n); _k = _k_0.hi(); _0 = _k_0.lo();
-    final Hilo _j3 = Hilo.twoSum(_1,_0); _j = _j3.hi(); axby[3] = _j3.lo();
-    final Hilo _i_1 = Hilo.twoSum(_2,_j); _i = _i_1.hi(); _1 = _i_1.lo();
-    _m_2 = Hilo.twoSum(_l,_i); _m = _m_2.hi(); _2 = _m_2.lo();
-    final Hilo _i4 = Hilo.twoSum(_1,_k); _i = _i4.hi(); axby[4] = _i4.lo();
-    final Hilo _k5 = Hilo.twoSum(_2,_i);
-    _k = _k5.hi(); axby[5] = _k5.lo();
-    final Hilo axby76 = Hilo.twoSum(_m,_k);
-    axby[7] = axby76.hi();
-    axby[6] = axby76.lo();
-
-    return axby; }
+    return ab; }
 
 //  public static final XDouble twoTwoProduct (final Hilo a,
 //                                             final Hilo b) {

@@ -112,7 +112,7 @@ public final class Slow implements Predicate {
 //    final XDouble sxlo = sum.scale(cx.lo());
 //    // TODO: guess simple loop works because exact if 2x
 //    //  could implement a faster exponent add version for powers of 2?
-//    //  for (i = 0; i < xxtlen; i++) { detxxt[i] *= 2.0; }
+//    //  for (int i = 0; i < xxtlen; i++) { detxxt[i] *= 2.0; }
 //    final XDouble sxlohi2 = sxlo.scale(cx.hi()).fast2x();
 //    //final XDouble sxlohi2 = sxlo.scale(cx.hi()).scale(2.0);
 //    final XDouble sxlolo = sxlo.scale(cx.lo());
@@ -120,10 +120,10 @@ public final class Slow implements Predicate {
 //
 //    final XDouble syhihi = sum.scale(cy.hi()).scale(cy.hi());
 //    final XDouble sylo = sum.scale(cy.lo());
-//    //for (i = 0; i < yytlen; i++) { detyyt[i] *= 2.0; }
+//    //for (int i = 0; i < yytlen; i++) { detyyt[i] *= 2.0; }
 //    final XDouble sylohi2 = sylo.scale(cy.hi()).fast2x();
 //    //final XDouble sylohi2 = sylo.scale(cy.hi()).scale(2.0);
-//    //for (i = 0; i < yytlen; i++) { detyyt[i] *= 2.0; }
+//    //for (int i = 0; i < yytlen; i++) { detyyt[i] *= 2.0; }
 //    final XDouble sylolo = sylo.scale(cy.lo());
 //    final XDouble dety = syhihi.add(sylohi2).add(sylolo);
 //
@@ -163,8 +163,6 @@ public final double incircle (final double[] pa,
                               final double[] pb,
                               final double[] pc,
                               final double[] pd) {
-  double negate, negatetail;
-  double axby7, bxcy7, axcy7, bxay7, cxby7, cxay7;
   double[] temp16 = new double[16];
   int temp16len;
   double[] detx = new double[32], detxx = new double[64],
@@ -183,9 +181,7 @@ public final double incircle (final double[] pa,
     cdet = new double[384], abdet = new double[768],
     deter = new double[1152];
   int alen, blen, clen, ablen;
-  @SuppressWarnings("unused")
   int deterlen;
-  int i;
 
   double bvirt; double avirt, bround, around;
   double c;
@@ -226,15 +222,13 @@ public final double incircle (final double[] pa,
   final double[] cxay = XDouble.twoTwoProduct(cx,ay);
   final double[] axcy = XDouble.twoTwoProduct(ax,cy.negate());
 
-  double a0hi, a0lo, bhi,blo,a1hi,a1lo;
-
   temp16len = sum(8, bxcy, 8, cxby, temp16);
 
   xlen = scale(temp16len, temp16, adx, detx);
   xxlen = scale(xlen, detx, adx, detxx);
   xtlen = scale(temp16len, temp16, adxtail, detxt);
   xxtlen = scale(xtlen, detxt, adx, detxxt);
-  for (i = 0; i < xxtlen; i++) { detxxt[i] *= 2.0; }
+  for (int i = 0; i < xxtlen; i++) { detxxt[i] *= 2.0; }
   xtxtlen = scale(xtlen, detxt, adxtail, detxtxt);
   x1len = sum(xxlen, detxx, xxtlen, detxxt, x1);
   x2len = sum(x1len, x1, xtxtlen, detxtxt, x2);
@@ -243,7 +237,7 @@ public final double incircle (final double[] pa,
   yylen = scale(ylen, dety, ady, detyy);
   ytlen = scale(temp16len, temp16, adytail, detyt);
   yytlen = scale(ytlen, detyt, ady, detyyt);
-  for (i = 0; i < yytlen; i++) { detyyt[i] *= 2.0; }
+  for (int i = 0; i < yytlen; i++) { detyyt[i] *= 2.0; }
   ytytlen = scale(ytlen, detyt, adytail, detytyt);
   y1len = sum(yylen, detyy, yytlen, detyyt, y1);
   y2len = sum(y1len, y1, ytytlen, detytyt, y2);
@@ -256,7 +250,7 @@ public final double incircle (final double[] pa,
   xxlen = scale(xlen, detx, bdx, detxx);
   xtlen = scale(temp16len, temp16, bdxtail, detxt);
   xxtlen = scale(xtlen, detxt, bdx, detxxt);
-  for (i = 0; i < xxtlen; i++) { detxxt[i] *= 2.0; }
+  for (int i = 0; i < xxtlen; i++) { detxxt[i] *= 2.0; }
   xtxtlen = scale(xtlen, detxt, bdxtail, detxtxt);
   x1len = sum(xxlen, detxx, xxtlen, detxxt, x1);
   x2len = sum(x1len, x1, xtxtlen, detxtxt, x2);
@@ -265,7 +259,7 @@ public final double incircle (final double[] pa,
   yylen = scale(ylen, dety, bdy, detyy);
   ytlen = scale(temp16len, temp16, bdytail, detyt);
   yytlen = scale(ytlen, detyt, bdy, detyyt);
-  for (i = 0; i < yytlen; i++) { detyyt[i] *= 2.0; }
+  for (int i = 0; i < yytlen; i++) { detyyt[i] *= 2.0; }
   ytytlen = scale(ytlen, detyt, bdytail, detytyt);
   y1len = sum(yylen, detyy, yytlen, detyyt, y1);
   y2len = sum(y1len, y1, ytytlen, detytyt, y2);
@@ -278,7 +272,7 @@ public final double incircle (final double[] pa,
   xxlen = scale(xlen, detx, cdx, detxx);
   xtlen = scale(temp16len, temp16, cdxtail, detxt);
   xxtlen = scale(xtlen, detxt, cdx, detxxt);
-  for (i = 0; i < xxtlen; i++) { detxxt[i] *= 2.0; }
+  for (int i = 0; i < xxtlen; i++) { detxxt[i] *= 2.0; }
   xtxtlen = scale(xtlen, detxt, cdxtail, detxtxt);
   x1len = sum(xxlen, detxx, xxtlen, detxxt, x1);
   x2len = sum(x1len, x1, xtxtlen, detxtxt, x2);
@@ -287,7 +281,7 @@ public final double incircle (final double[] pa,
   yylen = scale(ylen, dety, cdy, detyy);
   ytlen = scale(temp16len, temp16, cdytail, detyt);
   yytlen = scale(ytlen, detyt, cdy, detyyt);
-  for (i = 0; i < yytlen; i++) { detyyt[i] *= 2.0; }
+  for (int i = 0; i < yytlen; i++) { detyyt[i] *= 2.0; }
   ytytlen = scale(ytlen, detyt, cdytail, detytyt);
   y1len = sum(yylen, detyy, yytlen, detyyt, y1);
   y2len = sum(y1len, y1, ytytlen, detytyt, y2);
@@ -892,7 +886,7 @@ public final double incircle (final double[] pa,
       new double[6912], ddet = new double[6912];
     int alen, blen, clen, dlen;
     double[] abdet = new double[13824], cddet = new double[13824],
-      deter = new double[27648]; int deterlen; int i;
+      deter = new double[27648]; int deterlen;
 
     double bvirt; double avirt, bround, around; double c; double abig;
     double a0hi, a0lo, a1hi, a1lo, bhi, blo; double err1, err2, err3;
@@ -1547,7 +1541,7 @@ public final double incircle (final double[] pa,
     xxlen = scale(xlen, detx, aex, detxx);xtlen =
       scale(temp192len, temp192, aextail, detxt);
     xxtlen = scale(xtlen, detxt, aex, detxxt);
-    for (i = 0; i < xxtlen; i++) {
+    for (int i = 0; i < xxtlen; i++) {
       detxxt[i] *= 2.0;
     }
     xtxtlen = scale(xtlen, detxt, aextail, detxtxt);
@@ -1559,7 +1553,7 @@ public final double incircle (final double[] pa,
     yylen = scale(ylen, dety, aey, detyy);ytlen =
       scale(temp192len, temp192, aeytail, detyt);
     yytlen = scale(ytlen, detyt, aey, detyyt);
-    for (i = 0; i < yytlen; i++) {
+    for (int i = 0; i < yytlen; i++) {
       detyyt[i] *= 2.0;
     }
     ytytlen = scale(ytlen, detyt, aeytail, detytyt);
@@ -1571,7 +1565,7 @@ public final double incircle (final double[] pa,
     zzlen = scale(zlen, detz, aez, detzz);ztlen =
       scale(temp192len, temp192, aeztail, detzt);
     zztlen = scale(ztlen, detzt, aez, detzzt);
-    for (i = 0; i < zztlen; i++) {
+    for (int i = 0; i < zztlen; i++) {
       detzzt[i] *= 2.0;
     }
     ztztlen = scale(ztlen, detzt, aeztail, detztzt);
@@ -1605,7 +1599,7 @@ public final double incircle (final double[] pa,
     xxlen = scale(xlen, detx, bex, detxx);xtlen =
       scale(temp192len, temp192, bextail, detxt);
     xxtlen = scale(xtlen, detxt, bex, detxxt);
-    for (i = 0; i < xxtlen; i++) {
+    for (int i = 0; i < xxtlen; i++) {
       detxxt[i] *= 2.0;
     }
     xtxtlen = scale(xtlen, detxt, bextail, detxtxt);
@@ -1617,7 +1611,7 @@ public final double incircle (final double[] pa,
     yylen = scale(ylen, dety, bey, detyy);ytlen =
       scale(temp192len, temp192, beytail, detyt);
     yytlen = scale(ytlen, detyt, bey, detyyt);
-    for (i = 0; i < yytlen; i++) {
+    for (int i = 0; i < yytlen; i++) {
       detyyt[i] *= 2.0;
     }
     ytytlen = scale(ytlen, detyt, beytail, detytyt);
@@ -1629,7 +1623,7 @@ public final double incircle (final double[] pa,
     zzlen = scale(zlen, detz, bez, detzz);ztlen =
       scale(temp192len, temp192, beztail, detzt);
     zztlen = scale(ztlen, detzt, bez, detzzt);
-    for (i = 0; i < zztlen; i++) {
+    for (int i = 0; i < zztlen; i++) {
       detzzt[i] *= 2.0;
     }
     ztztlen = scale(ztlen, detzt, beztail, detztzt);
@@ -1663,7 +1657,7 @@ public final double incircle (final double[] pa,
     xxlen = scale(xlen, detx, cex, detxx);xtlen =
       scale(temp192len, temp192, cextail, detxt);
     xxtlen = scale(xtlen, detxt, cex, detxxt);
-    for (i = 0; i < xxtlen; i++) {
+    for (int i = 0; i < xxtlen; i++) {
       detxxt[i] *= 2.0;
     }
     xtxtlen = scale(xtlen, detxt, cextail, detxtxt);
@@ -1675,7 +1669,7 @@ public final double incircle (final double[] pa,
     yylen = scale(ylen, dety, cey, detyy);ytlen =
       scale(temp192len, temp192, ceytail, detyt);
     yytlen = scale(ytlen, detyt, cey, detyyt);
-    for (i = 0; i < yytlen; i++) {
+    for (int i = 0; i < yytlen; i++) {
       detyyt[i] *= 2.0;
     }
     ytytlen = scale(ytlen, detyt, ceytail, detytyt);
@@ -1687,7 +1681,7 @@ public final double incircle (final double[] pa,
     zzlen = scale(zlen, detz, cez, detzz);ztlen =
       scale(temp192len, temp192, ceztail, detzt);
     zztlen = scale(ztlen, detzt, cez, detzzt);
-    for (i = 0; i < zztlen; i++) {
+    for (int i = 0; i < zztlen; i++) {
       detzzt[i] *= 2.0;
     }
     ztztlen = scale(ztlen, detzt, ceztail, detztzt);
@@ -1721,7 +1715,7 @@ public final double incircle (final double[] pa,
     xxlen = scale(xlen, detx, dex, detxx);xtlen =
       scale(temp192len, temp192, dextail, detxt);
     xxtlen = scale(xtlen, detxt, dex, detxxt);
-    for (i = 0; i < xxtlen; i++) {
+    for (int i = 0; i < xxtlen; i++) {
       detxxt[i] *= 2.0;
     }
     xtxtlen = scale(xtlen, detxt, dextail, detxtxt);
@@ -1733,7 +1727,7 @@ public final double incircle (final double[] pa,
     yylen = scale(ylen, dety, dey, detyy);ytlen =
       scale(temp192len, temp192, deytail, detyt);
     yytlen = scale(ytlen, detyt, dey, detyyt);
-    for (i = 0; i < yytlen; i++) {
+    for (int i = 0; i < yytlen; i++) {
       detyyt[i] *= 2.0;
     }
     ytytlen = scale(ytlen, detyt, deytail, detytyt);
@@ -1745,7 +1739,7 @@ public final double incircle (final double[] pa,
     zzlen = scale(zlen, detz, dez, detzz);ztlen =
       scale(temp192len, temp192, deztail, detzt);
     zztlen = scale(ztlen, detzt, dez, detzzt);
-    for (i = 0; i < zztlen; i++) {
+    for (int i = 0; i < zztlen; i++) {
       detzzt[i] *= 2.0;
     }
     ztztlen = scale(ztlen, detzt, deztail, detztzt);
