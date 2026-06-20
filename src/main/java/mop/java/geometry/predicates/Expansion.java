@@ -5,6 +5,8 @@ package mop.java.geometry.predicates;
 // 2026-05-15
 // split into algorithm type classes
 
+import java.util.Arrays;
+
 /**
  * Adaptive precision floating point based on:
  * <ul>
@@ -451,24 +453,30 @@ public final class Expansion {
     int findex=0;
     int hindex=0;
 
-    double enow = e[0];
-    double fnow = f[0];
+    double enow = (e.length>=1) ? e[0] : 0.0;
+    double fnow = (f.length>=1) ? f[0] : 0.0;
 
     if ((fnow > enow) == (fnow > -enow)) {
-      Q = enow; enow = e[++eindex]; }
+      Q = enow;
+      eindex++;
+      enow = (eindex<e.length) ? e[eindex] : 0.0; }
     else {
-      Q = fnow; fnow = f[++findex]; }
+      Q = fnow;
+      findex++;
+      fnow = (findex<f.length) ? f[findex] : 0.0; }
 
     if ((eindex < elen) && (findex < flen)) {
       if ((fnow > enow) == (fnow > -enow)) {
         // Fast_Two_Sum(enow, Q, Qnew, hh);
         { final double[] fts = fastTwoSum(enow,Q);
-          Qnew = fts[0]; hh = fts[1]; }
+          Qnew = fts[0];
+          hh = (fts.length>=2) ?  fts[1] : 0.0; }
         enow = e[++eindex]; }
       else {
         // Fast_Two_Sum(fnow, Q, Qnew, hh);
         { final double[] fts = fastTwoSum(fnow,Q);
-          Qnew = fts[0]; hh = fts[1]; }
+          Qnew = fts[0];
+          hh = (fts.length>=2) ?  fts[1] : 0.0; }
         fnow = f[++findex]; }
 
       Q = Qnew;
@@ -700,6 +708,9 @@ public final class Expansion {
                                  final double[] e,
                                  final double b,
                                  final double[] h) {
+
+    if (0>=elen) { Arrays.fill(h,0.0); return 0; }
+
     double Q, sum;
     double hh;
     double product1;
@@ -794,6 +805,7 @@ public final class Expansion {
 
   public static final double estimate (final int elen,
                                        final double[] e) {
+    if (e.length <= 0)  { return 0.0; }
     double Q = e[0];
     for (int eindex = 1; eindex < elen; eindex++) {
       Q += e[eindex]; }

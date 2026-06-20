@@ -110,16 +110,12 @@ public final class Slow implements Predicate {
     final XDouble sxhihi = sum.scale(cx.hi()).scale(cx.hi());
     final XDouble sxlo = sum.scale(cx.lo());
     final XDouble sxlohi2 = sxlo.scale(cx.hi()).fast2x();
-    //final XDouble sxlohi2 = sxlo.scale(cx.hi()).scale(2.0);
     final XDouble sxlolo = sxlo.scale(cx.lo());
     final XDouble detx = sxhihi.add(sxlohi2).add(sxlolo);
 
     final XDouble syhihi = sum.scale(cy.hi()).scale(cy.hi());
     final XDouble sylo = sum.scale(cy.lo());
-    //for (int i = 0; i < yytlen; i++) { detyyt[i] *= 2.0; }
     final XDouble sylohi2 = sylo.scale(cy.hi()).fast2x();
-    //final XDouble sylohi2 = sylo.scale(cy.hi()).scale(2.0);
-    //for (int i = 0; i < yytlen; i++) { detyyt[i] *= 2.0; }
     final XDouble sylolo = sylo.scale(cy.lo());
     final XDouble dety = syhihi.add(sylohi2).add(sylolo);
 
@@ -141,114 +137,10 @@ public final class Slow implements Predicate {
     final Hilo by = Hilo.twoDiff(pb[1], pd[1]);
     final Hilo cx = Hilo.twoDiff(pc[0], pd[0]);
     final Hilo cy = Hilo.twoDiff(pc[1], pd[1]);
-
     final XDouble ad = det(bx,by,cx,cy,ax,ay);
     final XDouble bd = det(cx,cy,ax,ay,bx,by);
     final XDouble cd = det(ax,ay,bx,by,cx,cy);
-
-    final XDouble d = cd.add(bd).add(ad);
-    //new Throwable().printStackTrace(System.out);
-    System.out.println(d);
-    return d.doubleValue();
-    }
-
-//// from macro expanded C code:
-//  public final double incircle (final double[] pa,
-//                                final double[] pb,
-//                                final double[] pc,
-//                                final double[] pd) {
-//
-//    final Hilo ax = Hilo.twoDiff(pa[0], pd[0]);
-//    final Hilo ay = Hilo.twoDiff(pa[1], pd[1]);
-//    final Hilo bx = Hilo.twoDiff(pb[0], pd[0]);
-//    final Hilo by = Hilo.twoDiff(pb[1], pd[1]);
-//    final Hilo cx = Hilo.twoDiff(pc[0], pd[0]);
-//    final Hilo cy = Hilo.twoDiff(pc[1], pd[1]);
-//
-//    final double adx = ax.hi();
-//    final double adxtail = ax.lo();
-//    final double ady = ay.hi();
-//    final double adytail = ay.lo();
-//    final double bdx = bx.hi();
-//    final double bdxtail = bx.lo();
-//    final double bdy = by.hi();
-//    final double bdytail = by.lo();
-//    final double cdx = cx.hi();
-//    final double cdxtail = cx.lo();
-//    final double cdy = cy.hi();
-//    final double cdytail = cy.lo();
-//
-//    final XDouble axby = XDouble.twoTwoProduct(ax, by);
-//    final XDouble bxay = XDouble.twoTwoProduct(bx, ay);
-//    final XDouble bxcy = XDouble.twoTwoProduct(bx, cy);
-//    final XDouble cxby = XDouble.twoTwoProduct(cx, by);
-//    final XDouble cxay = XDouble.twoTwoProduct(cx, ay);
-//    final XDouble axcy = XDouble.twoTwoProduct(ax, cy);
-//
-//    XDouble temp16 = bxcy.subtract(cxby);
-//
-//    XDouble detx = temp16.scale(adx);
-//    XDouble detxx = detx.scale(adx);
-//    XDouble detxt = temp16.scale(adxtail);
-//    XDouble detxxt = detxt.scale(adx).fast2x();
-//    XDouble detxtxt = detxt.scale(adxtail);
-//    XDouble x1 = detxx.add(detxxt);
-//    XDouble x2 = x1.add(detxtxt);
-//
-//    XDouble dety = temp16.scale(ady);
-//    XDouble detyy = dety.scale(ady);
-//    XDouble detyt = temp16.scale(adytail);
-//    XDouble detyyt = detyt.scale(ady).fast2x();
-//    XDouble detytyt = detyt.scale(adytail);
-//    XDouble y1 = detyy.add(detyyt);
-//    XDouble y2 = y1.add(detytyt);
-//
-//    XDouble adet = x2.add(y2);
-//    //--------------------------
-//    temp16 = cxay.subtract(axcy);
-//
-//    detx = temp16.scale(bdx);
-//     detxx = detx.scale(bdx);
-//     detxt = temp16.scale(bdxtail);
-//     detxxt = detxt.scale(bdx).fast2x();
-//     detxtxt = detxt.scale(bdxtail);
-//     x1 = detxx.add(detxxt);
-//     x2 = x1.add(detxtxt);
-//
-//     dety = temp16.scale(bdy);
-//     detyy = dety.scale(bdy);
-//     detyt = temp16.scale(bdytail);
-//     detyyt = detyt.scale(bdy).fast2x();
-//     detytyt = detyt.scale(bdytail);
-//     y1 = detyy.add(detyyt);
-//     y2 = y1.add(detytyt);
-//
-//    XDouble bdet = x2.add(y2);
-//
-//    //--------------------------
-//    temp16 = axby.subtract(bxay);
-//
-//    detx = temp16.scale(cdx);
-//    detxx = detx.scale(cdx);
-//    detxt = temp16.scale(cdxtail);
-//    detxxt = detxt.scale(cdx).fast2x();
-//    detxtxt = detxt.scale(cdxtail);
-//    x1 = detxx.add(detxxt);
-//    x2 = x1.add(detxtxt);
-//
-//    dety = temp16.scale(cdy);
-//    detyy = dety.scale(cdy);
-//    detyt = temp16.scale(cdytail);
-//    detyyt = detyt.scale(cdy).fast2x();
-//    detytyt = detyt.scale(cdytail);
-//    y1 = detyy.add(detyyt);
-//    y2 = y1.add(detytyt);
-//
-//    XDouble cdet = x2.add(y2);
-//
-//    XDouble det = adet.add(bdet).add(cdet);
-//    return det.doubleValue();
-//  }
+    return cd.add(bd).add(ad).doubleValue(); }
 
   //--------------------------------------------------------------------
   // orient2d

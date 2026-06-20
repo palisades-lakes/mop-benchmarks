@@ -5,15 +5,8 @@ package mop.java.geometry.predicates;
 // 2026-05-15
 // split into Expansion manipulation and fast, slow, exact, adaptive
 // algorithm classes
-
-import mop.java.numbers.Hilo;
-import mop.java.numbers.XDouble;
-
-import static mop.java.geometry.predicates.Expansion.EPSILON;
-import static mop.java.geometry.predicates.Expansion.SPLITTER;
-import static mop.java.geometry.predicates.Expansion.estimate;
-import static mop.java.geometry.predicates.Expansion.scale;
-import static mop.java.geometry.predicates.Expansion.sum;
+// 2026-06-20 save macro expanded version before cleanup
+import static mop.java.geometry.predicates.Expansion.*;
 
 /** Adaptive 'exact' tests. Robust.
  * 'Exact' seems to mean boolean predicate, that is, the sign of the
@@ -91,7 +84,7 @@ import static mop.java.geometry.predicates.Expansion.sum;
  */
 
 // strictfp unnecessary for JDK17 and later
-public final class Adapt implements Predicate {
+public final class AdaptMacro implements Predicate {
 
   //--------------------------------------------------------------------
 
@@ -115,11 +108,36 @@ public final class Adapt implements Predicate {
                                         final double[] pc,
                                         final double[] pd,
                                         final double permanent) {
+    double adx, bdx, cdx, ady, bdy, cdy;
     double det, errbound;
 
-    double[] fin2 = new double[1152];
+    double bdxcdy1, cdxbdy1, cdxady1, adxcdy1, adxbdy1, bdxady1;
+    double bdxcdy0, cdxbdy0, cdxady0, adxcdy0, adxbdy0, bdxady0;
+    double[] bc = new double[4], ca = new double[4], ab = new double[4];
+    double bc3, ca3, ab3;
+    double[] axbc = new double[8], axxbc = new double[16],
+      aybc = new double[8], ayybc = new double[16], adet =
+      new double[32];
+    int axbclen, axxbclen, aybclen, ayybclen, alen;
+    double[] bxca = new double[8], bxxca = new double[16],
+      byca = new double[8], byyca = new double[16], bdet =
+      new double[32];
+    int bxcalen, bxxcalen, bycalen, byycalen, blen;
+    double[] cxab = new double[8], cxxab = new double[16],
+      cyab = new double[8], cyyab = new double[16], cdet =
+      new double[32];
+    int cxablen, cxxablen, cyablen, cyyablen, clen;
+    double[] abdet = new double[64];
+    int ablen;
+    double[] fin1 = new double[1152], fin2 = new double[1152];
     double[] finnow, finother, finswap;
+    int finlength;
 
+    double adxtail, bdxtail, cdxtail, adytail, bdytail, cdytail;
+    double adxadx1, adyady1, bdxbdx1, bdybdy1, cdxcdx1, cdycdy1;
+    double adxadx0, adyady0, bdxbdx0, bdybdy0, cdxcdx0, cdycdy0;
+    double[] aa = new double[4], bb = new double[4], cc = new double[4];
+    double aa3, bb3, cc3;
     double ti1, tj1;
     double ti0, tj0;
     double[] u = new double[4], v = new double[4];
@@ -139,11 +157,11 @@ public final class Adapt implements Predicate {
     double[] cxtaa = new double[8], cxtbb = new double[8],
       cytaa = new double[8], cytbb = new double[8];
     int cxtaalen, cxtbblen, cytaalen, cytbblen;
-    double[] aytbc = new double[8],
+    double[] axtbc = new double[8], aytbc = new double[8],
       bxtca = new double[8], bytca = new double[8], cxtab =
       new double[8],
       cytab = new double[8];
-    int aytbclen = -1, bxtcalen = -1, bytcalen = -1,
+    int axtbclen = -1, aytbclen = -1, bxtcalen = -1, bytcalen = -1,
       cxtablen = -1, cytablen = -1;
     double[] axtbct = new double[16],
       aytbct = new double[16], bxtcat = new double[16], bytcat =
@@ -175,154 +193,421 @@ public final class Adapt implements Predicate {
     double _i, _j;
     double _0;
 
-    final double adx = (pa[0] - pd[0]);
-    final double bdx = (pb[0] - pd[0]);
-    final double cdx = (pc[0] - pd[0]);
-    final double ady = (pa[1] - pd[1]);
-    final double bdy = (pb[1] - pd[1]);
-    final double cdy = (pc[1] - pd[1]);
+    adx = (pa[0] - pd[0]);
+    bdx = (pb[0] - pd[0]);
+    cdx = (pc[0] - pd[0]);
+    ady = (pa[1] - pd[1]);
+    bdy = (pb[1] - pd[1]);
+    cdy = (pc[1] - pd[1]);
 
-//    Two_Product(bdx, cdy, bdxcdy1, bdxcdy0);
-//    Two_Product(cdx, bdy, cdxbdy1, cdxbdy0);
-//    Two_Two_Diff(bdxcdy1, bdxcdy0, cdxbdy1, cdxbdy0, bc3, bc[2], bc[1], bc[0]);
-    final Hilo bdxcdy = Hilo.twoProduct(bdx,cdy);
-    final Hilo cdxbdy = Hilo.twoProduct(cdx,bdy);
-    final XDouble bc = XDouble.twoTwoDiff(bdxcdy,cdxbdy);
-    final XDouble axbc = bc.scale(adx);
-    final XDouble axxbc = axbc.scale(adx);
-    final XDouble aybc = bc.scale(ady);
-    final XDouble ayybc = aybc.scale(ady);
-    final XDouble adet = axxbc.add(ayybc);
-//    Two_Product(cdx, ady, cdxady1, cdxady0);
-//    Two_Product(adx, cdy, adxcdy1, adxcdy0);
-//    Two_Two_Diff(cdxady1, cdxady0, adxcdy1, adxcdy0, ca3, ca[2], ca[1], ca[0]);
-    final Hilo cdxady = Hilo.twoProduct(cdx,ady);
-    final Hilo adxcdy = Hilo.twoProduct(adx,cdy);
-    final XDouble ca = XDouble.twoTwoDiff(cdxady,adxcdy);
-    final XDouble bxca = ca.scale(bdx);
-    final XDouble bxxca = bxca.scale(bdx);
-    final XDouble byca = ca.scale(bdy);
-    final XDouble byyca = byca.scale(bdy);
-    final XDouble bdet = bxxca.add(byyca);
+    bdxcdy1 = (bdx * cdy);
+    c = (SPLITTER * bdx);
+    abig = (c - bdx);
+    ahi = c - abig;
+    alo = bdx - ahi;
+    c = (SPLITTER * cdy);
+    abig = (c - cdy);
+    bhi = c - abig;
+    blo = cdy - bhi;
+    err1 = bdxcdy1 - (ahi * bhi);
+    err2 = err1 - (alo * bhi);
+    err3 = err2 - (ahi * blo);
+    bdxcdy0 = (alo * blo) - err3;
+    cdxbdy1 = (cdx * bdy);
+    c = (SPLITTER * cdx);
+    abig = (c - cdx);
+    ahi = c - abig;
+    alo = cdx - ahi;
+    c = (SPLITTER * bdy);
+    abig = (c - bdy);
+    bhi = c - abig;
+    blo = bdy - bhi;
+    err1 = cdxbdy1 - (ahi * bhi);
+    err2 = err1 - (alo * bhi);
+    err3 = err2 - (ahi * blo);
+    cdxbdy0 = (alo * blo) - err3;
+    _i = (bdxcdy0 - cdxbdy0);
+    bvirt = (bdxcdy0 - _i);
+    avirt = _i + bvirt;
+    bround = bvirt - cdxbdy0;
+    around = bdxcdy0 - avirt;
+    bc[0] = around + bround;
+    _j = (bdxcdy1 + _i);
+    bvirt = (_j - bdxcdy1);
+    avirt = _j - bvirt;
+    bround = _i - bvirt;
+    around = bdxcdy1 - avirt;
+    _0 = around + bround;
+    _i = (_0 - cdxbdy1);
+    bvirt = (_0 - _i);
+    avirt = _i + bvirt;
+    bround = bvirt - cdxbdy1;
+    around = _0 - avirt;
+    bc[1] = around + bround;
+    bc3 = (_j + _i);
+    bvirt = (bc3 - _j);
+    avirt = bc3 - bvirt;
+    bround = _i - bvirt;
+    around = _j - avirt;
+    bc[2] = around + bround;
+    bc[3] = bc3;
+    axbclen = scale(4, bc, adx, axbc);
+    axxbclen = scale(axbclen, axbc, adx, axxbc);
+    aybclen = scale(4, bc, ady, aybc);
+    ayybclen = scale(aybclen, aybc, ady, ayybc);
+    alen = sum(axxbclen, axxbc, ayybclen, ayybc,
+               adet);
 
-//    Two_Product(adx, bdy, adxbdy1, adxbdy0);
-//    Two_Product(bdx, ady, bdxady1, bdxady0);
-//    Two_Two_Diff(adxbdy1, adxbdy0, bdxady1, bdxady0, ab3, ab[2], ab[1], ab[0]);
-    final Hilo adxbdy = Hilo.twoProduct(adx,bdy);
-    final Hilo bdxady = Hilo.twoProduct(bdx,ady);
-    final XDouble ab = XDouble.twoTwoDiff(adxbdy,bdxady);
-    final XDouble cxab = ab.scale(cdx);
-    final XDouble cxxab = cxab.scale(cdx);
-    final XDouble cyab = ab.scale(cdy);
-    final XDouble cyyab = cyab.scale(cdy);
-    final XDouble cdet = cxxab.add(cyyab);
+    cdxady1 = (cdx * ady);
+    c = (SPLITTER * cdx);
+    abig = (c - cdx);
+    ahi = c - abig;
+    alo = cdx - ahi;
+    c = (SPLITTER * ady);
+    abig = (c - ady);
+    bhi = c - abig;
+    blo = ady - bhi;
+    err1 = cdxady1 - (ahi * bhi);
+    err2 = err1 - (alo * bhi);
+    err3 = err2 - (ahi * blo);
+    cdxady0 = (alo * blo) - err3;
+    adxcdy1 = (adx * cdy);
+    c = (SPLITTER * adx);
+    abig = (c - adx);
+    ahi = c - abig;
+    alo = adx - ahi;
+    c = (SPLITTER * cdy);
+    abig = (c - cdy);
+    bhi = c - abig;
+    blo = cdy - bhi;
+    err1 = adxcdy1 - (ahi * bhi);
+    err2 = err1 - (alo * bhi);
+    err3 = err2 - (ahi * blo);
+    adxcdy0 = (alo * blo) - err3;
+    _i = (cdxady0 - adxcdy0);
+    bvirt = (cdxady0 - _i);
+    avirt = _i + bvirt;
+    bround = bvirt - adxcdy0;
+    around = cdxady0 - avirt;
+    ca[0] = around + bround;
+    _j = (cdxady1 + _i);
+    bvirt = (_j - cdxady1);
+    avirt = _j - bvirt;
+    bround = _i - bvirt;
+    around = cdxady1 - avirt;
+    _0 = around + bround;
+    _i = (_0 - adxcdy1);
+    bvirt = (_0 - _i);
+    avirt = _i + bvirt;
+    bround = bvirt - adxcdy1;
+    around = _0 - avirt;
+    ca[1] = around + bround;
+    ca3 = (_j + _i);
+    bvirt = (ca3 - _j);
+    avirt = ca3 - bvirt;
+    bround = _i - bvirt;
+    around = _j - avirt;
+    ca[2] = around + bround;
+    ca[3] = ca3;
+    bxcalen = scale(4, ca, bdx, bxca);
+    bxxcalen = scale(bxcalen, bxca, bdx, bxxca);
+    bycalen = scale(4, ca, bdy, byca);
+    byycalen = scale(bycalen, byca, bdy, byyca);
+    blen = sum(bxxcalen, bxxca, byycalen, byyca,
+               bdet);
 
-    final XDouble abdet = adet.add(bdet);
-    final XDouble fin1x = abdet.add(cdet);
+    adxbdy1 = (adx * bdy);
+    c = (SPLITTER * adx);
+    abig = (c - adx);
+    ahi = c - abig;
+    alo = adx - ahi;
+    c = (SPLITTER * bdy);
+    abig = (c - bdy);
+    bhi = c - abig;
+    blo = bdy - bhi;
+    err1 = adxbdy1 - (ahi * bhi);
+    err2 = err1 - (alo * bhi);
+    err3 = err2 - (ahi * blo);
+    adxbdy0 = (alo * blo) - err3;
+    bdxady1 = (bdx * ady);
+    c = (SPLITTER * bdx);
+    abig = (c - bdx);
+    ahi = c - abig;
+    alo = bdx - ahi;
+    c = (SPLITTER * ady);
+    abig = (c - ady);
+    bhi = c - abig;
+    blo = ady - bhi;
+    err1 = bdxady1 - (ahi * bhi);
+    err2 = err1 - (alo * bhi);
+    err3 = err2 - (ahi * blo);
+    bdxady0 = (alo * blo) - err3;
+    _i = (adxbdy0 - bdxady0);
+    bvirt = (adxbdy0 - _i);
+    avirt = _i + bvirt;
+    bround = bvirt - bdxady0;
+    around = adxbdy0 - avirt;
+    ab[0] = around + bround;
+    _j = (adxbdy1 + _i);
+    bvirt = (_j - adxbdy1);
+    avirt = _j - bvirt;
+    bround = _i - bvirt;
+    around = adxbdy1 - avirt;
+    _0 = around + bround;
+    _i = (_0 - bdxady1);
+    bvirt = (_0 - _i);
+    avirt = _i + bvirt;
+    bround = bvirt - bdxady1;
+    around = _0 - avirt;
+    ab[1] = around + bround;
+    ab3 = (_j + _i);
+    bvirt = (ab3 - _j);
+    avirt = ab3 - bvirt;
+    bround = _i - bvirt;
+    around = _j - avirt;
+    ab[2] = around + bround;
+    ab[3] = ab3;
+    cxablen = scale(4, ab, cdx, cxab);
+    cxxablen = scale(cxablen, cxab, cdx, cxxab);
+    cyablen = scale(4, ab, cdy, cyab);
+    cyyablen = scale(cyablen, cyab, cdy, cyyab);
+    clen = sum(cxxablen, cxxab, cyyablen, cyyab,
+               cdet);
 
-    det = fin1x.estimate();
+    ablen = sum(alen, adet, blen, bdet, abdet);
+    finlength =
+      sum(ablen, abdet, clen, cdet, fin1);
+
+    det = estimate(finlength, fin1);
     errbound = iccerrboundB * permanent;
-    if (Math.abs(det) >= errbound) { return det; }
-    final double[] fin1 = fin1x.toArray();
-    int finlength = fin1.length;
+    if (Math.abs(det) >= errbound) {
+      return det;
+    }
 
-//    Two_Diff_Tail(pa[0], pd[0], adx, adxtail);
-//    Two_Diff_Tail(pa[1], pd[1], ady, adytail);
-//    Two_Diff_Tail(pb[0], pd[0], bdx, bdxtail);
-//    Two_Diff_Tail(pb[1], pd[1], bdy, bdytail);
-//    Two_Diff_Tail(pc[0], pd[0], cdx, cdxtail);
-//    Two_Diff_Tail(pc[1], pd[1], cdy, cdytail);
-
-    final double adxtail = Hilo.twoDiffTail(pa[0], pd[0], adx);
-    final double adytail = Hilo.twoDiffTail(pa[1], pd[1], ady);
-    final double bdxtail = Hilo.twoDiffTail(pb[0], pd[0], bdx);
-    final double bdytail = Hilo.twoDiffTail(pb[1], pd[1], bdy);
-    final double cdxtail = Hilo.twoDiffTail(pc[0], pd[0], cdx);
-    final double cdytail = Hilo.twoDiffTail(pc[1], pd[1], cdy);
+    bvirt = (pa[0] - adx);
+    avirt = adx + bvirt;
+    bround = bvirt - pd[0];
+    around = pa[0] - avirt;
+    adxtail = around + bround;
+    bvirt = (pa[1] - ady);
+    avirt = ady + bvirt;
+    bround = bvirt - pd[1];
+    around = pa[1] - avirt;
+    adytail = around + bround;
+    bvirt = (pb[0] - bdx);
+    avirt = bdx + bvirt;
+    bround = bvirt - pd[0];
+    around = pb[0] - avirt;
+    bdxtail = around + bround;
+    bvirt = (pb[1] - bdy);
+    avirt = bdy + bvirt;
+    bround = bvirt - pd[1];
+    around = pb[1] - avirt;
+    bdytail = around + bround;
+    bvirt = (pc[0] - cdx);
+    avirt = cdx + bvirt;
+    bround = bvirt - pd[0];
+    around = pc[0] - avirt;
+    cdxtail = around + bround;
+    bvirt = (pc[1] - cdy);
+    avirt = cdy + bvirt;
+    bround = bvirt - pd[1];
+    around = pc[1] - avirt;
+    cdytail = around + bround;
     if ((adxtail == 0.0) && (bdxtail == 0.0) && (cdxtail == 0.0)
       && (adytail == 0.0) && (bdytail == 0.0) && (cdytail == 0.0)) {
-      return det; }
+      return det;
+    }
 
-    errbound = (iccerrboundC * permanent)
-      + (resulterrbound * Math.abs(det));
-    det +=
-      (((adx*adx) + (ady*ady))
-      * ((bdx*cdytail + cdy*bdxtail) - (bdy*cdxtail + cdx*bdytail))
-      + 2.0*(adx*adxtail + ady*adytail) * (bdx*cdy - bdy*cdx))
-      + ((bdx*bdx + bdy*bdy) * ((cdx*adytail + ady*cdxtail)
-      - (cdy*adxtail + adx*cdytail))
-      + 2.0*(bdx*bdxtail + bdy*bdytail)*(cdx*ady - cdy*adx))
-      + ((cdx*cdx + cdy*cdy)*((adx*bdytail + bdy*adxtail)
-      - (ady*bdxtail + bdx*adytail))
-      + 2.0*(cdx*cdxtail + cdy*cdytail)*(adx*bdy - ady*bdx));
-    if (Math.abs(det) >= errbound) { return det; }
+    errbound =
+      iccerrboundC * permanent + resulterrbound * ((det) >= 0.0 ? (det)
+                                                                :
+                                                   -(det));
+    det += ((adx * adx + ady * ady) * ((bdx * cdytail + cdy * bdxtail)
+      - (bdy * cdxtail + cdx * bdytail))
+      + 2.0 * (adx * adxtail + ady * adytail) * (bdx * cdy - bdy * cdx))
+      + ((bdx * bdx + bdy * bdy) * ((cdx * adytail + ady * cdxtail)
+      - (cdy * adxtail + adx * cdytail))
+      + 2.0 * (bdx * bdxtail + bdy * bdytail) * (cdx * ady - cdy * adx))
+      + ((cdx * cdx + cdy * cdy) * ((adx * bdytail + bdy * adxtail)
+      - (ady * bdxtail + bdx * adytail))
+      + 2.0 * (cdx * cdxtail + cdy * cdytail) * (adx * bdy - ady * bdx));
+    if (Math.abs(det) >= errbound) {
+      return det;
+    }
 
     finnow = fin1;
     finother = fin2;
 
-    XDouble aa = XDouble.ZERO;
     if ((bdxtail != 0.0) || (bdytail != 0.0)
       || (cdxtail != 0.0) || (cdytail != 0.0)) {
-//      Square(adx, adxadx1, adxadx0);
-//      Square(ady, adyady1, adyady0);
-//      Two_Two_Sum(adxadx1, adxadx0, adyady1, adyady0, aa3, aa[2], aa[1], aa[0]);
-//      Square(adx, adxadx1, adxadx0);
-      final Hilo adx2 = Hilo.square(adx);
-      final Hilo ady2 = Hilo.square(ady);
-      aa = XDouble.twoTwoSum(adx2, ady2); }
-
-    XDouble bb = XDouble.ZERO;
+      adxadx1 = (adx * adx);
+      c = (SPLITTER * adx);
+      abig = (c - adx);
+      ahi = c - abig;
+      alo = adx - ahi;
+      err1 = adxadx1 - (ahi * ahi);
+      err3 = err1 - ((ahi + ahi) * alo);
+      adxadx0 = (alo * alo) - err3;
+      adyady1 = (ady * ady);
+      c = (SPLITTER * ady);
+      abig = (c - ady);
+      ahi = c - abig;
+      alo = ady - ahi;
+      err1 = adyady1 - (ahi * ahi);
+      err3 = err1 - ((ahi + ahi) * alo);
+      adyady0 = (alo * alo) - err3;
+      _i = (adxadx0 + adyady0);
+      bvirt = (_i - adxadx0);
+      avirt = _i - bvirt;
+      bround = adyady0 - bvirt;
+      around = adxadx0 - avirt;
+      aa[0] = around + bround;
+      _j = (adxadx1 + _i);
+      bvirt = (_j - adxadx1);
+      avirt = _j - bvirt;
+      bround = _i - bvirt;
+      around = adxadx1 - avirt;
+      _0 = around + bround;
+      _i = (_0 + adyady1);
+      bvirt = (_i - _0);
+      avirt = _i - bvirt;
+      bround = adyady1 - bvirt;
+      around = _0 - avirt;
+      aa[1] = around + bround;
+      aa3 = (_j + _i);
+      bvirt = (aa3 - _j);
+      avirt = aa3 - bvirt;
+      bround = _i - bvirt;
+      around = _j - avirt;
+      aa[2] = around + bround;
+      aa[3] = aa3;
+    }
     if ((cdxtail != 0.0) || (cdytail != 0.0)
       || (adxtail != 0.0) || (adytail != 0.0)) {
-//      Square(bdx, bdxbdx1, bdxbdx0);
-//      Square(bdy, bdybdy1, bdybdy0);
-//      Two_Two_Sum(bdxbdx1, bdxbdx0, bdybdy1, bdybdy0, bb3, bb[2], bb[1], bb[0]);
-      final Hilo bdx2 = Hilo.square(bdx);
-      final Hilo bdy2 = Hilo.square(bdy);
-      bb = XDouble.twoTwoSum(bdx2, bdy2); }
-
-    XDouble cc = XDouble.ZERO;
+      bdxbdx1 = (bdx * bdx);
+      c = (SPLITTER * bdx);
+      abig = (c - bdx);
+      ahi = c - abig;
+      alo = bdx - ahi;
+      err1 = bdxbdx1 - (ahi * ahi);
+      err3 = err1 - ((ahi + ahi) * alo);
+      bdxbdx0 = (alo * alo) - err3;
+      bdybdy1 = (bdy * bdy);
+      c = (SPLITTER * bdy);
+      abig = (c - bdy);
+      ahi = c - abig;
+      alo = bdy - ahi;
+      err1 = bdybdy1 - (ahi * ahi);
+      err3 = err1 - ((ahi + ahi) * alo);
+      bdybdy0 = (alo * alo) - err3;
+      _i = (bdxbdx0 + bdybdy0);
+      bvirt = (_i - bdxbdx0);
+      avirt = _i - bvirt;
+      bround = bdybdy0 - bvirt;
+      around = bdxbdx0 - avirt;
+      bb[0] = around + bround;
+      _j = (bdxbdx1 + _i);
+      bvirt = (_j - bdxbdx1);
+      avirt = _j - bvirt;
+      bround = _i - bvirt;
+      around = bdxbdx1 - avirt;
+      _0 = around + bround;
+      _i = (_0 + bdybdy1);
+      bvirt = (_i - _0);
+      avirt = _i - bvirt;
+      bround = bdybdy1 - bvirt;
+      around = _0 - avirt;
+      bb[1] = around + bround;
+      bb3 = (_j + _i);
+      bvirt = (bb3 - _j);
+      avirt = bb3 - bvirt;
+      bround = _i - bvirt;
+      around = _j - avirt;
+      bb[2] = around + bround;
+      bb[3] = bb3;
+    }
     if ((adxtail != 0.0) || (adytail != 0.0)
       || (bdxtail != 0.0) || (bdytail != 0.0)) {
-//      Square(cdx, cdxcdx1, cdxcdx0);
-//      Square(cdy, cdycdy1, cdycdy0);
-//      Two_Two_Sum(cdxcdx1, cdxcdx0, cdycdy1, cdycdy0, cc3, cc[2], cc[1], cc[0]);
-      final Hilo cdx2 = Hilo.square(cdx);
-      final Hilo cdy2 = Hilo.square(cdy);
-      cc = XDouble.twoTwoSum(cdx2, cdy2); }
+      cdxcdx1 = (cdx * cdx);
+      c = (SPLITTER * cdx);
+      abig = (c - cdx);
+      ahi = c - abig;
+      alo = cdx - ahi;
+      err1 = cdxcdx1 - (ahi * ahi);
+      err3 = err1 - ((ahi + ahi) * alo);
+      cdxcdx0 = (alo * alo) - err3;
+      cdycdy1 = (cdy * cdy);
+      c = (SPLITTER * cdy);
+      abig = (c - cdy);
+      ahi = c - abig;
+      alo = cdy - ahi;
+      err1 = cdycdy1 - (ahi * ahi);
+      err3 = err1 - ((ahi + ahi) * alo);
+      cdycdy0 = (alo * alo) - err3;
+      _i = (cdxcdx0 + cdycdy0);
+      bvirt = (_i - cdxcdx0);
+      avirt = _i - bvirt;
+      bround = cdycdy0 - bvirt;
+      around = cdxcdx0 - avirt;
+      cc[0] = around + bround;
+      _j = (cdxcdx1 + _i);
+      bvirt = (_j - cdxcdx1);
+      avirt = _j - bvirt;
+      bround = _i - bvirt;
+      around = cdxcdx1 - avirt;
+      _0 = around + bround;
+      _i = (_0 + cdycdy1);
+      bvirt = (_i - _0);
+      avirt = _i - bvirt;
+      bround = cdycdy1 - bvirt;
+      around = _0 - avirt;
+      cc[1] = around + bround;
+      cc3 = (_j + _i);
+      bvirt = (cc3 - _j);
+      avirt = cc3 - bvirt;
+      bround = _i - bvirt;
+      around = _j - avirt;
+      cc[2] = around + bround;
+      cc[3] = cc3;
+    }
 
-    XDouble axtbc = XDouble.ZERO;
     if (adxtail != 0.0) {
-      axtbc = bc.scale(adxtail);
-      temp16a = axtbc.scale(2.0 * adx).toArray();
-      temp16alen = temp16a.length;
+      axtbclen = scale(4, bc, adxtail, axtbc);
+      temp16alen = scale(axtbclen, axtbc, 2.0 * adx,
+                         temp16a);
 
-      final double[] cca = cc.toArray();
-      axtcclen = scale(cca.length, cca, adxtail, axtcc);
-      temp16blen = scale(axtcclen, axtcc, bdy, temp16b);
+      axtcclen = scale(4, cc, adxtail, axtcc);
+      temp16blen =
+        scale(axtcclen, axtcc, bdy, temp16b);
 
-      final double[] bba = bb.toArray();
-      axtbblen = scale(bba.length, bba, adxtail, axtbb);
-      temp16clen = scale(axtbblen, axtbb, -cdy, temp16c);
+      axtbblen = scale(4, bb, adxtail, axtbb);
+      temp16clen =
+        scale(axtbblen, axtbb, -cdy, temp16c);
 
-      temp32alen = sum(temp16alen, temp16a, temp16blen, temp16b, temp32a);
-      temp48len = sum(temp16clen, temp16c, temp32alen, temp32a, temp48);
-      finlength = sum(finlength, finnow, temp48len, temp48, finother);
+      temp32alen = sum(temp16alen, temp16a,
+                       temp16blen, temp16b,
+                       temp32a);
+      temp48len = sum(temp16clen, temp16c,
+                      temp32alen, temp32a,
+                      temp48);
+      finlength =
+        sum(finlength, finnow, temp48len,
+            temp48, finother);
       finswap = finnow;
       finnow = finother;
       finother = finswap;
     }
     if (adytail != 0.0) {
-      final double[] bca = bc.toArray();
-      aytbclen = scale(bca.length, bca, adytail, aytbc);
-      temp16alen = scale(aytbclen, aytbc, 2.0 * ady, temp16a);
+      aytbclen = scale(4, bc, adytail, aytbc);
+      temp16alen = scale(aytbclen, aytbc, 2.0 * ady,
+                         temp16a);
 
-      final double[] bba = bb.toArray();
-      aytbblen = scale(bba.length, bba, adytail, aytbb);
-      temp16blen = scale(aytbblen, aytbb, cdx, temp16b);
+      aytbblen = scale(4, bb, adytail, aytbb);
+      temp16blen =
+        scale(aytbblen, aytbb, cdx, temp16b);
 
-      final double[] cca = cc.toArray();
-      aytcclen = scale(cca.length, cca, adytail, aytcc);
+      aytcclen = scale(4, cc, adytail, aytcc);
       temp16clen =
         scale(aytcclen, aytcc, -bdx, temp16c);
 
@@ -333,24 +618,22 @@ public final class Adapt implements Predicate {
                       temp32alen, temp32a,
                       temp48);
       finlength =
-        sum(finlength, finnow, temp48len,temp48, finother);
+        sum(finlength, finnow, temp48len,
+            temp48, finother);
       finswap = finnow;
       finnow = finother;
       finother = finswap;
     }
     if (bdxtail != 0.0) {
-      final double[] caa = ca.toArray();
-      bxtcalen = scale(caa.length, caa, bdxtail, bxtca);
+      bxtcalen = scale(4, ca, bdxtail, bxtca);
       temp16alen = scale(bxtcalen, bxtca, 2.0 * bdx,
                          temp16a);
 
-      final double[] aaa = aa.toArray();
-      bxtaalen = scale(aaa.length, aaa, bdxtail, bxtaa);
+      bxtaalen = scale(4, aa, bdxtail, bxtaa);
       temp16blen =
         scale(bxtaalen, bxtaa, cdy, temp16b);
 
-      final double[] cca = cc.toArray();
-      bxtcclen = scale(cca.length, cca, bdxtail, bxtcc);
+      bxtcclen = scale(4, cc, bdxtail, bxtcc);
       temp16clen =
         scale(bxtcclen, bxtcc, -ady, temp16c);
 
@@ -368,17 +651,15 @@ public final class Adapt implements Predicate {
       finother = finswap;
     }
     if (bdytail != 0.0) {
-      final double[] caa = ca.toArray();
-      bytcalen = scale(caa.length, caa, bdytail, bytca);
+      bytcalen = scale(4, ca, bdytail, bytca);
       temp16alen = scale(bytcalen, bytca, 2.0 * bdy,
                          temp16a);
-      final double[] cca = cc.toArray();
-      bytcclen = scale(cca.length, cca, bdytail, bytcc);
+
+      bytcclen = scale(4, cc, bdytail, bytcc);
       temp16blen =
         scale(bytcclen, bytcc, adx, temp16b);
 
-      final double[] aaa = aa.toArray();
-      bytaalen = scale(aaa.length, aaa, bdytail, bytaa);
+      bytaalen = scale(4, aa, bdytail, bytaa);
       temp16clen =
         scale(bytaalen, bytaa, -cdx, temp16c);
 
@@ -396,17 +677,15 @@ public final class Adapt implements Predicate {
       finother = finswap;
     }
     if (cdxtail != 0.0) {
-      final double[] aba = ab.toArray();
-      cxtablen = scale(aba.length, aba, cdxtail, cxtab);
+      cxtablen = scale(4, ab, cdxtail, cxtab);
       temp16alen = scale(cxtablen, cxtab, 2.0 * cdx,
                          temp16a);
-      final double[] bba = bb.toArray();
-      cxtbblen = scale(bba.length, bba, cdxtail, cxtbb);
+
+      cxtbblen = scale(4, bb, cdxtail, cxtbb);
       temp16blen =
         scale(cxtbblen, cxtbb, ady, temp16b);
 
-      final double[] aaa = aa.toArray();
-      cxtaalen = scale(aaa.length, aaa, cdxtail, cxtaa);
+      cxtaalen = scale(4, aa, cdxtail, cxtaa);
       temp16clen =
         scale(cxtaalen, cxtaa, -bdy, temp16c);
 
@@ -424,18 +703,15 @@ public final class Adapt implements Predicate {
       finother = finswap;
     }
     if (cdytail != 0.0) {
-      final double[] aba = ab.toArray();
-      cytablen = scale(aba.length, aba, cdytail, cytab);
+      cytablen = scale(4, ab, cdytail, cytab);
       temp16alen = scale(cytablen, cytab, 2.0 * cdy,
                          temp16a);
 
-      final double[] aaa = aa.toArray();
-      cytaalen = scale(aaa.length, aaa, cdytail, cytaa);
+      cytaalen = scale(4, aa, cdytail, cytaa);
       temp16blen =
         scale(cytaalen, cytaa, bdx, temp16b);
 
-      final double[] bba = bb.toArray();
-      cytbblen = scale(bba.length, bba, cdytail, cytbb);
+      cytbblen = scale(4, bb, cdytail, cytbb);
       temp16clen =
         scale(cytbblen, cytbb, -adx, temp16c);
 
@@ -623,10 +899,13 @@ public final class Adapt implements Predicate {
       }
 // TODO: axtbclen not initialized!!!
       if (adxtail != 0.0) {
-        final double[] axtbca = axtbc.toArray();
-        temp16alen = scale(axtbca.length, axtbca, adxtail, temp16a);
-        axtbctlen = scale(bctlen, bct, adxtail, axtbct);
-        temp32alen = scale(axtbctlen, axtbct, 2.0 * adx, temp32a);
+        temp16alen =
+          scale(axtbclen, axtbc, adxtail, temp16a);
+        axtbctlen =
+          scale(bctlen, bct, adxtail, axtbct);
+        temp32alen =
+          scale(axtbctlen, axtbct, 2.0 * adx,
+                temp32a);
         temp48len = sum(temp16alen, temp16a,
                         temp32alen, temp32a,
                         temp48);
@@ -637,8 +916,7 @@ public final class Adapt implements Predicate {
         finnow = finother;
         finother = finswap;
         if (bdytail != 0.0) {
-          final double[] cca = cc.toArray();
-          temp8len = scale(cca.length, cca, adxtail, temp8);
+          temp8len = scale(4, cc, adxtail, temp8);
           temp16alen =
             scale(temp8len, temp8, bdytail,
                   temp16a);
@@ -650,8 +928,7 @@ public final class Adapt implements Predicate {
           finother = finswap;
         }
         if (cdytail != 0.0) {
-          final double[] bba = bb.toArray();
-          temp8len = scale(bba.length, bba, -adxtail, temp8);
+          temp8len = scale(4, bb, -adxtail, temp8);
           temp16alen =
             scale(temp8len, temp8, cdytail,
                   temp16a);
@@ -918,8 +1195,7 @@ public final class Adapt implements Predicate {
         finnow = finother;
         finother = finswap;
         if (cdytail != 0.0) {
-          final double[] aaa = aa.toArray();
-          temp8len = scale(aaa.length, aaa, bdxtail, temp8);
+          temp8len = scale(4, aa, bdxtail, temp8);
           temp16alen =
             scale(temp8len, temp8, cdytail,
                   temp16a);
@@ -931,10 +1207,13 @@ public final class Adapt implements Predicate {
           finother = finswap;
         }
         if (adytail != 0.0) {
-          final double[] cca = cc.toArray();
-          temp8len = scale(cca.length, cca, -bdxtail, temp8);
-          temp16alen =scale(temp8len, temp8, adytail,temp16a);
-          finlength = sum(finlength, finnow, temp16alen, temp16a, finother);
+          temp8len = scale(4, cc, -bdxtail, temp8);
+          temp16alen =
+            scale(temp8len, temp8, adytail,
+                  temp16a);
+          finlength =
+            sum(finlength, finnow, temp16alen,
+                temp16a, finother);
           finswap = finnow;
           finnow = finother;
           finother = finswap;
@@ -1195,8 +1474,7 @@ public final class Adapt implements Predicate {
         finnow = finother;
         finother = finswap;
         if (adytail != 0.0) {
-          final double[] bba = bb.toArray();
-          temp8len = scale(bba.length, bba, cdxtail, temp8);
+          temp8len = scale(4, bb, cdxtail, temp8);
           temp16alen =
             scale(temp8len, temp8, adytail,
                   temp16a);
@@ -1208,8 +1486,7 @@ public final class Adapt implements Predicate {
           finother = finswap;
         }
         if (bdytail != 0.0) {
-          final double[] aaa = aa.toArray();
-          temp8len = scale(aaa.length, aaa, -cdxtail, temp8);
+          temp8len = scale(4, aa, -cdxtail, temp8);
           temp16alen =
             scale(temp8len, temp8, bdytail,
                   temp16a);
@@ -3253,7 +3530,7 @@ public final class Adapt implements Predicate {
       return det;
     }
 
-    return new Adapt().orient3d(pa, pb, pc, pd, permanent);
+    return new AdaptMacro().orient3d(pa, pb, pc, pd, permanent);
   }
 
   //--------------------------------------------------------------------
@@ -3948,7 +4225,7 @@ public final class Adapt implements Predicate {
   //--------------------------------------------------------------------
   // TODO: singleton?
 
-  public Adapt () { super(); }
+  public AdaptMacro () { super(); }
 
   //-------------------------------------------------------------------
 } // end class

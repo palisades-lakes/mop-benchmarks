@@ -531,28 +531,29 @@ public final class XDouble implements Comparable<XDouble> {
   // #define Two_One_Diff(a1, a0, b, x2, x1, x0) \
   //  Two_Diff(a0, b , _i, x0); \
   //  Two_Sum( a1, _i, x2, x1)
-//  private static final double[] twoOneDiff (final double ahi,
-//                                            final double alo,
-//                                            final double b) {
-//    final Hilo ix0 = Hilo.twoDiff(alo, b);
-//    final Hilo x2x1 = Hilo.twoSum(ahi, ix0.hi());
-//    return new double[] {ix0.lo(), x2x1.lo(), x2x1.hi(), }; }
+
+  private static final double[] twoOneDiff (final double ahi,
+                                            final double alo,
+                                            final double b) {
+    final Hilo ix0 = Hilo.twoDiff(alo, b);
+    final Hilo x2x1 = Hilo.twoSum(ahi, ix0.hi());
+    return new double[] {ix0.lo(), x2x1.lo(), x2x1.hi(), }; }
 
   // Two_Two_Diff(axby1, axby0, bxay1, bxay0,
   //              ab[3], ab[2], ab[1], ab[0]);
 
-//  public static final XDouble twoTwoDiff (final Hilo a,
-//                                          final Hilo b) {
-//    // Two_One_Diff(a1, a0, b0, _j, _0, x0);
-//    final double[] x00j = twoOneDiff(a.hi(),a.lo(),b.lo());
-//    // Two_One_Diff(_j, _0, b.hi(), x3, x2, x1)
-//    final double[] x123 = twoOneDiff(x00j[2],x00j[1],b.hi());
-//    final DoubleArrayList terms = new DoubleArrayList(4);
-//    if (0.0!=x00j[0]) { terms.add(x00j[0]); }
-//    for (int i=1;i<x123.length;i++) {
-//      if (0.0!= x123[i]) { terms.add(x123[i]); }  }
-//    if (terms.isEmpty()) { return ZERO; }
-//    return unsafe(terms); }
+  public static final XDouble twoTwoDiff (final Hilo a,
+                                          final Hilo b) {
+    // Two_One_Diff(a1, a0, b0, _j, _0, x0);
+    final double[] x00j = twoOneDiff(a.hi(),a.lo(),b.lo());
+    // Two_One_Diff(_j, _0, b.hi(), x3, x2, x1)
+    final double[] x123 = twoOneDiff(x00j[2],x00j[1],b.hi());
+    final DoubleArrayList terms = new DoubleArrayList(4);
+    if (0.0!=x00j[0]) { terms.add(x00j[0]); }
+    for (int i=1;i<x123.length;i++) {
+      if (0.0!= x123[i]) { terms.add(x123[i]); }  }
+    if (terms.isEmpty()) { return ZERO; }
+    return unsafe(terms); }
 
 //  public static final XDouble twoSum (final double a, final double b) {
 //    final double x = (a + b);
@@ -576,6 +577,29 @@ public final class XDouble implements Comparable<XDouble> {
 //    if (0.0==hi)  { return ZERO; }
 //    // enforce ulp constraint
 //    return twoSum(hi,lo); }
+
+// #define Two_One_Sum(a1, a0, b, x2, x1, x0) \
+//  Two_Sum(a0, b , _i, x0); \
+//  Two_Sum(a1, _i, x2, x1)
+
+  private static final double[] twoOneSum (final double a1,
+                                          final double a0,
+                                          final double b) {
+    final Hilo _ix0 = Hilo.twoSum(a0,b);
+    final Hilo x1x2 = Hilo.twoSum(a1,_ix0.hi());
+    return new double[] { _ix0.lo(), x1x2.lo(), x1x2.hi(), }; }
+
+// #define Two_Two_Sum(a1, a0, b1, b0, x3, x2, x1, x0) \
+//  Two_One_Sum(a1, a0, b0, _j, _0, x0); \
+//  Two_One_Sum(_j, _0, b1, x3, x2, x1)
+
+  public static final XDouble twoTwoSum (final Hilo a,
+                                         final Hilo b) {
+    final double[] ab0 = twoOneSum(a.hi(),a.lo(),b.lo());
+    final double[] ab1 = twoOneSum(ab0[0],ab0[1],b.hi());
+    return unsafe(DoubleArrayList.from(
+      ab0[2],ab1[0],ab1[1],ab1[2]));
+  }
 
   // Shewchuk version
   public static final XDouble twoProduct (final double a,

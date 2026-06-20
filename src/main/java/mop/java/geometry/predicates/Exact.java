@@ -60,13 +60,7 @@ public final class Exact implements Predicate {
     // shouldn't matter, XDouble addition should be associative
     //final XDouble det = adet.add(bdet).add(cdet.add(ddet));
     final XDouble det = adet.add(bdet).add(cdet).add(ddet);
-//    System.out.println();
-//    System.out.println(
-//      toHexString(a) + "->" + toHexString(b) + "->" + toHexString(c));
-//    System.out.println(toHexString(d));
-//    System.out.println(det);
     return det.doubleValue(); }
-    //return det.term(det.nterms() - 1); }
 
   //--------------------------------------------------------------------
   // orient2d

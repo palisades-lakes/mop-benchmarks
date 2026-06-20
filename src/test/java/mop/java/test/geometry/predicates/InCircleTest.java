@@ -1,7 +1,8 @@
 package mop.java.test.geometry.predicates;
 
+import mop.java.geometry.predicates.Adapt;
+import mop.java.geometry.predicates.AdaptMacro;
 import mop.java.geometry.predicates.Predicate;
-import mop.java.geometry.predicates.Slow;
 import mop.java.numbers.Doubles;
 import mop.java.prng.Generator;
 import mop.java.prng.PRNG;
@@ -25,6 +26,7 @@ import java.util.List;
 public final class InCircleTest {
 
   //--------------------------------------------------------------
+  @SuppressWarnings("unused")
   private static final String debugMsg (final double truth,
                                         final double check,
                                         final Predicate gold,
@@ -63,10 +65,30 @@ public final class InCircleTest {
         "\npred=" + pred + " -> " + Double.toHexString(check));
     msg.append("\ndiff=").append(Double.toHexString(truth-check));
     msg.append("\nulp=").append(Double.toHexString(Math.ulp(truth)));
+    if (null != predicates) {
     for (final Predicate p : predicates) {
       msg.append("\n").append(p).append(" ->\n")
-         .append(Double.toHexString(p.incircle(p0, p1, p2, p3))); }
+         .append(Double.toHexString(p.incircle(p0, p1, p2, p3))); } }
     return msg + "\n"; }
+
+  //--------------------------------------------------------------
+  /** Compare exact value from cleaned up Adapt and
+   * brutal macro-expanded AdaptMacro.
+   */
+
+  private static final void adaptTest (final double[] p0,
+                                      final double[] p1,
+                                      final double[] p2,
+                                      final double[] p3) {
+    final Predicate gold = new AdaptMacro();
+    final Predicate p = new Adapt();
+
+    final double trueInc = gold.incircle(p0, p1, p2, p3);
+      final double inc = p.incircle(p0, p1, p2, p3);
+        // with delta=0.0 handles +0 vs -0 'correctly'
+        Assertions.assertEquals(
+          trueInc, inc, 0.0,
+          failureMsg(trueInc,inc,gold,p,null,p0,p1,p2,p3)); }
 
   //--------------------------------------------------------------
 
@@ -75,12 +97,13 @@ public final class InCircleTest {
                                       final double[] p1,
                                       final double[] p2,
                                       final double[] p3) {
+    adaptTest(p0,p1,p2,p3);
     final Predicate gold = Common.truth();
     final double trueInc = gold.incircle(p0, p1, p2, p3);
     for (final Predicate p : predicates) {
       final double inc = p.incircle(p0, p1, p2, p3);
-      if (p instanceof Slow) {
-        System.out.println(debugMsg(trueInc,inc,gold,p,p0,p1,p2,p3)); }
+//      if (p instanceof Slow) {
+//        System.out.println(debugMsg(trueInc,inc,gold,p,p0,p1,p2,p3)); }
       if (p.isExact()) {
         // with delta=0.0 handles +0 vs -0 'correctly'
         Assertions.assertEquals(
@@ -115,7 +138,7 @@ public final class InCircleTest {
 
   @Test
   public final void laplaceTest () {
-    final List<Predicate> predicates =Common.inCirclePredicates();
+    final List<Predicate> predicates = Common.inCirclePredicates();
     final int n = 12;
     final UniformRandomProvider urp =
       PRNG.well44497b("seeds/Well44497b-2019-01-05.txt");

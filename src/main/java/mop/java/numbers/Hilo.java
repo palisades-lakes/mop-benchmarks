@@ -335,6 +335,27 @@ public record Hilo (double hi, double lo)
         "\nulp(hi)= " + Double.toHexString(Math.ulp(hi));
   }
 
+//  #define Square_Tail(a, x, y) \
+//  Split(a, ahi, alo); \
+//  err1 = x - (ahi * ahi); \
+//  err3 = err1 - ((ahi + ahi) * alo); \
+//  y = (alo * alo) - err3
+
+  private static final double squareTail (final double a,
+                                        final double hi) {
+    final Hilo ahilo = split(a);
+    final double err1 = hi - (ahilo.hi() * ahilo.hi());
+    final double err3 = err1 - ((ahilo.hi() + ahilo.hi()) * ahilo.lo());
+    return (ahilo.lo() * ahilo.lo()) - err3; }
+
+  //  #define Square(a, x, y) \
+//  x = (REAL) (a * a); \
+//  Square_Tail(a, x, y)
+  public static final Hilo square (final double a) {
+  final double x =  (a * a);
+  final double y = squareTail(a, x);
+  return new Hilo(x, y); }
+
   public static final Hilo twoSum (final double a, final double b) {
     final double x = (a + b);
     final double bvirt = (x - a);
@@ -371,6 +392,23 @@ public record Hilo (double hi, double lo)
     final double y = around + bround;
     return new Hilo(x, y);
   }
+
+  // TODO: move somewhere else?
+//#define Two_Diff_Tail(a, b, x, y) \
+//  bvirt = (REAL) (a - x); \
+//  avirt = x + bvirt; \
+//  bround = bvirt - b; \
+//  around = a - avirt; \
+//  y = around + bround
+  public static final double twoDiffTail (final double a,
+                                        final double b,
+                                        final double hi) {
+
+  final double bvirt = (a - hi);
+  final double avirt = hi + bvirt;
+  final double bround = bvirt - b;
+  final double around = a - avirt;
+  return around + bround; }
 
   // TODO: move to Expansion or XDouble
   // returns double[3]
