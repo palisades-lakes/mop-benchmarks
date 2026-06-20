@@ -93,7 +93,7 @@ import com.carrotsearch.hppc.procedures.DoubleProcedure;
  *   even <code>BigInteger</code> to extend range.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-05-28
+ * @version 2026-06-20
  */
 
 //@SuppressWarnings("unused")
@@ -414,6 +414,10 @@ public final class XDouble implements Comparable<XDouble> {
     if (isPositiveInfinity()) { return POSITIVE_INFINITY; }
     if (isNegativeInfinity()) { return NEGATIVE_INFINITY; }
     final DoubleArrayList x2 = terms().clone();
+    // This works because multiply by power of 2
+    // (within over/under flow) is exact.
+    // TODO: is it possible that directly modifying the exponent,
+    //  via doubleToLongBits, is faster than float multiply?
     for  (int i=0;i<nterms();i++) { x2.set(i,2*x2.get(i)); }
     return unsafe(x2); }
 
@@ -493,6 +497,10 @@ public final class XDouble implements Comparable<XDouble> {
     if (terms.isEmpty()) { assert null != ZERO; return ZERO; }
     // TODO: is compress() a good idea?
     return new XDouble(compress(terms)); }
+
+  // TODO: make this private, public version should clone terms.
+  public static final XDouble unsafe (final double[] terms) {
+    return unsafe(DoubleArrayList.from(terms)); }
 
   // Not really safe unless non-overlapping is enforced
 //  private static final XDouble safe (final DoubleArrayList terms) {
@@ -608,7 +616,7 @@ public final class XDouble implements Comparable<XDouble> {
   //  Two_Sum(_2, _i, _k, x5); \
   //  Two_Sum(_m, _k, x7, x6)
 
-  public static final double[] twoTwoProduct (final Hilo a,
+  public static final XDouble twoTwoProduct (final Hilo a,
                                               final Hilo b) {
     final double[] ab = new double[8];
     final double a0 = a.lo();
@@ -648,7 +656,7 @@ public final class XDouble implements Comparable<XDouble> {
     ab[7] = s15.hi();
     ab[6] = s15.lo();
 
-    return ab; }
+    return unsafe(ab); }
 
   //-------------------------------------------------------------------
   //

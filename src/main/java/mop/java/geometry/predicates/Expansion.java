@@ -719,7 +719,8 @@ public final class Expansion {
     blo = b - bhi;
     //------------------------------------------------
     //Two_Product_Presplit(e[0], b, bhi, blo, Q, hh);
-    Q = (e[0] * b); c = (SPLITTER * e[0]);
+    Q = (e[0] * b);
+    c = (SPLITTER * e[0]);
     abig = (c - e[0]); ahi = c - abig; alo = e[0] - ahi;
     err1 = Q - (ahi * bhi); err2 = err1 - (alo * bhi);
     err3 = err2 - (ahi * blo); hh = (alo * blo) - err3;

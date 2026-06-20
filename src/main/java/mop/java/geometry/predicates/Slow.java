@@ -6,7 +6,6 @@ package mop.java.geometry.predicates;
 // split into Expansion manipulation and fast, slow, exact, adaptive
 // algorithm classes
 
-import com.carrotsearch.hppc.DoubleArrayList;
 import mop.java.numbers.Hilo;
 import mop.java.numbers.XDouble;
 
@@ -82,7 +81,7 @@ import static mop.java.geometry.predicates.Expansion.*;
  *   even <code>BigInteger</code> to extend range.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-05-28
+ * @version 2026-06-20
  */
 
 // strictfp unnecessary for JDK17 and later
@@ -154,146 +153,201 @@ public final class Slow implements Predicate {
 //    //new Throwable().printStackTrace(System.out);
 //    System.out.println(d);
 //    return d.doubleValue();
-////    return d.estimate();
+
+  /// /    return d.estimate();
 //  }
 
 // from macro expanded C code:
+  public final double incircle (final double[] pa,
+                                final double[] pb,
+                                final double[] pc,
+                                final double[] pd) {
+//    double[] detx = new double[32], detxx = new double[64],
+//      detxt = new double[32], detxxt = new double[64],
+//      detxtxt = new double[64];
+//    int xlen, xxlen, xtlen, xxtlen, xtxtlen;
+//    double[] x1 = new double[128], x2 = new double[192];
+//    int x1len, x2len;
+//    double[] dety = new double[32], detyy = new double[64],
+//      detyt = new double[32], detyyt = new double[64],
+//      detytyt = new double[64];
+//    int ylen, yylen, ytlen, yytlen, ytytlen;
+//    double[] y1 = new double[128], y2 = new double[192];
+//    int y1len, y2len;
+//    double[] adet = new double[384], bdet = new double[384],
+//      cdet = new double[384], abdet = new double[768],
+//      deter = new double[1152];
+//    int alen, blen, clen, ablen;
+//    int deterlen;
 
-public final double incircle (final double[] pa,
-                              final double[] pb,
-                              final double[] pc,
-                              final double[] pd) {
-  double[] temp16 = new double[16];
-  int temp16len;
-  double[] detx = new double[32], detxx = new double[64],
-    detxt = new double[32], detxxt = new double[64],
-    detxtxt = new double[64];
-  int xlen, xxlen, xtlen, xxtlen, xtxtlen;
-  double[] x1 = new double[128], x2 = new double[192];
-  int x1len, x2len;
-  double[] dety = new double[32], detyy = new double[64],
-    detyt = new double[32], detyyt = new double[64],
-    detytyt = new double[64];
-  int ylen, yylen, ytlen, yytlen, ytytlen;
-  double[] y1 = new double[128], y2 = new double[192];
-  int y1len, y2len;
-  double[] adet = new double[384], bdet = new double[384],
-    cdet = new double[384], abdet = new double[768],
-    deter = new double[1152];
-  int alen, blen, clen, ablen;
-  int deterlen;
+    //double avirt, bround, around;
+//  double c;
+//  double abig;
+//  double err1, err2, err3;
 
-  double bvirt; double avirt, bround, around;
-  double c;
-  double abig;
-  double err1, err2, err3;
+    final Hilo ax = Hilo.twoDiff(pa[0], pd[0]);
+    final double adx = ax.hi();
+    final double adxtail = ax.lo();
 
-  final Hilo ax = Hilo.twoDiff(pa[0], pd[0]);
-  final double adx = ax.hi();
-  final double adxtail = ax.lo();
+    final Hilo ay = Hilo.twoDiff(pa[1], pd[1]);
+    final double ady = ay.hi();
+    final double adytail = ay.lo();
 
-  final Hilo ay = Hilo.twoDiff(pa[1], pd[1]);
-  final double ady = ay.hi();
-  final double adytail = ay.lo();
+    final Hilo bx = Hilo.twoDiff(pb[0], pd[0]);
+    final double bdx = bx.hi();
+    final double bdxtail = bx.lo();
 
-  final Hilo bx = Hilo.twoDiff(pb[0], pd[0]);
-  final double bdx = bx.hi();
-  final double bdxtail = bx.lo();
+    final Hilo by = Hilo.twoDiff(pb[1], pd[1]);
+    final double bdy = by.hi();
+    final double bdytail = by.lo();
 
-  final Hilo by = Hilo.twoDiff(pb[1], pd[1]);
-  final double bdy = by.hi();
-  final double bdytail = by.lo();
+    final Hilo cx = Hilo.twoDiff(pc[0], pd[0]);
+    final double cdx = cx.hi();
+    final double cdxtail = cx.lo();
 
-  final Hilo cx = Hilo.twoDiff(pc[0], pd[0]);
-  final double cdx = cx.hi();
-  final double cdxtail = cx.lo();
+    final Hilo cy = Hilo.twoDiff(pc[1], pd[1]);
+    final double cdy = cy.hi();
+    final double cdytail = cy.lo();
 
-  final Hilo cy = Hilo.twoDiff(pc[1], pd[1]);
-  final double cdy = cy.hi();
-  final double cdytail = cy.lo();
+    Hilo a0hilo, bhilo, a1hilo;
+    double _i, _j, _0, _k, _1, _2, _l, _m, _n;
 
-  Hilo a0hilo, bhilo, a1hilo;
-  double _i, _j, _0, _k, _1, _2, _l, _m, _n ;
+    final XDouble axby = XDouble.twoTwoProduct(ax, by);
+    final XDouble bxay = XDouble.twoTwoProduct(bx, ay.negate());
+    final XDouble bxcy = XDouble.twoTwoProduct(bx, cy);
+    final XDouble cxby = XDouble.twoTwoProduct(cx, by.negate());
+    final XDouble cxay = XDouble.twoTwoProduct(cx, ay);
+    final XDouble axcy = XDouble.twoTwoProduct(ax, cy.negate());
 
-  final double[] axby = XDouble.twoTwoProduct(ax,by);
-  final double[] bxay = XDouble.twoTwoProduct(bx,ay.negate());
-  final double[] bxcy = XDouble.twoTwoProduct(bx,cy);
-  final double[] cxby = XDouble.twoTwoProduct(cx,by.negate());
-  final double[] cxay = XDouble.twoTwoProduct(cx,ay);
-  final double[] axcy = XDouble.twoTwoProduct(ax,cy.negate());
+//    temp16len = sum(8, bxcy, 8, cxby, temp16);
+//    xlen = scale(temp16.length, temp16, adx, detx);
+//    xxlen = scale(xlen, detx, adx, detxx);
+//    xtlen = scale(temp16.length, temp16, adxtail, detxt);
+//    xxtlen = scale(xtlen, detxt, adx, detxxt);
+//    for (int i = 0; i < xxtlen; i++) { detxxt[i] *= 2.0; }
+//    xtxtlen = scale(xtlen, detxt, adxtail, detxtxt);
+//    x1len = sum(xxlen, detxx, xxtlen, detxxt, x1);
+//    x2len = sum(x1len, x1, xtxtlen, detxtxt, x2);
+//    ylen = scale(temp16.length, temp16, ady, dety);
+//    yylen = scale(ylen, dety, ady, detyy);
+//    ytlen = scale(temp16.length, temp16, adytail, detyt);
+//    yytlen = scale(ytlen, detyt, ady, detyyt);
+//    for (int i = 0; i < yytlen; i++) { detyyt[i] *= 2.0; }
+//    ytytlen = scale(ytlen, detyt, adytail, detytyt);
+//    y1len = sum(yylen, detyy, yytlen, detyyt, y1);
+//    y2len = sum(y1len, y1, ytytlen, detytyt, y2);
+//    alen = sum(x2len, x2, y2len, y2, adet);
 
-  temp16len = sum(8, bxcy, 8, cxby, temp16);
+    XDouble temp16 = bxcy.add(cxby);
 
-  xlen = scale(temp16len, temp16, adx, detx);
-  xxlen = scale(xlen, detx, adx, detxx);
-  xtlen = scale(temp16len, temp16, adxtail, detxt);
-  xxtlen = scale(xtlen, detxt, adx, detxxt);
-  for (int i = 0; i < xxtlen; i++) { detxxt[i] *= 2.0; }
-  xtxtlen = scale(xtlen, detxt, adxtail, detxtxt);
-  x1len = sum(xxlen, detxx, xxtlen, detxxt, x1);
-  x2len = sum(x1len, x1, xtxtlen, detxtxt, x2);
+    XDouble detx = temp16.scale(adx);
+    XDouble detxx = detx.scale(adx);
+    XDouble detxt = temp16.scale(adxtail);
+    XDouble detxxt = detxt.scale(adx).fast2x();
+    XDouble detxtxt = detxt.scale(adxtail);
+    XDouble x1 = detxx.add(detxxt);
+    XDouble x2 = x1.add(detxtxt);
 
-  ylen = scale(temp16len, temp16, ady, dety);
-  yylen = scale(ylen, dety, ady, detyy);
-  ytlen = scale(temp16len, temp16, adytail, detyt);
-  yytlen = scale(ytlen, detyt, ady, detyyt);
-  for (int i = 0; i < yytlen; i++) { detyyt[i] *= 2.0; }
-  ytytlen = scale(ytlen, detyt, adytail, detytyt);
-  y1len = sum(yylen, detyy, yytlen, detyyt, y1);
-  y2len = sum(y1len, y1, ytytlen, detytyt, y2);
+    XDouble dety = temp16.scale(ady);
+    XDouble detyy = dety.scale(ady);
+    XDouble detyt = temp16.scale(adytail);
+    XDouble detyyt = detyt.scale(ady).fast2x();
+    XDouble detytyt = detyt.scale(adytail);
+    XDouble y1 = detyy.add(detyyt);
+    XDouble y2 = y1.add(detytyt);
 
-  alen = sum(x2len, x2, y2len, y2, adet);
+    XDouble adet = x2.add(y2);
+    //--------------------------
 
-  temp16len = sum(8, cxay, 8, axcy, temp16);
+//    temp16len = sum(8, cxay, 8, axcy, temp16);
+//    xlen = scale(temp16.length, temp16, bdx, detx);
+//    xxlen = scale(xlen, detx, bdx, detxx);
+//    xtlen = scale(temp16.length, temp16, bdxtail, detxt);
+//    xxtlen = scale(xtlen, detxt, bdx, detxxt);
+//    for (int i = 0; i < xxtlen; i++) { detxxt[i] *= 2.0; }
+//    xtxtlen = scale(xtlen, detxt, bdxtail, detxtxt);
+//    x1len = sum(xxlen, detxx, xxtlen, detxxt, x1);
+//    x2len = sum(x1len, x1, xtxtlen, detxtxt, x2);
+//    ylen = scale(temp16.length, temp16, bdy, dety);
+//    yylen = scale(ylen, dety, bdy, detyy);
+//    ytlen = scale(temp16.length, temp16, bdytail, detyt);
+//    yytlen = scale(ytlen, detyt, bdy, detyyt);
+//    for (int i = 0; i < yytlen; i++) { detyyt[i] *= 2.0; }
+//    ytytlen = scale(ytlen, detyt, bdytail, detytyt);
+//    y1len = sum(yylen, detyy, yytlen, detyyt, y1);
+//    y2len = sum(y1len, y1, ytytlen, detytyt, y2);
+//
+//    blen = sum(x2len, x2, y2len, y2, bdet);
 
-  xlen = scale(temp16len, temp16, bdx, detx);
-  xxlen = scale(xlen, detx, bdx, detxx);
-  xtlen = scale(temp16len, temp16, bdxtail, detxt);
-  xxtlen = scale(xtlen, detxt, bdx, detxxt);
-  for (int i = 0; i < xxtlen; i++) { detxxt[i] *= 2.0; }
-  xtxtlen = scale(xtlen, detxt, bdxtail, detxtxt);
-  x1len = sum(xxlen, detxx, xxtlen, detxxt, x1);
-  x2len = sum(x1len, x1, xtxtlen, detxtxt, x2);
+    temp16 = cxay.add(axcy);
 
-  ylen = scale(temp16len, temp16, bdy, dety);
-  yylen = scale(ylen, dety, bdy, detyy);
-  ytlen = scale(temp16len, temp16, bdytail, detyt);
-  yytlen = scale(ytlen, detyt, bdy, detyyt);
-  for (int i = 0; i < yytlen; i++) { detyyt[i] *= 2.0; }
-  ytytlen = scale(ytlen, detyt, bdytail, detytyt);
-  y1len = sum(yylen, detyy, yytlen, detyyt, y1);
-  y2len = sum(y1len, y1, ytytlen, detytyt, y2);
+    detx = temp16.scale(bdx);
+     detxx = detx.scale(bdx);
+     detxt = temp16.scale(bdxtail);
+     detxxt = detxt.scale(bdx).fast2x();
+     detxtxt = detxt.scale(bdxtail);
+     x1 = detxx.add(detxxt);
+     x2 = x1.add(detxtxt);
 
-  blen = sum(x2len, x2, y2len, y2, bdet);
+     dety = temp16.scale(bdy);
+     detyy = dety.scale(bdy);
+     detyt = temp16.scale(bdytail);
+     detyyt = detyt.scale(bdy).fast2x();
+     detytyt = detyt.scale(bdytail);
+     y1 = detyy.add(detyyt);
+     y2 = y1.add(detytyt);
 
-  temp16len = sum(8, axby, 8, bxay, temp16);
+    XDouble bdet = x2.add(y2);
 
-  xlen = scale(temp16len, temp16, cdx, detx);
-  xxlen = scale(xlen, detx, cdx, detxx);
-  xtlen = scale(temp16len, temp16, cdxtail, detxt);
-  xxtlen = scale(xtlen, detxt, cdx, detxxt);
-  for (int i = 0; i < xxtlen; i++) { detxxt[i] *= 2.0; }
-  xtxtlen = scale(xtlen, detxt, cdxtail, detxtxt);
-  x1len = sum(xxlen, detxx, xxtlen, detxxt, x1);
-  x2len = sum(x1len, x1, xtxtlen, detxtxt, x2);
+    //--------------------------
+//    temp16len = sum(8, axby, 8, bxay, temp16);
+//    xlen = scale(temp16.length, temp16, cdx, detx);
+//    xxlen = scale(xlen, detx, cdx, detxx);
+//    xtlen = scale(temp16.length, temp16, cdxtail, detxt);
+//    xxtlen = scale(xtlen, detxt, cdx, detxxt);
+//    for (int i = 0; i < xxtlen; i++) { detxxt[i] *= 2.0; }
+//    xtxtlen = scale(xtlen, detxt, cdxtail, detxtxt);
+//    x1len = sum(xxlen, detxx, xxtlen, detxxt, x1);
+//    x2len = sum(x1len, x1, xtxtlen, detxtxt, x2);
+//    ylen = scale(temp16.length, temp16, cdy, dety);
+//    yylen = scale(ylen, dety, cdy, detyy);
+//    ytlen = scale(temp16.length, temp16, cdytail, detyt);
+//    yytlen = scale(ytlen, detyt, cdy, detyyt);
+//    for (int i = 0; i < yytlen; i++) { detyyt[i] *= 2.0; }
+//    ytytlen = scale(ytlen, detyt, cdytail, detytyt);
+//    y1len = sum(yylen, detyy, yytlen, detyyt, y1);
+//    y2len = sum(y1len, y1, ytytlen, detytyt, y2);
+//
+//    clen = sum(x2len, x2, y2len, y2, cdet);
+    temp16 = axby.add(bxay);
 
-  ylen = scale(temp16len, temp16, cdy, dety);
-  yylen = scale(ylen, dety, cdy, detyy);
-  ytlen = scale(temp16len, temp16, cdytail, detyt);
-  yytlen = scale(ytlen, detyt, cdy, detyyt);
-  for (int i = 0; i < yytlen; i++) { detyyt[i] *= 2.0; }
-  ytytlen = scale(ytlen, detyt, cdytail, detytyt);
-  y1len = sum(yylen, detyy, yytlen, detyyt, y1);
-  y2len = sum(y1len, y1, ytytlen, detytyt, y2);
+    detx = temp16.scale(cdx);
+    detxx = detx.scale(cdx);
+    detxt = temp16.scale(cdxtail);
+    detxxt = detxt.scale(cdx).fast2x();
+    detxtxt = detxt.scale(cdxtail);
+    x1 = detxx.add(detxxt);
+    x2 = x1.add(detxtxt);
 
-  clen = sum(x2len, x2, y2len, y2, cdet);
+    dety = temp16.scale(cdy);
+    detyy = dety.scale(cdy);
+    detyt = temp16.scale(cdytail);
+    detyyt = detyt.scale(cdy).fast2x();
+    detytyt = detyt.scale(cdytail);
+    y1 = detyy.add(detyyt);
+    y2 = y1.add(detytyt);
 
-  ablen = sum(alen, adet, blen, bdet, abdet);
-  deterlen = sum(ablen, abdet, clen, cdet, deter);
-//    return deter[deterlen - 1];
-  // TODO: this is ignoring deterlen!
-  final XDouble det = XDouble.unsafe(DoubleArrayList.from(deter));
-  return det.doubleValue(); }
+    XDouble cdet = x2.add(y2);
+
+//    ablen = sum(alen, adet, blen, bdet, abdet);
+//    deterlen = sum(ablen, abdet, clen, cdet, deter);
+//    // return deter[deterlen - 1];
+//    // TODO: this is ignoring deterlen!
+//    final XDouble det = XDouble.unsafe(deter);
+
+    XDouble det = adet.add(bdet).add(cdet);
+    return det.doubleValue();
+  }
 
   //--------------------------------------------------------------------
   // orient2d
@@ -1538,7 +1592,7 @@ public final double incircle (final double[] pa,
       sum(temp64clen, temp64c, temp128len,
           temp128, temp192);
     xlen = scale(temp192len, temp192, aex, detx);
-    xxlen = scale(xlen, detx, aex, detxx);xtlen =
+    xxlen = scale(xlen, detx, aex, detxx); xtlen =
       scale(temp192len, temp192, aextail, detxt);
     xxtlen = scale(xtlen, detxt, aex, detxxt);
     for (int i = 0; i < xxtlen; i++) {
@@ -1550,7 +1604,7 @@ public final double incircle (final double[] pa,
     x2len =
       sum(x1len, x1, xtxtlen, detxtxt, x2);
     ylen = scale(temp192len, temp192, aey, dety);
-    yylen = scale(ylen, dety, aey, detyy);ytlen =
+    yylen = scale(ylen, dety, aey, detyy); ytlen =
       scale(temp192len, temp192, aeytail, detyt);
     yytlen = scale(ytlen, detyt, aey, detyyt);
     for (int i = 0; i < yytlen; i++) {
@@ -1562,7 +1616,7 @@ public final double incircle (final double[] pa,
     y2len =
       sum(y1len, y1, ytytlen, detytyt, y2);
     zlen = scale(temp192len, temp192, aez, detz);
-    zzlen = scale(zlen, detz, aez, detzz);ztlen =
+    zzlen = scale(zlen, detz, aez, detzz); ztlen =
       scale(temp192len, temp192, aeztail, detzt);
     zztlen = scale(ztlen, detzt, aez, detzzt);
     for (int i = 0; i < zztlen; i++) {
@@ -1596,7 +1650,7 @@ public final double incircle (final double[] pa,
       sum(temp64clen, temp64c, temp128len,
           temp128, temp192);
     xlen = scale(temp192len, temp192, bex, detx);
-    xxlen = scale(xlen, detx, bex, detxx);xtlen =
+    xxlen = scale(xlen, detx, bex, detxx); xtlen =
       scale(temp192len, temp192, bextail, detxt);
     xxtlen = scale(xtlen, detxt, bex, detxxt);
     for (int i = 0; i < xxtlen; i++) {
@@ -1608,7 +1662,7 @@ public final double incircle (final double[] pa,
     x2len =
       sum(x1len, x1, xtxtlen, detxtxt, x2);
     ylen = scale(temp192len, temp192, bey, dety);
-    yylen = scale(ylen, dety, bey, detyy);ytlen =
+    yylen = scale(ylen, dety, bey, detyy); ytlen =
       scale(temp192len, temp192, beytail, detyt);
     yytlen = scale(ytlen, detyt, bey, detyyt);
     for (int i = 0; i < yytlen; i++) {
@@ -1620,7 +1674,7 @@ public final double incircle (final double[] pa,
     y2len =
       sum(y1len, y1, ytytlen, detytyt, y2);
     zlen = scale(temp192len, temp192, bez, detz);
-    zzlen = scale(zlen, detz, bez, detzz);ztlen =
+    zzlen = scale(zlen, detz, bez, detzz); ztlen =
       scale(temp192len, temp192, beztail, detzt);
     zztlen = scale(ztlen, detzt, bez, detzzt);
     for (int i = 0; i < zztlen; i++) {
@@ -1654,7 +1708,7 @@ public final double incircle (final double[] pa,
       sum(temp64clen, temp64c, temp128len,
           temp128, temp192);
     xlen = scale(temp192len, temp192, cex, detx);
-    xxlen = scale(xlen, detx, cex, detxx);xtlen =
+    xxlen = scale(xlen, detx, cex, detxx); xtlen =
       scale(temp192len, temp192, cextail, detxt);
     xxtlen = scale(xtlen, detxt, cex, detxxt);
     for (int i = 0; i < xxtlen; i++) {
@@ -1666,7 +1720,7 @@ public final double incircle (final double[] pa,
     x2len =
       sum(x1len, x1, xtxtlen, detxtxt, x2);
     ylen = scale(temp192len, temp192, cey, dety);
-    yylen = scale(ylen, dety, cey, detyy);ytlen =
+    yylen = scale(ylen, dety, cey, detyy); ytlen =
       scale(temp192len, temp192, ceytail, detyt);
     yytlen = scale(ytlen, detyt, cey, detyyt);
     for (int i = 0; i < yytlen; i++) {
@@ -1678,7 +1732,7 @@ public final double incircle (final double[] pa,
     y2len =
       sum(y1len, y1, ytytlen, detytyt, y2);
     zlen = scale(temp192len, temp192, cez, detz);
-    zzlen = scale(zlen, detz, cez, detzz);ztlen =
+    zzlen = scale(zlen, detz, cez, detzz); ztlen =
       scale(temp192len, temp192, ceztail, detzt);
     zztlen = scale(ztlen, detzt, cez, detzzt);
     for (int i = 0; i < zztlen; i++) {
@@ -1712,7 +1766,7 @@ public final double incircle (final double[] pa,
       sum(temp64clen, temp64c, temp128len,
           temp128, temp192);
     xlen = scale(temp192len, temp192, dex, detx);
-    xxlen = scale(xlen, detx, dex, detxx);xtlen =
+    xxlen = scale(xlen, detx, dex, detxx); xtlen =
       scale(temp192len, temp192, dextail, detxt);
     xxtlen = scale(xtlen, detxt, dex, detxxt);
     for (int i = 0; i < xxtlen; i++) {
@@ -1724,7 +1778,7 @@ public final double incircle (final double[] pa,
     x2len =
       sum(x1len, x1, xtxtlen, detxtxt, x2);
     ylen = scale(temp192len, temp192, dey, dety);
-    yylen = scale(ylen, dety, dey, detyy);ytlen =
+    yylen = scale(ylen, dety, dey, detyy); ytlen =
       scale(temp192len, temp192, deytail, detyt);
     yytlen = scale(ytlen, detyt, dey, detyyt);
     for (int i = 0; i < yytlen; i++) {
@@ -1736,7 +1790,7 @@ public final double incircle (final double[] pa,
     y2len =
       sum(y1len, y1, ytytlen, detytyt, y2);
     zlen = scale(temp192len, temp192, dez, detz);
-    zzlen = scale(zlen, detz, dez, detzz);ztlen =
+    zzlen = scale(zlen, detz, dez, detzz); ztlen =
       scale(temp192len, temp192, deztail, detzt);
     zztlen = scale(ztlen, detzt, dez, detzzt);
     for (int i = 0; i < zztlen; i++) {
