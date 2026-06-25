@@ -1,7 +1,7 @@
 package mop.java.test.geometry.predicates;
 
 import mop.java.geometry.predicates.Adapt;
-import mop.java.geometry.predicates.AdaptMacro;
+import mop.java.geometry.predicates.macro.AdaptMacro;
 import mop.java.geometry.predicates.Predicate;
 import mop.java.numbers.Doubles;
 import mop.java.prng.Generator;
@@ -20,7 +20,7 @@ import java.util.List;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-06-20
+ * @version 2026-06-25
  */
 
 public final class InCircleTest {
@@ -77,18 +77,18 @@ public final class InCircleTest {
    */
 
   private static final void adaptTest (final double[] p0,
-                                      final double[] p1,
-                                      final double[] p2,
-                                      final double[] p3) {
+                                       final double[] p1,
+                                       final double[] p2,
+                                       final double[] p3) {
     final Predicate gold = new AdaptMacro();
     final Predicate p = new Adapt();
 
     final double trueInc = gold.incircle(p0, p1, p2, p3);
-      final double inc = p.incircle(p0, p1, p2, p3);
-        // with delta=0.0 handles +0 vs -0 'correctly'
-        Assertions.assertEquals(
-          trueInc, inc, 0.0,
-          failureMsg(trueInc,inc,gold,p,null,p0,p1,p2,p3)); }
+    final double inc = p.incircle(p0, p1, p2, p3);
+    // with delta=0.0 handles +0 vs -0 'correctly'
+    Assertions.assertEquals(
+      trueInc, inc, 0.0,
+      failureMsg(trueInc,inc,gold,p,null,p0,p1,p2,p3)); }
 
   //--------------------------------------------------------------
 

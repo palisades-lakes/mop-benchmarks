@@ -1,4 +1,4 @@
-package mop.java.geometry.predicates;
+package mop.java.geometry.predicates.macro;
 // 2026-05-14
 // macro expand predicates.c via https://godbolt.org/
 // minimal changes to compile as java
@@ -6,11 +6,12 @@ package mop.java.geometry.predicates;
 // split into Expansion manipulation and fast, slow, exact, adaptive
 // algorithm classes
 
-import com.carrotsearch.hppc.DoubleArrayList;
-import mop.java.numbers.Hilo;
+import mop.java.geometry.predicates.Predicate;
 import mop.java.numbers.XDouble;
 
-import static mop.java.geometry.predicates.Expansion.*;
+import static mop.java.geometry.predicates.macro.Expansion.SPLITTER;
+import static mop.java.geometry.predicates.Expansion.scale;
+import static mop.java.geometry.predicates.Expansion.sum;
 
 /**
  * More exact tests.  Robust.
@@ -83,7 +84,7 @@ import static mop.java.geometry.predicates.Expansion.*;
  *   even <code>BigInteger</code> to extend range.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-05-28
+ * @version 2026-06-25
  */
 
 // strictfp unnecessary for JDK17 and later
@@ -97,68 +98,7 @@ public final class SlowMacro implements Predicate {
   //--------------------------------------------------------------------
   // incircle
   //--------------------------------------------------------------------
-
-//  private static final XDouble det (final Hilo ax,
-//                                    final Hilo ay,
-//                                    final Hilo bx,
-//                                    final Hilo by,
-//                                    final Hilo cx,
-//                                    final Hilo cy) {
-//
-//    final XDouble axby = XDouble.twoTwoProduct(ax, by);
-//    final XDouble bxay = XDouble.twoTwoProduct(bx, ay);
-//    final XDouble sum = axby.subtract(bxay);
-//
-//    final XDouble sxhihi = sum.scale(cx.hi()).scale(cx.hi());
-//    final XDouble sxlo = sum.scale(cx.lo());
-//    // TODO: guess simple loop works because exact if 2x
-//    //  could implement a faster exponent add version for powers of 2?
-//    //  for (i = 0; i < xxtlen; i++) { detxxt[i] *= 2.0; }
-//    final XDouble sxlohi2 = sxlo.scale(cx.hi()).fast2x();
-//    //final XDouble sxlohi2 = sxlo.scale(cx.hi()).scale(2.0);
-//    final XDouble sxlolo = sxlo.scale(cx.lo());
-//    final XDouble detx = sxhihi.add(sxlohi2).add(sxlolo);
-//
-//    final XDouble syhihi = sum.scale(cy.hi()).scale(cy.hi());
-//    final XDouble sylo = sum.scale(cy.lo());
-//    //for (i = 0; i < yytlen; i++) { detyyt[i] *= 2.0; }
-//    final XDouble sylohi2 = sylo.scale(cy.hi()).fast2x();
-//    //final XDouble sylohi2 = sylo.scale(cy.hi()).scale(2.0);
-//    //for (i = 0; i < yytlen; i++) { detyyt[i] *= 2.0; }
-//    final XDouble sylolo = sylo.scale(cy.lo());
-//    final XDouble dety = syhihi.add(sylohi2).add(sylolo);
-//
-//    return detx.add(dety); }
-
-  //--------------------------------------------------------------------
-//  /** signed distance of <code>pd</code> from the circumcircle thru
-//   * <code>pa,pb,pc</code>, negative means outside.
-//   */
-
-//  public final double incircle (final double[] pa,
-//                                final double[] pb,
-//                                final double[] pc,
-//                                final double[] pd) {
-//
-//    final Hilo ax = Hilo.twoDiff(pa[0], pd[0]);
-//    final Hilo ay = Hilo.twoDiff(pa[1], pd[1]);
-//    final Hilo bx = Hilo.twoDiff(pb[0], pd[0]);
-//    final Hilo by = Hilo.twoDiff(pb[1], pd[1]);
-//    final Hilo cx = Hilo.twoDiff(pc[0], pd[0]);
-//    final Hilo cy = Hilo.twoDiff(pc[1], pd[1]);
-//
-//    final XDouble ad = det(bx,by,cx,cy,ax,ay);
-//    final XDouble bd = det(cx,cy,ax,ay,bx,by);
-//    final XDouble cd = det(ax,ay,bx,by,cx,cy);
-//
-//    final XDouble d = cd.add(bd).add(ad);
-//    //new Throwable().printStackTrace(System.out);
-//    System.out.println(d);
-//    return d.doubleValue();
-  ////    return d.estimate();
-//  }
-
-// from macro expanded C code:
+  // from macro expanded C code:
 
   public final double incircle (final double[] pa, final double[] pb,
                                 final double[] pc, final double[] pd) {
@@ -182,8 +122,6 @@ public final class SlowMacro implements Predicate {
     double[] adet = new double[384], bdet = new double[384], cdet =
       new double[384], abdet = new double[768], deter =
       new double[1152]; int alen, blen, clen, ablen;
-    @SuppressWarnings("unused")
-    int deterlen;
     int i;
 
     double bvirt; double avirt, bround, around; double c; double abig;
@@ -590,11 +528,11 @@ public final class SlowMacro implements Predicate {
     clen = sum(x2len, x2, y2len, y2, cdet);
 
     ablen = sum(alen, adet, blen, bdet, abdet);
-    deterlen = sum(ablen, abdet, clen, cdet, deter);
+    sum(ablen, abdet, clen, cdet, deter);
+//    incorrect rounding to double!
 //    return deter[deterlen - 1];
     // TODO: this is ignoring deterlen!
-    final XDouble det = XDouble.unsafe(DoubleArrayList.from(deter));
-    return det.doubleValue(); }
+   return XDouble.unsafe(deter).doubleValue(); }
 
   //--------------------------------------------------------------------
   // orient2d

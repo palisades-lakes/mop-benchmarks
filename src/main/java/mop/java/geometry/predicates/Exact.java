@@ -11,7 +11,7 @@ import mop.java.numbers.XDouble;
  *   profiling.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-05-24
+ * @version 2026-06-25
  */
 
 public final class Exact implements Predicate {
@@ -19,7 +19,6 @@ public final class Exact implements Predicate {
   private static final double SPLITTER = 0x1.0000002p27;
 
   public final boolean isExact () { return true; }
-
 
   //--------------------------------------------------------------------
 
@@ -56,8 +55,9 @@ public final class Exact implements Predicate {
     final XDouble ddet =
       (abc.scale(dx).scale(-dx)).add(abc.scale(dy).scale(-dy));
 
+    // TODO: resolve this!
     // this change fixes current test cases.
-    // shouldn't matter, XDouble addition should be associative
+    // shouldn't matter, XDouble add should be associative
     //final XDouble det = adet.add(bdet).add(cdet.add(ddet));
     final XDouble det = adet.add(bdet).add(cdet).add(ddet);
     return det.doubleValue(); }
