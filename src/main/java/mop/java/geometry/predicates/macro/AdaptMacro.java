@@ -1946,8 +1946,7 @@ import static mop.java.geometry.predicates.macro.Expansion.*;
                                   final double[] pb,
                                   final double[] pc,
                                   final double[] pd) {
-      return new DefaultMacro().incircle(pa, pb, pc, pd);
-    }
+      return new DefaultMacro().incircle(pa, pb, pc, pd); }
 
     final double incircle (final double[] pa,
                            final double[] pb,
