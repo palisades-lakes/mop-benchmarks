@@ -80,6 +80,8 @@ package mop.java.geometry.predicates;
 
 public interface Predicate {
 
+  // TODO: replace double[] with Point/Vector objects
+
   //--------------------------------------------------------------------
   // TODO: algorithm might be exact for some operations and not others.
   // TODO: an estimate of accuracy for each operation would be better.
