@@ -65,7 +65,7 @@ public final class XDoubles implements Set {
       public final String toString () { return "XDouble.scale()"; }
       @Override
       public final XDouble apply (final Double q, final XDouble s) {
-        return s.scale(q); } }; }
+        return s.multiply(q); } }; }
 
   //--------------------------------------------------------------
   // Set methods

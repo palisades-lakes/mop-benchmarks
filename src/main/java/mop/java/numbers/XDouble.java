@@ -307,7 +307,7 @@ public final class XDouble implements Comparable<XDouble> {
   // TODO: cleanup non-finite cases
   // naive implementation:
 
-  public final XDouble scale (final double b) {
+  public final XDouble multiply (final double b) {
     if (0.0==b) { return ZERO; }
     if (1.0==b) { return this; }
     if (Double.isNaN(b)) { return NaN; }
@@ -333,7 +333,7 @@ public final class XDouble implements Comparable<XDouble> {
     assert isFinite() : "\n" + this;
     XDouble result = ZERO;
     for  (int i=0;i<nterms();i++) {
-      final Hilo ab = Hilo.twoProduct(term(i),b);
+      final Hilo ab = Hilo.product(term(i), b);
       if (ab.isNaN()) { return NaN; }
       result = result.add(ab.hi());
       result = result.add(ab.lo()); }
@@ -453,7 +453,7 @@ public final class XDouble implements Comparable<XDouble> {
   //--------------------------------------------------------------------
   /** Copy the terms to an array. */
 
-  public final double[] toArray () { return terms().toArray(); }
+  //public final double[] toArray () { return terms().toArray(); }
 
   //--------------------------------------------------------------------
   // private construction
@@ -539,9 +539,6 @@ public final class XDouble implements Comparable<XDouble> {
     final Hilo x2x1 = Hilo.twoSum(ahi, ix0.hi());
     return new double[] {ix0.lo(), x2x1.lo(), x2x1.hi(), }; }
 
-  // Two_Two_Diff(axby1, axby0, bxay1, bxay0,
-  //              ab[3], ab[2], ab[1], ab[0]);
-
   public static final XDouble twoTwoDiff (final Hilo a,
                                           final Hilo b) {
     // Two_One_Diff(a1, a0, b0, _j, _0, x0);
@@ -598,13 +595,16 @@ public final class XDouble implements Comparable<XDouble> {
     final double[] ab0 = twoOneSum(a.hi(),a.lo(),b.lo());
     final double[] ab1 = twoOneSum(ab0[0],ab0[1],b.hi());
     return unsafe(DoubleArrayList.from(
-      ab0[2],ab1[0],ab1[1],ab1[2]));
-  }
+      ab0[2],ab1[0],ab1[1],ab1[2])); }
+
+  public static final XDouble l2norm2 (final double x,
+                                       final double y) {
+    return twoTwoSum(Hilo.square(x), Hilo.square(y)); }
 
   // Shewchuk version
   public static final XDouble twoProduct (final double a,
                                           final double b) {
-    final Hilo hilo = Hilo.twoProduct(a,b);
+    final Hilo hilo = Hilo.product(a, b);
     return unsafe(DoubleArrayList.from(hilo.lo(), hilo.hi())); }
 
   public static final XDouble crossProduct (final double[] a,
@@ -614,31 +614,6 @@ public final class XDouble implements Comparable<XDouble> {
     return axby.subtract(bxay); }
 
   //--------------------------------------------------------------------
-  //  #define Two_Two_Product(a1, a0, b1, b0, x7, x6, x5, x4, x3, x2, x1, x0) \
-  //  Split(a0, a0hi, a0lo); \
-  //  Split(b0, bhi, blo); \
-  //  Two_Product_2Presplit(a0, a0hi, a0lo, b0, bhi, blo, _i, x0); \
-  //  Split(a1, a1hi, a1lo); \
-  //  Two_Product_2Presplit(a1, a1hi, a1lo, b0, bhi, blo, _j, _0); \
-  //  Two_Sum(_i, _0, _k, _1); \
-  //  Fast_Two_Sum(_j, _k, _l, _2); \
-  //  Split(b1, bhi, blo); \
-  //  Two_Product_2Presplit(a0, a0hi, a0lo, b1, bhi, blo, _i, _0); \
-  //  Two_Sum(_1, _0, _k, x1); \
-  //  Two_Sum(_2, _k, _j, _1); \
-  //  Two_Sum(_l, _j, _m, _2); \
-  //  Two_Product_2Presplit(a1, a1hi, a1lo, b1, bhi, blo, _j, _0); \
-  //  Two_Sum(_i, _0, _n, _0); \
-  //  Two_Sum(_1, _0, _i, x2); \
-  //  Two_Sum(_2, _i, _k, _1); \
-  //  Two_Sum(_m, _k, _l, _2); \
-  //  Two_Sum(_j, _n, _k, _0); \
-  //  Two_Sum(_1, _0, _j, x3); \
-  //  Two_Sum(_2, _j, _i, _1); \(
-  //  Two_Sum(_l, _i, _m, _2); \
-  //  Two_Sum(_1, _k, _i, x4); \
-  //  Two_Sum(_2, _i, _k, x5); \
-  //  Two_Sum(_m, _k, x7, x6)
 
   public static final XDouble twoTwoProduct (final Hilo a,
                                               final Hilo b) {

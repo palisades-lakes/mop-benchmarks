@@ -126,7 +126,8 @@ public record Hilo (double hi, double lo)
 
   private static final double SPLIT = 1.0 + 0x1.0p27;
 
-  public final Hilo multiply (final double yhi, final double ylo) {
+  public final Hilo multiply (final double yhi,
+                              final double ylo) {
     // TODO: check whether all these edge cases are necessary
     if (ZERO.equals(this)) { return ZERO; }
     if ((0.0 == yhi) && (0.0 == ylo)) { return ZERO; }
@@ -168,8 +169,7 @@ public record Hilo (double hi, double lo)
 
   @Override
   public final Hilo multiply (final Hilo that) {
-    return multiply(that.hi, that.lo);
-  }
+    return multiply(that.hi, that.lo); }
 
   @Override
   public final Hilo square () { return multiply(this); }
@@ -342,7 +342,7 @@ public record Hilo (double hi, double lo)
 //  y = (alo * alo) - err3
 
   private static final double squareTail (final double a,
-                                        final double hi) {
+                                          final double hi) {
     final Hilo ahilo = split(a);
     final double err1 = hi - (ahilo.hi() * ahilo.hi());
     final double err3 = err1 - ((ahilo.hi() + ahilo.hi()) * ahilo.lo());
@@ -352,9 +352,9 @@ public record Hilo (double hi, double lo)
 //  x = (REAL) (a * a); \
 //  Square_Tail(a, x, y)
   public static final Hilo square (final double a) {
-  final double x =  (a * a);
-  final double y = squareTail(a, x);
-  return new Hilo(x, y); }
+    final double x =  (a * a);
+    final double y = squareTail(a, x);
+    return new Hilo(x, y); }
 
   public static final Hilo twoSum (final double a, final double b) {
     final double x = (a + b);
@@ -401,14 +401,14 @@ public record Hilo (double hi, double lo)
 //  around = a - avirt; \
 //  y = around + bround
   public static final double twoDiffTail (final double a,
-                                        final double b,
-                                        final double hi) {
+                                          final double b,
+                                          final double hi) {
 
-  final double bvirt = (a - hi);
-  final double avirt = hi + bvirt;
-  final double bround = bvirt - b;
-  final double around = a - avirt;
-  return around + bround; }
+    final double bvirt = (a - hi);
+    final double avirt = hi + bvirt;
+    final double bround = bvirt - b;
+    final double around = a - avirt;
+    return around + bround; }
 
   // TODO: move to Expansion or XDouble
   // returns double[3]
@@ -511,8 +511,8 @@ public record Hilo (double hi, double lo)
 //    final double y = (ahilo.lo() * bhilo.lo()) - err3;
 //    return new Hilo(x, y); }
 
-  public static final Hilo twoProduct (final double a,
-                                       final double b) {
+  public static final Hilo product (final double a,
+                                    final double b) {
     final double x = (a * b);
     //Two_Product_Tail(a, b, x, y)
     // TODO: inline to avoid instance creation?

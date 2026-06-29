@@ -107,16 +107,16 @@ public final class Slow implements Predicate {
     final XDouble bxay = XDouble.twoTwoProduct(bx, ay);
     final XDouble sum = axby.subtract(bxay);
 
-    final XDouble sxhihi = sum.scale(cx.hi()).scale(cx.hi());
-    final XDouble sxlo = sum.scale(cx.lo());
-    final XDouble sxlohi2 = sxlo.scale(cx.hi()).fast2x();
-    final XDouble sxlolo = sxlo.scale(cx.lo());
+    final XDouble sxhihi = sum.multiply(cx.hi()).multiply(cx.hi());
+    final XDouble sxlo = sum.multiply(cx.lo());
+    final XDouble sxlohi2 = sxlo.multiply(cx.hi()).fast2x();
+    final XDouble sxlolo = sxlo.multiply(cx.lo());
     final XDouble detx = sxhihi.add(sxlohi2).add(sxlolo);
 
-    final XDouble syhihi = sum.scale(cy.hi()).scale(cy.hi());
-    final XDouble sylo = sum.scale(cy.lo());
-    final XDouble sylohi2 = sylo.scale(cy.hi()).fast2x();
-    final XDouble sylolo = sylo.scale(cy.lo());
+    final XDouble syhihi = sum.multiply(cy.hi()).multiply(cy.hi());
+    final XDouble sylo = sum.multiply(cy.lo());
+    final XDouble sylohi2 = sylo.multiply(cy.hi()).fast2x();
+    final XDouble sylolo = sylo.multiply(cy.lo());
     final XDouble dety = syhihi.add(sylohi2).add(sylolo);
 
     return detx.add(dety); }

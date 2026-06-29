@@ -6,7 +6,7 @@ import mop.java.numbers.BigFloat;
  * Should be exact, up to BigFloat resolution.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-05-19
+ * @version 2026-06-9
  */
 
 public final class BigFloatPredicate implements Predicate {
@@ -90,6 +90,7 @@ public final class BigFloatPredicate implements Predicate {
                                 final double[] pb,
                                 final double[] pc,
                                 final double[] pd) {
+    // TODO: move BigFloat creation to BigFloat.subtract(double,double)
     final BigFloat ax = BigFloat.valueOf(pa[0]);
     final BigFloat ay = BigFloat.valueOf(pa[1]);
     final BigFloat bx = BigFloat.valueOf(pb[0]);

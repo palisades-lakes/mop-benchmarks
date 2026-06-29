@@ -87,7 +87,7 @@ import static mop.java.geometry.predicates.Expansion.sum;
  *   even <code>BigInteger</code> to extend range.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-06-27
+ * @version 2026-06-29
  */
 
 // strictfp (may be) necessary for JDK16 and earlier
@@ -110,12 +110,28 @@ public final class Adapt implements Predicate {
   private static final double iccerrboundA =
     (10.0 + 96.0 * EPSILON) * EPSILON;
 
+  private static final XDouble fininc (final XDouble bb,
+                                       final double adxtail,
+                                       final double cdy,
+                                       final XDouble axtbc,
+                                       final double adx,
+                                       final XDouble cc,
+                                       final double bdy) {
+    // TODO: XDouble.scaleTimes(double,double) ->
+    //  XDouble.scale(Hilo.twoProduct(a,v))
+    //  intermediate Hilo instance rather than XDouble
+    return bb.multiply(adxtail).multiply(-cdy)
+             .add(axtbc.multiply(2*adx))
+             .add(cc.multiply(adxtail).multiply(bdy)); }
+
   private static final double incircle (final double[] pa,
                                         final double[] pb,
                                         final double[] pc,
                                         final double[] pd,
                                         final double permanent) {
     // TODO: should this be Hilo.twoDiff? see calls to towDiffTail below
+    // TODO: convert to vector ops.
+    // TODO: subtract d from other vecs before calling
     final double adx = (pa[0] - pd[0]);
     final double ady = (pa[1] - pd[1]);
     final double bdx = (pb[0] - pd[0]);
@@ -123,55 +139,31 @@ public final class Adapt implements Predicate {
     final double cdx = (pc[0] - pd[0]);
     final double cdy = (pc[1] - pd[1]);
 
-    //    Two_Product(bdx, cdy, bdxcdy1, bdxcdy0);
-    //    Two_Product(cdx, bdy, cdxbdy1, cdxbdy0);
-    //    Two_Two_Diff(bdxcdy1, bdxcdy0, cdxbdy1, cdxbdy0, bc3, bc[2], bc[1], bc[0]);
-    final Hilo bdxcdy = Hilo.twoProduct(bdx,cdy);
-    final Hilo cdxbdy = Hilo.twoProduct(cdx,bdy);
-    final XDouble bc = XDouble.twoTwoDiff(bdxcdy,cdxbdy);
-    // TODO: XDouble l2norm2
-    final XDouble axbc = bc.scale(adx);
-    final XDouble axxbc = axbc.scale(adx);
-    final XDouble aybc = bc.scale(ady);
-    final XDouble ayybc = aybc.scale(ady);
-    final XDouble adet = axxbc.add(ayybc);
+    // TODO: XDouble.crossProduct?
+    final XDouble bc = XDouble.twoTwoDiff(
+      Hilo.product(bdx, cdy),
+      Hilo.product(cdx, bdy));
+    // TODO: XDouble l2norm2, scale2
+    final XDouble adet = bc.multiply(adx).multiply(adx)
+                           .add(bc.multiply(ady).multiply(ady));
 
-    //    Two_Product(cdx, ady, cdxady1, cdxady0);
-    //    Two_Product(adx, cdy, adxcdy1, adxcdy0);
-    //    Two_Two_Diff(cdxady1, cdxady0, adxcdy1, adxcdy0, ca3, ca[2], ca[1], ca[0]);
-    final Hilo cdxady = Hilo.twoProduct(cdx,ady);
-    final Hilo adxcdy = Hilo.twoProduct(adx,cdy);
-    final XDouble ca = XDouble.twoTwoDiff(cdxady,adxcdy);
-    final XDouble bxca = ca.scale(bdx);
-    final XDouble bxxca = bxca.scale(bdx);
-    final XDouble byca = ca.scale(bdy);
-    final XDouble byyca = byca.scale(bdy);
-    final XDouble bdet = bxxca.add(byyca);
+    final XDouble ca = XDouble.twoTwoDiff(
+      Hilo.product(cdx, ady),
+      Hilo.product(adx, cdy));
+    final XDouble bdet = ca.multiply(bdx).multiply(bdx)
+                           .add(
+                             ca.multiply(bdy).multiply(bdy));
 
-//    Two_Product(adx, bdy, adxbdy1, adxbdy0);
-//    Two_Product(bdx, ady, bdxady1, bdxady0);
-//    Two_Two_Diff(adxbdy1, adxbdy0, bdxady1, bdxady0, ab3, ab[2], ab[1], ab[0]);
-    final Hilo adxbdy = Hilo.twoProduct(adx,bdy);
-    final Hilo bdxady = Hilo.twoProduct(bdx,ady);
-    final XDouble ab = XDouble.twoTwoDiff(adxbdy,bdxady);
-    final XDouble cxab = ab.scale(cdx);
-    final XDouble cxxab = cxab.scale(cdx);
-    final XDouble cyab = ab.scale(cdy);
-    final XDouble cyyab = cyab.scale(cdy);
-    final XDouble cdet = cxxab.add(cyyab);
-    final XDouble abdet = adet.add(bdet);
-    XDouble finnow = abdet.add(cdet);
+    final XDouble ab = XDouble.twoTwoDiff(
+      Hilo.product(adx, bdy),
+      Hilo.product(bdx, ady));
+    final XDouble cdet = ab.multiply(cdx).multiply(cdx)
+                           .add(ab.multiply(cdy).multiply(cdy));
 
-    //det = fin1x.estimate();
+    XDouble finnow =  adet.add(bdet).add(cdet);
+
     double det = finnow.doubleValue();
     if (Math.abs(det) >= iccerrboundB * permanent) { return det; }
-
-//    Two_Diff_Tail(pa[0], pd[0], adx, adxtail);
-//    Two_Diff_Tail(pa[1], pd[1], ady, adytail);
-//    Two_Diff_Tail(pb[0], pd[0], bdx, bdxtail);
-//    Two_Diff_Tail(pb[1], pd[1], bdy, bdytail);
-//    Two_Diff_Tail(pc[0], pd[0], cdx, cdxtail);
-//    Two_Diff_Tail(pc[1], pd[1], cdy, cdytail);
 
     final double adxtail = Hilo.twoDiffTail(pa[0], pd[0], adx);
     final double adytail = Hilo.twoDiffTail(pa[1], pd[1], ady);
@@ -179,9 +171,18 @@ public final class Adapt implements Predicate {
     final double bdytail = Hilo.twoDiffTail(pb[1], pd[1], bdy);
     final double cdxtail = Hilo.twoDiffTail(pc[0], pd[0], cdx);
     final double cdytail = Hilo.twoDiffTail(pc[1], pd[1], cdy);
-    if ((adxtail == 0.0) && (bdxtail == 0.0) && (cdxtail == 0.0)
-      && (adytail == 0.0) && (bdytail == 0.0) && (cdytail == 0.0)) {
-      return det; }
+
+    final boolean axtail = (adxtail != 0.0);
+    final boolean aytail = (adytail != 0.0);
+    final boolean atail = axtail || aytail;
+    final boolean bxtail = (bdxtail != 0.0);
+    final boolean bytail = (bdytail != 0.0);
+    final boolean btail = bxtail || bytail;
+    final boolean cxtail = (cdxtail != 0.0);
+    final boolean cytail = (cdytail != 0.0);
+    final boolean ctail = cxtail || cytail;
+
+    if (! (atail || btail || ctail)) { return det; }
 
     final double errbound = (iccerrboundC*permanent)
       + (resulterrbound*Math.abs(det));
@@ -197,331 +198,196 @@ public final class Adapt implements Predicate {
         + 2.0*(cdx*cdxtail + cdy*cdytail)*(adx*bdy - ady*bdx));
     if (Math.abs(det) >= errbound) { return det; }
 
-    final XDouble aa;
-    if ((bdxtail != 0.0) || (bdytail != 0.0)
-      || (cdxtail != 0.0) || (cdytail != 0.0)) {
-      aa = XDouble.twoTwoSum(Hilo.square(adx), Hilo.square(ady)); }
-    else {
-      aa = XDouble.ZERO; }
+    final XDouble aa =
+      (btail || ctail) ? XDouble.l2norm2(adx,ady) : XDouble.ZERO;
 
-    final XDouble bb;
-    if ((cdxtail != 0.0) || (cdytail != 0.0)
-      || (adxtail != 0.0) || (adytail != 0.0)) {
-      bb = XDouble.twoTwoSum(Hilo.square(bdx), Hilo.square(bdy)); }
-    else {
-      bb = XDouble.ZERO; }
+    final XDouble bb =
+      (ctail || atail) ? XDouble.l2norm2(bdx,bdy) : XDouble.ZERO;
 
-    final XDouble cc;
-    if ((adxtail != 0.0) || (adytail != 0.0)
-      || (bdxtail != 0.0) || (bdytail != 0.0)) {
-      cc = XDouble.twoTwoSum(Hilo.square(cdx), Hilo.square(cdy)); }
-    else {
-      cc  = XDouble.ZERO; }
+    final XDouble cc =
+      (atail || btail) ? XDouble.l2norm2(cdx,cdy) : XDouble.ZERO;
 
     final XDouble axtbc;
-    if (adxtail != 0.0) {
-      axtbc = bc.scale(adxtail);
-      final XDouble temp16a = axtbc.scale(2*adx);
-      final XDouble axtcc = cc.scale(adxtail);
-      final XDouble temp16b = axtcc.scale(bdy);
-      final XDouble axtbb = bb.scale(adxtail);
-      final XDouble temp16c = axtbb.scale(-cdy);
-      final XDouble temp32a = temp16a.add(temp16b);
-      final XDouble temp48 = temp16c.add(temp32a);
-      finnow = finnow.add(temp48); }
+    if (axtail) {
+      axtbc = bc.multiply(adxtail);
+      finnow = finnow.add(fininc(bb,adxtail,cdy,axtbc,adx,cc,bdy)); }
     else {
       axtbc = XDouble.ZERO; }
 
     final XDouble aytbc;
-    if (adytail != 0.0) {
-      aytbc = bc.scale(adytail);
-      final XDouble temp16a = aytbc.scale(2*ady);
-      final XDouble aytbb = bb.scale(adytail);
-      final XDouble temp16b = aytbb.scale(adytail);
-      final XDouble aytcc = cc.scale(adytail);
-      final XDouble temp16c = aytcc.scale(-bdx);
-      final XDouble temp32a = temp16a.add(temp16b);
-      final XDouble temp48 = temp16c.add(temp32a);
-      finnow = finnow.add(temp48); }
+    if (aytail) {
+      aytbc = bc.multiply(adytail);
+      finnow = finnow.add( fininc(cc,adytail,cdy,aytbc,ady,bb,bdx)); }
     else {
       aytbc = XDouble.ZERO; }
 
     final XDouble bxtca;
-    if (bdxtail != 0.0) {
-      bxtca = ca.scale(bdxtail);
-      final XDouble temp16a = bxtca.scale(2*bdx);
-      final XDouble bxtaa = aa.scale(bdxtail);
-      final XDouble temp16b = bxtaa.scale(cdy);
-      final XDouble bxtcc = cc.scale(bdxtail);
-      final XDouble temp16c = bxtcc.scale(-ady);
-      final XDouble temp32a = temp16a.add(temp16b);
-      final XDouble temp48 = temp16c.add(temp32a);
-      finnow = finnow.add(temp48); }
+    if (bxtail) {
+      bxtca = ca.multiply(bdxtail);
+      finnow = finnow.add(fininc(cc,bdxtail,ady,bxtca,bdx,aa,cdy)); }
     else {
       bxtca = XDouble.ZERO; }
 
     final XDouble bytca;
-    if (bdytail != 0.0) {
-      bytca = ca.scale(bdytail);
-      final XDouble temp16a = bytca.scale(2*bdy);
-      final XDouble bytcc = cc.scale(bdytail);
-      final XDouble temp16b = bytcc.scale(adx);
-      final XDouble bytaa = aa.scale(bdytail);
-      final XDouble temp16c = bytaa.scale(-cdx);
-      final XDouble temp32a = temp16a.add(temp16b);
-      final XDouble temp48 = temp16c.add(temp32a);
-      finnow = finnow.add(temp48);
-    }
+    if (bytail) {
+      bytca = ca.multiply(bdytail);
+      finnow = finnow.add(fininc(aa,bdytail,cdx,bytca,bdy,cc,adx)); }
+
     else { bytca = XDouble.ZERO; }
 
     final XDouble cxtab;
-    if (cdxtail != 0.0) {
-      cxtab = ab.scale(cdxtail);
-      final XDouble temp16a = cxtab.scale(2*cdx);
-      final XDouble cxtbb = bb.scale(cdxtail);
-      final XDouble temp16b = cxtbb.scale(ady);
-      final XDouble cxtaa = aa.scale(cdxtail);
-      final XDouble temp16c = cxtaa.scale(-bdy);
-      final XDouble temp32a = temp16a.add(temp16b);
-      final XDouble temp48 = temp16c.add(temp32a);
-      finnow = finnow.add(temp48); }
+    if (cxtail) {
+      cxtab = ab.multiply(cdxtail);
+      finnow = finnow.add(fininc(aa,cdxtail,bdy,cxtab,cdx,bb,ady)); }
     else { cxtab = XDouble.ZERO; }
 
     final XDouble cytab;
-    if (cdytail != 0.0) {
-      cytab = ab.scale(cdytail);
-      final XDouble temp16a = cytab.scale(2*cdy);
-      final XDouble cytaa = aa.scale(cdytail);
-      final XDouble temp16b = cytaa.scale(bdx);
-      final XDouble cytbb = bb.scale(cdytail);
-      final XDouble temp16c = cytbb.scale(-adx);
-      final XDouble temp32a = temp16a.add(temp16b);
-      final XDouble temp48 = temp16c.add(temp32a);
-      finnow = finnow.add(temp48); }
+    if (cytail) {
+      cytab = ab.multiply(cdytail);
+      finnow = finnow.add(fininc(bb,cdytail,adx,cytab,cdy,aa,bdx)); }
     else { cytab = XDouble.ZERO; }
 
     final XDouble bct, bctt;
-    if ((adxtail != 0.0) || (adytail != 0.0)) {
-      if ((bdxtail != 0.0) || (bdytail != 0.0)
-        || (cdxtail != 0.0) || (cdytail != 0.0)) {
-//        Two_Product(bdxtail, cdy, ti1, ti0);
-//        Two_Product(bdx, cdytail, tj1, tj0);
-//        Two_Two_Sum(ti1, ti0, tj1, tj0, u3, u[2], u[1], u[0]);
-//        u[3] = u3;
+    if (atail) {
+      if (btail || ctail) {
         final XDouble u = XDouble.twoTwoSum(
-          Hilo.twoProduct(bdxtail,cdy),
-          Hilo.twoProduct(bdx,cdytail));
-
-//        negate = -bdy;
-//        Two_Product(cdxtail, negate, ti1, ti0);
-//        negate = -bdytail;
-//        Two_Product(cdx, negate, tj1, tj0);
-//        Two_Two_Sum(ti1, ti0, tj1, tj0, v3, v[2], v[1], v[0]);
-//        v[3] = v3;
+          Hilo.product(bdxtail, cdy),
+          Hilo.product(bdx, cdytail));
         final XDouble v = XDouble.twoTwoSum(
-          Hilo.twoProduct(cdxtail,-bdy),
-          Hilo.twoProduct(cdx,-bdytail));
-
-//        bctlen = fast_expansion_sum_zeroelim(4, u, 4, v, bct);
+          Hilo.product(cdxtail, -bdy),
+          Hilo.product(cdx, -bdytail));
         bct = u.add(v);
-
-//        Two_Product(bdxtail, cdytail, ti1, ti0);
-//        Two_Product(cdxtail, bdytail, tj1, tj0);
-//        Two_Two_Diff(ti1, ti0, tj1, tj0, bctt3, bctt[2], bctt[1], bctt[0]);
-//        bctt[3] = bctt3;
-//        bcttlen = 4;
         bctt = XDouble.twoTwoDiff(
-          Hilo.twoProduct(bdxtail,cdytail),
-          Hilo.twoProduct(cdxtail,bdytail)); }
+          Hilo.product(bdxtail, cdytail),
+          Hilo.product(cdxtail, bdytail)); }
       else {
         bct = XDouble.ZERO;
         bctt = XDouble.ZERO; }
 
-      if (adxtail != 0.0) {
-        { final XDouble axtbct = bct.scale(adxtail);
-          { final XDouble temp32a = axtbct.scale(2*adx);
-            final XDouble temp48 = axtbc.scale(adxtail).add(temp32a);
-            finnow = finnow.add(temp48); }
+      if (axtail) {
+        { final XDouble axtbct = bct.multiply(adxtail);
+          finnow = finnow.add(
+            axtbc.multiply(adxtail)
+                 .add(axtbct.multiply(2*adx)));
+          if (bytail) {
+            finnow = finnow.add(cc.multiply(adxtail).multiply(bdytail)); }
+          if (cytail) {
+            finnow = finnow.add(bb.multiply(-adxtail).multiply(cdytail)); }
 
-          if (bdytail != 0.0) {
-            final XDouble temp8 = cc.scale(adxtail);
-            finnow = finnow.add(temp8.scale(bdytail)); }
-          if (cdytail != 0.0) {
-            final XDouble temp8 = bb.scale(-adxtail);
-            final XDouble temp16a = temp8.scale(cdytail);
-            finnow = finnow.add(temp16a); }
-          final XDouble temp32a = axtbct.scale(adxtail);
-          final XDouble axtbctt = bctt.scale(adxtail);
-          final XDouble temp16a = axtbctt.scale(2*adx);
-          final XDouble temp16b = axtbctt.scale(adxtail);
-          final XDouble temp32b = temp16a.add(temp16b);
-          final XDouble temp64 = temp32a.add(temp32b);
-          finnow = finnow.add(temp64); }
+          final XDouble axtbctt = bctt.multiply(adxtail);
+          // TODO: XDouble.linearCombination?
+          finnow = finnow.add(
+            axtbct.multiply(adxtail)
+                  .add(axtbctt.multiply(2*adx))
+                  .add(axtbctt.multiply(adxtail))); }
 
-        if (adytail != 0.0) {
-          final XDouble aytbct = bct.scale(adytail);
-          { final XDouble temp16a = aytbc.scale(adxtail);
-            final XDouble temp32a = aytbct.scale(2*ady);
-            final XDouble temp48 = temp16a.add(temp32a);
-            finnow = finnow.add(temp48); }
-
-
-          final XDouble temp32a = aytbct.scale(adytail);
-          final XDouble aytbctt = bctt.scale(adytail);
-          final XDouble temp16a = aytbctt.scale(2*ady);
-          final XDouble temp16b = aytbctt.scale(adytail);
-          final XDouble temp32b = temp16a.add(temp16b);
-          final XDouble temp64 = temp32a.add(temp32b);
-          finnow = finnow.add(temp64); } } }
+        if (aytail) {
+          final XDouble aytbct = bct.multiply(adytail);
+          finnow = finnow.add(
+            aytbc.multiply(adxtail)
+                 .add(
+                   aytbct.multiply(2*ady)));
+          final XDouble aytbctt = bctt.multiply(adytail);
+          finnow = finnow.add(
+            aytbct.multiply(adytail)
+                  .add(aytbctt.multiply(2*ady))
+                  .add(aytbctt.multiply(adytail))); } } }
 
     final XDouble cat, catt;
-    if ((bdxtail != 0.0) || (bdytail != 0.0)) {
-      if ((cdxtail != 0.0) || (cdytail != 0.0)
-        || (adxtail != 0.0) || (adytail != 0.0)) {
-//        Two_Product(cdxtail, ady, ti1, ti0);
-//        Two_Product(cdx, adytail, tj1, tj0);
-//        Two_Two_Sum(ti1, ti0, tj1, tj0, u3, u[2], u[1], u[0]);
-//        u[3] = u3;
+    if (btail) {
+      if (ctail || atail) {
         final XDouble u = XDouble.twoTwoSum(
-          Hilo.twoProduct(cdxtail,ady),
-          Hilo.twoProduct(cdx,adytail));
+          Hilo.product(cdxtail, ady),
+          Hilo.product(cdx, adytail));
 
-//        negate = -cdy;
-//        Two_Product(adxtail, negate, ti1, ti0);
-//        negate = -cdytail;
-//        Two_Product(adx, negate, tj1, tj0);
-//        Two_Two_Sum(ti1, ti0, tj1, tj0, v3, v[2], v[1], v[0]);
-//        v[3] = v3;
         final XDouble v = XDouble.twoTwoSum(
-          Hilo.twoProduct(adxtail,-cdy),
-          Hilo.twoProduct(adx,-cdytail));
+          Hilo.product(adxtail, -cdy),
+          Hilo.product(adx, -cdytail));
 
-//        catlen = fast_expansion_sum_zeroelim(4, u, 4, v, cat);
         cat = u.add(v);
 
-//        Two_Product(cdxtail, adytail, ti1, ti0);
-//        Two_Product(adxtail, cdytail, tj1, tj0);
-//        Two_Two_Diff(ti1, ti0, tj1, tj0, catt3, catt[2], catt[1], catt[0]);
-//        catt[3] = catt3;
-//        cattlen = 4;
         catt = XDouble.twoTwoDiff(
-          Hilo.twoProduct(cdxtail,adytail),
-          Hilo.twoProduct(adxtail,cdytail)); }
+          Hilo.product(cdxtail, adytail),
+          Hilo.product(adxtail, cdytail)); }
       else {
         cat= XDouble.ZERO;
         catt = XDouble.ZERO; }
 
-      if (bdxtail != 0.0) {
-        final XDouble bxtcat = cat.scale(bdxtail);
-        { final XDouble temp32a = bxtcat.scale(2.0*bdx);
-          final XDouble temp48 = bxtca.scale(bdxtail).add(temp32a);
-          finnow = finnow.add(temp48); }
+      if (bxtail) {
+        final XDouble bxtcat = cat.multiply(bdxtail);
+        finnow = finnow.add(
+          bxtca.multiply(bdxtail).add(bxtcat.multiply(2.0*bdx)));
 
-        if (cdytail != 0.0) {
-          final XDouble temp8 = aa.scale(bdxtail);
-          final XDouble temp16a = temp8.scale(cdytail);
-          finnow = finnow.add(temp16a); }
-        if (adytail != 0.0) {
-          final XDouble temp8 = cc.scale(-bdxtail);
-          final XDouble temp16a = temp8.scale(adytail);
-          finnow = finnow.add(temp16a); }
+        if (cytail) {
+          finnow = finnow.add(aa.multiply(bdxtail).multiply(cdytail)); }
+        if (aytail) {
+          finnow = finnow.add(cc.multiply(-bdxtail).multiply(adytail)); }
 
-        final XDouble temp32a = bxtcat.scale(bdxtail);
-        final XDouble bxtcatt = catt.scale(bdxtail);
-        final XDouble temp16a = bxtcatt.scale(2*bdx);
-        final XDouble temp16b = bxtcatt.scale(bdxtail);
-        final XDouble temp32b = temp16a.add(temp16b);
-        final XDouble temp64 = temp32a.add(temp32b);
-        finnow = finnow.add(temp64); }
+        final XDouble bxtcatt = catt.multiply(bdxtail);
+        finnow = finnow.add(
+          bxtcat.multiply(bdxtail)
+                .add(bxtcatt.multiply(2*bdx))
+                .add(bxtcatt.multiply(bdxtail))); }
 
-      if (bdytail != 0.0) {
-        final XDouble bytcat = cat.scale(bdytail);
-        {final XDouble temp16a = bytca.scale(bdytail);
-          final XDouble temp32a = bytcat.scale(2*bdy);
-          final XDouble temp48 = temp16a.add(temp32a);
-          finnow = finnow.add(temp48); }
-        final XDouble temp32a = bytcat.scale(bdytail);
-        final XDouble bytcatt = catt.scale(bdytail);
-        final XDouble temp16a = bytcatt.scale(2*bdy);
-        final XDouble temp16b = bytcatt.scale(bdytail);
-        final XDouble temp32b = temp16a.add(temp16b);
-        final XDouble temp64 = temp32a.add(temp32b);
-        finnow = finnow.add(temp64); } }
+      if (bytail) {
+        final XDouble bytcat = cat.multiply(bdytail);
+        finnow = finnow.add(
+          bytca.multiply(bdytail)
+               .add(bytcat.multiply(2*bdy)));
+        final XDouble bytcatt = catt.multiply(bdytail);
+        // TODO: XDouble.scalePlus(double,double) ->
+        //  XDouble.scale(Hilo.twoSum(a,v))
+        //  intermediate Hilo instance rather than XDouble
+
+        finnow = finnow.add(
+          bytcat.multiply(bdytail)
+                .add(bytcatt.multiply(2*bdy))
+                .add(bytcatt.multiply(bdytail))); } }
 
     final XDouble abt, abtt;
-    if ((cdxtail != 0.0) || (cdytail != 0.0)) {
-      if ((adxtail != 0.0) || (adytail != 0.0)
-        || (bdxtail != 0.0) || (bdytail != 0.0)) {
-//        Two_Product(adxtail, bdy, ti1, ti0);
-//        Two_Product(adx, bdytail, tj1, tj0);
-//        Two_Two_Sum(ti1, ti0, tj1, tj0, u3, u[2], u[1], u[0]);
-//        u[3] = u3;
+    if (ctail) {
+      if (atail || btail) {
         final XDouble u = XDouble.twoTwoSum(
-          Hilo.twoProduct(adxtail,bdy),
-          Hilo.twoProduct(adx,bdytail));
+          Hilo.product(adxtail, bdy),
+          Hilo.product(adx, bdytail));
 
-//        negate = -ady;
-//        Two_Product(bdxtail, negate, ti1, ti0);
-//        negate = -adytail;
-//        Two_Product(bdx, negate, tj1, tj0);
-//        Two_Two_Sum(ti1, ti0, tj1, tj0, v3, v[2], v[1], v[0]);
-//        v[3] = v3;
         final XDouble v = XDouble.twoTwoSum(
-          Hilo.twoProduct(bdxtail,-ady),
-          Hilo.twoProduct(bdx,-adytail));
-
-//        abtlen = fast_expansion_sum_zeroelim(4, u, 4, v, abt);
+          Hilo.product(bdxtail, -ady),
+          Hilo.product(bdx, -adytail));
         abt = u.add(v);
 
-//        Two_Product(adxtail, bdytail, ti1, ti0);
-//        Two_Product(bdxtail, adytail, tj1, tj0);
-//        Two_Two_Diff(ti1, ti0, tj1, tj0, abtt3, abtt[2], abtt[1], abtt[0]);
-//        abtt[3] = abtt3;
-//        abttlen = 4;
         abtt = XDouble.twoTwoDiff(
-          Hilo.twoProduct(adxtail,bdytail),
-          Hilo.twoProduct(bdxtail,adytail)); }
+          Hilo.product(adxtail, bdytail),
+          Hilo.product(bdxtail, adytail)); }
       else {
         abt = XDouble.ZERO;
         abtt = XDouble.ZERO; }
 
-      if (cdxtail != 0.0) {
-        final XDouble cxtabt = abt.scale(cdxtail);
-        { final XDouble temp16a = cxtab.scale(cdxtail);
-          final XDouble temp32a = cxtabt.scale(2*cdx);
-          final XDouble temp48 = temp16a.add(temp32a);
-          finnow = finnow.add(temp48); }
-        if (adytail != 0.0) {
-          final XDouble temp8 = bb.scale(cdxtail);
-          final XDouble temp16a = temp8.scale(adytail);
-          finnow = finnow.add(temp16a); }
-        if (bdytail != 0.0) {
-          final XDouble temp8 = aa.scale(-cdxtail);
-          final XDouble temp16a = temp8.scale(bdytail);
-          finnow = finnow.add(temp16a); }
+      if (cxtail) {
+        final XDouble cxtabt = abt.multiply(cdxtail);
+        finnow = finnow.add(
+          cxtab.multiply(cdxtail).add(cxtabt.multiply(2*cdx)));
+        if (aytail) {
+          finnow = finnow.add(bb.multiply(cdxtail).multiply(adytail)); }
+        if (bytail) {
+          finnow = finnow.add(aa.multiply(-cdxtail).multiply(bdytail)); }
 
-        final XDouble temp32a = cxtabt.scale(cdxtail);
-        final XDouble cxtabtt = abtt.scale(cdxtail);
-        final XDouble temp16a = cxtabtt.scale(2*cdx);
-        final XDouble temp16b = cxtabtt.scale(cdxtail);
-        final XDouble temp32b = temp16a.add(temp16b);
-        final XDouble temp64 = temp32a.add(temp32b);
-        finnow = finnow.add(temp64); }
+        final XDouble cxtabtt = abtt.multiply(cdxtail);
+        finnow = finnow.add(
+          cxtabt.multiply(cdxtail)
+                .add(cxtabtt.multiply(2*cdx))
+                .add(cxtabtt.multiply(cdxtail))); }
 
-      if (cdytail != 0.0) {
-        final XDouble cytabt = abt.scale(cdytail);
-        { final XDouble temp16a = cytab.scale(cdytail);
-          final XDouble temp32a = cytabt.scale(2*cdy);
-          final XDouble temp48 = temp16a.add(temp32a);
-          finnow = finnow.add(temp48); }
+      if (cytail) {
+        final XDouble cytabt = abt.multiply(cdytail);
+        finnow = finnow.add(
+          cytab.multiply(cdytail).add(cytabt.multiply(2*cdy)));
 
-        final XDouble temp32a = cytabt.scale(cdytail);
-        final XDouble cytabtt = abtt.scale(cdytail);
-        final XDouble temp16a = cytabtt.scale(2*cdy);
-        final XDouble temp16b = cytabtt.scale(cdytail);
-        final XDouble temp32b = temp16a.add(temp16b);
-        final XDouble temp64 = temp32a.add(temp32b);
-        finnow = finnow.add(temp64); } }
+        final XDouble cytabtt = abtt.multiply(cdytail);
+        finnow = finnow.add(
+          cytabt.multiply(cdytail)
+                .add(cytabtt.multiply(2*cdy))
+                .add(cytabtt.multiply(cdytail))); } }
 
     return finnow.doubleValue(); }
 
@@ -558,12 +424,12 @@ public final class Adapt implements Predicate {
       + clift * (adxbdy - bdxady);
 
     final double permanent
-      = ((Math.abs(bdxcdy) + Math.abs(cdxbdy) ) * alift)
+      = ((Math.abs(bdxcdy) + Math.abs(cdxbdy)) * alift)
       + ((Math.abs(cdxady) + Math.abs(adxcdy)) * blift)
       + ((Math.abs(adxbdy) + Math.abs(bdxady)) * clift);
 
     final double errbound = iccerrboundA * permanent;
-    if ((det > errbound) || (-det > errbound)) { return det; }
+    if (Math.abs(det) > errbound) { return det; }
     return incircle(pa, pb, pc, pd, permanent); }
 
   //--------------------------------------------------------------------

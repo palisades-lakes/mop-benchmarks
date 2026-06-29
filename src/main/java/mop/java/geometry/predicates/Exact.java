@@ -11,7 +11,7 @@ import mop.java.numbers.XDouble;
  *   profiling.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-06-25
+ * @version 2026-06-29
  */
 
 public final class Exact implements Predicate {
@@ -22,38 +22,39 @@ public final class Exact implements Predicate {
 
   //--------------------------------------------------------------------
 
+  private static final XDouble det (final double[] a,
+                                     final boolean subtractFlag,
+                                     final XDouble bc,
+                                     final XDouble cd,
+                                     final XDouble bd,
+                                   final int flip) {
+    final double ax = a[0], ay = a[1];
+    // TODO: XDouble.add(XDouble,XDouble) to skip one object creation?
+    //  ...and XDouble.addSubtract(XDouble,XDouble)
+    // TODO: XDouble.multiplyBySquare(double)?
+    final XDouble bcd = subtractFlag
+                        ? bc.add(cd).subtract(bd)
+                        : bc.add(cd).add(bd);
+    return
+      (bcd.multiply(ax).multiply(flip*ax))
+        .add(
+          bcd.multiply(ay).multiply(flip*ay)); }
+
+
   public final double incircle (final double[] a,
                                 final double[] b,
                                 final double[] c,
                                 final double[] d) {
-
     final XDouble ab = XDouble.crossProduct(a,b);
     final XDouble bc = XDouble.crossProduct(b,c);
     final XDouble cd = XDouble.crossProduct(c,d);
     final XDouble da = XDouble.crossProduct(d,a);
     final XDouble ac = XDouble.crossProduct(a,c);
     final XDouble bd = XDouble.crossProduct(b,d);
-
-    final XDouble cda = cd.add(da).add(ac);
-    final XDouble dab = da.add(ab).add(bd);
-    final XDouble abc = ab.add(bc).subtract(ac);
-    final XDouble bcd = bc.add(cd).subtract(bd);
-
-    final double ax = a[0], ay = a[1];
-    final XDouble adet =
-      (bcd.scale(ax).scale(ax)).add(bcd.scale(ay).scale(ay));
-
-    final double bx = b[0], by = b[1];
-    final XDouble bdet =
-      (cda.scale(bx).scale(-bx)).add(cda.scale(by).scale(-by));
-
-    final double cx = c[0], cy = c[1];
-    final XDouble cdet =
-      (dab.scale(cx).scale(cx)).add(dab.scale(cy).scale(cy));
-
-    final double dx = d[0], dy = d[1];
-    final XDouble ddet =
-      (abc.scale(dx).scale(-dx)).add(abc.scale(dy).scale(-dy));
+    final XDouble adet = det(a,true,bc,cd,bd, 1);
+    final XDouble bdet = det(b,false,cd,da,ac,-1);
+    final XDouble cdet = det(c,false,da,ab,bd, 1);
+    final XDouble ddet = det(d,true,ab,bc,ac,-1);
 
     // TODO: resolve this!
     // this change fixes current test cases.
@@ -92,7 +93,7 @@ public final class Exact implements Predicate {
   }
   //--------------------------------------------------------------------
   private static final double[] twoSum (final double a,
-                                         final double b) {
+                                        final double b) {
     final double x = (a + b);
     //  Two_Sum_Tail(a, b, x, y)
     final double bvirt = (x - a);
@@ -367,7 +368,7 @@ public final class Exact implements Predicate {
     ablen =Expansion.sum(alen, adet, blen, bdet, abdet);
     cdlen =Expansion.sum(clen, cdet, dlen, ddet, cddet);
     deterlen =
-     Expansion.sum(ablen, abdet, cdlen, cddet, deter);
+      Expansion.sum(ablen, abdet, cdlen, cddet, deter);
 
     return deter[deterlen - 1];
   }
@@ -917,102 +918,102 @@ public final class Exact implements Predicate {
     temp8alen =Expansion.scale(4, bc, pa[2], temp8a);
     temp8blen =Expansion.scale(4, ac, -pb[2], temp8b);
     temp16len =
-     Expansion.sum(temp8alen, temp8a, temp8blen, temp8b,
-          temp16);
+      Expansion.sum(temp8alen, temp8a, temp8blen, temp8b,
+                    temp16);
     temp8alen =Expansion.scale(4, ab, pc[2], temp8a);abclen =
-     Expansion.sum(temp8alen, temp8a, temp16len, temp16,
-          abc);
+      Expansion.sum(temp8alen, temp8a, temp16len, temp16,
+                    abc);
 
     temp8alen =Expansion.scale(4, cd, pb[2], temp8a);
     temp8blen =Expansion.scale(4, bd, -pc[2], temp8b);
     temp16len =
-     Expansion.sum(temp8alen, temp8a, temp8blen, temp8b,
-          temp16);
+      Expansion.sum(temp8alen, temp8a, temp8blen, temp8b,
+                    temp16);
     temp8alen =Expansion.scale(4, bc, pd[2], temp8a);bcdlen =
-     Expansion.sum(temp8alen, temp8a, temp16len, temp16,
-          bcd);
+      Expansion.sum(temp8alen, temp8a, temp16len, temp16,
+                    bcd);
 
     temp8alen =Expansion.scale(4, de, pc[2], temp8a);
     temp8blen =Expansion.scale(4, ce, -pd[2], temp8b);
     temp16len =
-     Expansion.sum(temp8alen, temp8a, temp8blen, temp8b,
-          temp16);
+      Expansion.sum(temp8alen, temp8a, temp8blen, temp8b,
+                    temp16);
     temp8alen =Expansion.scale(4, cd, pe[2], temp8a);cdelen =
-     Expansion.sum(temp8alen, temp8a, temp16len, temp16,
-          cde);
+      Expansion.sum(temp8alen, temp8a, temp16len, temp16,
+                    cde);
 
     temp8alen =Expansion.scale(4, ea, pd[2], temp8a);
     temp8blen =Expansion.scale(4, da, -pe[2], temp8b);
     temp16len =
-     Expansion.sum(temp8alen, temp8a, temp8blen, temp8b,
-          temp16);
+      Expansion.sum(temp8alen, temp8a, temp8blen, temp8b,
+                    temp16);
     temp8alen =Expansion.scale(4, de, pa[2], temp8a);dealen =
-     Expansion.sum(temp8alen, temp8a, temp16len, temp16,
-          dea);
+      Expansion.sum(temp8alen, temp8a, temp16len, temp16,
+                    dea);
 
     temp8alen =Expansion.scale(4, ab, pe[2], temp8a);
     temp8blen =Expansion.scale(4, eb, -pa[2], temp8b);
     temp16len =
-     Expansion.sum(temp8alen, temp8a, temp8blen, temp8b,
-          temp16);
+      Expansion.sum(temp8alen, temp8a, temp8blen, temp8b,
+                    temp16);
     temp8alen =Expansion.scale(4, ea, pb[2], temp8a);eablen =
-     Expansion.sum(temp8alen, temp8a, temp16len, temp16,
-          eab);
+      Expansion.sum(temp8alen, temp8a, temp16len, temp16,
+                    eab);
 
     temp8alen =Expansion.scale(4, bd, pa[2], temp8a);
     temp8blen =Expansion.scale(4, da, pb[2], temp8b);
     temp16len =
-     Expansion.sum(temp8alen, temp8a, temp8blen, temp8b,
-          temp16);
+      Expansion.sum(temp8alen, temp8a, temp8blen, temp8b,
+                    temp16);
     temp8alen =Expansion.scale(4, ab, pd[2], temp8a);abdlen =
-     Expansion.sum(temp8alen, temp8a, temp16len, temp16,
-          abd);
+      Expansion.sum(temp8alen, temp8a, temp16len, temp16,
+                    abd);
 
     temp8alen =Expansion.scale(4, ce, pb[2], temp8a);
     temp8blen =Expansion.scale(4, eb, pc[2], temp8b);
     temp16len =
-     Expansion.sum(temp8alen, temp8a, temp8blen, temp8b,
-          temp16);
+      Expansion.sum(temp8alen, temp8a, temp8blen, temp8b,
+                    temp16);
     temp8alen =Expansion.scale(4, bc, pe[2], temp8a);bcelen =
-     Expansion.sum(temp8alen, temp8a, temp16len, temp16,
-          bce);
+      Expansion.sum(temp8alen, temp8a, temp16len, temp16,
+                    bce);
 
     temp8alen =Expansion.scale(4, da, pc[2], temp8a);
     temp8blen =Expansion.scale(4, ac, pd[2], temp8b);
     temp16len =
-     Expansion.sum(temp8alen, temp8a, temp8blen, temp8b,
-          temp16);
+      Expansion.sum(temp8alen, temp8a, temp8blen, temp8b,
+                    temp16);
     temp8alen =Expansion.scale(4, cd, pa[2], temp8a);cdalen =
-     Expansion.sum(temp8alen, temp8a, temp16len, temp16,
-          cda);
+      Expansion.sum(temp8alen, temp8a, temp16len, temp16,
+                    cda);
 
     temp8alen =Expansion.scale(4, eb, pd[2], temp8a);
     temp8blen =Expansion.scale(4, bd, pe[2], temp8b);
     temp16len =
-     Expansion.sum(temp8alen, temp8a, temp8blen, temp8b,
-          temp16);
+      Expansion.sum(temp8alen, temp8a, temp8blen, temp8b,
+                    temp16);
     temp8alen =Expansion.scale(4, de, pb[2], temp8a);deblen =
-     Expansion.sum(temp8alen, temp8a, temp16len, temp16,
-          deb);
+      Expansion.sum(temp8alen, temp8a, temp16len, temp16,
+                    deb);
 
     temp8alen =Expansion.scale(4, ac, pe[2], temp8a);
     temp8blen =Expansion.scale(4, ce, pa[2], temp8b);
     temp16len =
-     Expansion.sum(temp8alen, temp8a, temp8blen, temp8b,
-          temp16);
+      Expansion.sum(temp8alen, temp8a, temp8blen, temp8b,
+                    temp16);
     temp8alen =Expansion.scale(4, ea, pc[2], temp8a);eaclen =
-     Expansion.sum(temp8alen, temp8a, temp16len, temp16,
-          eac);
+      Expansion.sum(temp8alen, temp8a, temp16len, temp16,
+                    eac);
 
     temp48alen =
-     Expansion.sum(cdelen, cde, bcelen, bce, temp48a);
+      Expansion.sum(cdelen, cde, bcelen, bce, temp48a);
     temp48blen =
-     Expansion.sum(deblen, deb, bcdlen, bcd, temp48b);
+      Expansion.sum(deblen, deb, bcdlen, bcd, temp48b);
     for (i = 0; i < temp48blen; i++) {
       temp48b[i] = -temp48b[i];
     } bcdelen =
-     Expansion.sum(temp48alen, temp48a, temp48blen,
-          temp48b, bcde);
+      Expansion.sum(temp48alen, temp48a, temp48blen,
+                    temp48b, bcde);
     xlen =Expansion.scale(bcdelen, bcde, pa[0], temp192);
     xlen =Expansion.scale(xlen, temp192, pa[0], det384x);
     ylen =Expansion.scale(bcdelen, bcde, pa[1], temp192);
@@ -1020,19 +1021,19 @@ public final class Exact implements Predicate {
     zlen =Expansion.scale(bcdelen, bcde, pa[2], temp192);
     zlen =Expansion.scale(zlen, temp192, pa[2], det384z);
     xylen =
-     Expansion.sum(xlen, det384x, ylen, det384y, detxy);
+      Expansion.sum(xlen, det384x, ylen, det384y, detxy);
     alen =
-     Expansion.sum(xylen, detxy, zlen, det384z, adet);
+      Expansion.sum(xylen, detxy, zlen, det384z, adet);
 
     temp48alen =
-     Expansion.sum(dealen, dea, cdalen, cda, temp48a);
+      Expansion.sum(dealen, dea, cdalen, cda, temp48a);
     temp48blen =
-     Expansion.sum(eaclen, eac, cdelen, cde, temp48b);
+      Expansion.sum(eaclen, eac, cdelen, cde, temp48b);
     for (i = 0; i < temp48blen; i++) {
       temp48b[i] = -temp48b[i];
     } cdealen =
-     Expansion.sum(temp48alen, temp48a, temp48blen,
-          temp48b, cdea);
+      Expansion.sum(temp48alen, temp48a, temp48blen,
+                    temp48b, cdea);
     xlen =Expansion.scale(cdealen, cdea, pb[0], temp192);
     xlen =Expansion.scale(xlen, temp192, pb[0], det384x);
     ylen =Expansion.scale(cdealen, cdea, pb[1], temp192);
@@ -1040,19 +1041,19 @@ public final class Exact implements Predicate {
     zlen =Expansion.scale(cdealen, cdea, pb[2], temp192);
     zlen =Expansion.scale(zlen, temp192, pb[2], det384z);
     xylen =
-     Expansion.sum(xlen, det384x, ylen, det384y, detxy);
+      Expansion.sum(xlen, det384x, ylen, det384y, detxy);
     blen =
-     Expansion.sum(xylen, detxy, zlen, det384z, bdet);
+      Expansion.sum(xylen, detxy, zlen, det384z, bdet);
 
     temp48alen =
-     Expansion.sum(eablen, eab, deblen, deb, temp48a);
+      Expansion.sum(eablen, eab, deblen, deb, temp48a);
     temp48blen =
-     Expansion.sum(abdlen, abd, dealen, dea, temp48b);
+      Expansion.sum(abdlen, abd, dealen, dea, temp48b);
     for (i = 0; i < temp48blen; i++) {
       temp48b[i] = -temp48b[i];
     } deablen =
-     Expansion.sum(temp48alen, temp48a, temp48blen,
-          temp48b, deab);
+      Expansion.sum(temp48alen, temp48a, temp48blen,
+                    temp48b, deab);
     xlen =Expansion.scale(deablen, deab, pc[0], temp192);
     xlen =Expansion.scale(xlen, temp192, pc[0], det384x);
     ylen =Expansion.scale(deablen, deab, pc[1], temp192);
@@ -1060,19 +1061,19 @@ public final class Exact implements Predicate {
     zlen =Expansion.scale(deablen, deab, pc[2], temp192);
     zlen =Expansion.scale(zlen, temp192, pc[2], det384z);
     xylen =
-     Expansion.sum(xlen, det384x, ylen, det384y, detxy);
+      Expansion.sum(xlen, det384x, ylen, det384y, detxy);
     clen =
-     Expansion.sum(xylen, detxy, zlen, det384z, cdet);
+      Expansion.sum(xylen, detxy, zlen, det384z, cdet);
 
     temp48alen =
-     Expansion.sum(abclen, abc, eaclen, eac, temp48a);
+      Expansion.sum(abclen, abc, eaclen, eac, temp48a);
     temp48blen =
-     Expansion.sum(bcelen, bce, eablen, eab, temp48b);
+      Expansion.sum(bcelen, bce, eablen, eab, temp48b);
     for (i = 0; i < temp48blen; i++) {
       temp48b[i] = -temp48b[i];
     } eabclen =
-     Expansion.sum(temp48alen, temp48a, temp48blen,
-          temp48b, eabc);
+      Expansion.sum(temp48alen, temp48a, temp48blen,
+                    temp48b, eabc);
     xlen =Expansion.scale(eabclen, eabc, pd[0], temp192);
     xlen =Expansion.scale(xlen, temp192, pd[0], det384x);
     ylen =Expansion.scale(eabclen, eabc, pd[1], temp192);
@@ -1080,19 +1081,19 @@ public final class Exact implements Predicate {
     zlen =Expansion.scale(eabclen, eabc, pd[2], temp192);
     zlen =Expansion.scale(zlen, temp192, pd[2], det384z);
     xylen =
-     Expansion.sum(xlen, det384x, ylen, det384y, detxy);
+      Expansion.sum(xlen, det384x, ylen, det384y, detxy);
     dlen =
-     Expansion.sum(xylen, detxy, zlen, det384z, ddet);
+      Expansion.sum(xylen, detxy, zlen, det384z, ddet);
 
     temp48alen =
-     Expansion.sum(bcdlen, bcd, abdlen, abd, temp48a);
+      Expansion.sum(bcdlen, bcd, abdlen, abd, temp48a);
     temp48blen =
-     Expansion.sum(cdalen, cda, abclen, abc, temp48b);
+      Expansion.sum(cdalen, cda, abclen, abc, temp48b);
     for (i = 0; i < temp48blen; i++) {
       temp48b[i] = -temp48b[i];
     } abcdlen =
-     Expansion.sum(temp48alen, temp48a, temp48blen,
-          temp48b, abcd);
+      Expansion.sum(temp48alen, temp48a, temp48blen,
+                    temp48b, abcd);
     xlen =Expansion.scale(abcdlen, abcd, pe[0], temp192);
     xlen =Expansion.scale(xlen, temp192, pe[0], det384x);
     ylen =Expansion.scale(abcdlen, abcd, pe[1], temp192);
@@ -1100,16 +1101,16 @@ public final class Exact implements Predicate {
     zlen =Expansion.scale(abcdlen, abcd, pe[2], temp192);
     zlen =Expansion.scale(zlen, temp192, pe[2], det384z);
     xylen =
-     Expansion.sum(xlen, det384x, ylen, det384y, detxy);
+      Expansion.sum(xlen, det384x, ylen, det384y, detxy);
     elen =
-     Expansion.sum(xylen, detxy, zlen, det384z, edet);
+      Expansion.sum(xylen, detxy, zlen, det384z, edet);
 
     ablen =Expansion.sum(alen, adet, blen, bdet, abdet);
     cdlen =Expansion.sum(clen, cdet, dlen, ddet, cddet);
     cdelen =
-     Expansion.sum(cdlen, cddet, elen, edet, cdedet);
+      Expansion.sum(cdlen, cddet, elen, edet, cdedet);
     deterlen =
-     Expansion.sum(ablen, abdet, cdelen, cdedet, deter);
+      Expansion.sum(ablen, abdet, cdelen, cdedet, deter);
 
     return deter[deterlen - 1];
   }
