@@ -12,12 +12,10 @@ import mop.java.numbers.XDouble;
  *   profiling.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-06-29
+ * @version 2026-06-30
  */
 
 public final class Exact implements Predicate {
-
-  private static final double SPLITTER = 0x1.0000002p27;
 
   public final boolean isExact () { return true; }
 
@@ -137,445 +135,342 @@ public final class Exact implements Predicate {
                                 final double[] pc,
                                 final double[] pd,
                                 final double[] pe) {
-    double axby1, bxcy1, cxdy1, dxey1, exay1;
-    double bxay1, cxby1, dxcy1, exdy1, axey1;
-    double axcy1, bxdy1, cxey1, dxay1, exby1;
-    double cxay1, dxby1, excy1, axdy1, bxey1;
-    double axby0, bxcy0, cxdy0, dxey0, exay0;
-    double bxay0, cxby0, dxcy0, exdy0, axey0;
-    double axcy0, bxdy0, cxey0, dxay0, exby0;
-    double cxay0, dxby0, excy0, axdy0, bxey0;
-    double[] ab = new double[4], bc = new double[4], cd = new double[4],
-      de = new double[4], ea = new double[4];
-    double[] ac = new double[4], bd = new double[4], ce = new double[4],
-      da = new double[4], eb = new double[4];
-    double[] temp8a = new double[8], temp8b = new double[8], temp16 =
-      new double[16]; int temp8alen, temp8blen, temp16len;
-    double[] abc = new double[24], bcd = new double[24], cde =
-      new double[24], dea = new double[24], eab = new double[24];
-    double[] abd = new double[24], bce = new double[24], cda =
-      new double[24], deb = new double[24], eac = new double[24];
-    int abclen, bcdlen, cdelen, dealen, eablen;
-    int abdlen, bcelen, cdalen, deblen, eaclen;
-    double[] temp48a = new double[48], temp48b = new double[48];
-    int temp48alen, temp48blen;
-    double[] abcd = new double[96], bcde = new double[96], cdea =
-      new double[96], deab = new double[96], eabc = new double[96];
-    int abcdlen, bcdelen, cdealen, deablen, eabclen;
-    double[] temp192 = new double[192];
-    double[] det384x = new double[384], det384y = new double[384],
-      det384z = new double[384]; int xlen, ylen, zlen;
-    double[] detxy = new double[768]; int xylen;
-    double[] adet = new double[1152], bdet = new double[1152], cdet =
-      new double[1152], ddet = new double[1152], edet =
-      new double[1152]; int alen, blen, clen, dlen, elen;
-    double[] abdet = new double[2304], cddet = new double[2304],
-      cdedet = new double[3456]; int ablen, cdlen;
-    double[] deter = new double[5760]; int deterlen; int i;
 
-    double bvirt; double avirt, bround, around; double c; double abig;
-    double ahi, alo, bhi, blo; double err1, err2, err3; double _i, _j;
-    double _0;
+    // TODO: XDouble.cross2D?
+//    Two_Product(pa[0], pb[1], axby1, axby0);
+//    Two_Product(pb[0], pa[1], bxay1, bxay0);
+//    Two_Two_Diff(axby1, axby0, bxay1, bxay0, ab[3], ab[2], ab[1], ab[0]);
+    final Hilo axby = Hilo.product(pa[0],pb[1]);
+    final Hilo bxay = Hilo.product(pb[0],pa[1]);
+    final XDouble ab = XDouble.twoTwoDiff(axby,bxay);
+//    Two_Product(pb[0], pc[1], bxcy1, bxcy0);
+//    Two_Product(pc[0], pb[1], cxby1, cxby0);
+//    Two_Two_Diff(bxcy1, bxcy0, cxby1, cxby0, bc[3], bc[2], bc[1], bc[0]);
+    final Hilo bxcy = Hilo.product(pb[0],pc[1]);
+    final Hilo cxby = Hilo.product(pc[0],pb[1]);
+    final XDouble bc = XDouble.twoTwoDiff(bxcy,cxby);
+//    Two_Product(pc[0], pd[1], cxdy1, cxdy0);
+//    Two_Product(pd[0], pc[1], dxcy1, dxcy0);
+//    Two_Two_Diff(cxdy1, cxdy0, dxcy1, dxcy0, cd[3], cd[2], cd[1], cd[0]);
+    final Hilo cxdy = Hilo.product(pc[0],pd[1]);
+    final Hilo dxcy = Hilo.product(pd[0],pc[1]);
+    final XDouble cd = XDouble.twoTwoDiff(cxdy,dxcy);
+//    Two_Product(pd[0], pe[1], dxey1, dxey0);
+//    Two_Product(pe[0], pd[1], exdy1, exdy0);
+//    Two_Two_Diff(dxey1, dxey0, exdy1, exdy0, de[3], de[2], de[1], de[0]);
+    final Hilo dxey = Hilo.product(pd[0],pe[1]);
+    final Hilo exdy = Hilo.product(pe[0],pd[1]);
+    final XDouble de = XDouble.twoTwoDiff(dxey,exdy);
+//    Two_Product(pe[0], pa[1], exay1, exay0);
+//    Two_Product(pa[0], pe[1], axey1, axey0);
+//    Two_Two_Diff(exay1, exay0, axey1, axey0, ea[3], ea[2], ea[1], ea[0]);
+    final Hilo exay = Hilo.product(pe[0],pa[1]);
+    final Hilo axey = Hilo.product(pa[0],pe[1]);
+    final XDouble ea = XDouble.twoTwoDiff(exay,axey);
+//    Two_Product(pa[0], pc[1], axcy1, axcy0);
+//    Two_Product(pc[0], pa[1], cxay1, cxay0);
+//    Two_Two_Diff(axcy1, axcy0, cxay1, cxay0, ac[3], ac[2], ac[1], ac[0]);
+    final Hilo axcy = Hilo.product(pa[0],pc[1]);
+    final Hilo cxay = Hilo.product(pc[0],pa[1]);
+    final XDouble ac = XDouble.twoTwoDiff(axcy,cxay);
+//    Two_Product(pb[0], pd[1], bxdy1, bxdy0);
+//    Two_Product(pd[0], pb[1], dxby1, dxby0);
+//    Two_Two_Diff(bxdy1, bxdy0, dxby1, dxby0, bd[3], bd[2], bd[1], bd[0]);
+    final Hilo bxdy = Hilo.product(pb[0],pd[1]);
+    final Hilo dxby = Hilo.product(pd[0],pb[1]);
+    final XDouble bd = XDouble.twoTwoDiff(bxdy,dxby);
+//    Two_Product(pc[0], pe[1], cxey1, cxey0);
+//    Two_Product(pe[0], pc[1], excy1, excy0);
+//    Two_Two_Diff(cxey1, cxey0, excy1, excy0, ce[3], ce[2], ce[1], ce[0]);
+    final Hilo cxey = Hilo.product(pc[0],pe[1]);
+    final Hilo excy = Hilo.product(pe[0],pc[1]);
+    final XDouble ce = XDouble.twoTwoDiff(cxey,excy);
+//    Two_Product(pd[0], pa[1], dxay1, dxay0);
+//    Two_Product(pa[0], pd[1], axdy1, axdy0);
+//    Two_Two_Diff(dxay1, dxay0, axdy1, axdy0, da[3], da[2], da[1], da[0]);
+    final Hilo dxay = Hilo.product(pd[0],pa[1]);
+    final Hilo axdy = Hilo.product(pa[0],pd[1]);
+    final  XDouble da = XDouble.twoTwoDiff(dxay,axdy);
+//    Two_Product(pe[0], pb[1], exby1, exby0);
+//    Two_Product(pb[0], pe[1], bxey1, bxey0);
+//    Two_Two_Diff(exby1, exby0, bxey1, bxey0, eb[3], eb[2], eb[1], eb[0]);
+    final Hilo exby = Hilo.product(pe[0],pb[1]);
+    final Hilo bxey = Hilo.product(pb[0],pe[1]);
+    final XDouble eb = XDouble.twoTwoDiff(exby,bxey);
 
-    axby1 = (pa[0] * pb[1]); c = (SPLITTER * pa[0]); abig = (c - pa[0]);
-    ahi = c - abig; alo = pa[0] - ahi; c = (SPLITTER * pb[1]);
-    abig = (c - pb[1]); bhi = c - abig; blo = pb[1] - bhi;
-    err1 = axby1 - (ahi * bhi); err2 = err1 - (alo * bhi);
-    err3 = err2 - (ahi * blo); axby0 = (alo * blo) - err3;
-    bxay1 = (pb[0] * pa[1]); c = (SPLITTER * pb[0]); abig = (c - pb[0]);
-    ahi = c - abig; alo = pb[0] - ahi; c = (SPLITTER * pa[1]);
-    abig = (c - pa[1]); bhi = c - abig; blo = pa[1] - bhi;
-    err1 = bxay1 - (ahi * bhi); err2 = err1 - (alo * bhi);
-    err3 = err2 - (ahi * blo); bxay0 = (alo * blo) - err3;
-    _i = (axby0 - bxay0); bvirt = (axby0 - _i); avirt = _i + bvirt;
-    bround = bvirt - bxay0; around = axby0 - avirt;
-    ab[0] = around + bround; _j = (axby1 + _i); bvirt = (_j - axby1);
-    avirt = _j - bvirt; bround = _i - bvirt; around = axby1 - avirt;
-    _0 = around + bround; _i = (_0 - bxay1); bvirt = (_0 - _i);
-    avirt = _i + bvirt; bround = bvirt - bxay1; around = _0 - avirt;
-    ab[1] = around + bround; ab[3] = (_j + _i); bvirt = (ab[3] - _j);
-    avirt = ab[3] - bvirt; bround = _i - bvirt; around = _j - avirt;
-    ab[2] = around + bround;
+//    temp8alen = scale_expansion_zeroelim(4, bc, pa[2], temp8a);
+//    temp8blen = scale_expansion_zeroelim(4, ac, -pb[2], temp8b);
+//    temp16len = fast_expansion_sum_zeroelim(temp8alen, temp8a, temp8blen, temp8b,
+//                                            temp16);
+//    temp8alen = scale_expansion_zeroelim(4, ab, pc[2], temp8a);
+//    abclen = fast_expansion_sum_zeroelim(temp8alen, temp8a, temp16len, temp16,
+//                                         abc);
+    XDouble temp8a = bc.multiply(pa[2]);
+    XDouble temp8b = ac.multiply(-pb[2]);
+    XDouble temp16 = temp8a.add(temp8b);
+    temp8a = ab.multiply(pc[2]);
+    final XDouble abc = temp8a.add(temp16);
 
-    bxcy1 = (pb[0] * pc[1]); c = (SPLITTER * pb[0]); abig = (c - pb[0]);
-    ahi = c - abig; alo = pb[0] - ahi; c = (SPLITTER * pc[1]);
-    abig = (c - pc[1]); bhi = c - abig; blo = pc[1] - bhi;
-    err1 = bxcy1 - (ahi * bhi); err2 = err1 - (alo * bhi);
-    err3 = err2 - (ahi * blo); bxcy0 = (alo * blo) - err3;
-    cxby1 = (pc[0] * pb[1]); c = (SPLITTER * pc[0]); abig = (c - pc[0]);
-    ahi = c - abig; alo = pc[0] - ahi; c = (SPLITTER * pb[1]);
-    abig = (c - pb[1]); bhi = c - abig; blo = pb[1] - bhi;
-    err1 = cxby1 - (ahi * bhi); err2 = err1 - (alo * bhi);
-    err3 = err2 - (ahi * blo); cxby0 = (alo * blo) - err3;
-    _i = (bxcy0 - cxby0); bvirt = (bxcy0 - _i); avirt = _i + bvirt;
-    bround = bvirt - cxby0; around = bxcy0 - avirt;
-    bc[0] = around + bround; _j = (bxcy1 + _i); bvirt = (_j - bxcy1);
-    avirt = _j - bvirt; bround = _i - bvirt; around = bxcy1 - avirt;
-    _0 = around + bround; _i = (_0 - cxby1); bvirt = (_0 - _i);
-    avirt = _i + bvirt; bround = bvirt - cxby1; around = _0 - avirt;
-    bc[1] = around + bround; bc[3] = (_j + _i); bvirt = (bc[3] - _j);
-    avirt = bc[3] - bvirt; bround = _i - bvirt; around = _j - avirt;
-    bc[2] = around + bround;
+//    temp8alen = scale_expansion_zeroelim(4, cd, pb[2], temp8a);
+//    temp8blen = scale_expansion_zeroelim(4, bd, -pc[2], temp8b);
+//    temp16len = fast_expansion_sum_zeroelim(temp8alen, temp8a, temp8blen, temp8b,
+//                                            temp16);
+//    temp8alen = scale_expansion_zeroelim(4, bc, pd[2], temp8a);
+//    bcdlen = fast_expansion_sum_zeroelim(temp8alen, temp8a, temp16len, temp16,
+//                                         bcd);
+    temp8a = cd.multiply(pb[2]);
+    temp8b = bd.multiply(-pc[2]);
+    temp16 = temp8a.add(temp8b);
+    temp8a = bc.multiply(pd[2]);
+    final XDouble bcd = temp8a.add(temp16);
 
-    cxdy1 = (pc[0] * pd[1]); c = (SPLITTER * pc[0]); abig = (c - pc[0]);
-    ahi = c - abig; alo = pc[0] - ahi; c = (SPLITTER * pd[1]);
-    abig = (c - pd[1]); bhi = c - abig; blo = pd[1] - bhi;
-    err1 = cxdy1 - (ahi * bhi); err2 = err1 - (alo * bhi);
-    err3 = err2 - (ahi * blo); cxdy0 = (alo * blo) - err3;
-    dxcy1 = (pd[0] * pc[1]); c = (SPLITTER * pd[0]); abig = (c - pd[0]);
-    ahi = c - abig; alo = pd[0] - ahi; c = (SPLITTER * pc[1]);
-    abig = (c - pc[1]); bhi = c - abig; blo = pc[1] - bhi;
-    err1 = dxcy1 - (ahi * bhi); err2 = err1 - (alo * bhi);
-    err3 = err2 - (ahi * blo); dxcy0 = (alo * blo) - err3;
-    _i = (cxdy0 - dxcy0); bvirt = (cxdy0 - _i); avirt = _i + bvirt;
-    bround = bvirt - dxcy0; around = cxdy0 - avirt;
-    cd[0] = around + bround; _j = (cxdy1 + _i); bvirt = (_j - cxdy1);
-    avirt = _j - bvirt; bround = _i - bvirt; around = cxdy1 - avirt;
-    _0 = around + bround; _i = (_0 - dxcy1); bvirt = (_0 - _i);
-    avirt = _i + bvirt; bround = bvirt - dxcy1; around = _0 - avirt;
-    cd[1] = around + bround; cd[3] = (_j + _i); bvirt = (cd[3] - _j);
-    avirt = cd[3] - bvirt; bround = _i - bvirt; around = _j - avirt;
-    cd[2] = around + bround;
+//    temp8alen = scale_expansion_zeroelim(4, de, pc[2], temp8a);
+//    temp8blen = scale_expansion_zeroelim(4, ce, -pd[2], temp8b);
+//    temp16len = fast_expansion_sum_zeroelim(temp8alen, temp8a, temp8blen, temp8b,
+//                                            temp16);
+//    temp8alen = scale_expansion_zeroelim(4, cd, pe[2], temp8a);
+//    cdelen = fast_expansion_sum_zeroelim(temp8alen, temp8a, temp16len, temp16,
+//                                         cde);
+    temp8a = de.multiply(pc[2]);
+    temp8b = ce.multiply(-pd[2]);
+    temp16 = temp8a.add(temp8b);
+    temp8a = cd.multiply(pe[2]);
+    final XDouble cde = temp8a.add(temp16);
 
-    dxey1 = (pd[0] * pe[1]); c = (SPLITTER * pd[0]); abig = (c - pd[0]);
-    ahi = c - abig; alo = pd[0] - ahi; c = (SPLITTER * pe[1]);
-    abig = (c - pe[1]); bhi = c - abig; blo = pe[1] - bhi;
-    err1 = dxey1 - (ahi * bhi); err2 = err1 - (alo * bhi);
-    err3 = err2 - (ahi * blo); dxey0 = (alo * blo) - err3;
-    exdy1 = (pe[0] * pd[1]); c = (SPLITTER * pe[0]); abig = (c - pe[0]);
-    ahi = c - abig; alo = pe[0] - ahi; c = (SPLITTER * pd[1]);
-    abig = (c - pd[1]); bhi = c - abig; blo = pd[1] - bhi;
-    err1 = exdy1 - (ahi * bhi); err2 = err1 - (alo * bhi);
-    err3 = err2 - (ahi * blo); exdy0 = (alo * blo) - err3;
-    _i = (dxey0 - exdy0); bvirt = (dxey0 - _i); avirt = _i + bvirt;
-    bround = bvirt - exdy0; around = dxey0 - avirt;
-    de[0] = around + bround; _j = (dxey1 + _i); bvirt = (_j - dxey1);
-    avirt = _j - bvirt; bround = _i - bvirt; around = dxey1 - avirt;
-    _0 = around + bround; _i = (_0 - exdy1); bvirt = (_0 - _i);
-    avirt = _i + bvirt; bround = bvirt - exdy1; around = _0 - avirt;
-    de[1] = around + bround; de[3] = (_j + _i); bvirt = (de[3] - _j);
-    avirt = de[3] - bvirt; bround = _i - bvirt; around = _j - avirt;
-    de[2] = around + bround;
+//    temp8alen = scale_expansion_zeroelim(4, ea, pd[2], temp8a);
+//    temp8blen = scale_expansion_zeroelim(4, da, -pe[2], temp8b);
+//    temp16len = fast_expansion_sum_zeroelim(temp8alen, temp8a, temp8blen, temp8b,
+//                                            temp16);
+//    temp8alen = scale_expansion_zeroelim(4, de, pa[2], temp8a);
+//    dealen = fast_expansion_sum_zeroelim(temp8alen, temp8a, temp16len, temp16,
+//                                         dea);
+    temp8a = ea.multiply(pd[2]);
+    temp8b = da.multiply(-pe[2]);
+    temp16 = temp8a.add(temp8b);
+    temp8a = de.multiply(pa[2]);
+    final XDouble dea = temp8a.add(temp16);
 
-    exay1 = (pe[0] * pa[1]); c = (SPLITTER * pe[0]); abig = (c - pe[0]);
-    ahi = c - abig; alo = pe[0] - ahi; c = (SPLITTER * pa[1]);
-    abig = (c - pa[1]); bhi = c - abig; blo = pa[1] - bhi;
-    err1 = exay1 - (ahi * bhi); err2 = err1 - (alo * bhi);
-    err3 = err2 - (ahi * blo); exay0 = (alo * blo) - err3;
-    axey1 = (pa[0] * pe[1]); c = (SPLITTER * pa[0]); abig = (c - pa[0]);
-    ahi = c - abig; alo = pa[0] - ahi; c = (SPLITTER * pe[1]);
-    abig = (c - pe[1]); bhi = c - abig; blo = pe[1] - bhi;
-    err1 = axey1 - (ahi * bhi); err2 = err1 - (alo * bhi);
-    err3 = err2 - (ahi * blo); axey0 = (alo * blo) - err3;
-    _i = (exay0 - axey0); bvirt = (exay0 - _i); avirt = _i + bvirt;
-    bround = bvirt - axey0; around = exay0 - avirt;
-    ea[0] = around + bround; _j = (exay1 + _i); bvirt = (_j - exay1);
-    avirt = _j - bvirt; bround = _i - bvirt; around = exay1 - avirt;
-    _0 = around + bround; _i = (_0 - axey1); bvirt = (_0 - _i);
-    avirt = _i + bvirt; bround = bvirt - axey1; around = _0 - avirt;
-    ea[1] = around + bround; ea[3] = (_j + _i); bvirt = (ea[3] - _j);
-    avirt = ea[3] - bvirt; bround = _i - bvirt; around = _j - avirt;
-    ea[2] = around + bround;
+//    temp8alen = scale_expansion_zeroelim(4, ab, pe[2], temp8a);
+//    temp8blen = scale_expansion_zeroelim(4, eb, -pa[2], temp8b);
+//    temp16len = fast_expansion_sum_zeroelim(temp8alen, temp8a, temp8blen, temp8b,
+//                                            temp16);
+//    temp8alen = scale_expansion_zeroelim(4, ea, pb[2], temp8a);
+//    eablen = fast_expansion_sum_zeroelim(temp8alen, temp8a, temp16len, temp16,
+//                                         eab);
+    temp8a = ab.multiply(pe[2]);
+    temp8b = eb.multiply(-pa[2]);
+    temp16 = temp8a.add(temp8b);
+    temp8a = ea.multiply(pb[2]);
+    final XDouble eab = temp8a.add(temp16);
 
-    axcy1 = (pa[0] * pc[1]); c = (SPLITTER * pa[0]); abig = (c - pa[0]);
-    ahi = c - abig; alo = pa[0] - ahi; c = (SPLITTER * pc[1]);
-    abig = (c - pc[1]); bhi = c - abig; blo = pc[1] - bhi;
-    err1 = axcy1 - (ahi * bhi); err2 = err1 - (alo * bhi);
-    err3 = err2 - (ahi * blo); axcy0 = (alo * blo) - err3;
-    cxay1 = (pc[0] * pa[1]); c = (SPLITTER * pc[0]); abig = (c - pc[0]);
-    ahi = c - abig; alo = pc[0] - ahi; c = (SPLITTER * pa[1]);
-    abig = (c - pa[1]); bhi = c - abig; blo = pa[1] - bhi;
-    err1 = cxay1 - (ahi * bhi); err2 = err1 - (alo * bhi);
-    err3 = err2 - (ahi * blo); cxay0 = (alo * blo) - err3;
-    _i = (axcy0 - cxay0); bvirt = (axcy0 - _i); avirt = _i + bvirt;
-    bround = bvirt - cxay0; around = axcy0 - avirt;
-    ac[0] = around + bround; _j = (axcy1 + _i); bvirt = (_j - axcy1);
-    avirt = _j - bvirt; bround = _i - bvirt; around = axcy1 - avirt;
-    _0 = around + bround; _i = (_0 - cxay1); bvirt = (_0 - _i);
-    avirt = _i + bvirt; bround = bvirt - cxay1; around = _0 - avirt;
-    ac[1] = around + bround; ac[3] = (_j + _i); bvirt = (ac[3] - _j);
-    avirt = ac[3] - bvirt; bround = _i - bvirt; around = _j - avirt;
-    ac[2] = around + bround;
+//    temp8alen = scale_expansion_zeroelim(4, bd, pa[2], temp8a);
+//    temp8blen = scale_expansion_zeroelim(4, da, pb[2], temp8b);
+//    temp16len = fast_expansion_sum_zeroelim(temp8alen, temp8a, temp8blen, temp8b,
+//                                            temp16);
+//    temp8alen = scale_expansion_zeroelim(4, ab, pd[2], temp8a);
+//    abdlen = fast_expansion_sum_zeroelim(temp8alen, temp8a, temp16len, temp16,
+//                                         abd);
+    temp8a = bd.multiply(pa[2]);
+    temp8b = da.multiply(pb[2]);
+    temp16 = temp8a.add(temp8b);
+    temp8a = ab.multiply(pd[2]);
+    final XDouble abd = temp8a.add(temp16);
 
-    bxdy1 = (pb[0] * pd[1]); c = (SPLITTER * pb[0]); abig = (c - pb[0]);
-    ahi = c - abig; alo = pb[0] - ahi; c = (SPLITTER * pd[1]);
-    abig = (c - pd[1]); bhi = c - abig; blo = pd[1] - bhi;
-    err1 = bxdy1 - (ahi * bhi); err2 = err1 - (alo * bhi);
-    err3 = err2 - (ahi * blo); bxdy0 = (alo * blo) - err3;
-    dxby1 = (pd[0] * pb[1]); c = (SPLITTER * pd[0]); abig = (c - pd[0]);
-    ahi = c - abig; alo = pd[0] - ahi; c = (SPLITTER * pb[1]);
-    abig = (c - pb[1]); bhi = c - abig; blo = pb[1] - bhi;
-    err1 = dxby1 - (ahi * bhi); err2 = err1 - (alo * bhi);
-    err3 = err2 - (ahi * blo); dxby0 = (alo * blo) - err3;
-    _i = (bxdy0 - dxby0); bvirt = (bxdy0 - _i); avirt = _i + bvirt;
-    bround = bvirt - dxby0; around = bxdy0 - avirt;
-    bd[0] = around + bround; _j = (bxdy1 + _i); bvirt = (_j - bxdy1);
-    avirt = _j - bvirt; bround = _i - bvirt; around = bxdy1 - avirt;
-    _0 = around + bround; _i = (_0 - dxby1); bvirt = (_0 - _i);
-    avirt = _i + bvirt; bround = bvirt - dxby1; around = _0 - avirt;
-    bd[1] = around + bround; bd[3] = (_j + _i); bvirt = (bd[3] - _j);
-    avirt = bd[3] - bvirt; bround = _i - bvirt; around = _j - avirt;
-    bd[2] = around + bround;
+//    temp8alen = scale_expansion_zeroelim(4, ce, pb[2], temp8a);
+//    temp8blen = scale_expansion_zeroelim(4, eb, pc[2], temp8b);
+//    temp16len = fast_expansion_sum_zeroelim(temp8alen, temp8a, temp8blen, temp8b,
+//                                            temp16);
+//    temp8alen = scale_expansion_zeroelim(4, bc, pe[2], temp8a);
+//    bcelen = fast_expansion_sum_zeroelim(temp8alen, temp8a, temp16len, temp16,
+//                                         bce);
+    temp8a = ce.multiply(pb[2]);
+    temp8b = eb.multiply(pc[2]);
+    temp16 = temp8a.add(temp8b);
+    temp8a = bc.multiply(pe[2]);
+    final XDouble bce = temp8a.add(temp16);
 
-    cxey1 = (pc[0] * pe[1]); c = (SPLITTER * pc[0]); abig = (c - pc[0]);
-    ahi = c - abig; alo = pc[0] - ahi; c = (SPLITTER * pe[1]);
-    abig = (c - pe[1]); bhi = c - abig; blo = pe[1] - bhi;
-    err1 = cxey1 - (ahi * bhi); err2 = err1 - (alo * bhi);
-    err3 = err2 - (ahi * blo); cxey0 = (alo * blo) - err3;
-    excy1 = (pe[0] * pc[1]); c = (SPLITTER * pe[0]); abig = (c - pe[0]);
-    ahi = c - abig; alo = pe[0] - ahi; c = (SPLITTER * pc[1]);
-    abig = (c - pc[1]); bhi = c - abig; blo = pc[1] - bhi;
-    err1 = excy1 - (ahi * bhi); err2 = err1 - (alo * bhi);
-    err3 = err2 - (ahi * blo); excy0 = (alo * blo) - err3;
-    _i = (cxey0 - excy0); bvirt = (cxey0 - _i); avirt = _i + bvirt;
-    bround = bvirt - excy0; around = cxey0 - avirt;
-    ce[0] = around + bround; _j = (cxey1 + _i); bvirt = (_j - cxey1);
-    avirt = _j - bvirt; bround = _i - bvirt; around = cxey1 - avirt;
-    _0 = around + bround; _i = (_0 - excy1); bvirt = (_0 - _i);
-    avirt = _i + bvirt; bround = bvirt - excy1; around = _0 - avirt;
-    ce[1] = around + bround; ce[3] = (_j + _i); bvirt = (ce[3] - _j);
-    avirt = ce[3] - bvirt; bround = _i - bvirt; around = _j - avirt;
-    ce[2] = around + bround;
+//    temp8alen = scale_expansion_zeroelim(4, da, pc[2], temp8a);
+//    temp8blen = scale_expansion_zeroelim(4, ac, pd[2], temp8b);
+//    temp16len = fast_expansion_sum_zeroelim(temp8alen, temp8a, temp8blen, temp8b,
+//                                            temp16);
+//    temp8alen = scale_expansion_zeroelim(4, cd, pa[2], temp8a);
+//    cdalen = fast_expansion_sum_zeroelim(temp8alen, temp8a, temp16len, temp16,
+//                                         cda);
+    temp8a = da.multiply(pc[2]);
+    temp8b = ac.multiply(pd[2]);
+    temp16 = temp8a.add(temp8b);
+    temp8a = cd.multiply(pa[2]);
+    final XDouble cda = temp8a.add(temp16);
 
-    dxay1 = (pd[0] * pa[1]); c = (SPLITTER * pd[0]); abig = (c - pd[0]);
-    ahi = c - abig; alo = pd[0] - ahi; c = (SPLITTER * pa[1]);
-    abig = (c - pa[1]); bhi = c - abig; blo = pa[1] - bhi;
-    err1 = dxay1 - (ahi * bhi); err2 = err1 - (alo * bhi);
-    err3 = err2 - (ahi * blo); dxay0 = (alo * blo) - err3;
-    axdy1 = (pa[0] * pd[1]); c = (SPLITTER * pa[0]); abig = (c - pa[0]);
-    ahi = c - abig; alo = pa[0] - ahi; c = (SPLITTER * pd[1]);
-    abig = (c - pd[1]); bhi = c - abig; blo = pd[1] - bhi;
-    err1 = axdy1 - (ahi * bhi); err2 = err1 - (alo * bhi);
-    err3 = err2 - (ahi * blo); axdy0 = (alo * blo) - err3;
-    _i = (dxay0 - axdy0); bvirt = (dxay0 - _i); avirt = _i + bvirt;
-    bround = bvirt - axdy0; around = dxay0 - avirt;
-    da[0] = around + bround; _j = (dxay1 + _i); bvirt = (_j - dxay1);
-    avirt = _j - bvirt; bround = _i - bvirt; around = dxay1 - avirt;
-    _0 = around + bround; _i = (_0 - axdy1); bvirt = (_0 - _i);
-    avirt = _i + bvirt; bround = bvirt - axdy1; around = _0 - avirt;
-    da[1] = around + bround; da[3] = (_j + _i); bvirt = (da[3] - _j);
-    avirt = da[3] - bvirt; bround = _i - bvirt; around = _j - avirt;
-    da[2] = around + bround;
+//    temp8alen = scale_expansion_zeroelim(4, eb, pd[2], temp8a);
+//    temp8blen = scale_expansion_zeroelim(4, bd, pe[2], temp8b);
+//    temp16len = fast_expansion_sum_zeroelim(temp8alen, temp8a, temp8blen, temp8b,
+//                                            temp16);
+//    temp8alen = scale_expansion_zeroelim(4, de, pb[2], temp8a);
+//    deblen = fast_expansion_sum_zeroelim(temp8alen, temp8a, temp16len, temp16,
+//                                         deb);
+    temp8a = eb.multiply(pd[2]);
+    temp8b = bd.multiply(pe[2]);
+    temp16 = temp8a.add(temp8b);
+    temp8a = de.multiply(pb[2]);
+    final XDouble deb = temp8a.add(temp16);
 
-    exby1 = (pe[0] * pb[1]); c = (SPLITTER * pe[0]); abig = (c - pe[0]);
-    ahi = c - abig; alo = pe[0] - ahi; c = (SPLITTER * pb[1]);
-    abig = (c - pb[1]); bhi = c - abig; blo = pb[1] - bhi;
-    err1 = exby1 - (ahi * bhi); err2 = err1 - (alo * bhi);
-    err3 = err2 - (ahi * blo); exby0 = (alo * blo) - err3;
-    bxey1 = (pb[0] * pe[1]); c = (SPLITTER * pb[0]); abig = (c - pb[0]);
-    ahi = c - abig; alo = pb[0] - ahi; c = (SPLITTER * pe[1]);
-    abig = (c - pe[1]); bhi = c - abig; blo = pe[1] - bhi;
-    err1 = bxey1 - (ahi * bhi); err2 = err1 - (alo * bhi);
-    err3 = err2 - (ahi * blo); bxey0 = (alo * blo) - err3;
-    _i = (exby0 - bxey0); bvirt = (exby0 - _i); avirt = _i + bvirt;
-    bround = bvirt - bxey0; around = exby0 - avirt;
-    eb[0] = around + bround; _j = (exby1 + _i); bvirt = (_j - exby1);
-    avirt = _j - bvirt; bround = _i - bvirt; around = exby1 - avirt;
-    _0 = around + bround; _i = (_0 - bxey1); bvirt = (_0 - _i);
-    avirt = _i + bvirt; bround = bvirt - bxey1; around = _0 - avirt;
-    eb[1] = around + bround; eb[3] = (_j + _i); bvirt = (eb[3] - _j);
-    avirt = eb[3] - bvirt; bround = _i - bvirt; around = _j - avirt;
-    eb[2] = around + bround;
+//    temp8alen = scale_expansion_zeroelim(4, ac, pe[2], temp8a);
+//    temp8blen = scale_expansion_zeroelim(4, ce, pa[2], temp8b);
+//    temp16len = fast_expansion_sum_zeroelim(temp8alen, temp8a, temp8blen, temp8b,
+//                                            temp16);
+//    temp8alen = scale_expansion_zeroelim(4, ea, pc[2], temp8a);
+//    eaclen = fast_expansion_sum_zeroelim(temp8alen, temp8a, temp16len, temp16,
+//                                         eac);
+    temp8a = ac.multiply(pe[2]);
+    temp8b = ce.multiply(pa[2]);
+    temp16 = temp8a.add(temp8b);
+    temp8a = ea.multiply(pc[2]);
+    final XDouble eac = temp8a.add(temp16);
 
-    temp8alen =Expansion.scale(4, bc, pa[2], temp8a);
-    temp8blen =Expansion.scale(4, ac, -pb[2], temp8b);
-    temp16len =
-      Expansion.sum(temp8alen, temp8a, temp8blen, temp8b,
-                    temp16);
-    temp8alen =Expansion.scale(4, ab, pc[2], temp8a);abclen =
-      Expansion.sum(temp8alen, temp8a, temp16len, temp16,
-                    abc);
+//    temp48alen = fast_expansion_sum_zeroelim(cdelen, cde, bcelen, bce, temp48a);
+//    temp48blen = fast_expansion_sum_zeroelim(deblen, deb, bcdlen, bcd, temp48b);
+//    for (i = 0; i < temp48blen; i++) { temp48b[i] = -temp48b[i]; }
+//    bcdelen = fast_expansion_sum_zeroelim(temp48alen, temp48a,
+//                                          temp48blen, temp48b, bcde);
+    XDouble temp48a = cde.add(bce);
+    XDouble temp48b = deb.add(bcd);
+    final XDouble bcde = temp48a.subtract(temp48b);
+//    xlen = scale_expansion_zeroelim(bcdelen, bcde, pa[0], temp192);
+    XDouble temp192 = bcde.multiply(pa[0]);
+//    xlen = scale_expansion_zeroelim(xlen, temp192, pa[0], det384x);
+    XDouble det384x = temp192.multiply(pa[0]);
+//    ylen = scale_expansion_zeroelim(bcdelen, bcde, pa[1], temp192);
+    temp192 = bcde.multiply(pa[1]);
+//    ylen = scale_expansion_zeroelim(ylen, temp192, pa[1], det384y);
+    XDouble det384y = temp192.multiply(pa[1]);
+//    zlen = scale_expansion_zeroelim(bcdelen, bcde, pa[2], temp192);
+    temp192 = bcde.multiply(pa[2]);
+//    zlen = scale_expansion_zeroelim(zlen, temp192, pa[2], det384z);
+    XDouble det384z = temp192.multiply(pa[2]);
+//    xylen = fast_expansion_sum_zeroelim(xlen, det384x, ylen, det384y, detxy);
+    XDouble detxy = det384x.add(det384y);
+//    alen = fast_expansion_sum_zeroelim(xylen, detxy, zlen, det384z, adet);
+    final XDouble adet = detxy.add(det384z);
 
-    temp8alen =Expansion.scale(4, cd, pb[2], temp8a);
-    temp8blen =Expansion.scale(4, bd, -pc[2], temp8b);
-    temp16len =
-      Expansion.sum(temp8alen, temp8a, temp8blen, temp8b,
-                    temp16);
-    temp8alen =Expansion.scale(4, bc, pd[2], temp8a);bcdlen =
-      Expansion.sum(temp8alen, temp8a, temp16len, temp16,
-                    bcd);
+//    temp48alen = fast_expansion_sum_zeroelim(dealen, dea, cdalen, cda, temp48a);
+//    temp48blen = fast_expansion_sum_zeroelim(eaclen, eac, cdelen, cde, temp48b);
+//    for (i = 0; i < temp48blen; i++) {
+//      temp48b[i] = -temp48b[i];
+//    }
+//    cdealen = fast_expansion_sum_zeroelim(temp48alen, temp48a,
+//                                          temp48blen, temp48b, cdea);
+//    xlen = scale_expansion_zeroelim(cdealen, cdea, pb[0], temp192);
+//    xlen = scale_expansion_zeroelim(xlen, temp192, pb[0], det384x);
+//    ylen = scale_expansion_zeroelim(cdealen, cdea, pb[1], temp192);
+//    ylen = scale_expansion_zeroelim(ylen, temp192, pb[1], det384y);
+//    zlen = scale_expansion_zeroelim(cdealen, cdea, pb[2], temp192);
+//    zlen = scale_expansion_zeroelim(zlen, temp192, pb[2], det384z);
+//    xylen = fast_expansion_sum_zeroelim(xlen, det384x, ylen, det384y, detxy);
+//    blen = fast_expansion_sum_zeroelim(xylen, detxy, zlen, det384z, bdet);
+    temp48a = dea.add(cda);
+    temp48b = eac.add(cde);
+    final XDouble cdea = temp48a.subtract(temp48b);
+    temp192 = cdea.multiply(pb[0]);
+    det384x = temp192.multiply(pb[0]);
+    temp192 = cdea.multiply(pb[1]);
+    det384y = temp192.multiply(pb[1]);
+    temp192 = cdea.multiply(pb[2]);
+    det384z = temp192.multiply(pb[2]);
+    detxy = det384x.add(det384y);
+    final XDouble bdet = detxy.add(det384z);
 
-    temp8alen =Expansion.scale(4, de, pc[2], temp8a);
-    temp8blen =Expansion.scale(4, ce, -pd[2], temp8b);
-    temp16len =
-      Expansion.sum(temp8alen, temp8a, temp8blen, temp8b,
-                    temp16);
-    temp8alen =Expansion.scale(4, cd, pe[2], temp8a);cdelen =
-      Expansion.sum(temp8alen, temp8a, temp16len, temp16,
-                    cde);
+//    temp48alen = fast_expansion_sum_zeroelim(eablen, eab, deblen, deb, temp48a);
+//    temp48blen = fast_expansion_sum_zeroelim(abdlen, abd, dealen, dea, temp48b);
+//    for (i = 0; i < temp48blen; i++) {
+//      temp48b[i] = -temp48b[i];
+//    }
+//    deablen = fast_expansion_sum_zeroelim(temp48alen, temp48a,
+//                                          temp48blen, temp48b, deab);
+//    xlen = scale_expansion_zeroelim(deablen, deab, pc[0], temp192);
+//    xlen = scale_expansion_zeroelim(xlen, temp192, pc[0], det384x);
+//    ylen = scale_expansion_zeroelim(deablen, deab, pc[1], temp192);
+//    ylen = scale_expansion_zeroelim(ylen, temp192, pc[1], det384y);
+//    zlen = scale_expansion_zeroelim(deablen, deab, pc[2], temp192);
+//    zlen = scale_expansion_zeroelim(zlen, temp192, pc[2], det384z);
+//    xylen = fast_expansion_sum_zeroelim(xlen, det384x, ylen, det384y, detxy);
+//    clen = fast_expansion_sum_zeroelim(xylen, detxy, zlen, det384z, cdet);
+    temp48a = eab.add(deb);
+    temp48b = abd.add(dea);
+    final XDouble deab = temp48a.subtract(temp48b);
+    temp192 = deab.multiply(pc[0]);
+    det384x = temp192.multiply(pc[0]);
+    temp192 = deab.multiply(pc[1]);
+    det384y = temp192.multiply(pc[1]);
+    temp192 = deab.multiply(pc[2]);
+    det384z = temp192.multiply(pc[2]);
+    detxy = det384x.add(det384y);
+    final XDouble cdet = detxy.add(det384z);
 
-    temp8alen =Expansion.scale(4, ea, pd[2], temp8a);
-    temp8blen =Expansion.scale(4, da, -pe[2], temp8b);
-    temp16len =
-      Expansion.sum(temp8alen, temp8a, temp8blen, temp8b,
-                    temp16);
-    temp8alen =Expansion.scale(4, de, pa[2], temp8a);dealen =
-      Expansion.sum(temp8alen, temp8a, temp16len, temp16,
-                    dea);
+//    temp48alen = fast_expansion_sum_zeroelim(abclen, abc, eaclen, eac, temp48a);
+//    temp48blen = fast_expansion_sum_zeroelim(bcelen, bce, eablen, eab, temp48b);
+//    for (i = 0; i < temp48blen; i++) {
+//      temp48b[i] = -temp48b[i];
+//    }
+//    eabclen = fast_expansion_sum_zeroelim(temp48alen, temp48a,
+//                                          temp48blen, temp48b, eabc);
+//    xlen = scale_expansion_zeroelim(eabclen, eabc, pd[0], temp192);
+//    xlen = scale_expansion_zeroelim(xlen, temp192, pd[0], det384x);
+//    ylen = scale_expansion_zeroelim(eabclen, eabc, pd[1], temp192);
+//    ylen = scale_expansion_zeroelim(ylen, temp192, pd[1], det384y);
+//    zlen = scale_expansion_zeroelim(eabclen, eabc, pd[2], temp192);
+//    zlen = scale_expansion_zeroelim(zlen, temp192, pd[2], det384z);
+//    xylen = fast_expansion_sum_zeroelim(xlen, det384x, ylen, det384y, detxy);
+//    dlen = fast_expansion_sum_zeroelim(xylen, detxy, zlen, det384z, ddet);
+    temp48a = abc.add(eac);
+    temp48b = bce.add(eab);
+    final XDouble eabc = temp48a.subtract(temp48b);
+    temp192 = eabc.multiply(pd[0]);
+    det384x = temp192.multiply(pd[0]);
+    temp192 = eabc.multiply(pd[1]);
+    det384y = temp192.multiply(pd[1]);
+    temp192 = eabc.multiply(pd[2]);
+    det384z = temp192.multiply(pd[2]);
+    detxy = det384x.add(det384y);
+    final XDouble ddet = detxy.add(det384z);
 
-    temp8alen =Expansion.scale(4, ab, pe[2], temp8a);
-    temp8blen =Expansion.scale(4, eb, -pa[2], temp8b);
-    temp16len =
-      Expansion.sum(temp8alen, temp8a, temp8blen, temp8b,
-                    temp16);
-    temp8alen =Expansion.scale(4, ea, pb[2], temp8a);eablen =
-      Expansion.sum(temp8alen, temp8a, temp16len, temp16,
-                    eab);
+//    temp48alen = fast_expansion_sum_zeroelim(bcdlen, bcd, abdlen, abd, temp48a);
+//    temp48blen = fast_expansion_sum_zeroelim(cdalen, cda, abclen, abc, temp48b);
+//    for (i = 0; i < temp48blen; i++) {
+//      temp48b[i] = -temp48b[i];
+//    }
+//    abcdlen = fast_expansion_sum_zeroelim(temp48alen, temp48a,
+//                                          temp48blen, temp48b, abcd);
+//    xlen = scale_expansion_zeroelim(abcdlen, abcd, pe[0], temp192);
+//    xlen = scale_expansion_zeroelim(xlen, temp192, pe[0], det384x);
+//    ylen = scale_expansion_zeroelim(abcdlen, abcd, pe[1], temp192);
+//    ylen = scale_expansion_zeroelim(ylen, temp192, pe[1], det384y);
+//    zlen = scale_expansion_zeroelim(abcdlen, abcd, pe[2], temp192);
+//    zlen = scale_expansion_zeroelim(zlen, temp192, pe[2], det384z);
+//    xylen = fast_expansion_sum_zeroelim(xlen, det384x, ylen, det384y, detxy);
+//    elen = fast_expansion_sum_zeroelim(xylen, detxy, zlen, det384z, edet);
+    temp48a = bcd.add(abd);
+    temp48b = cda.add(abc);
+    final XDouble abcd = temp48a.subtract(temp48b);
+    temp192 = abcd.multiply(pe[0]);
+    det384x = temp192.multiply(pe[0]);
+    temp192 = abcd.multiply(pe[1]);
+    det384y = temp192.multiply(pe[1]);
+    temp192 = abcd.multiply(pe[2]);
+    det384z = temp192.multiply(pe[2]);
+    detxy = det384x.add(det384y);
+    final XDouble edet = detxy.add(det384z);
 
-    temp8alen =Expansion.scale(4, bd, pa[2], temp8a);
-    temp8blen =Expansion.scale(4, da, pb[2], temp8b);
-    temp16len =
-      Expansion.sum(temp8alen, temp8a, temp8blen, temp8b,
-                    temp16);
-    temp8alen =Expansion.scale(4, ab, pd[2], temp8a);abdlen =
-      Expansion.sum(temp8alen, temp8a, temp16len, temp16,
-                    abd);
+//    ablen = fast_expansion_sum_zeroelim(alen, adet, blen, bdet, abdet);
+//    cdlen = fast_expansion_sum_zeroelim(clen, cdet, dlen, ddet, cddet);
+//    cdelen = fast_expansion_sum_zeroelim(cdlen, cddet, elen, edet, cdedet);
+//    deterlen = fast_expansion_sum_zeroelim(ablen, abdet, cdelen, cdedet, deter);
 
-    temp8alen =Expansion.scale(4, ce, pb[2], temp8a);
-    temp8blen =Expansion.scale(4, eb, pc[2], temp8b);
-    temp16len =
-      Expansion.sum(temp8alen, temp8a, temp8blen, temp8b,
-                    temp16);
-    temp8alen =Expansion.scale(4, bc, pe[2], temp8a);bcelen =
-      Expansion.sum(temp8alen, temp8a, temp16len, temp16,
-                    bce);
-
-    temp8alen =Expansion.scale(4, da, pc[2], temp8a);
-    temp8blen =Expansion.scale(4, ac, pd[2], temp8b);
-    temp16len =
-      Expansion.sum(temp8alen, temp8a, temp8blen, temp8b,
-                    temp16);
-    temp8alen =Expansion.scale(4, cd, pa[2], temp8a);cdalen =
-      Expansion.sum(temp8alen, temp8a, temp16len, temp16,
-                    cda);
-
-    temp8alen =Expansion.scale(4, eb, pd[2], temp8a);
-    temp8blen =Expansion.scale(4, bd, pe[2], temp8b);
-    temp16len =
-      Expansion.sum(temp8alen, temp8a, temp8blen, temp8b,
-                    temp16);
-    temp8alen =Expansion.scale(4, de, pb[2], temp8a);deblen =
-      Expansion.sum(temp8alen, temp8a, temp16len, temp16,
-                    deb);
-
-    temp8alen =Expansion.scale(4, ac, pe[2], temp8a);
-    temp8blen =Expansion.scale(4, ce, pa[2], temp8b);
-    temp16len =
-      Expansion.sum(temp8alen, temp8a, temp8blen, temp8b,
-                    temp16);
-    temp8alen =Expansion.scale(4, ea, pc[2], temp8a);eaclen =
-      Expansion.sum(temp8alen, temp8a, temp16len, temp16,
-                    eac);
-
-    temp48alen =
-      Expansion.sum(cdelen, cde, bcelen, bce, temp48a);
-    temp48blen =
-      Expansion.sum(deblen, deb, bcdlen, bcd, temp48b);
-    for (i = 0; i < temp48blen; i++) {
-      temp48b[i] = -temp48b[i];
-    } bcdelen =
-      Expansion.sum(temp48alen, temp48a, temp48blen,
-                    temp48b, bcde);
-    xlen =Expansion.scale(bcdelen, bcde, pa[0], temp192);
-    xlen =Expansion.scale(xlen, temp192, pa[0], det384x);
-    ylen =Expansion.scale(bcdelen, bcde, pa[1], temp192);
-    ylen =Expansion.scale(ylen, temp192, pa[1], det384y);
-    zlen =Expansion.scale(bcdelen, bcde, pa[2], temp192);
-    zlen =Expansion.scale(zlen, temp192, pa[2], det384z);
-    xylen =
-      Expansion.sum(xlen, det384x, ylen, det384y, detxy);
-    alen =
-      Expansion.sum(xylen, detxy, zlen, det384z, adet);
-
-    temp48alen =
-      Expansion.sum(dealen, dea, cdalen, cda, temp48a);
-    temp48blen =
-      Expansion.sum(eaclen, eac, cdelen, cde, temp48b);
-    for (i = 0; i < temp48blen; i++) {
-      temp48b[i] = -temp48b[i];
-    } cdealen =
-      Expansion.sum(temp48alen, temp48a, temp48blen,
-                    temp48b, cdea);
-    xlen =Expansion.scale(cdealen, cdea, pb[0], temp192);
-    xlen =Expansion.scale(xlen, temp192, pb[0], det384x);
-    ylen =Expansion.scale(cdealen, cdea, pb[1], temp192);
-    ylen =Expansion.scale(ylen, temp192, pb[1], det384y);
-    zlen =Expansion.scale(cdealen, cdea, pb[2], temp192);
-    zlen =Expansion.scale(zlen, temp192, pb[2], det384z);
-    xylen =
-      Expansion.sum(xlen, det384x, ylen, det384y, detxy);
-    blen =
-      Expansion.sum(xylen, detxy, zlen, det384z, bdet);
-
-    temp48alen =
-      Expansion.sum(eablen, eab, deblen, deb, temp48a);
-    temp48blen =
-      Expansion.sum(abdlen, abd, dealen, dea, temp48b);
-    for (i = 0; i < temp48blen; i++) {
-      temp48b[i] = -temp48b[i];
-    } deablen =
-      Expansion.sum(temp48alen, temp48a, temp48blen,
-                    temp48b, deab);
-    xlen =Expansion.scale(deablen, deab, pc[0], temp192);
-    xlen =Expansion.scale(xlen, temp192, pc[0], det384x);
-    ylen =Expansion.scale(deablen, deab, pc[1], temp192);
-    ylen =Expansion.scale(ylen, temp192, pc[1], det384y);
-    zlen =Expansion.scale(deablen, deab, pc[2], temp192);
-    zlen =Expansion.scale(zlen, temp192, pc[2], det384z);
-    xylen =
-      Expansion.sum(xlen, det384x, ylen, det384y, detxy);
-    clen =
-      Expansion.sum(xylen, detxy, zlen, det384z, cdet);
-
-    temp48alen =
-      Expansion.sum(abclen, abc, eaclen, eac, temp48a);
-    temp48blen =
-      Expansion.sum(bcelen, bce, eablen, eab, temp48b);
-    for (i = 0; i < temp48blen; i++) {
-      temp48b[i] = -temp48b[i];
-    } eabclen =
-      Expansion.sum(temp48alen, temp48a, temp48blen,
-                    temp48b, eabc);
-    xlen =Expansion.scale(eabclen, eabc, pd[0], temp192);
-    xlen =Expansion.scale(xlen, temp192, pd[0], det384x);
-    ylen =Expansion.scale(eabclen, eabc, pd[1], temp192);
-    ylen =Expansion.scale(ylen, temp192, pd[1], det384y);
-    zlen =Expansion.scale(eabclen, eabc, pd[2], temp192);
-    zlen =Expansion.scale(zlen, temp192, pd[2], det384z);
-    xylen =
-      Expansion.sum(xlen, det384x, ylen, det384y, detxy);
-    dlen =
-      Expansion.sum(xylen, detxy, zlen, det384z, ddet);
-
-    temp48alen =
-      Expansion.sum(bcdlen, bcd, abdlen, abd, temp48a);
-    temp48blen =
-      Expansion.sum(cdalen, cda, abclen, abc, temp48b);
-    for (i = 0; i < temp48blen; i++) {
-      temp48b[i] = -temp48b[i];
-    } abcdlen =
-      Expansion.sum(temp48alen, temp48a, temp48blen,
-                    temp48b, abcd);
-    xlen =Expansion.scale(abcdlen, abcd, pe[0], temp192);
-    xlen =Expansion.scale(xlen, temp192, pe[0], det384x);
-    ylen =Expansion.scale(abcdlen, abcd, pe[1], temp192);
-    ylen =Expansion.scale(ylen, temp192, pe[1], det384y);
-    zlen =Expansion.scale(abcdlen, abcd, pe[2], temp192);
-    zlen =Expansion.scale(zlen, temp192, pe[2], det384z);
-    xylen =
-      Expansion.sum(xlen, det384x, ylen, det384y, detxy);
-    elen =
-      Expansion.sum(xylen, detxy, zlen, det384z, edet);
-
-    ablen =Expansion.sum(alen, adet, blen, bdet, abdet);
-    cdlen =Expansion.sum(clen, cdet, dlen, ddet, cddet);
-    cdelen =
-      Expansion.sum(cdlen, cddet, elen, edet, cdedet);
-    deterlen =
-      Expansion.sum(ablen, abdet, cdelen, cdedet, deter);
-
-    return deter[deterlen - 1];
-  }
+    final XDouble abdet = adet.add(bdet);
+    final XDouble cddet = cdet.add(ddet);
+    final XDouble cdedet = cddet.add(edet);
+    final XDouble deter = abdet.add(cdedet);
+    return deter.doubleValue(); }
 
   //--------------------------------------------------------------------
   // construction

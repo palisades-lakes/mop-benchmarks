@@ -76,7 +76,7 @@ package mop.java.geometry.predicates;
  *   even <code>BigInteger</code> to extend range.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-05-29
+ * @version 2026-06-30
  */
 
 public final class Fast implements Predicate {
@@ -181,7 +181,8 @@ public final class Fast implements Predicate {
     final double clift = (cex * cex) + (cey * cey) + (cez * cez);
     final double dlift = (dex * dex) + (dey * dey) + (dez * dez);
 
-    return ((dlift*abc) - (clift*dab)) + ((blift*cda) - (alift*bcd)); }
+    return
+      ((dlift*abc) - (clift*dab)) + ((blift*cda) - (alift*bcd)); }
 
   //--------------------------------------------------------------------
   // construction

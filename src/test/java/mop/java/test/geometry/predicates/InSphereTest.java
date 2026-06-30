@@ -15,7 +15,7 @@ import java.util.List;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-05-19
+ * @version 2026-06-30
  */
 
 public final class InSphereTest {

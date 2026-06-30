@@ -6,7 +6,7 @@ import mop.java.numbers.RationalFloat;
  * Should be exact, up to RationalFloat resolution.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-05-19
+ * @version 2026-06-30
  */
 
 public final class RationalFloatPredicate implements Predicate {
@@ -176,9 +176,10 @@ public final class RationalFloatPredicate implements Predicate {
     final RationalFloat clift = cex.square().add(cey.square().add(cez.square()));
     final RationalFloat dlift = dex.square().add(dey.square().add(dez.square()));
 
-    return
-      dlift.multiply(abc).subtract(clift.multiply(dab))
-            .add(blift.multiply(cda).subtract(alift.multiply(bcd)))
+    return dlift.multiply(abc)
+           .subtract(clift.multiply(dab))
+           .add(blift.multiply(cda))
+           .subtract(alift.multiply(bcd))
            .doubleValue(); }
 
   //--------------------------------------------------------------------

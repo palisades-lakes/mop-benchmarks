@@ -542,6 +542,7 @@ public final class XDouble implements Comparable<XDouble> {
     final Hilo x2x1 = Hilo.twoSum(ahi, ix0.hi());
     return new double[] {ix0.lo(), x2x1.lo(), x2x1.hi(), }; }
 
+  // TODO: rename to subtract
   public static final XDouble twoTwoDiff (final Hilo a,
                                           final Hilo b) {
     // Two_One_Diff(a1, a0, b0, _j, _0, x0);

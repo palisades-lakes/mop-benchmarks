@@ -75,7 +75,7 @@ package mop.java.geometry.predicates;
  *   even <code>BigInteger</code> to extend range.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-05-15
+ * @version 2026-06-30
  */
 
 public interface Predicate {
@@ -130,15 +130,14 @@ public interface Predicate {
    * orient3d() only, this determinant is computed adaptively, in the
    * sense that exact arithmetic is used only to the degree it is needed
    * to ensure that the returned value has the correct sign.  Hence,
-   * orient3d() is usually quite fast, but will run more slowly when the
-   * input points are coplanar or nearly so.
+   * incircle() is usually quite fast, but will run more slowly when the
+   * input points are cocircular or nearly so.
    */
-  default double orient3d (final double[] pa,
+  default double incircle (final double[] pa,
                            final double[] pb,
                            final double[] pc,
                            final double[] pd) {
-    throw new UnsupportedOperationException(
-      getClass().getSimpleName()); }
+    throw new UnsupportedOperationException(getClass().getSimpleName()); }
 
   //--------------------------------------------------------------------
   /** Return a positive value if the point pd lies inside the circle
@@ -155,14 +154,15 @@ public interface Predicate {
    * orient3d() only, this determinant is computed adaptively, in the
    * sense that exact arithmetic is used only to the degree it is needed
    * to ensure that the returned value has the correct sign.  Hence,
-   * incircle() is usually quite fast, but will run more slowly when the
-   * input points are cocircular or nearly so.
+   * orient3d() is usually quite fast, but will run more slowly when the
+   * input points are coplanar or nearly so.
    */
-  default double incircle (final double[] pa,
+  default double orient3d (final double[] pa,
                            final double[] pb,
                            final double[] pc,
                            final double[] pd) {
-    throw new UnsupportedOperationException(getClass().getSimpleName()); }
+    throw new UnsupportedOperationException(
+      getClass().getSimpleName()); }
 
   //--------------------------------------------------------------------
 
