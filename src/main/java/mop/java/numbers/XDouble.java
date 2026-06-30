@@ -339,7 +339,10 @@ public final class XDouble implements Comparable<XDouble> {
       result = result.add(ab.lo()); }
     return result; }
 
-  // TODO: this version of scale() breaks all the Shewchuk predicates,
+  public final XDouble multiply (final Hilo b) {
+    return multiply(b.hi()).add(multiply(b.lo()));
+  }
+    // TODO: this version of scale() breaks all the Shewchuk predicates,
   //  while naive version only breaks Slow.incircle().
   //  In both cases, the difference from BigFloat is the absolute
   //  value of the ulp of the BigFloat rounded to double?

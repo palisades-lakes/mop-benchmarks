@@ -112,7 +112,8 @@ public interface Predicate {
   default double orient2d (final double[] pa,
                            final double[] pb,
                            final double[] pc) {
-    throw new UnsupportedOperationException(getClass().getSimpleName()); }
+    throw new UnsupportedOperationException(
+      getClass().getSimpleName()); }
 
   //--------------------------------------------------------------------
   /** Return a positive value if the point pd lies inside the circle
@@ -136,7 +137,8 @@ public interface Predicate {
                            final double[] pb,
                            final double[] pc,
                            final double[] pd) {
-    throw new UnsupportedOperationException(getClass().getSimpleName()); }
+    throw new UnsupportedOperationException(
+      getClass().getSimpleName()); }
 
   //--------------------------------------------------------------------
   /** Return a positive value if the point pd lies inside the circle

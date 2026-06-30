@@ -211,28 +211,24 @@ public final class Adapt implements Predicate {
     if (axtail) {
       axtbc = bc.multiply(adxtail);
       finnow = finnow.add(fininc(bb,adxtail,cdy,axtbc,adx,cc,bdy)); }
-    else {
-      axtbc = XDouble.ZERO; }
+    else { axtbc = XDouble.ZERO; }
 
     final XDouble aytbc;
     if (aytail) {
       aytbc = bc.multiply(adytail);
       finnow = finnow.add( fininc(cc,adytail,cdy,aytbc,ady,bb,bdx)); }
-    else {
-      aytbc = XDouble.ZERO; }
+    else { aytbc = XDouble.ZERO; }
 
     final XDouble bxtca;
     if (bxtail) {
       bxtca = ca.multiply(bdxtail);
       finnow = finnow.add(fininc(cc,bdxtail,ady,bxtca,bdx,aa,cdy)); }
-    else {
-      bxtca = XDouble.ZERO; }
+    else { bxtca = XDouble.ZERO; }
 
     final XDouble bytca;
     if (bytail) {
       bytca = ca.multiply(bdytail);
       finnow = finnow.add(fininc(aa,bdytail,cdx,bytca,bdy,cc,adx)); }
-
     else { bytca = XDouble.ZERO; }
 
     final XDouble cxtab;
@@ -260,19 +256,18 @@ public final class Adapt implements Predicate {
         bctt = XDouble.twoTwoDiff(
           Hilo.product(bdxtail, cdytail),
           Hilo.product(cdxtail, bdytail)); }
-      else {
-        bct = XDouble.ZERO;
-        bctt = XDouble.ZERO; }
+      else { bct = bctt = XDouble.ZERO; }
 
       if (axtail) {
         { final XDouble axtbct = bct.multiply(adxtail);
           finnow = finnow.add(
-            axtbc.multiply(adxtail)
-                 .add(axtbct.multiply(2*adx)));
+            axtbc.multiply(adxtail).add(axtbct.multiply(2*adx)));
           if (bytail) {
-            finnow = finnow.add(cc.multiply(adxtail).multiply(bdytail)); }
+            finnow = finnow.add(
+              cc.multiply(adxtail).multiply(bdytail)); }
           if (cytail) {
-            finnow = finnow.add(bb.multiply(-adxtail).multiply(cdytail)); }
+            finnow = finnow.add(
+              bb.multiply(-adxtail).multiply(cdytail)); }
 
           final XDouble axtbctt = bctt.multiply(adxtail);
           // TODO: XDouble.linearCombination?
@@ -285,8 +280,7 @@ public final class Adapt implements Predicate {
           final XDouble aytbct = bct.multiply(adytail);
           finnow = finnow.add(
             aytbc.multiply(adxtail)
-                 .add(
-                   aytbct.multiply(2*ady)));
+                 .add(aytbct.multiply(2*ady)));
           final XDouble aytbctt = bctt.multiply(adytail);
           finnow = finnow.add(
             aytbct.multiply(adytail)
@@ -299,29 +293,25 @@ public final class Adapt implements Predicate {
         final XDouble u = XDouble.twoTwoSum(
           Hilo.product(cdxtail, ady),
           Hilo.product(cdx, adytail));
-
         final XDouble v = XDouble.twoTwoSum(
           Hilo.product(adxtail, -cdy),
           Hilo.product(adx, -cdytail));
-
         cat = u.add(v);
-
         catt = XDouble.twoTwoDiff(
           Hilo.product(cdxtail, adytail),
           Hilo.product(adxtail, cdytail)); }
-      else {
-        cat= XDouble.ZERO;
-        catt = XDouble.ZERO; }
+      else { cat = catt = XDouble.ZERO; }
 
       if (bxtail) {
         final XDouble bxtcat = cat.multiply(bdxtail);
         finnow = finnow.add(
           bxtca.multiply(bdxtail).add(bxtcat.multiply(2.0*bdx)));
-
         if (cytail) {
-          finnow = finnow.add(aa.multiply(bdxtail).multiply(cdytail)); }
+          finnow = finnow.add(
+            aa.multiply(bdxtail).multiply(cdytail)); }
         if (aytail) {
-          finnow = finnow.add(cc.multiply(-bdxtail).multiply(adytail)); }
+          finnow = finnow.add(
+            cc.multiply(-bdxtail).multiply(adytail)); }
 
         final XDouble bxtcatt = catt.multiply(bdxtail);
         finnow = finnow.add(
@@ -332,13 +322,11 @@ public final class Adapt implements Predicate {
       if (bytail) {
         final XDouble bytcat = cat.multiply(bdytail);
         finnow = finnow.add(
-          bytca.multiply(bdytail)
-               .add(bytcat.multiply(2*bdy)));
+          bytca.multiply(bdytail).add(bytcat.multiply(2*bdy)));
         final XDouble bytcatt = catt.multiply(bdytail);
         // TODO: XDouble.scalePlus(double,double) ->
         //  XDouble.scale(Hilo.twoSum(a,v))
         //  intermediate Hilo instance rather than XDouble
-
         finnow = finnow.add(
           bytcat.multiply(bdytail)
                 .add(bytcatt.multiply(2*bdy))
@@ -348,29 +336,26 @@ public final class Adapt implements Predicate {
     if (ctail) {
       if (atail || btail) {
         final XDouble u = XDouble.twoTwoSum(
-          Hilo.product(adxtail, bdy),
-          Hilo.product(adx, bdytail));
+          Hilo.product(adxtail, bdy), Hilo.product(adx, bdytail));
 
         final XDouble v = XDouble.twoTwoSum(
-          Hilo.product(bdxtail, -ady),
-          Hilo.product(bdx, -adytail));
+          Hilo.product(bdxtail, -ady), Hilo.product(bdx, -adytail));
         abt = u.add(v);
-
         abtt = XDouble.twoTwoDiff(
           Hilo.product(adxtail, bdytail),
           Hilo.product(bdxtail, adytail)); }
-      else {
-        abt = XDouble.ZERO;
-        abtt = XDouble.ZERO; }
+      else { abt = abtt = XDouble.ZERO; }
 
       if (cxtail) {
         final XDouble cxtabt = abt.multiply(cdxtail);
         finnow = finnow.add(
           cxtab.multiply(cdxtail).add(cxtabt.multiply(2*cdx)));
         if (aytail) {
-          finnow = finnow.add(bb.multiply(cdxtail).multiply(adytail)); }
+          finnow = finnow.add(
+            bb.multiply(cdxtail).multiply(adytail)); }
         if (bytail) {
-          finnow = finnow.add(aa.multiply(-cdxtail).multiply(bdytail)); }
+          finnow = finnow.add(
+            aa.multiply(-cdxtail).multiply(bdytail)); }
 
         final XDouble cxtabtt = abtt.multiply(cdxtail);
         finnow = finnow.add(
@@ -382,7 +367,6 @@ public final class Adapt implements Predicate {
         final XDouble cytabt = abt.multiply(cdytail);
         finnow = finnow.add(
           cytab.multiply(cdytail).add(cytabt.multiply(2*cdy)));
-
         final XDouble cytabtt = abtt.multiply(cdytail);
         finnow = finnow.add(
           cytabt.multiply(cdytail)
@@ -448,292 +432,45 @@ public final class Adapt implements Predicate {
                                         final double[] pb,
                                         final double[] pc,
                                         final double detsum) {
-    double acx, acy, bcx, bcy;
-    double acxtail, acytail, bcxtail, bcytail;
-    double detleft, detright;
-    double detlefttail, detrighttail;
-    double det, errbound;
-    double[] B = new double[4];
-    double[] C1 = new double[8];
-    double[] C2 = new double[12];
-    double[] D = new double[16];
-    double B3;
-    int C1length, C2length, Dlength;
-    double[] u = new double[4];
-    double u3;
-    double s1, t1;
-    double s0, t0;
 
-    double bvirt;
-    double avirt, bround, around;
-    double c;
-    double abig;
-    double ahi, alo, bhi, blo;
-    double err1, err2, err3;
-    double _i, _j;
-    double _0;
+    final double acx = (pa[0] - pc[0]);
+    final double bcx = (pb[0] - pc[0]);
+    final double acy = (pa[1] - pc[1]);
+    final double bcy = (pb[1] - pc[1]);
 
-    acx = (pa[0] - pc[0]);
-    bcx = (pb[0] - pc[0]);
-    acy = (pa[1] - pc[1]);
-    bcy = (pb[1] - pc[1]);
+    final Hilo detleft = Hilo.product(acx,bcy);
+    final Hilo detright = Hilo.product(acy,bcx);
+    final XDouble B = XDouble.twoTwoDiff(detleft,detright);
 
-    detleft = (acx * bcy);
-    c = (SPLITTER * acx);
-    abig = (c - acx);
-    ahi = c - abig;
-    alo = acx - ahi;
-    c = (SPLITTER * bcy);
-    abig = (c - bcy);
-    bhi = c - abig;
-    blo = bcy - bhi;
-    err1 = detleft - (ahi * bhi);
-    err2 = err1 - (alo * bhi);
-    err3 = err2 - (ahi * blo);
-    detlefttail = (alo * blo) - err3;
-    detright = (acy * bcx);
-    c = (SPLITTER * acy);
-    abig = (c - acy);
-    ahi = c - abig;
-    alo = acy - ahi;
-    c = (SPLITTER * bcx);
-    abig = (c - bcx);
-    bhi = c - abig;
-    blo = bcx - bhi;
-    err1 = detright - (ahi * bhi);
-    err2 = err1 - (alo * bhi);
-    err3 = err2 - (ahi * blo);
-    detrighttail = (alo * blo) - err3;
+    double det = B.doubleValue();
+    double errbound = ccwerrboundB * detsum;
+    if (Math.abs(det) >= errbound) { return det; }
 
-    _i = (detlefttail - detrighttail);
-    bvirt = (detlefttail - _i);
-    avirt = _i + bvirt;
-    bround = bvirt - detrighttail;
-    around = detlefttail - avirt;
-    B[0] = around + bround;
-    _j = (detleft + _i);
-    bvirt = (_j - detleft);
-    avirt = _j - bvirt;
-    bround = _i - bvirt;
-    around = detleft - avirt;
-    _0 = around + bround;
-    _i = (_0 - detright);
-    bvirt = (_0 - _i);
-    avirt = _i + bvirt;
-    bround = bvirt - detright;
-    around = _0 - avirt;
-    B[1] = around + bround;
-    B3 = (_j + _i);
-    bvirt = (B3 - _j);
-    avirt = B3 - bvirt;
-    bround = _i - bvirt;
-    around = _j - avirt;
-    B[2] = around + bround
-    ;
-    B[3] = B3;
-
-    det = estimate(4, B);
-    errbound = ccwerrboundB * detsum;
-    if (Math.abs(det) >= errbound) {
-      return det;
-    }
-
-    bvirt = (pa[0] - acx);
-    avirt = acx + bvirt;
-    bround = bvirt - pc[0];
-    around = pa[0] - avirt;
-    acxtail = around + bround;
-    bvirt = (pb[0] - bcx);
-    avirt = bcx + bvirt;
-    bround = bvirt - pc[0];
-    around = pb[0] - avirt;
-    bcxtail = around + bround;
-    bvirt = (pa[1] - acy);
-    avirt = acy + bvirt;
-    bround = bvirt - pc[1];
-    around = pa[1] - avirt;
-    acytail = around + bround;
-    bvirt = (pb[1] - bcy);
-    avirt = bcy + bvirt;
-    bround = bvirt - pc[1];
-    around = pb[1] - avirt;
-    bcytail = around + bround;
-
+    final double acxtail = Hilo.twoDiffTail(pa[0],pc[0],acx);
+    final double bcxtail = Hilo.twoDiffTail(pb[0],pc[0],bcx);
+    final double acytail = Hilo.twoDiffTail(pa[1],pc[1],acy);
+    final double bcytail = Hilo.twoDiffTail(pb[1],pc[1],bcy);
     if ((acxtail == 0.0) && (acytail == 0.0)
       && (bcxtail == 0.0) && (bcytail == 0.0)) {
-      return det;
-    }
+      return det; }
 
-    errbound =
-      ccwerrboundC * detsum + resulterrbound * ((det) >= 0.0 ? (det)
-                                                             : -(det));
-    det += (acx * bcytail + bcy * acxtail)
-      - (acy * bcxtail + bcx * acytail);
-    if (Math.abs(det) >= errbound) {
-      return det;
-    }
+    errbound = (ccwerrboundC*detsum) + (resulterrbound*Math.abs(det));
+    det += (acx*bcytail + bcy*acxtail) - (acy*bcxtail + bcx*acytail);
+    if (Math.abs(det) >= errbound) { return det; }
 
-    s1 = (acxtail * bcy);
-    c = (SPLITTER * acxtail);
-    abig = (c - acxtail);
-    ahi = c - abig;
-    alo = acxtail - ahi;
-    c = (SPLITTER * bcy);
-    abig = (c - bcy);
-    bhi = c - abig;
-    blo = bcy - bhi;
-    err1 = s1 - (ahi * bhi);
-    err2 = err1 - (alo * bhi);
-    err3 = err2 - (ahi * blo);
-    s0 = (alo * blo) - err3;
-    t1 = (acytail * bcx);
-    c = (SPLITTER * acytail);
-    abig = (c - acytail);
-    ahi = c - abig;
-    alo = acytail - ahi;
-    c = (SPLITTER * bcx);
-    abig = (c - bcx);
-    bhi = c - abig;
-    blo = bcx - bhi;
-    err1 = t1 - (ahi * bhi);
-    err2 = err1 - (alo * bhi);
-    err3 = err2 - (ahi * blo);
-    t0 = (alo * blo) - err3;
-    _i = (s0 - t0);
-    bvirt = (s0 - _i);
-    avirt = _i + bvirt;
-    bround = bvirt - t0;
-    around = s0 - avirt;
-    u[0] = around + bround;
-    _j = (s1 + _i);
-    bvirt = (_j - s1);
-    avirt = _j - bvirt;
-    bround = _i - bvirt;
-    around = s1 - avirt;
-    _0 = around + bround;
-    _i = (_0 - t1);
-    bvirt = (_0 - _i);
-    avirt = _i + bvirt;
-    bround = bvirt - t1;
-    around = _0 - avirt;
-    u[1] = around + bround;
-    u3 = (_j + _i);
-    bvirt = (u3 - _j);
-    avirt = u3 - bvirt;
-    bround = _i - bvirt;
-    around = _j - avirt;
-    u[2] = around + bround;
-    u[3] = u3;
-    C1length = sum(4, B, 4, u, C1);
-
-    s1 = (acx * bcytail);
-    c = (SPLITTER * acx);
-    abig = (c - acx);
-    ahi = c - abig;
-    alo = acx - ahi;
-    c = (SPLITTER * bcytail);
-    abig = (c - bcytail);
-    bhi = c - abig;
-    blo = bcytail - bhi;
-    err1 = s1 - (ahi * bhi);
-    err2 = err1 - (alo * bhi);
-    err3 = err2 - (ahi * blo);
-    s0 = (alo * blo) - err3;
-    t1 = (acy * bcxtail);
-    c = (SPLITTER * acy);
-    abig = (c - acy);
-    ahi = c - abig;
-    alo = acy - ahi;
-    c = (SPLITTER * bcxtail);
-    abig = (c - bcxtail);
-    bhi = c - abig;
-    blo = bcxtail - bhi;
-    err1 = t1 - (ahi * bhi);
-    err2 = err1 - (alo * bhi);
-    err3 = err2 - (ahi * blo);
-    t0 = (alo * blo) - err3;
-    _i = (s0 - t0);
-    bvirt = (s0 - _i);
-    avirt = _i + bvirt;
-    bround = bvirt - t0;
-    around = s0 - avirt;
-    u[0] = around + bround;
-    _j = (s1 + _i);
-    bvirt = (_j - s1);
-    avirt = _j - bvirt;
-    bround = _i - bvirt;
-    around = s1 - avirt;
-    _0 = around + bround;
-    _i = (_0 - t1);
-    bvirt = (_0 - _i);
-    avirt = _i + bvirt;
-    bround = bvirt - t1;
-    around = _0 - avirt;
-    u[1] = around + bround;
-    u3 = (_j + _i);
-    bvirt = (u3 - _j);
-    avirt = u3 - bvirt;
-    bround = _i - bvirt;
-    around = _j - avirt;
-    u[2] = around + bround;
-    u[3] = u3;
-    C2length = sum(C1length, C1, 4, u, C2);
-
-    s1 = (acxtail * bcytail);
-    c = (SPLITTER * acxtail);
-    abig = (c - acxtail);
-    ahi = c - abig;
-    alo = acxtail - ahi;
-    c = (SPLITTER * bcytail);
-    abig = (c - bcytail);
-    bhi = c - abig;
-    blo = bcytail - bhi;
-    err1 = s1 - (ahi * bhi);
-    err2 = err1 - (alo * bhi);
-    err3 = err2 - (ahi * blo);
-    s0 = (alo * blo) - err3;
-    t1 = (acytail * bcxtail);
-    c = (SPLITTER * acytail);
-    abig = (c - acytail);
-    ahi = c - abig;
-    alo = acytail - ahi;
-    c = (SPLITTER * bcxtail);
-    abig = (c - bcxtail);
-    bhi = c - abig;
-    blo = bcxtail - bhi;
-    err1 = t1 - (ahi * bhi);
-    err2 = err1 - (alo * bhi);
-    err3 = err2 - (ahi * blo);
-    t0 = (alo * blo) - err3;
-    _i = (s0 - t0);
-    bvirt = (s0 - _i);
-    avirt = _i + bvirt;
-    bround = bvirt - t0;
-    around = s0 - avirt;
-    u[0] = around + bround;
-    _j = (s1 + _i);
-    bvirt = (_j - s1);
-    avirt = _j - bvirt;
-    bround = _i - bvirt;
-    around = s1 - avirt;
-    _0 = around + bround;
-    _i = (_0 - t1);
-    bvirt = (_0 - _i);
-    avirt = _i + bvirt;
-    bround = bvirt - t1;
-    around = _0 - avirt;
-    u[1] = around + bround;
-    u3 = (_j + _i);
-    bvirt = (u3 - _j);
-    avirt = u3 - bvirt;
-    bround = _i - bvirt;
-    around = _j - avirt;
-    u[2] = around + bround;
-    u[3] = u3;
-    Dlength = sum(C2length, C2, 4, u, D);
-
-    return (D[Dlength - 1]);
-  }
+    return B.add(
+              XDouble.twoTwoDiff(
+                Hilo.product(acxtail, bcy),
+                Hilo.product(acytail, bcx)))
+            .add(
+              XDouble.twoTwoDiff(
+                Hilo.product(acx, bcytail),
+                Hilo.product(acy, bcxtail)))
+            .add(
+              XDouble.twoTwoDiff(
+                Hilo.product(acxtail, bcytail),
+                Hilo.product(acytail, bcxtail)))
+            .doubleValue(); }
 
   //--------------------------------------------------------------------
   private static final double ccwerrboundA =
@@ -766,6 +503,7 @@ public final class Adapt implements Predicate {
   //--------------------------------------------------------------------
   // orient3d
   //--------------------------------------------------------------------
+
   private static final double o3derrboundB =
     (3.0 + 28.0 * EPSILON) * EPSILON;
   private static final double o3derrboundC =
@@ -1061,8 +799,7 @@ public final class Adapt implements Predicate {
     if ((adxtail == 0.0) && (bdxtail == 0.0) && (cdxtail == 0.0)
       && (adytail == 0.0) && (bdytail == 0.0) && (cdytail == 0.0)
       && (adztail == 0.0) && (bdztail == 0.0) && (cdztail == 0.0)) {
-      return det;
-    }
+      return det; }
 
     errbound =
       o3derrboundC * permanent + resulterrbound * ((det) >= 0.0 ? (det)
@@ -2287,7 +2024,7 @@ public final class Adapt implements Predicate {
     }
 
     return finnow[finlength - 1];
-  }
+     }
 
   public final double orient3d (final double[] pa,
                                 final double[] pb,
