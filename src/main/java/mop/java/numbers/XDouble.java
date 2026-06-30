@@ -342,7 +342,7 @@ public final class XDouble implements Comparable<XDouble> {
   public final XDouble multiply (final Hilo b) {
     return multiply(b.hi()).add(multiply(b.lo()));
   }
-    // TODO: this version of scale() breaks all the Shewchuk predicates,
+  // TODO: this version of scale() breaks all the Shewchuk predicates,
   //  while naive version only breaks Slow.incircle().
   //  In both cases, the difference from BigFloat is the absolute
   //  value of the ulp of the BigFloat rounded to double?
@@ -583,8 +583,8 @@ public final class XDouble implements Comparable<XDouble> {
 //  Two_Sum(a1, _i, x2, x1)
 
   private static final double[] twoOneSum (final double a1,
-                                          final double a0,
-                                          final double b) {
+                                           final double a0,
+                                           final double b) {
     final Hilo _ix0 = Hilo.twoSum(a0,b);
     final Hilo x1x2 = Hilo.twoSum(a1,_ix0.hi());
     return new double[] { _ix0.lo(), x1x2.lo(), x1x2.hi(), }; }
@@ -618,8 +618,25 @@ public final class XDouble implements Comparable<XDouble> {
 
   //--------------------------------------------------------------------
 
+  public static final XDouble twoOneProduct (final Hilo a,
+                                             final double b) {
+//    Split(b, bhi, blo); \
+    final Hilo bHilo = Hilo.split(b);
+//    Two_Product_Presplit(a0, b, bhi, blo, _i, x0); \
+    final Hilo _ix0 = Hilo.twoProductPresplit(a.lo(), b, bHilo);
+//    Two_Product_Presplit(a1, b, bhi, blo, _j, _0); \
+    final Hilo _j_0 = Hilo.twoProductPresplit(a.hi(), b, bHilo);
+//    Two_Sum(_i, _0, _k, x1);
+    final Hilo _kx1 = Hilo.twoSum(_ix0.hi(), _j_0.lo());
+//    Fast_Two_Sum(_j, _k, x3, x2)
+    final Hilo x3x2 = Hilo.fastTwoSum(_j_0.hi(), _kx1.hi());
+    return unsafe(DoubleArrayList.from(
+      _ix0.lo(), _kx1.lo(), x3x2.lo(), x3x2.hi())); }
+
+  //--------------------------------------------------------------------
+
   public static final XDouble twoTwoProduct (final Hilo a,
-                                              final Hilo b) {
+                                             final Hilo b) {
     final double[] ab = new double[8];
     final double a0 = a.lo();
     final double b0 = b.lo();

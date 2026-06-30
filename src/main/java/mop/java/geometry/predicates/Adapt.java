@@ -516,295 +516,49 @@ public final class Adapt implements Predicate {
                                 final double[] pc,
                                 final double[] pd,
                                 final double permanent) {
-    double adx, bdx, cdx, ady, bdy, cdy, adz, bdz, cdz;
-    double det, errbound;
+    final double adx = (pa[0] - pd[0]);
+    final double bdx = (pb[0] - pd[0]);
+    final double cdx = (pc[0] - pd[0]);
+    final double ady = (pa[1] - pd[1]);
+    final double bdy = (pb[1] - pd[1]);
+    final double cdy = (pc[1] - pd[1]);
+    final double adz = (pa[2] - pd[2]);
+    final double bdz = (pb[2] - pd[2]);
+    final double cdz = (pc[2] - pd[2]);
 
-    double bdxcdy1, cdxbdy1, cdxady1, adxcdy1, adxbdy1, bdxady1;
-    double bdxcdy0, cdxbdy0, cdxady0, adxcdy0, adxbdy0, bdxady0;
-    double[] bc = new double[4], ca = new double[4], ab = new double[4];
-    double bc3, ca3, ab3;
-    double[] adet = new double[8], bdet = new double[8], cdet =
-      new double[8];
-    int alen, blen, clen;
-    double[] abdet = new double[16];
-    int ablen;
-    double[] finnow, finother, finswap;
-    double[] fin1 = new double[192], fin2 = new double[192];
-    int finlength;
+    final Hilo bdxcdy = Hilo.product(bdx,cdy);
+    final Hilo cdxbdy = Hilo.product(cdx,bdy);
+    final XDouble bc = XDouble.twoTwoDiff(bdxcdy,cdxbdy);
+    final XDouble adet = bc.multiply(adz);
+    final Hilo cdxady = Hilo.product(cdx,ady);
+    final Hilo adxcdy = Hilo.product(adx,cdy);
+    final XDouble ca = XDouble.twoTwoDiff(cdxady,adxcdy);
+    final XDouble bdet = ca.multiply(bdz);
+    final Hilo adxbdy = Hilo.product(adx,bdy);
+    final Hilo bdxady = Hilo.product(bdx,ady);
+    final XDouble ab = XDouble.twoTwoDiff(adxbdy,bdxady);
+    final XDouble cdet = ab.multiply(cdz);
+    XDouble finnow = adet.add(bdet).add(cdet);
+    double det = finnow.doubleValue();
+    double errbound = o3derrboundB * permanent;
+    if (Math.abs(det) >= errbound) { return det; }
 
-    double adxtail, bdxtail, cdxtail;
-    double adytail, bdytail, cdytail;
-    double adztail, bdztail, cdztail;
-    double at_blarge, at_clarge;
-    double bt_clarge, bt_alarge;
-    double ct_alarge, ct_blarge;
-    double[] at_b = new double[4], at_c = new double[4],
-      bt_c = new double[4], bt_a = new double[4],
-      ct_a = new double[4], ct_b = new double[4];
-    int at_blen, at_clen, bt_clen, bt_alen, ct_alen, ct_blen;
-    double bdxt_cdy1, cdxt_bdy1, cdxt_ady1;
-    double adxt_cdy1, adxt_bdy1, bdxt_ady1;
-    double bdxt_cdy0, cdxt_bdy0, cdxt_ady0;
-    double adxt_cdy0, adxt_bdy0, bdxt_ady0;
-    double bdyt_cdx1, cdyt_bdx1, cdyt_adx1;
-    double adyt_cdx1, adyt_bdx1, bdyt_adx1;
-    double bdyt_cdx0, cdyt_bdx0, cdyt_adx0;
-    double adyt_cdx0, adyt_bdx0, bdyt_adx0;
-    double[] bct = new double[8], cat = new double[8],
-      abt = new double[8];
-    int bctlen, catlen, abtlen;
-    double bdxt_cdyt1, cdxt_bdyt1, cdxt_adyt1;
-    double adxt_cdyt1, adxt_bdyt1, bdxt_adyt1;
-    double bdxt_cdyt0, cdxt_bdyt0, cdxt_adyt0;
-    double adxt_cdyt0, adxt_bdyt0, bdxt_adyt0;
-    double[] u = new double[4], v = new double[12], w = new double[16];
-    double u3;
-    int vlength, wlength;
-    double negate;
-
-    double bvirt;
-    double avirt, bround, around;
-    double c;
-    double abig;
-    double ahi, alo, bhi, blo;
-    double err1, err2, err3;
-    double _i, _j, _k;
-    double _0;
-
-    adx = (pa[0] - pd[0]);
-    bdx = (pb[0] - pd[0]);
-    cdx = (pc[0] - pd[0]);
-    ady = (pa[1] - pd[1]);
-    bdy = (pb[1] - pd[1]);
-    cdy = (pc[1] - pd[1]);
-    adz = (pa[2] - pd[2]);
-    bdz = (pb[2] - pd[2]);
-    cdz = (pc[2] - pd[2]);
-
-    bdxcdy1 = (bdx * cdy);
-    c = (SPLITTER * bdx);
-    abig = (c - bdx);
-    ahi = c - abig;
-    alo = bdx - ahi;
-    c = (SPLITTER * cdy);
-    abig = (c - cdy);
-    bhi = c - abig;
-    blo = cdy - bhi;
-    err1 = bdxcdy1 - (ahi * bhi);
-    err2 = err1 - (alo * bhi);
-    err3 = err2 - (ahi * blo);
-    bdxcdy0 = (alo * blo) - err3;
-    cdxbdy1 = (cdx * bdy);
-    c = (SPLITTER * cdx);
-    abig = (c - cdx);
-    ahi = c - abig;
-    alo = cdx - ahi;
-    c = (SPLITTER * bdy);
-    abig = (c - bdy);
-    bhi = c - abig;
-    blo = bdy - bhi;
-    err1 = cdxbdy1 - (ahi * bhi);
-    err2 = err1 - (alo * bhi);
-    err3 = err2 - (ahi * blo);
-    cdxbdy0 = (alo * blo) - err3;
-    _i = (bdxcdy0 - cdxbdy0);
-    bvirt = (bdxcdy0 - _i);
-    avirt = _i + bvirt;
-    bround = bvirt - cdxbdy0;
-    around = bdxcdy0 - avirt;
-    bc[0] = around + bround;
-    _j = (bdxcdy1 + _i);
-    bvirt = (_j - bdxcdy1);
-    avirt = _j - bvirt;
-    bround = _i - bvirt;
-    around = bdxcdy1 - avirt;
-    _0 = around + bround;
-    _i = (_0 - cdxbdy1);
-    bvirt = (_0 - _i);
-    avirt = _i + bvirt;
-    bround = bvirt - cdxbdy1;
-    around = _0 - avirt;
-    bc[1] = around + bround;
-    bc3 = (_j + _i);
-    bvirt = (bc3 - _j);
-    avirt = bc3 - bvirt;
-    bround = _i - bvirt;
-    around = _j - avirt;
-    bc[2] = around + bround;
-    bc[3] = bc3;
-    alen = scale(4, bc, adz, adet);
-
-    cdxady1 = (cdx * ady);
-    c = (SPLITTER * cdx);
-    abig = (c - cdx);
-    ahi = c - abig;
-    alo = cdx - ahi;
-    c = (SPLITTER * ady);
-    abig = (c - ady);
-    bhi = c - abig;
-    blo = ady - bhi;
-    err1 = cdxady1 - (ahi * bhi);
-    err2 = err1 - (alo * bhi);
-    err3 = err2 - (ahi * blo);
-    cdxady0 = (alo * blo) - err3;
-    adxcdy1 = (adx * cdy);
-    c = (SPLITTER * adx);
-    abig = (c - adx);
-    ahi = c - abig;
-    alo = adx - ahi;
-    c = (SPLITTER * cdy);
-    abig = (c - cdy);
-    bhi = c - abig;
-    blo = cdy - bhi;
-    err1 = adxcdy1 - (ahi * bhi);
-    err2 = err1 - (alo * bhi);
-    err3 = err2 - (ahi * blo);
-    adxcdy0 = (alo * blo) - err3;
-    _i = (cdxady0 - adxcdy0);
-    bvirt = (cdxady0 - _i);
-    avirt = _i + bvirt;
-    bround = bvirt - adxcdy0;
-    around = cdxady0 - avirt;
-    ca[0] = around + bround;
-    _j = (cdxady1 + _i);
-    bvirt = (_j - cdxady1);
-    avirt = _j - bvirt;
-    bround = _i - bvirt;
-    around = cdxady1 - avirt;
-    _0 = around + bround;
-    _i = (_0 - adxcdy1);
-    bvirt = (_0 - _i);
-    avirt = _i + bvirt;
-    bround = bvirt - adxcdy1;
-    around = _0 - avirt;
-    ca[1] = around + bround;
-    ca3 = (_j + _i);
-    bvirt = (ca3 - _j);
-    avirt = ca3 - bvirt;
-    bround = _i - bvirt;
-    around = _j - avirt;
-    ca[2] = around + bround;
-    ca[3] = ca3;
-    blen = scale(4, ca, bdz, bdet);
-
-    adxbdy1 = (adx * bdy);
-    c = (SPLITTER * adx);
-    abig = (c - adx);
-    ahi = c - abig;
-    alo = adx - ahi;
-    c = (SPLITTER * bdy);
-    abig = (c - bdy);
-    bhi = c - abig;
-    blo = bdy - bhi;
-    err1 = adxbdy1 - (ahi * bhi);
-    err2 = err1 - (alo * bhi);
-    err3 = err2 - (ahi * blo);
-    adxbdy0 = (alo * blo) - err3;
-    bdxady1 = (bdx * ady);
-    c = (SPLITTER * bdx);
-    abig = (c - bdx);
-    ahi = c - abig;
-    alo = bdx - ahi;
-    c = (SPLITTER * ady);
-    abig = (c - ady);
-    bhi = c - abig;
-    blo = ady - bhi;
-    err1 = bdxady1 - (ahi * bhi);
-    err2 = err1 - (alo * bhi);
-    err3 = err2 - (ahi * blo);
-    bdxady0 = (alo * blo) - err3;
-    _i = (adxbdy0 - bdxady0);
-    bvirt = (adxbdy0 - _i);
-    avirt = _i + bvirt;
-    bround = bvirt - bdxady0;
-    around = adxbdy0 - avirt;
-    ab[0] = around + bround;
-    _j = (adxbdy1 + _i);
-    bvirt = (_j - adxbdy1);
-    avirt = _j - bvirt;
-    bround = _i - bvirt;
-    around = adxbdy1 - avirt;
-    _0 = around + bround;
-    _i = (_0 - bdxady1);
-    bvirt = (_0 - _i);
-    avirt = _i + bvirt;
-    bround = bvirt - bdxady1;
-    around = _0 - avirt;
-    ab[1] = around + bround;
-    ab3 = (_j + _i);
-    bvirt = (ab3 - _j);
-    avirt = ab3 - bvirt;
-    bround = _i - bvirt;
-    around = _j - avirt;
-    ab[2] = around + bround;
-    ab[3] = ab3;
-    clen = scale(4, ab, cdz, cdet);
-
-    ablen = sum(alen, adet, blen, bdet, abdet);
-    finlength =
-      sum(ablen, abdet, clen, cdet, fin1);
-
-    det = estimate(finlength, fin1);
-    errbound = o3derrboundB * permanent;
-    if (Math.abs(det) >= errbound) {
-      return det;
-    }
-
-    bvirt = (pa[0] - adx);
-    avirt = adx + bvirt;
-    bround = bvirt - pd[0];
-    around = pa[0] - avirt;
-    adxtail = around + bround;
-    bvirt = (pb[0] - bdx);
-    avirt = bdx + bvirt;
-    bround = bvirt - pd[0];
-    around = pb[0] - avirt;
-    bdxtail = around + bround;
-    bvirt = (pc[0] - cdx);
-    avirt = cdx + bvirt;
-    bround = bvirt - pd[0];
-    around = pc[0] - avirt;
-    cdxtail = around + bround;
-    bvirt = (pa[1] - ady);
-    avirt = ady + bvirt;
-    bround = bvirt - pd[1];
-    around = pa[1] - avirt;
-    adytail = around + bround;
-    bvirt = (pb[1] - bdy);
-    avirt = bdy + bvirt;
-    bround = bvirt - pd[1];
-    around = pb[1] - avirt;
-    bdytail = around + bround;
-    bvirt = (pc[1] - cdy);
-    avirt = cdy + bvirt;
-    bround = bvirt - pd[1];
-    around = pc[1] - avirt;
-    cdytail = around + bround;
-    bvirt = (pa[2] - adz);
-    avirt = adz + bvirt;
-    bround = bvirt - pd[2];
-    around = pa[2] - avirt;
-    adztail = around + bround;
-    bvirt = (pb[2] - bdz);
-    avirt = bdz + bvirt;
-    bround = bvirt - pd[2];
-    around = pb[2] - avirt;
-    bdztail = around + bround;
-    bvirt = (pc[2] - cdz);
-    avirt = cdz + bvirt;
-    bround = bvirt - pd[2];
-    around = pc[2] - avirt;
-    cdztail = around + bround;
+    final double adxtail = Hilo.twoDiffTail(pa[0],pd[0],adx);
+    final double bdxtail = Hilo.twoDiffTail(pb[0],pd[0],bdx);
+    final double cdxtail = Hilo.twoDiffTail(pc[0],pd[0],cdx);
+    final double adytail = Hilo.twoDiffTail(pa[1],pd[1],ady);
+    final double bdytail = Hilo.twoDiffTail(pb[1],pd[1],bdy);
+    final double cdytail = Hilo.twoDiffTail(pc[1],pd[1],cdy);
+    final double adztail = Hilo.twoDiffTail(pa[2],pd[2],adz);
+    final double bdztail = Hilo.twoDiffTail(pb[2],pd[2],bdz);
+    final double cdztail = Hilo.twoDiffTail(pc[2],pd[2],cdz);
 
     if ((adxtail == 0.0) && (bdxtail == 0.0) && (cdxtail == 0.0)
       && (adytail == 0.0) && (bdytail == 0.0) && (cdytail == 0.0)
       && (adztail == 0.0) && (bdztail == 0.0) && (cdztail == 0.0)) {
       return det; }
 
-    errbound =
-      o3derrboundC * permanent + resulterrbound * ((det) >= 0.0 ? (det)
-                                                                :
-                                                   -(det));
+    errbound = o3derrboundC*permanent + resulterrbound*Math.abs(det);
     det += (adz * ((bdx * cdytail + cdy * bdxtail)
       - (bdy * cdxtail + cdx * bdytail))
       + adztail * (bdx * cdy - bdy * cdx))
@@ -814,1270 +568,153 @@ public final class Adapt implements Predicate {
       + (cdz * ((adx * bdytail + bdy * adxtail)
       - (ady * bdxtail + bdx * adytail))
       + cdztail * (adx * bdy - ady * bdx));
-    if (Math.abs(det) >= errbound) {
-      return det;
-    }
+    if (Math.abs(det) >= errbound) { return det; }
 
-    finnow = fin1;
-    finother = fin2;
-
+    final XDouble at_b, at_c;
     if (adxtail == 0.0) {
-      if (adytail == 0.0) {
-        at_b[0] = 0.0;
-        at_blen = 1;
-        at_c[0] = 0.0;
-        at_clen = 1;
-      }
+      if (adytail == 0.0) { at_b = at_c = XDouble.ZERO; }
       else {
-        negate = -adytail;
-        at_blarge = (negate * bdx);
-        c = (SPLITTER * negate);
-        abig = (c - negate);
-        ahi = c - abig;
-        alo = negate - ahi;
-        c = (SPLITTER * bdx);
-        abig = (c - bdx);
-        bhi = c - abig;
-        blo = bdx - bhi;
-        err1 = at_blarge - (ahi * bhi);
-        err2 = err1 - (alo * bhi);
-        err3 = err2 - (ahi * blo);
-        at_b[0] = (alo * blo) - err3;
-        at_b[1] = at_blarge;
-        at_blen = 2;
-        at_clarge = (adytail * cdx);
-        c = (SPLITTER * adytail);
-        abig = (c - adytail);
-        ahi = c - abig;
-        alo = adytail - ahi;
-        c = (SPLITTER * cdx);
-        abig = (c - cdx);
-        bhi = c - abig;
-        blo = cdx - bhi;
-        err1 = at_clarge - (ahi * bhi);
-        err2 = err1 - (alo * bhi);
-        err3 = err2 - (ahi * blo);
-        at_c[0] = (alo * blo) - err3;
-        at_c[1] = at_clarge;
-        at_clen = 2;
-      }
-    }
+        at_b = XDouble.twoProduct(-adytail, bdx);
+        at_c = XDouble.twoProduct(adytail, cdx); } }
     else {
       if (adytail == 0.0) {
-        at_blarge = (adxtail * bdy);
-        c = (SPLITTER * adxtail);
-        abig = (c - adxtail);
-        ahi = c - abig;
-        alo = adxtail - ahi;
-        c = (SPLITTER * bdy);
-        abig = (c - bdy);
-        bhi = c - abig;
-        blo = bdy - bhi;
-        err1 = at_blarge - (ahi * bhi);
-        err2 = err1 - (alo * bhi);
-        err3 = err2 - (ahi * blo);
-        at_b[0] = (alo * blo) - err3;
-        at_b[1] = at_blarge;
-        at_blen = 2;
-        negate = -adxtail;
-        at_clarge = (negate * cdy);
-        c = (SPLITTER * negate);
-        abig = (c - negate);
-        ahi = c - abig;
-        alo = negate - ahi;
-        c = (SPLITTER * cdy);
-        abig = (c - cdy);
-        bhi = c - abig;
-        blo = cdy - bhi;
-        err1 = at_clarge - (ahi * bhi);
-        err2 = err1 - (alo * bhi);
-        err3 = err2 - (ahi * blo);
-        at_c[0] = (alo * blo) - err3;
-        at_c[1] = at_clarge;
-        at_clen = 2;
-      }
+        at_b = XDouble.twoProduct(adxtail, bdy);
+        at_c = XDouble.twoProduct(-adxtail, cdy);}
       else {
-        adxt_bdy1 = (adxtail * bdy);
-        c = (SPLITTER * adxtail);
-        abig = (c - adxtail);
-        ahi = c - abig;
-        alo = adxtail - ahi;
-        c = (SPLITTER * bdy);
-        abig = (c - bdy);
-        bhi = c - abig;
-        blo = bdy - bhi;
-        err1 = adxt_bdy1 - (ahi * bhi);
-        err2 = err1 - (alo * bhi);
-        err3 = err2 - (ahi * blo);
-        adxt_bdy0 = (alo * blo) - err3;
-        adyt_bdx1 = (adytail * bdx);
-        c = (SPLITTER * adytail);
-        abig = (c - adytail);
-        ahi = c - abig;
-        alo = adytail - ahi;
-        c = (SPLITTER * bdx);
-        abig = (c - bdx);
-        bhi = c - abig;
-        blo = bdx - bhi;
-        err1 = adyt_bdx1 - (ahi * bhi);
-        err2 = err1 - (alo * bhi);
-        err3 = err2 - (ahi * blo);
-        adyt_bdx0 = (alo * blo) - err3;
-        _i = (adxt_bdy0 - adyt_bdx0);
-        bvirt = (adxt_bdy0 - _i);
-        avirt = _i + bvirt;
-        bround = bvirt - adyt_bdx0;
-        around = adxt_bdy0 - avirt;
-        at_b[0] = around + bround;
-        _j = (adxt_bdy1 + _i);
-        bvirt = (_j - adxt_bdy1);
-        avirt = _j - bvirt;
-        bround = _i - bvirt;
-        around = adxt_bdy1 - avirt;
-        _0 = around + bround;
-        _i = (_0 - adyt_bdx1);
-        bvirt = (_0 - _i);
-        avirt = _i + bvirt;
-        bround = bvirt - adyt_bdx1;
-        around = _0 - avirt;
-        at_b[1] = around + bround;
-        at_blarge = (_j + _i);
-        bvirt = (at_blarge - _j);
-        avirt = at_blarge - bvirt;
-        bround = _i - bvirt;
-        around = _j - avirt;
-        at_b[2] = around + bround
-        ;
-        at_b[3] = at_blarge;
-        at_blen = 4;
-        adyt_cdx1 = (adytail * cdx);
-        c = (SPLITTER * adytail);
-        abig = (c - adytail);
-        ahi = c - abig;
-        alo = adytail - ahi;
-        c = (SPLITTER * cdx);
-        abig = (c - cdx);
-        bhi = c - abig;
-        blo = cdx - bhi;
-        err1 = adyt_cdx1 - (ahi * bhi);
-        err2 = err1 - (alo * bhi);
-        err3 = err2 - (ahi * blo);
-        adyt_cdx0 = (alo * blo) - err3;
-        adxt_cdy1 = (adxtail * cdy);
-        c = (SPLITTER * adxtail);
-        abig = (c - adxtail);
-        ahi = c - abig;
-        alo = adxtail - ahi;
-        c = (SPLITTER * cdy);
-        abig = (c - cdy);
-        bhi = c - abig;
-        blo = cdy - bhi;
-        err1 = adxt_cdy1 - (ahi * bhi);
-        err2 = err1 - (alo * bhi);
-        err3 = err2 - (ahi * blo);
-        adxt_cdy0 = (alo * blo) - err3;
-        _i = (adyt_cdx0 - adxt_cdy0);
-        bvirt = (adyt_cdx0 - _i);
-        avirt = _i + bvirt;
-        bround = bvirt - adxt_cdy0;
-        around = adyt_cdx0 - avirt;
-        at_c[0] = around + bround;
-        _j = (adyt_cdx1 + _i);
-        bvirt = (_j - adyt_cdx1);
-        avirt = _j - bvirt;
-        bround = _i - bvirt;
-        around = adyt_cdx1 - avirt;
-        _0 = around + bround;
-        _i = (_0 - adxt_cdy1);
-        bvirt = (_0 - _i);
-        avirt = _i + bvirt;
-        bround = bvirt - adxt_cdy1;
-        around = _0 - avirt;
-        at_c[1] = around + bround;
-        at_clarge = (_j + _i);
-        bvirt = (at_clarge - _j);
-        avirt = at_clarge - bvirt;
-        bround = _i - bvirt;
-        around = _j - avirt;
-        at_c[2] = around + bround
-        ;
-        at_c[3] = at_clarge;
-        at_clen = 4;
-      }
-    }
+        at_b = XDouble.twoTwoDiff(Hilo.product(adxtail, bdy),
+                                  Hilo.product(adytail, bdx));
+        at_c = XDouble.twoTwoDiff(Hilo.product(adytail, cdx),
+                                  Hilo.product(adxtail, cdy)); } }
+
+    final XDouble bt_c, bt_a;
     if (bdxtail == 0.0) {
-      if (bdytail == 0.0) {
-        bt_c[0] = 0.0;
-        bt_clen = 1;
-        bt_a[0] = 0.0;
-        bt_alen = 1;
-      }
+      if (bdytail == 0.0) { bt_c = bt_a = XDouble.ZERO; }
       else {
-        negate = -bdytail;
-        bt_clarge = (negate * cdx);
-        c = (SPLITTER * negate);
-        abig = (c - negate);
-        ahi = c - abig;
-        alo = negate - ahi;
-        c = (SPLITTER * cdx);
-        abig = (c - cdx);
-        bhi = c - abig;
-        blo = cdx - bhi;
-        err1 = bt_clarge - (ahi * bhi);
-        err2 = err1 - (alo * bhi);
-        err3 = err2 - (ahi * blo);
-        bt_c[0] = (alo * blo) - err3;
-        bt_c[1] = bt_clarge;
-        bt_clen = 2;
-        bt_alarge = (bdytail * adx);
-        c = (SPLITTER * bdytail);
-        abig = (c - bdytail);
-        ahi = c - abig;
-        alo = bdytail - ahi;
-        c = (SPLITTER * adx);
-        abig = (c - adx);
-        bhi = c - abig;
-        blo = adx - bhi;
-        err1 = bt_alarge - (ahi * bhi);
-        err2 = err1 - (alo * bhi);
-        err3 = err2 - (ahi * blo);
-        bt_a[0] = (alo * blo) - err3;
-        bt_a[1] = bt_alarge;
-        bt_alen = 2;
-      }
-    }
+        bt_c = XDouble.twoProduct(-bdytail, cdx);
+        bt_a = XDouble.twoProduct(bdytail, adx); } }
     else {
       if (bdytail == 0.0) {
-        bt_clarge = (bdxtail * cdy);
-        c = (SPLITTER * bdxtail);
-        abig = (c - bdxtail);
-        ahi = c - abig;
-        alo = bdxtail - ahi;
-        c = (SPLITTER * cdy);
-        abig = (c - cdy);
-        bhi = c - abig;
-        blo = cdy - bhi;
-        err1 = bt_clarge - (ahi * bhi);
-        err2 = err1 - (alo * bhi);
-        err3 = err2 - (ahi * blo);
-        bt_c[0] = (alo * blo) - err3;
-        bt_c[1] = bt_clarge;
-        bt_clen = 2;
-        negate = -bdxtail;
-        bt_alarge = (negate * ady);
-        c = (SPLITTER * negate);
-        abig = (c - negate);
-        ahi = c - abig;
-        alo = negate - ahi;
-        c = (SPLITTER * ady);
-        abig = (c - ady);
-        bhi = c - abig;
-        blo = ady - bhi;
-        err1 = bt_alarge - (ahi * bhi);
-        err2 = err1 - (alo * bhi);
-        err3 = err2 - (ahi * blo);
-        bt_a[0] = (alo * blo) - err3;
-        bt_a[1] = bt_alarge;
-        bt_alen = 2;
-      }
+        bt_c = XDouble.twoProduct(bdxtail, cdy);
+        bt_a = XDouble.twoProduct(-bdxtail, ady);}
       else {
-        bdxt_cdy1 = (bdxtail * cdy);
-        c = (SPLITTER * bdxtail);
-        abig = (c - bdxtail);
-        ahi = c - abig;
-        alo = bdxtail - ahi;
-        c = (SPLITTER * cdy);
-        abig = (c - cdy);
-        bhi = c - abig;
-        blo = cdy - bhi;
-        err1 = bdxt_cdy1 - (ahi * bhi);
-        err2 = err1 - (alo * bhi);
-        err3 = err2 - (ahi * blo);
-        bdxt_cdy0 = (alo * blo) - err3;
-        bdyt_cdx1 = (bdytail * cdx);
-        c = (SPLITTER * bdytail);
-        abig = (c - bdytail);
-        ahi = c - abig;
-        alo = bdytail - ahi;
-        c = (SPLITTER * cdx);
-        abig = (c - cdx);
-        bhi = c - abig;
-        blo = cdx - bhi;
-        err1 = bdyt_cdx1 - (ahi * bhi);
-        err2 = err1 - (alo * bhi);
-        err3 = err2 - (ahi * blo);
-        bdyt_cdx0 = (alo * blo) - err3;
-        _i = (bdxt_cdy0 - bdyt_cdx0);
-        bvirt = (bdxt_cdy0 - _i);
-        avirt = _i + bvirt;
-        bround = bvirt - bdyt_cdx0;
-        around = bdxt_cdy0 - avirt;
-        bt_c[0] = around + bround;
-        _j = (bdxt_cdy1 + _i);
-        bvirt = (_j - bdxt_cdy1);
-        avirt = _j - bvirt;
-        bround = _i - bvirt;
-        around = bdxt_cdy1 - avirt;
-        _0 = around + bround;
-        _i = (_0 - bdyt_cdx1);
-        bvirt = (_0 - _i);
-        avirt = _i + bvirt;
-        bround = bvirt - bdyt_cdx1;
-        around = _0 - avirt;
-        bt_c[1] = around + bround;
-        bt_clarge = (_j + _i);
-        bvirt = (bt_clarge - _j);
-        avirt = bt_clarge - bvirt;
-        bround = _i - bvirt;
-        around = _j - avirt;
-        bt_c[2] = around + bround
-        ;
-        bt_c[3] = bt_clarge;
-        bt_clen = 4;
-        bdyt_adx1 = (bdytail * adx);
-        c = (SPLITTER * bdytail);
-        abig = (c - bdytail);
-        ahi = c - abig;
-        alo = bdytail - ahi;
-        c = (SPLITTER * adx);
-        abig = (c - adx);
-        bhi = c - abig;
-        blo = adx - bhi;
-        err1 = bdyt_adx1 - (ahi * bhi);
-        err2 = err1 - (alo * bhi);
-        err3 = err2 - (ahi * blo);
-        bdyt_adx0 = (alo * blo) - err3;
-        bdxt_ady1 = (bdxtail * ady);
-        c = (SPLITTER * bdxtail);
-        abig = (c - bdxtail);
-        ahi = c - abig;
-        alo = bdxtail - ahi;
-        c = (SPLITTER * ady);
-        abig = (c - ady);
-        bhi = c - abig;
-        blo = ady - bhi;
-        err1 = bdxt_ady1 - (ahi * bhi);
-        err2 = err1 - (alo * bhi);
-        err3 = err2 - (ahi * blo);
-        bdxt_ady0 = (alo * blo) - err3;
-        _i = (bdyt_adx0 - bdxt_ady0);
-        bvirt = (bdyt_adx0 - _i);
-        avirt = _i + bvirt;
-        bround = bvirt - bdxt_ady0;
-        around = bdyt_adx0 - avirt;
-        bt_a[0] = around + bround;
-        _j = (bdyt_adx1 + _i);
-        bvirt = (_j - bdyt_adx1);
-        avirt = _j - bvirt;
-        bround = _i - bvirt;
-        around = bdyt_adx1 - avirt;
-        _0 = around + bround;
-        _i = (_0 - bdxt_ady1);
-        bvirt = (_0 - _i);
-        avirt = _i + bvirt;
-        bround = bvirt - bdxt_ady1;
-        around = _0 - avirt;
-        bt_a[1] = around + bround;
-        bt_alarge = (_j + _i);
-        bvirt = (bt_alarge - _j);
-        avirt = bt_alarge - bvirt;
-        bround = _i - bvirt;
-        around = _j - avirt;
-        bt_a[2] = around + bround
-        ;
-        bt_a[3] = bt_alarge;
-        bt_alen = 4;
-      }
-    }
+        bt_c = XDouble.twoTwoDiff(Hilo.product(bdxtail, cdy),
+                                  Hilo.product(bdytail, cdx));
+        bt_a = XDouble.twoTwoDiff(Hilo.product(bdytail, adx),
+                                  Hilo.product(bdxtail, ady)); } }
+
+    final XDouble ct_a, ct_b;
     if (cdxtail == 0.0) {
-      if (cdytail == 0.0) {
-        ct_a[0] = 0.0;
-        ct_alen = 1;
-        ct_b[0] = 0.0;
-        ct_blen = 1;
-      }
+      if (cdytail == 0.0) { ct_a = ct_b = XDouble.ZERO; }
       else {
-        negate = -cdytail;
-        ct_alarge = (negate * adx);
-        c = (SPLITTER * negate);
-        abig = (c - negate);
-        ahi = c - abig;
-        alo = negate - ahi;
-        c = (SPLITTER * adx);
-        abig = (c - adx);
-        bhi = c - abig;
-        blo = adx - bhi;
-        err1 = ct_alarge - (ahi * bhi);
-        err2 = err1 - (alo * bhi);
-        err3 = err2 - (ahi * blo);
-        ct_a[0] = (alo * blo) - err3;
-        ct_a[1] = ct_alarge;
-        ct_alen = 2;
-        ct_blarge = (cdytail * bdx);
-        c = (SPLITTER * cdytail);
-        abig = (c - cdytail);
-        ahi = c - abig;
-        alo = cdytail - ahi;
-        c = (SPLITTER * bdx);
-        abig = (c - bdx);
-        bhi = c - abig;
-        blo = bdx - bhi;
-        err1 = ct_blarge - (ahi * bhi);
-        err2 = err1 - (alo * bhi);
-        err3 = err2 - (ahi * blo);
-        ct_b[0] = (alo * blo) - err3;
-        ct_b[1] = ct_blarge;
-        ct_blen = 2;
-      }
-    }
+        ct_a = XDouble.twoProduct(-cdytail, adx);
+        ct_b = XDouble.twoProduct(cdytail, bdx); } }
     else {
       if (cdytail == 0.0) {
-        ct_alarge = (cdxtail * ady);
-        c = (SPLITTER * cdxtail);
-        abig = (c - cdxtail);
-        ahi = c - abig;
-        alo = cdxtail - ahi;
-        c = (SPLITTER * ady);
-        abig = (c - ady);
-        bhi = c - abig;
-        blo = ady - bhi;
-        err1 = ct_alarge - (ahi * bhi);
-        err2 = err1 - (alo * bhi);
-        err3 = err2 - (ahi * blo);
-        ct_a[0] = (alo * blo) - err3;
-        ct_a[1] = ct_alarge;
-        ct_alen = 2;
-        negate = -cdxtail;
-        ct_blarge = (negate * bdy);
-        c = (SPLITTER * negate);
-        abig = (c - negate);
-        ahi = c - abig;
-        alo = negate - ahi;
-        c = (SPLITTER * bdy);
-        abig = (c - bdy);
-        bhi = c - abig;
-        blo = bdy - bhi;
-        err1 = ct_blarge - (ahi * bhi);
-        err2 = err1 - (alo * bhi);
-        err3 = err2 - (ahi * blo);
-        ct_b[0] = (alo * blo) - err3;
-        ct_b[1] = ct_blarge;
-        ct_blen = 2;
-      }
+        ct_a = XDouble.twoProduct(cdxtail, ady);
+        ct_b = XDouble.twoProduct(-cdxtail, bdy);}
       else {
-        cdxt_ady1 = (cdxtail * ady);
-        c = (SPLITTER * cdxtail);
-        abig = (c - cdxtail);
-        ahi = c - abig;
-        alo = cdxtail - ahi;
-        c = (SPLITTER * ady);
-        abig = (c - ady);
-        bhi = c - abig;
-        blo = ady - bhi;
-        err1 = cdxt_ady1 - (ahi * bhi);
-        err2 = err1 - (alo * bhi);
-        err3 = err2 - (ahi * blo);
-        cdxt_ady0 = (alo * blo) - err3;
-        cdyt_adx1 = (cdytail * adx);
-        c = (SPLITTER * cdytail);
-        abig = (c - cdytail);
-        ahi = c - abig;
-        alo = cdytail - ahi;
-        c = (SPLITTER * adx);
-        abig = (c - adx);
-        bhi = c - abig;
-        blo = adx - bhi;
-        err1 = cdyt_adx1 - (ahi * bhi);
-        err2 = err1 - (alo * bhi);
-        err3 = err2 - (ahi * blo);
-        cdyt_adx0 = (alo * blo) - err3;
-        _i = (cdxt_ady0 - cdyt_adx0);
-        bvirt = (cdxt_ady0 - _i);
-        avirt = _i + bvirt;
-        bround = bvirt - cdyt_adx0;
-        around = cdxt_ady0 - avirt;
-        ct_a[0] = around + bround;
-        _j = (cdxt_ady1 + _i);
-        bvirt = (_j - cdxt_ady1);
-        avirt = _j - bvirt;
-        bround = _i - bvirt;
-        around = cdxt_ady1 - avirt;
-        _0 = around + bround;
-        _i = (_0 - cdyt_adx1);
-        bvirt = (_0 - _i);
-        avirt = _i + bvirt;
-        bround = bvirt - cdyt_adx1;
-        around = _0 - avirt;
-        ct_a[1] = around + bround;
-        ct_alarge = (_j + _i);
-        bvirt = (ct_alarge - _j);
-        avirt = ct_alarge - bvirt;
-        bround = _i - bvirt;
-        around = _j - avirt;
-        ct_a[2] = around + bround
-        ;
-        ct_a[3] = ct_alarge;
-        ct_alen = 4;
-        cdyt_bdx1 = (cdytail * bdx);
-        c = (SPLITTER * cdytail);
-        abig = (c - cdytail);
-        ahi = c - abig;
-        alo = cdytail - ahi;
-        c = (SPLITTER * bdx);
-        abig = (c - bdx);
-        bhi = c - abig;
-        blo = bdx - bhi;
-        err1 = cdyt_bdx1 - (ahi * bhi);
-        err2 = err1 - (alo * bhi);
-        err3 = err2 - (ahi * blo);
-        cdyt_bdx0 = (alo * blo) - err3;
-        cdxt_bdy1 = (cdxtail * bdy);
-        c = (SPLITTER * cdxtail);
-        abig = (c - cdxtail);
-        ahi = c - abig;
-        alo = cdxtail - ahi;
-        c = (SPLITTER * bdy);
-        abig = (c - bdy);
-        bhi = c - abig;
-        blo = bdy - bhi;
-        err1 = cdxt_bdy1 - (ahi * bhi);
-        err2 = err1 - (alo * bhi);
-        err3 = err2 - (ahi * blo);
-        cdxt_bdy0 = (alo * blo) - err3;
-        _i = (cdyt_bdx0 - cdxt_bdy0);
-        bvirt = (cdyt_bdx0 - _i);
-        avirt = _i + bvirt;
-        bround = bvirt - cdxt_bdy0;
-        around = cdyt_bdx0 - avirt;
-        ct_b[0] = around + bround;
-        _j = (cdyt_bdx1 + _i);
-        bvirt = (_j - cdyt_bdx1);
-        avirt = _j - bvirt;
-        bround = _i - bvirt;
-        around = cdyt_bdx1 - avirt;
-        _0 = around + bround;
-        _i = (_0 - cdxt_bdy1);
-        bvirt = (_0 - _i);
-        avirt = _i + bvirt;
-        bround = bvirt - cdxt_bdy1;
-        around = _0 - avirt;
-        ct_b[1] = around + bround;
-        ct_blarge = (_j + _i);
-        bvirt = (ct_blarge - _j);
-        avirt = ct_blarge - bvirt;
-        bround = _i - bvirt;
-        around = _j - avirt;
-        ct_b[2] = around + bround
-        ;
-        ct_b[3] = ct_blarge;
-        ct_blen = 4;
-      }
-    }
+        ct_a = XDouble.twoTwoDiff(Hilo.product(cdxtail, ady),
+                                  Hilo.product(cdytail, adx));
+        ct_b = XDouble.twoTwoDiff(Hilo.product(cdytail, bdx),
+                                  Hilo.product(cdxtail, bdy)); } }
 
-    bctlen =
-      sum(bt_clen, bt_c, ct_blen, ct_b, bct);
-    wlength = scale(bctlen, bct, adz, w);
-    finlength =
-      sum(finlength, finnow, wlength, w,
-          finother);
-    finswap = finnow;
-    finnow = finother;
-    finother = finswap;
+    final XDouble bct = bt_c.add(ct_b);
+    final XDouble cat = ct_a.add(at_c);
+    final XDouble abt = at_b.add(bt_a);
+    finnow = finnow.add(bct.multiply(adz));
+    finnow = finnow.add(cat.multiply(bdz));
+    finnow = finnow.add(abt.multiply(cdz));
 
-    catlen =
-      sum(ct_alen, ct_a, at_clen, at_c, cat);
-    wlength = scale(catlen, cat, bdz, w);
-    finlength =
-      sum(finlength, finnow, wlength, w,
-          finother);
-    finswap = finnow;
-    finnow = finother;
-    finother = finswap;
-
-    abtlen =
-      sum(at_blen, at_b, bt_alen, bt_a, abt);
-    wlength = scale(abtlen, abt, cdz, w);
-    finlength =
-      sum(finlength, finnow, wlength, w,
-          finother);
-    finswap = finnow;
-    finnow = finother;
-    finother = finswap;
-
-    if (adztail != 0.0) {
-      vlength = scale(4, bc, adztail, v);
-      finlength =
-        sum(finlength, finnow, vlength, v,
-            finother);
-      finswap = finnow;
-      finnow = finother;
-      finother = finswap;
-    }
-    if (bdztail != 0.0) {
-      vlength = scale(4, ca, bdztail, v);
-      finlength =
-        sum(finlength, finnow, vlength, v,
-            finother);
-      finswap = finnow;
-      finnow = finother;
-      finother = finswap;
-    }
-    if (cdztail != 0.0) {
-      vlength = scale(4, ab, cdztail, v);
-      finlength =
-        sum(finlength, finnow, vlength, v,
-            finother);
-      finswap = finnow;
-      finnow = finother;
-      finother = finswap;
-    }
+    // TODO: XDouble.fma ?
+    if (adztail != 0.0) { finnow  = finnow.add(bc.multiply(adztail)); }
+    if (bdztail != 0.0) { finnow  = finnow.add(ca.multiply(bdztail)); }
+    if (cdztail != 0.0) { finnow  = finnow.add(ab.multiply(cdztail)); }
 
     if (adxtail != 0.0) {
       if (bdytail != 0.0) {
-        adxt_bdyt1 = (adxtail * bdytail);
-        c = (SPLITTER * adxtail);
-        abig = (c - adxtail);
-        ahi = c - abig;
-        alo = adxtail - ahi;
-        c = (SPLITTER * bdytail);
-        abig = (c - bdytail);
-        bhi = c - abig;
-        blo = bdytail - bhi;
-        err1 = adxt_bdyt1 - (ahi * bhi);
-        err2 = err1 - (alo * bhi);
-        err3 = err2 - (ahi * blo);
-        adxt_bdyt0 = (alo * blo) - err3;
-        c = (SPLITTER * cdz);
-        abig = (c - cdz);
-        bhi = c - abig;
-        blo = cdz - bhi;
-        _i = (adxt_bdyt0 * cdz);
-        c = (SPLITTER * adxt_bdyt0);
-        abig = (c - adxt_bdyt0);
-        ahi = c - abig;
-        alo = adxt_bdyt0 - ahi;
-        err1 = _i - (ahi * bhi);
-        err2 = err1 - (alo * bhi);
-        err3 = err2 - (ahi * blo);
-        u[0] = (alo * blo) - err3;
-        _j = (adxt_bdyt1 * cdz);
-        c = (SPLITTER * adxt_bdyt1);
-        abig = (c - adxt_bdyt1);
-        ahi = c - abig;
-        alo = adxt_bdyt1 - ahi;
-        err1 = _j - (ahi * bhi);
-        err2 = err1 - (alo * bhi);
-        err3 = err2 - (ahi * blo);
-        _0 = (alo * blo) - err3;
-        _k = (_i + _0);
-        bvirt = (_k - _i);
-        avirt = _k - bvirt;
-        bround = _0 - bvirt;
-        around = _i - avirt;
-        u[1] = around + bround;
-        u3 = (_j + _k);
-        bvirt = u3 - _j;
-        u[2] = _k - bvirt;
-        u[3] = u3;
-        finlength = sum(finlength, finnow, 4, u,
-                        finother);
-        finswap = finnow;
-        finnow = finother;
-        finother = finswap;
+        final Hilo adxt_bdyt = Hilo.product(adxtail,bdytail);
+        finnow = finnow.add(XDouble.twoOneProduct(adxt_bdyt,cdz));
         if (cdztail != 0.0) {
-          c = (SPLITTER * cdztail);
-          abig = (c - cdztail);
-          bhi = c - abig;
-          blo = cdztail - bhi;
-          _i = (adxt_bdyt0 * cdztail);
-          c = (SPLITTER * adxt_bdyt0);
-          abig = (c - adxt_bdyt0);
-          ahi = c - abig;
-          alo = adxt_bdyt0 - ahi;
-          err1 = _i - (ahi * bhi);
-          err2 = err1 - (alo * bhi);
-          err3 = err2 - (ahi * blo);
-          u[0] = (alo * blo) - err3;
-          _j = (adxt_bdyt1 * cdztail);
-          c = (SPLITTER * adxt_bdyt1);
-          abig = (c - adxt_bdyt1);
-          ahi = c - abig;
-          alo = adxt_bdyt1 - ahi;
-          err1 = _j - (ahi * bhi);
-          err2 = err1 - (alo * bhi);
-          err3 = err2 - (ahi * blo);
-          _0 = (alo * blo) - err3;
-          _k = (_i + _0);
-          bvirt = (_k - _i);
-          avirt = _k - bvirt;
-          bround = _0 - bvirt;
-          around = _i - avirt;
-          u[1] = around + bround;
-          u3 = (_j + _k);
-          bvirt = u3 - _j;
-          u[2] = _k - bvirt;
-          u[3] = u3;
-          finlength =
-            sum(finlength, finnow, 4, u,
-                finother);
-          finswap = finnow;
-          finnow = finother;
-          finother = finswap;
-        }
-      }
+          finnow = finnow.add(
+            XDouble.twoOneProduct(adxt_bdyt,cdztail)); } }
+
       if (cdytail != 0.0) {
-        negate = -adxtail;
-        adxt_cdyt1 = (negate * cdytail);
-        c = (SPLITTER * negate);
-        abig = (c - negate);
-        ahi = c - abig;
-        alo = negate - ahi;
-        c = (SPLITTER * cdytail);
-        abig = (c - cdytail);
-        bhi = c - abig;
-        blo = cdytail - bhi;
-        err1 = adxt_cdyt1 - (ahi * bhi);
-        err2 = err1 - (alo * bhi);
-        err3 = err2 - (ahi * blo);
-        adxt_cdyt0 = (alo * blo) - err3;
-        c = (SPLITTER * bdz);
-        abig = (c - bdz);
-        bhi = c - abig;
-        blo = bdz - bhi;
-        _i = (adxt_cdyt0 * bdz);
-        c = (SPLITTER * adxt_cdyt0);
-        abig = (c - adxt_cdyt0);
-        ahi = c - abig;
-        alo = adxt_cdyt0 - ahi;
-        err1 = _i - (ahi * bhi);
-        err2 = err1 - (alo * bhi);
-        err3 = err2 - (ahi * blo);
-        u[0] = (alo * blo) - err3;
-        _j = (adxt_cdyt1 * bdz);
-        c = (SPLITTER * adxt_cdyt1);
-        abig = (c - adxt_cdyt1);
-        ahi = c - abig;
-        alo = adxt_cdyt1 - ahi;
-        err1 = _j - (ahi * bhi);
-        err2 = err1 - (alo * bhi);
-        err3 = err2 - (ahi * blo);
-        _0 = (alo * blo) - err3;
-        _k = (_i + _0);
-        bvirt = (_k - _i);
-        avirt = _k - bvirt;
-        bround = _0 - bvirt;
-        around = _i - avirt;
-        u[1] = around + bround;
-        u3 = (_j + _k);
-        bvirt = u3 - _j;
-        u[2] = _k - bvirt;
-        u[3] = u3;
-        finlength = sum(finlength, finnow, 4, u,
-                        finother);
-        finswap = finnow;
-        finnow = finother;
-        finother = finswap;
+        final Hilo adxt_cdyt =  Hilo.product(-adxtail,cdytail);
+        finnow = finnow.add(XDouble.twoOneProduct(adxt_cdyt,bdz));
         if (bdztail != 0.0) {
-          c = (SPLITTER * bdztail);
-          abig = (c - bdztail);
-          bhi = c - abig;
-          blo = bdztail - bhi;
-          _i = (adxt_cdyt0 * bdztail);
-          c = (SPLITTER * adxt_cdyt0);
-          abig = (c - adxt_cdyt0);
-          ahi = c - abig;
-          alo = adxt_cdyt0 - ahi;
-          err1 = _i - (ahi * bhi);
-          err2 = err1 - (alo * bhi);
-          err3 = err2 - (ahi * blo);
-          u[0] = (alo * blo) - err3;
-          _j = (adxt_cdyt1 * bdztail);
-          c = (SPLITTER * adxt_cdyt1);
-          abig = (c - adxt_cdyt1);
-          ahi = c - abig;
-          alo = adxt_cdyt1 - ahi;
-          err1 = _j - (ahi * bhi);
-          err2 = err1 - (alo * bhi);
-          err3 = err2 - (ahi * blo);
-          _0 = (alo * blo) - err3;
-          _k = (_i + _0);
-          bvirt = (_k - _i);
-          avirt = _k - bvirt;
-          bround = _0 - bvirt;
-          around = _i - avirt;
-          u[1] = around + bround;
-          u3 = (_j + _k);
-          bvirt = u3 - _j;
-          u[2] = _k - bvirt;
-          u[3] = u3;
-          finlength =
-            sum(finlength, finnow, 4, u,
-                finother);
-          finswap = finnow;
-          finnow = finother;
-          finother = finswap;
-        }
-      }
-    }
+          finnow = finnow.add(
+            XDouble.twoOneProduct(adxt_cdyt,bdztail)); } } }
+
     if (bdxtail != 0.0) {
       if (cdytail != 0.0) {
-        bdxt_cdyt1 = (bdxtail * cdytail);
-        c = (SPLITTER * bdxtail);
-        abig = (c - bdxtail);
-        ahi = c - abig;
-        alo = bdxtail - ahi;
-        c = (SPLITTER * cdytail);
-        abig = (c - cdytail);
-        bhi = c - abig;
-        blo = cdytail - bhi;
-        err1 = bdxt_cdyt1 - (ahi * bhi);
-        err2 = err1 - (alo * bhi);
-        err3 = err2 - (ahi * blo);
-        bdxt_cdyt0 = (alo * blo) - err3;
-        c = (SPLITTER * adz);
-        abig = (c - adz);
-        bhi = c - abig;
-        blo = adz - bhi;
-        _i = (bdxt_cdyt0 * adz);
-        c = (SPLITTER * bdxt_cdyt0);
-        abig = (c - bdxt_cdyt0);
-        ahi = c - abig;
-        alo = bdxt_cdyt0 - ahi;
-        err1 = _i - (ahi * bhi);
-        err2 = err1 - (alo * bhi);
-        err3 = err2 - (ahi * blo);
-        u[0] = (alo * blo) - err3;
-        _j = (bdxt_cdyt1 * adz);
-        c = (SPLITTER * bdxt_cdyt1);
-        abig = (c - bdxt_cdyt1);
-        ahi = c - abig;
-        alo = bdxt_cdyt1 - ahi;
-        err1 = _j - (ahi * bhi);
-        err2 = err1 - (alo * bhi);
-        err3 = err2 - (ahi * blo);
-        _0 = (alo * blo) - err3;
-        _k = (_i + _0);
-        bvirt = (_k - _i);
-        avirt = _k - bvirt;
-        bround = _0 - bvirt;
-        around = _i - avirt;
-        u[1] = around + bround;
-        u3 = (_j + _k);
-        bvirt = u3 - _j;
-        u[2] = _k - bvirt;
-        u[3] = u3;
-        finlength = sum(finlength, finnow, 4, u,
-                        finother);
-        finswap = finnow;
-        finnow = finother;
-        finother = finswap;
+        final Hilo bdxt_cdy = Hilo.product(bdxtail,cdytail);
+        finnow = finnow.add(XDouble.twoOneProduct(bdxt_cdy,adz));
         if (adztail != 0.0) {
-          c = (SPLITTER * adztail);
-          abig = (c - adztail);
-          bhi = c - abig;
-          blo = adztail - bhi;
-          _i = (bdxt_cdyt0 * adztail);
-          c = (SPLITTER * bdxt_cdyt0);
-          abig = (c - bdxt_cdyt0);
-          ahi = c - abig;
-          alo = bdxt_cdyt0 - ahi;
-          err1 = _i - (ahi * bhi);
-          err2 = err1 - (alo * bhi);
-          err3 = err2 - (ahi * blo);
-          u[0] = (alo * blo) - err3;
-          _j = (bdxt_cdyt1 * adztail);
-          c = (SPLITTER * bdxt_cdyt1);
-          abig = (c - bdxt_cdyt1);
-          ahi = c - abig;
-          alo = bdxt_cdyt1 - ahi;
-          err1 = _j - (ahi * bhi);
-          err2 = err1 - (alo * bhi);
-          err3 = err2 - (ahi * blo);
-          _0 = (alo * blo) - err3;
-          _k = (_i + _0);
-          bvirt = (_k - _i);
-          avirt = _k - bvirt;
-          bround = _0 - bvirt;
-          around = _i - avirt;
-          u[1] = around + bround;
-          u3 = (_j + _k);
-          bvirt = u3 - _j;
-          u[2] = _k - bvirt;
-          u[3] = u3;
-          finlength =
-            sum(finlength, finnow, 4, u,
-                finother);
-          finswap = finnow;
-          finnow = finother;
-          finother = finswap;
-        }
-      }
+          finnow = finnow.add(
+            XDouble.twoOneProduct(bdxt_cdy,adztail)); } }
       if (adytail != 0.0) {
-        negate = -bdxtail;
-        bdxt_adyt1 = (negate * adytail);
-        c = (SPLITTER * negate);
-        abig = (c - negate);
-        ahi = c - abig;
-        alo = negate - ahi;
-        c = (SPLITTER * adytail);
-        abig = (c - adytail);
-        bhi = c - abig;
-        blo = adytail - bhi;
-        err1 = bdxt_adyt1 - (ahi * bhi);
-        err2 = err1 - (alo * bhi);
-        err3 = err2 - (ahi * blo);
-        bdxt_adyt0 = (alo * blo) - err3;
-        c = (SPLITTER * cdz);
-        abig = (c - cdz);
-        bhi = c - abig;
-        blo = cdz - bhi;
-        _i = (bdxt_adyt0 * cdz);
-        c = (SPLITTER * bdxt_adyt0);
-        abig = (c - bdxt_adyt0);
-        ahi = c - abig;
-        alo = bdxt_adyt0 - ahi;
-        err1 = _i - (ahi * bhi);
-        err2 = err1 - (alo * bhi);
-        err3 = err2 - (ahi * blo);
-        u[0] = (alo * blo) - err3;
-        _j = (bdxt_adyt1 * cdz);
-        c = (SPLITTER * bdxt_adyt1);
-        abig = (c - bdxt_adyt1);
-        ahi = c - abig;
-        alo = bdxt_adyt1 - ahi;
-        err1 = _j - (ahi * bhi);
-        err2 = err1 - (alo * bhi);
-        err3 = err2 - (ahi * blo);
-        _0 = (alo * blo) - err3;
-        _k = (_i + _0);
-        bvirt = (_k - _i);
-        avirt = _k - bvirt;
-        bround = _0 - bvirt;
-        around = _i - avirt;
-        u[1] = around + bround;
-        u3 = (_j + _k);
-        bvirt = u3 - _j;
-        u[2] = _k - bvirt;
-        u[3] = u3;
-        finlength = sum(finlength, finnow, 4, u,
-                        finother);
-        finswap = finnow;
-        finnow = finother;
-        finother = finswap;
+        final Hilo bdxt_adyt =  Hilo.product(-bdxtail,adytail);
+        finnow = finnow.add(XDouble.twoOneProduct(bdxt_adyt,cdz));
         if (cdztail != 0.0) {
-          c = (SPLITTER * cdztail);
-          abig = (c - cdztail);
-          bhi = c - abig;
-          blo = cdztail - bhi;
-          _i = (bdxt_adyt0 * cdztail);
-          c = (SPLITTER * bdxt_adyt0);
-          abig = (c - bdxt_adyt0);
-          ahi = c - abig;
-          alo = bdxt_adyt0 - ahi;
-          err1 = _i - (ahi * bhi);
-          err2 = err1 - (alo * bhi);
-          err3 = err2 - (ahi * blo);
-          u[0] = (alo * blo) - err3;
-          _j = (bdxt_adyt1 * cdztail);
-          c = (SPLITTER * bdxt_adyt1);
-          abig = (c - bdxt_adyt1);
-          ahi = c - abig;
-          alo = bdxt_adyt1 - ahi;
-          err1 = _j - (ahi * bhi);
-          err2 = err1 - (alo * bhi);
-          err3 = err2 - (ahi * blo);
-          _0 = (alo * blo) - err3;
-          _k = (_i + _0);
-          bvirt = (_k - _i);
-          avirt = _k - bvirt;
-          bround = _0 - bvirt;
-          around = _i - avirt;
-          u[1] = around + bround;
-          u3 = (_j + _k);
-          bvirt = u3 - _j;
-          u[2] = _k - bvirt;
-          u[3] = u3;
-          finlength =
-            sum(finlength, finnow, 4, u,
-                finother);
-          finswap = finnow;
-          finnow = finother;
-          finother = finswap;
-        }
-      }
-    }
+          finnow = finnow.add(
+            XDouble.twoOneProduct(bdxt_adyt,cdztail)); } } }
     if (cdxtail != 0.0) {
       if (adytail != 0.0) {
-        cdxt_adyt1 = (cdxtail * adytail);
-        c = (SPLITTER * cdxtail);
-        abig = (c - cdxtail);
-        ahi = c - abig;
-        alo = cdxtail - ahi;
-        c = (SPLITTER * adytail);
-        abig = (c - adytail);
-        bhi = c - abig;
-        blo = adytail - bhi;
-        err1 = cdxt_adyt1 - (ahi * bhi);
-        err2 = err1 - (alo * bhi);
-        err3 = err2 - (ahi * blo);
-        cdxt_adyt0 = (alo * blo) - err3;
-        c = (SPLITTER * bdz);
-        abig = (c - bdz);
-        bhi = c - abig;
-        blo = bdz - bhi;
-        _i = (cdxt_adyt0 * bdz);
-        c = (SPLITTER * cdxt_adyt0);
-        abig = (c - cdxt_adyt0);
-        ahi = c - abig;
-        alo = cdxt_adyt0 - ahi;
-        err1 = _i - (ahi * bhi);
-        err2 = err1 - (alo * bhi);
-        err3 = err2 - (ahi * blo);
-        u[0] = (alo * blo) - err3;
-        _j = (cdxt_adyt1 * bdz);
-        c = (SPLITTER * cdxt_adyt1);
-        abig = (c - cdxt_adyt1);
-        ahi = c - abig;
-        alo = cdxt_adyt1 - ahi;
-        err1 = _j - (ahi * bhi);
-        err2 = err1 - (alo * bhi);
-        err3 = err2 - (ahi * blo);
-        _0 = (alo * blo) - err3;
-        _k = (_i + _0);
-        bvirt = (_k - _i);
-        avirt = _k - bvirt;
-        bround = _0 - bvirt;
-        around = _i - avirt;
-        u[1] = around + bround;
-        u3 = (_j + _k);
-        bvirt = u3 - _j;
-        u[2] = _k - bvirt;
-        u[3] = u3;
-        finlength = sum(finlength, finnow, 4, u,
-                        finother);
-        finswap = finnow;
-        finnow = finother;
-        finother = finswap;
+        final Hilo cdxt_adyt = Hilo.product(cdxtail,adytail);
+        finnow = finnow.add(XDouble.twoOneProduct(cdxt_adyt,bdz));
         if (bdztail != 0.0) {
-          c = (SPLITTER * bdztail);
-          abig = (c - bdztail);
-          bhi = c - abig;
-          blo = bdztail - bhi;
-          _i = (cdxt_adyt0 * bdztail);
-          c = (SPLITTER * cdxt_adyt0);
-          abig = (c - cdxt_adyt0);
-          ahi = c - abig;
-          alo = cdxt_adyt0 - ahi;
-          err1 = _i - (ahi * bhi);
-          err2 = err1 - (alo * bhi);
-          err3 = err2 - (ahi * blo);
-          u[0] = (alo * blo) - err3;
-          _j = (cdxt_adyt1 * bdztail);
-          c = (SPLITTER * cdxt_adyt1);
-          abig = (c - cdxt_adyt1);
-          ahi = c - abig;
-          alo = cdxt_adyt1 - ahi;
-          err1 = _j - (ahi * bhi);
-          err2 = err1 - (alo * bhi);
-          err3 = err2 - (ahi * blo);
-          _0 = (alo * blo) - err3;
-          _k = (_i + _0);
-          bvirt = (_k - _i);
-          avirt = _k - bvirt;
-          bround = _0 - bvirt;
-          around = _i - avirt;
-          u[1] = around + bround;
-          u3 = (_j + _k);
-          bvirt = u3 - _j;
-          u[2] = _k - bvirt;
-          u[3] = u3;
-          finlength =
-            sum(finlength, finnow, 4, u,
-                finother);
-          finswap = finnow;
-          finnow = finother;
-          finother = finswap;
-        }
-      }
+          finnow = finnow.add(
+            XDouble.twoOneProduct(cdxt_adyt,bdztail)); } }
       if (bdytail != 0.0) {
-        negate = -cdxtail;
-        cdxt_bdyt1 = (negate * bdytail);
-        c = (SPLITTER * negate);
-        abig = (c - negate);
-        ahi = c - abig;
-        alo = negate - ahi;
-        c = (SPLITTER * bdytail);
-        abig = (c - bdytail);
-        bhi = c - abig;
-        blo = bdytail - bhi;
-        err1 = cdxt_bdyt1 - (ahi * bhi);
-        err2 = err1 - (alo * bhi);
-        err3 = err2 - (ahi * blo);
-        cdxt_bdyt0 = (alo * blo) - err3;
-        c = (SPLITTER * adz);
-        abig = (c - adz);
-        bhi = c - abig;
-        blo = adz - bhi;
-        _i = (cdxt_bdyt0 * adz);
-        c = (SPLITTER * cdxt_bdyt0);
-        abig = (c - cdxt_bdyt0);
-        ahi = c - abig;
-        alo = cdxt_bdyt0 - ahi;
-        err1 = _i - (ahi * bhi);
-        err2 = err1 - (alo * bhi);
-        err3 = err2 - (ahi * blo);
-        u[0] = (alo * blo) - err3;
-        _j = (cdxt_bdyt1 * adz);
-        c = (SPLITTER * cdxt_bdyt1);
-        abig = (c - cdxt_bdyt1);
-        ahi = c - abig;
-        alo = cdxt_bdyt1 - ahi;
-        err1 = _j - (ahi * bhi);
-        err2 = err1 - (alo * bhi);
-        err3 = err2 - (ahi * blo);
-        _0 = (alo * blo) - err3;
-        _k = (_i + _0);
-        bvirt = (_k - _i);
-        avirt = _k - bvirt;
-        bround = _0 - bvirt;
-        around = _i - avirt;
-        u[1] = around + bround;
-        u3 = (_j + _k);
-        bvirt = u3 - _j;
-        u[2] = _k - bvirt;
-        u[3] = u3;
-        finlength = sum(finlength, finnow, 4, u,
-                        finother);
-        finswap = finnow;
-        finnow = finother;
-        finother = finswap;
+        final Hilo cdxt_bdyt =  Hilo.product(-cdxtail,bdytail);
+        finnow = finnow.add(XDouble.twoOneProduct(cdxt_bdyt,adz));
         if (adztail != 0.0) {
-          c = (SPLITTER * adztail);
-          abig = (c - adztail);
-          bhi = c - abig;
-          blo = adztail - bhi;
-          _i = (cdxt_bdyt0 * adztail);
-          c = (SPLITTER * cdxt_bdyt0);
-          abig = (c - cdxt_bdyt0);
-          ahi = c - abig;
-          alo = cdxt_bdyt0 - ahi;
-          err1 = _i - (ahi * bhi);
-          err2 = err1 - (alo * bhi);
-          err3 = err2 - (ahi * blo);
-          u[0] = (alo * blo) - err3;
-          _j = (cdxt_bdyt1 * adztail);
-          c = (SPLITTER * cdxt_bdyt1);
-          abig = (c - cdxt_bdyt1);
-          ahi = c - abig;
-          alo = cdxt_bdyt1 - ahi;
-          err1 = _j - (ahi * bhi);
-          err2 = err1 - (alo * bhi);
-          err3 = err2 - (ahi * blo);
-          _0 = (alo * blo) - err3;
-          _k = (_i + _0);
-          bvirt = (_k - _i);
-          avirt = _k - bvirt;
-          bround = _0 - bvirt;
-          around = _i - avirt;
-          u[1] = around + bround;
-          u3 = (_j + _k);
-          bvirt = u3 - _j;
-          u[2] = _k - bvirt;
-          u[3] = u3;
-          finlength =
-            sum(finlength, finnow, 4, u,
-                finother);
-          finswap = finnow;
-          finnow = finother;
-          finother = finswap;
-        }
-      }
-    }
+          finnow = finnow.add(
+            XDouble.twoOneProduct(cdxt_bdyt,adztail)); } } }
 
-    if (adztail != 0.0) {
-      wlength = scale(bctlen, bct, adztail, w);
-      finlength =
-        sum(finlength, finnow, wlength, w,
-            finother);
-      finswap = finnow;
-      finnow = finother;
-      finother = finswap;
-    }
-    if (bdztail != 0.0) {
-      wlength = scale(catlen, cat, bdztail, w);
-      finlength =
-        sum(finlength, finnow, wlength, w,
-            finother);
-      finswap = finnow;
-      finnow = finother;
-      finother = finswap;
-    }
-    if (cdztail != 0.0) {
-      wlength = scale(abtlen, abt, cdztail, w);
-      finlength =
-        sum(finlength, finnow, wlength, w,
-            finother);
-      //finswap = finnow;
-      finnow = finother;
-      // TODO: unused?
-      //finother = finswap;
-    }
+    if (adztail != 0.0) { finnow = finnow.add(bct.multiply(adztail)); }
+    if (bdztail != 0.0) { finnow = finnow.add(cat.multiply(bdztail)); }
+    if (cdztail != 0.0) { finnow = finnow.add(abt.multiply(cdztail)); }
 
-    return finnow[finlength - 1];
-     }
+    return finnow.doubleValue(); }
 
   public final double orient3d (final double[] pa,
                                 final double[] pb,
                                 final double[] pc,
                                 final double[] pd) {
-    double adx, bdx, cdx, ady, bdy, cdy, adz, bdz, cdz;
-    double bdxcdy, cdxbdy, cdxady, adxcdy, adxbdy, bdxady;
-    double det;
-    double permanent, errbound;
 
-    adx = pa[0] - pd[0];
-    bdx = pb[0] - pd[0];
-    cdx = pc[0] - pd[0];
-    ady = pa[1] - pd[1];
-    bdy = pb[1] - pd[1];
-    cdy = pc[1] - pd[1];
-    adz = pa[2] - pd[2];
-    bdz = pb[2] - pd[2];
-    cdz = pc[2] - pd[2];
 
-    bdxcdy = bdx * cdy;
-    cdxbdy = cdx * bdy;
+    final double adx = pa[0] - pd[0];
+    final double bdx = pb[0] - pd[0];
+    final double cdx = pc[0] - pd[0];
+    final double ady = pa[1] - pd[1];
+    final double bdy = pb[1] - pd[1];
+    final double cdy = pc[1] - pd[1];
+    final double adz = pa[2] - pd[2];
+    final double bdz = pb[2] - pd[2];
+    final double cdz = pc[2] - pd[2];
 
-    cdxady = cdx * ady;
-    adxcdy = adx * cdy;
+    final double bdxcdy = bdx * cdy;
+    final double cdxbdy = cdx * bdy;
 
-    adxbdy = adx * bdy;
-    bdxady = bdx * ady;
+    final double cdxady = cdx * ady;
+    final double adxcdy = adx * cdy;
 
-    det = adz * (bdxcdy - cdxbdy)
-      + bdz * (cdxady - adxcdy)
-      + cdz * (adxbdy - bdxady);
+    final double adxbdy = adx * bdy;
+    final double bdxady = bdx * ady;
 
-    permanent =
-      (((bdxcdy) >= 0.0 ? (bdxcdy) : -(bdxcdy)) + ((cdxbdy) >= 0.0
-                                                   ? (cdxbdy)
-                                                   : -(cdxbdy))) * (
-        (adz) >= 0.0 ? (adz) : -(adz))
-        + (((cdxady) >= 0.0 ? (cdxady) : -(cdxady)) + ((adxcdy) >= 0.0
-                                                       ? (adxcdy)
-                                                       : -(adxcdy))) * (
-        (bdz) >= 0.0 ? (bdz) : -(bdz))
-        + (((adxbdy) >= 0.0 ? (adxbdy) : -(adxbdy)) + ((bdxady) >= 0.0
-                                                       ? (bdxady)
-                                                       : -(bdxady))) * (
-        (cdz) >= 0.0 ? (cdz) : -(cdz));
-    errbound = o3derrboundA * permanent;
-    if ((det > errbound) || (-det > errbound)) {
-      return det;
-    }
+    final double det =
+      adz * (bdxcdy - cdxbdy)
+        + bdz * (cdxady - adxcdy)
+        + cdz * (adxbdy - bdxady);
 
-    return new Adapt().orient3d(pa, pb, pc, pd, permanent);
-  }
+    final double permanent
+      = (Math.abs(bdxcdy) + Math.abs(cdxbdy)) * Math.abs(adz)
+      + (Math.abs(cdxady) + Math.abs(adxcdy)) * Math.abs(bdz)
+      + (Math.abs(adxbdy) + Math.abs(bdxady)) * Math.abs(cdz);
+    final double errbound = o3derrboundA * permanent;
+    if (Math.abs(det) > errbound) { return det; }
+    return orient3d(pa, pb, pc, pd, permanent);}
 
   //--------------------------------------------------------------------
   // insphere

@@ -2015,11 +2015,9 @@ REAL permanent;
     } else {
       negate = -adytail;
       Two_Product(negate, bdx, at_blarge, at_b[0]);
-      at_b[1] = at_blarge;
-      at_blen = 2;
+      at_b[1] = at_blarge; at_blen = 2;
       Two_Product(adytail, cdx, at_clarge, at_c[0]);
-      at_c[1] = at_clarge;
-      at_clen = 2;
+      at_c[1] = at_clarge; at_clen = 2;
     }
   } else {
     if (adytail == 0.0) {

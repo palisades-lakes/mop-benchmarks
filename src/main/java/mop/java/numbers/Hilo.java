@@ -462,9 +462,7 @@ public record Hilo (double hi, double lo)
   public static final Hilo twoProductPresplit (final double a,
                                                final double b,
                                                final Hilo bhilo) {
-
     final double x = a * b;
-
     final Hilo ahilo = split (a);
     final double err1 = x - (ahilo.hi() * bhilo.hi());
     final double err2 = err1 - (ahilo.lo() * bhilo.hi());
