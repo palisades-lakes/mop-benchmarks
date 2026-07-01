@@ -530,6 +530,7 @@ public final class XDouble implements Comparable<XDouble> {
 //      x = x.add(a); }
 //    return x; }
 
+  //--------------------------------------------------------------------
   // returns double[3]
   // #define Two_One_Diff(a1, a0, b, x2, x1, x0) \
   //  Two_Diff(a0, b , _i, x0); \
@@ -677,6 +678,14 @@ public final class XDouble implements Comparable<XDouble> {
     ab[6] = s15.lo();
 
     return unsafe(ab); }
+
+  public static final XDouble crossProduct (final Hilo x0,
+                                            final Hilo y0,
+                                            final Hilo x1,
+                                            final Hilo y1) {
+    final XDouble x0y1 = twoTwoProduct(x0,y1);
+    final XDouble x1y0 = twoTwoProduct(x1,y0);
+    return x0y1.subtract(x1y0); }
 
   //-------------------------------------------------------------------
   //

@@ -190,6 +190,42 @@ public final class Slow implements Predicate {
   //--------------------------------------------------------------------
   // insphere
   //--------------------------------------------------------------------
+
+  private static final XDouble insphereDet (final XDouble cd,
+                                            final Hilo bez,
+                                            final XDouble bd,
+                                            final Hilo cez,
+                                            final XDouble bc,
+                                            final Hilo dez,
+                                            final Hilo aex,
+                                            final Hilo aey,
+                                            final Hilo aez) {
+
+    final XDouble temp192 = cd.multiply(bez)
+                              .add(bd.multiply(cez))
+                              .add(bc.multiply(dez));
+
+    final XDouble detxx = temp192.multiply(aex.hi()).multiply(aex.hi());
+    final XDouble detxt = temp192.multiply(aex.lo());
+    final XDouble detxxt = detxt.multiply(aex.hi()).fast2x();
+    final XDouble detxtxt = detxt.multiply(aex.lo());
+
+    final XDouble detyy = temp192.multiply(aey.hi()).multiply(aey.hi());
+    final XDouble detyt = temp192.multiply(aey.lo());
+    final XDouble detyyt = detyt.multiply(aey.hi()).fast2x();
+    final XDouble detytyt = detyt.multiply(aey.lo());
+
+    final XDouble detzz = temp192.multiply(aez.hi()).multiply(aez.hi());
+    final XDouble detzt = temp192.multiply(aez.lo());
+    final XDouble detzzt = detzt.multiply(aez.hi()).fast2x();
+    final XDouble detztzt = detzt.multiply(aez.lo());
+
+    return
+      detxx.add(detxxt).add(detxtxt)
+           .add(detyy).add(detyyt).add(detytyt)
+           .add(detzz).add(detzzt).add(detztzt); }
+
+  //--------------------------------------------------------------------
   public final double insphere (final double[] pa,
                                 final double[] pb,
                                 final double[] pc,
@@ -209,164 +245,22 @@ public final class Slow implements Predicate {
     final Hilo dey = Hilo.twoDiff(pd[1], pe[1]);
     final Hilo dez = Hilo.twoDiff(pd[2], pe[2]);
 
-    // TODO: XDouble.cross2d?
-    final XDouble axby =  XDouble.twoTwoProduct(aex,bey);
-    final XDouble bxay =  XDouble.twoTwoProduct(bex,aey.negate());
-    final XDouble ab =  axby.add(bxay);
+    final XDouble ab = XDouble.crossProduct(aex,aey,bex,bey);
+    final XDouble bc = XDouble.crossProduct(bex,bey,cex,cey);
+    final XDouble cd = XDouble.crossProduct(cex,cey,dex,dey);
+    final XDouble da = XDouble.crossProduct(dex,dey,aex,aey);
+    final XDouble ac = XDouble.crossProduct(aex,aey,cex,cey);
+    final XDouble bd = XDouble.crossProduct(bex,bey,dex,dey);
 
-    final XDouble bxcy = XDouble.twoTwoProduct(bex,cey);
-    final XDouble cxby = XDouble.twoTwoProduct(cex,bey.negate());
-    final XDouble bc = bxcy.add(cxby);
-
-    final XDouble cxdy = XDouble.twoTwoProduct(cex,dey);
-    final XDouble dxcy = XDouble.twoTwoProduct(dex,cey.negate());
-    final XDouble cd = cxdy.add(dxcy);
-
-    final XDouble dxay = XDouble.twoTwoProduct(dex,aey);
-    final XDouble axdy = XDouble.twoTwoProduct(aex,dey.negate());
-    final XDouble da = dxay.add(axdy);
-
-    final XDouble axcy = XDouble.twoTwoProduct(aex,cey);
-    final XDouble cxay = XDouble.twoTwoProduct(cex,aey.negate());
-    final XDouble ac = axcy.add(cxay);
-
-    final XDouble bxdy = XDouble.twoTwoProduct(bex,dey);
-    final XDouble dxby = XDouble.twoTwoProduct(dex,bey.negate());
-    final XDouble bd = bxdy.add(dxby);
-
-    XDouble temp64a, temp64b, temp64c, temp192;
-    temp64a = cd.multiply(bez.negate());
-    temp64b = bd.multiply(cez);
-    temp64c = bc.multiply(dez.negate());
-    temp192 = temp64a.add(temp64b).add(temp64c);
-
-    XDouble detx, detxx, detxt, detxxt, detxtxt, x1, x2;
-    XDouble dety, detyy, detyt, detyyt, detytyt, y1, y2;
-    XDouble detxy;
-    XDouble detz, detzz, detzt, detzzt, detztzt, z1, z2;
-
-    detx = temp192.multiply(aex.hi());
-    detxx = detx.multiply(aex.hi());
-    detxt = temp192.multiply(aex.lo());
-    detxxt = detxt.multiply(aex.hi()).fast2x();
-    detxtxt = detxt.multiply(aex.lo());
-    x1 = detxx.add(detxxt);
-    x2 = x1.add(detxtxt);
-
-    dety = temp192.multiply(aey.hi());
-    detyy = dety.multiply(aey.hi());
-    detyt = temp192.multiply(aey.lo());
-    detyyt = detyt.multiply(aey.hi()).fast2x();
-    detytyt = detyt.multiply(aey.lo());
-    y1 = detyy.add(detyyt);
-    y2 = y1.add(detytyt);
-
-    detz = temp192.multiply(aez.hi());
-    detzz = detz.multiply(aez.hi());
-    detzt = temp192.multiply(aez.lo());
-    detzzt = detzt.multiply(aez.hi()).fast2x();
-    detztzt = detzt.multiply(aez.lo());
-    z1 = detzz.add(detzzt);
-    z2 = z1.add(detztzt);
-
-    detxy = x2.add(y2);
-    final XDouble adet = z2.add(detxy);
-
-    temp64a = da.multiply(cez);
-    temp64b = ac.multiply(dez);
-    temp64c = cd.multiply(aez);
-    temp192 = temp64a.add(temp64b).add(temp64c);
-
-    detx = temp192.multiply(bex.hi());
-    detxx = detx.multiply(bex.hi());
-    detxt = temp192.multiply(bex.lo());
-    detxxt = detxt.multiply(bex.hi()).fast2x();
-    detxtxt = detxt.multiply(bex.lo());
-    x1 = detxx.add(detxxt);
-    x2 = x1.add(detxtxt);
-
-    dety = temp192.multiply(bey.hi());
-    detyy = dety.multiply(bey.hi());
-    detyt = temp192.multiply(bey.lo());
-    detyyt = detyt.multiply(bey.hi()).fast2x();
-    detytyt = detyt.multiply(bey.lo());
-    y1 = detyy.add(detyyt);
-    y2 = y1.add(detytyt);
-
-    detz = temp192.multiply(bez.hi());
-    detzz = detz.multiply(bez.hi());
-    detzt = temp192.multiply(bez.lo());
-    detzzt = detzt.multiply(bez.hi()).fast2x();
-    detztzt = detzt.multiply(bez.lo());
-    z1 = detzz.add(detzzt);
-    z2 = z1.add(detztzt);
-
-    detxy = x2.add(y2);
-    final XDouble bdet = z2.add(detxy);
-
-    temp64a = ab.multiply(dez.negate());
-    temp64b = bd.multiply(aez.negate());
-    temp64c = da.multiply(bez.negate());
-    temp192 = temp64a.add(temp64b).add(temp64c);
-
-    detx = temp192.multiply(cex.hi());
-    detxx = detx.multiply(cex.hi());
-    detxt = temp192.multiply(cex.lo());
-    detxxt = detxt.multiply(cex.hi()).fast2x();
-    detxtxt = detxt.multiply(cex.lo());
-    x1 = detxx.add(detxxt);
-    x2 = x1.add(detxtxt);
-
-    dety = temp192.multiply(cey.hi());
-    detyy = dety.multiply(cey.hi());
-    detyt = temp192.multiply(cey.lo());
-    detyyt = detyt.multiply(cey.hi()).fast2x();
-    detytyt = detyt.multiply(cey.lo());
-    y1 = detyy.add(detyyt);
-    y2 = y1.add(detytyt);
-
-    detz = temp192.multiply(cez.hi());
-    detzz = detz.multiply(cez.hi());
-    detzt = temp192.multiply(cez.lo());
-    detzzt = detzt.multiply(cez.hi()).fast2x();
-    detztzt = detzt.multiply(cez.lo());
-    z1 = detzz.add(detzzt);
-    z2 = z1.add(detztzt);
-
-    detxy = x2.add(y2);
-    final XDouble cdet = z2.add(detxy);
-
-    temp64a = bc.multiply(aez);
-    temp64b = ac.multiply(bez.negate());
-    temp64c = ab.multiply(cez);
-    temp192 = temp64a.add(temp64b).add(temp64c);
-
-    detx = temp192.multiply(dex.hi());
-    detxx = detx.multiply(dex.hi());
-    detxt = temp192.multiply(dex.lo());
-    detxxt = detxt.multiply(dex.hi()).fast2x();
-    detxtxt = detxt.multiply(dex.lo());
-    x1 = detxx.add(detxxt);
-    x2 = x1.add(detxtxt);
-
-    dety = temp192.multiply(dey.hi());
-    detyy = dety.multiply(dey.hi());
-    detyt = temp192.multiply(dey.lo());
-    detyyt = detyt.multiply(dey.hi()).fast2x();
-    detytyt = detyt.multiply(dey.lo());
-    y1 = detyy.add(detyyt);
-    y2 = y1.add(detytyt);
-
-    detz = temp192.multiply(dez.hi());
-    detzz = detz.multiply(dez.hi());
-    detzt = temp192.multiply(dez.lo());
-    detzzt = detzt.multiply(dez.hi()).fast2x();
-    detztzt = detzt.multiply(dez.lo());
-    z1 = detzz.add(detzzt);
-    z2 = z1.add(detztzt);
-
-    detxy = x2.add(y2);
-    final XDouble ddet = z2.add(detxy);
+    final XDouble adet =
+      insphereDet(cd,bez.negate(),bd,cez,bc,dez.negate(),aex,aey,aez);
+    final XDouble bdet =
+      insphereDet(da,cez,ac,dez,cd,aez,bex,bey,bez);
+    final XDouble cdet =
+      insphereDet(ab,dez.negate(),bd,aez.negate(),da,bez.negate(),
+                  cex,cey,cez);
+    final XDouble ddet =
+      insphereDet(bc,aez,ac,bez.negate(),ab,cez,dex,dey,dez);
 
     final XDouble deter = adet.add(bdet).add(cdet).add(ddet);
     return deter.doubleValue(); }
