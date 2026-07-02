@@ -22,11 +22,11 @@ public final class Exact implements Predicate {
   //--------------------------------------------------------------------
 
   private static final XDouble det (final double[] a,
-                                     final boolean subtractFlag,
-                                     final XDouble bc,
-                                     final XDouble cd,
-                                     final XDouble bd,
-                                   final int flip) {
+                                    final boolean subtractFlag,
+                                    final XDouble bc,
+                                    final XDouble cd,
+                                    final XDouble bd,
+                                    final int flip) {
     final double ax = a[0], ay = a[1];
     // TODO: XDouble.add(XDouble,XDouble) to skip one object creation?
     //  ...and XDouble.addSubtract(XDouble,XDouble)

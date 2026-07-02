@@ -79,7 +79,7 @@ import mop.java.numbers.XDouble;
  *   even <code>BigInteger</code> to extend range.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-06-20
+ * @version 2026-07-01
  */
 
 // strictfp unnecessary for JDK17 and later

@@ -114,7 +114,7 @@ public final class Expansion {
   // initialize some constants
   //--------------------------------------------------------------------
 
-  static final double EPSILON = 0x1.0p-53;
+
   static final double SPLITTER = 0x1.0000002p27;
 
 //  static {

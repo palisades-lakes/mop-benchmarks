@@ -93,7 +93,7 @@ import com.carrotsearch.hppc.procedures.DoubleProcedure;
  *   even <code>BigInteger</code> to extend range.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-06-20
+ * @version 2026-07-01
  */
 
 //@SuppressWarnings("unused")
@@ -106,6 +106,10 @@ public final class XDouble implements Comparable<XDouble> {
 
   public final int nterms () { return _terms.size(); }
   public final double term (final int i) { return _terms.get(i); }
+//  public final double mostSignificantTerm () {
+//    return _terms.get(_terms.size()-1); }
+  public final double term3 () {
+    return (4 > nterms()) ? 0.0 : term(3); }
 
   //-------------------------------------------------------------------
   // DoubleArrayList
@@ -612,8 +616,18 @@ public final class XDouble implements Comparable<XDouble> {
     final Hilo hilo = Hilo.product(a, b);
     return unsafe(DoubleArrayList.from(hilo.lo(), hilo.hi())); }
 
+  public static final XDouble crossProduct (final double x0,
+                                            final double y0,
+                                            final double x1,
+                                            final double y1) {
+    final Hilo x0y1 = Hilo.product(x0,y1);
+    final Hilo x1y0 = Hilo.product(x1,y0);
+    return twoTwoDiff(x0y1,x1y0); }
+
   public static final XDouble crossProduct (final double[] a,
                                             final double[] b) {
+    // TODO: next breaks Exact.incircle!?
+//    return crossProduct(a[0],a[1],b[0],b[1]); }
     final XDouble axby = twoProduct(a[0], b[1]);
     final XDouble bxay = twoProduct(b[0], a[1]);
     return axby.subtract(bxay); }

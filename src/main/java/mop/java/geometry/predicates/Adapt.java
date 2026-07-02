@@ -9,12 +9,6 @@ package mop.java.geometry.predicates;
 import mop.java.numbers.Hilo;
 import mop.java.numbers.XDouble;
 
-import static mop.java.geometry.predicates.Expansion.EPSILON;
-import static mop.java.geometry.predicates.Expansion.SPLITTER;
-import static mop.java.geometry.predicates.Expansion.estimate;
-import static mop.java.geometry.predicates.Expansion.scale;
-import static mop.java.geometry.predicates.Expansion.sum;
-
 /** Adaptive 'exact' tests. Robust.
  * 'Exact' seems to mean boolean predicate, that is, the sign of the
  * returned value is correct, not its specific value.
@@ -87,7 +81,7 @@ import static mop.java.geometry.predicates.Expansion.sum;
  *   even <code>BigInteger</code> to extend range.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-06-29
+ * @version 2026-07-01
  */
 
 // strictfp (may be) necessary for JDK16 and earlier
@@ -100,6 +94,8 @@ public final class Adapt implements Predicate {
   //--------------------------------------------------------------------
   // incircle
   //--------------------------------------------------------------------
+  // TODO: determine from system constants/IEEE 754?
+  private static final double EPSILON = 0x1.0p-53;
 
   private static final double iccerrboundC =
     (44.0 + 576.0 * EPSILON) * EPSILON * EPSILON;
@@ -719,6 +715,27 @@ public final class Adapt implements Predicate {
   //--------------------------------------------------------------------
   // insphere
   //--------------------------------------------------------------------
+
+  private static final XDouble insphereDet (final XDouble cd,
+                                            final double bez,
+                                            final XDouble bd,
+                                            final double cez,
+                                            final XDouble bc,
+                                            final double dez,
+                                            final int sgn,
+                                            final double aex,
+                                            final double aey,
+                                            final double aez) {
+    final XDouble temp8a = cd.multiply(bez);
+    final XDouble temp8b = bd.multiply(cez);
+    final XDouble temp8c = bc.multiply(dez);
+    final XDouble temp24 = temp8a.add(temp8b).add(temp8c);
+    final XDouble xdet = temp24.multiply(aex).multiply(sgn*aex);
+    final XDouble ydet = temp24.multiply(aey).multiply(sgn*aey);
+    final XDouble zdet = temp24.multiply(aez).multiply(sgn*aez);
+    return xdet.add(ydet).add(zdet); }
+
+  //--------------------------------------------------------------------
   private static final double isperrboundB =
     (5.0 + 72.0 * EPSILON) * EPSILON;
   private static final double isperrboundC =
@@ -730,545 +747,83 @@ public final class Adapt implements Predicate {
                                         final double[] pd,
                                         final double[] pe,
                                         final double permanent) {
-    double aex, bex, cex, dex, aey, bey, cey, dey, aez, bez, cez, dez;
-    double det, errbound;
+    final double aex = (pa[0] - pe[0]);
+    final double aey = (pa[1] - pe[1]);
+    final double aez = (pa[2] - pe[2]);
 
-    double aexbey1, bexaey1, bexcey1, cexbey1;
-    double cexdey1, dexcey1, dexaey1, aexdey1;
-    double aexcey1, cexaey1, bexdey1, dexbey1;
-    double aexbey0, bexaey0, bexcey0, cexbey0;
-    double cexdey0, dexcey0, dexaey0, aexdey0;
-    double aexcey0, cexaey0, bexdey0, dexbey0;
-    double[] ab = new double[4], bc = new double[4],
-      cd = new double[4], da = new double[4], ac = new double[4],
-      bd = new double[4];
-    double ab3, bc3, cd3, da3, ac3, bd3;
-    double abeps, bceps, cdeps, daeps, aceps, bdeps;
-    double[] temp8a = new double[8],
-      temp8b = new double[8], temp8c = new double[8],
-      temp16 = new double[16], temp24 = new double[24],
-      temp48 = new double[48];
-    int temp8alen, temp8blen, temp8clen, temp16len, temp24len,
-      temp48len;
-    double[] xdet = new double[96], ydet = new double[96],
-      zdet = new double[96], xydet = new double[192];
-    int xlen, ylen, zlen, xylen;
-    double[] adet = new double[288], bdet = new double[288],
-      cdet = new double[288], ddet = new double[288];
-    int alen, blen, clen, dlen;
-    double[] abdet = new double[576], cddet = new double[576];
-    int ablen, cdlen;
-    double[] fin1 = new double[1152];
-    int finlength;
+    final double bex = (pb[0] - pe[0]);
+    final double bey = (pb[1] - pe[1]);
+    final double bez = (pb[2] - pe[2]);
 
-    double aextail, bextail, cextail, dextail;
-    double aeytail, beytail, ceytail, deytail;
-    double aeztail, beztail, ceztail, deztail;
+    final double cex = (pc[0] - pe[0]);
+    final double cey = (pc[1] - pe[1]);
+    final double cez = (pc[2] - pe[2]);
 
-    double bvirt;
-    double avirt, bround, around;
-    double c;
-    double abig;
-    double ahi, alo, bhi, blo;
-    double err1, err2, err3;
-    double _i, _j;
-    double _0;
+    final double dex = (pd[0] - pe[0]);
+    final double dey = (pd[1] - pe[1]);
+    final double dez = (pd[2] - pe[2]);
 
-    aex = (pa[0] - pe[0]);
-    bex = (pb[0] - pe[0]);
-    cex = (pc[0] - pe[0]);
-    dex = (pd[0] - pe[0]);
-    aey = (pa[1] - pe[1]);
-    bey = (pb[1] - pe[1]);
-    cey = (pc[1] - pe[1]);
-    dey = (pd[1] - pe[1]);
-    aez = (pa[2] - pe[2]);
-    bez = (pb[2] - pe[2]);
-    cez = (pc[2] - pe[2]);
-    dez = (pd[2] - pe[2]);
+    final XDouble ab = XDouble.crossProduct(aex,aey,bex,bey);
+    final XDouble bc = XDouble.crossProduct(bex,bey,cex,cey);
+    final XDouble cd = XDouble.crossProduct(cex,cey,dex,dey);
+    final XDouble da = XDouble.crossProduct(dex,dey,aex,aey);
+    final XDouble ac = XDouble.crossProduct(aex,aey,cex,cey);
+    final XDouble bd = XDouble.crossProduct(bex,bey,dex,dey);
+    final XDouble adet =
+      insphereDet(cd,bez,bd,-cez,bc,dez,-1,aex,aey,aez);
+    final XDouble bdet =
+      insphereDet(da,cez,ac,dez,cd,aez,1,bex,bey,bez);
+    final XDouble cdet =
+      insphereDet(ab,dez,bd,aez,da,bez,-1,cex,cey,cez);
+    final XDouble ddet =
+      insphereDet(bc,aez,ac,-bez,ab,cez,1,dex,dey,dez);
 
-    aexbey1 = (aex * bey);
-    c = (SPLITTER * aex);
-    abig = (c - aex);
-    ahi = c - abig;
-    alo = aex - ahi;
-    c = (SPLITTER * bey);
-    abig = (c - bey);
-    bhi = c - abig;
-    blo = bey - bhi;
-    err1 = aexbey1 - (ahi * bhi);
-    err2 = err1 - (alo * bhi);
-    err3 = err2 - (ahi * blo);
-    aexbey0 = (alo * blo) - err3;
-    bexaey1 = (bex * aey);
-    c = (SPLITTER * bex);
-    abig = (c - bex);
-    ahi = c - abig;
-    alo = bex - ahi;
-    c = (SPLITTER * aey);
-    abig = (c - aey);
-    bhi = c - abig;
-    blo = aey - bhi;
-    err1 = bexaey1 - (ahi * bhi);
-    err2 = err1 - (alo * bhi);
-    err3 = err2 - (ahi * blo);
-    bexaey0 = (alo * blo) - err3;
-    _i = (aexbey0 - bexaey0);
-    bvirt = (aexbey0 - _i);
-    avirt = _i + bvirt;
-    bround = bvirt - bexaey0;
-    around = aexbey0 - avirt;
-    ab[0] = around + bround;
-    _j = (aexbey1 + _i);
-    bvirt = (_j - aexbey1);
-    avirt = _j - bvirt;
-    bround = _i - bvirt;
-    around = aexbey1 - avirt;
-    _0 = around + bround;
-    _i = (_0 - bexaey1);
-    bvirt = (_0 - _i);
-    avirt = _i + bvirt;
-    bround = bvirt - bexaey1;
-    around = _0 - avirt;
-    ab[1] = around + bround;
-    ab3 = (_j + _i);
-    bvirt = (ab3 - _j);
-    avirt = ab3 - bvirt;
-    bround = _i - bvirt;
-    around = _j - avirt;
-    ab[2] = around + bround;
-    ab[3] = ab3;
+    final XDouble fin1 = adet.add(bdet).add(cdet).add(ddet);
 
-    bexcey1 = (bex * cey);
-    c = (SPLITTER * bex);
-    abig = (c - bex);
-    ahi = c - abig;
-    alo = bex - ahi;
-    c = (SPLITTER * cey);
-    abig = (c - cey);
-    bhi = c - abig;
-    blo = cey - bhi;
-    err1 = bexcey1 - (ahi * bhi);
-    err2 = err1 - (alo * bhi);
-    err3 = err2 - (ahi * blo);
-    bexcey0 = (alo * blo) - err3;
-    cexbey1 = (cex * bey);
-    c = (SPLITTER * cex);
-    abig = (c - cex);
-    ahi = c - abig;
-    alo = cex - ahi;
-    c = (SPLITTER * bey);
-    abig = (c - bey);
-    bhi = c - abig;
-    blo = bey - bhi;
-    err1 = cexbey1 - (ahi * bhi);
-    err2 = err1 - (alo * bhi);
-    err3 = err2 - (ahi * blo);
-    cexbey0 = (alo * blo) - err3;
-    _i = (bexcey0 - cexbey0);
-    bvirt = (bexcey0 - _i);
-    avirt = _i + bvirt;
-    bround = bvirt - cexbey0;
-    around = bexcey0 - avirt;
-    bc[0] = around + bround;
-    _j = (bexcey1 + _i);
-    bvirt = (_j - bexcey1);
-    avirt = _j - bvirt;
-    bround = _i - bvirt;
-    around = bexcey1 - avirt;
-    _0 = around + bround;
-    _i = (_0 - cexbey1);
-    bvirt = (_0 - _i);
-    avirt = _i + bvirt;
-    bround = bvirt - cexbey1;
-    around = _0 - avirt;
-    bc[1] = around + bround;
-    bc3 = (_j + _i);
-    bvirt = (bc3 - _j);
-    avirt = bc3 - bvirt;
-    bround = _i - bvirt;
-    around = _j - avirt;
-    bc[2] = around + bround;
-    bc[3] = bc3;
+    double det = fin1.doubleValue();
+    double errbound = isperrboundB * permanent;
+    if (Math.abs(det) >= errbound) { return det; }
 
-    cexdey1 = (cex * dey);
-    c = (SPLITTER * cex);
-    abig = (c - cex);
-    ahi = c - abig;
-    alo = cex - ahi;
-    c = (SPLITTER * dey);
-    abig = (c - dey);
-    bhi = c - abig;
-    blo = dey - bhi;
-    err1 = cexdey1 - (ahi * bhi);
-    err2 = err1 - (alo * bhi);
-    err3 = err2 - (ahi * blo);
-    cexdey0 = (alo * blo) - err3;
-    dexcey1 = (dex * cey);
-    c = (SPLITTER * dex);
-    abig = (c - dex);
-    ahi = c - abig;
-    alo = dex - ahi;
-    c = (SPLITTER * cey);
-    abig = (c - cey);
-    bhi = c - abig;
-    blo = cey - bhi;
-    err1 = dexcey1 - (ahi * bhi);
-    err2 = err1 - (alo * bhi);
-    err3 = err2 - (ahi * blo);
-    dexcey0 = (alo * blo) - err3;
-    _i = (cexdey0 - dexcey0);
-    bvirt = (cexdey0 - _i);
-    avirt = _i + bvirt;
-    bround = bvirt - dexcey0;
-    around = cexdey0 - avirt;
-    cd[0] = around + bround;
-    _j = (cexdey1 + _i);
-    bvirt = (_j - cexdey1);
-    avirt = _j - bvirt;
-    bround = _i - bvirt;
-    around = cexdey1 - avirt;
-    _0 = around + bround;
-    _i = (_0 - dexcey1);
-    bvirt = (_0 - _i);
-    avirt = _i + bvirt;
-    bround = bvirt - dexcey1;
-    around = _0 - avirt;
-    cd[1] = around + bround;
-    cd3 = (_j + _i);
-    bvirt = (cd3 - _j);
-    avirt = cd3 - bvirt;
-    bround = _i - bvirt;
-    around = _j - avirt;
-    cd[2] = around + bround;
-    cd[3] = cd3;
+    final double aextail = Hilo.twoDiffTail(pa[0], pe[0], aex);
+    final double aeytail = Hilo.twoDiffTail(pa[1], pe[1], aey);
+    final double aeztail = Hilo.twoDiffTail(pa[2], pe[2], aez);
+    final double bextail = Hilo.twoDiffTail(pb[0], pe[0], bex);
+    final double beytail = Hilo.twoDiffTail(pb[1], pe[1], bey);
+    final double beztail = Hilo.twoDiffTail(pb[2], pe[2], bez);
+    final double cextail = Hilo.twoDiffTail(pc[0], pe[0], cex);
+    final double ceytail = Hilo.twoDiffTail(pc[1], pe[1], cey);
+    final double ceztail = Hilo.twoDiffTail(pc[2], pe[2], cez);
+    final double dextail = Hilo.twoDiffTail(pd[0], pe[0], dex);
+    final double deytail = Hilo.twoDiffTail(pd[1], pe[1], dey);
+    final double deztail = Hilo.twoDiffTail(pd[2], pe[2], dez);
 
-    dexaey1 = (dex * aey);
-    c = (SPLITTER * dex);
-    abig = (c - dex);
-    ahi = c - abig;
-    alo = dex - ahi;
-    c = (SPLITTER * aey);
-    abig = (c - aey);
-    bhi = c - abig;
-    blo = aey - bhi;
-    err1 = dexaey1 - (ahi * bhi);
-    err2 = err1 - (alo * bhi);
-    err3 = err2 - (ahi * blo);
-    dexaey0 = (alo * blo) - err3;
-    aexdey1 = (aex * dey);
-    c = (SPLITTER * aex);
-    abig = (c - aex);
-    ahi = c - abig;
-    alo = aex - ahi;
-    c = (SPLITTER * dey);
-    abig = (c - dey);
-    bhi = c - abig;
-    blo = dey - bhi;
-    err1 = aexdey1 - (ahi * bhi);
-    err2 = err1 - (alo * bhi);
-    err3 = err2 - (ahi * blo);
-    aexdey0 = (alo * blo) - err3;
-    _i = (dexaey0 - aexdey0);
-    bvirt = (dexaey0 - _i);
-    avirt = _i + bvirt;
-    bround = bvirt - aexdey0;
-    around = dexaey0 - avirt;
-    da[0] = around + bround;
-    _j = (dexaey1 + _i);
-    bvirt = (_j - dexaey1);
-    avirt = _j - bvirt;
-    bround = _i - bvirt;
-    around = dexaey1 - avirt;
-    _0 = around + bround;
-    _i = (_0 - aexdey1);
-    bvirt = (_0 - _i);
-    avirt = _i + bvirt;
-    bround = bvirt - aexdey1;
-    around = _0 - avirt;
-    da[1] = around + bround;
-    da3 = (_j + _i);
-    bvirt = (da3 - _j);
-    avirt = da3 - bvirt;
-    bround = _i - bvirt;
-    around = _j - avirt;
-    da[2] = around + bround;
-    da[3] = da3;
-
-    aexcey1 = (aex * cey);
-    c = (SPLITTER * aex);
-    abig = (c - aex);
-    ahi = c - abig;
-    alo = aex - ahi;
-    c = (SPLITTER * cey);
-    abig = (c - cey);
-    bhi = c - abig;
-    blo = cey - bhi;
-    err1 = aexcey1 - (ahi * bhi);
-    err2 = err1 - (alo * bhi);
-    err3 = err2 - (ahi * blo);
-    aexcey0 = (alo * blo) - err3;
-    cexaey1 = (cex * aey);
-    c = (SPLITTER * cex);
-    abig = (c - cex);
-    ahi = c - abig;
-    alo = cex - ahi;
-    c = (SPLITTER * aey);
-    abig = (c - aey);
-    bhi = c - abig;
-    blo = aey - bhi;
-    err1 = cexaey1 - (ahi * bhi);
-    err2 = err1 - (alo * bhi);
-    err3 = err2 - (ahi * blo);
-    cexaey0 = (alo * blo) - err3;
-    _i = (aexcey0 - cexaey0);
-    bvirt = (aexcey0 - _i);
-    avirt = _i + bvirt;
-    bround = bvirt - cexaey0;
-    around = aexcey0 - avirt;
-    ac[0] = around + bround;
-    _j = (aexcey1 + _i);
-    bvirt = (_j - aexcey1);
-    avirt = _j - bvirt;
-    bround = _i - bvirt;
-    around = aexcey1 - avirt;
-    _0 = around + bround;
-    _i = (_0 - cexaey1);
-    bvirt = (_0 - _i);
-    avirt = _i + bvirt;
-    bround = bvirt - cexaey1;
-    around = _0 - avirt;
-    ac[1] = around + bround;
-    ac3 = (_j + _i);
-    bvirt = (ac3 - _j);
-    avirt = ac3 - bvirt;
-    bround = _i - bvirt;
-    around = _j - avirt;
-    ac[2] = around + bround;
-    ac[3] = ac3;
-
-    bexdey1 = (bex * dey);
-    c = (SPLITTER * bex);
-    abig = (c - bex);
-    ahi = c - abig;
-    alo = bex - ahi;
-    c = (SPLITTER * dey);
-    abig = (c - dey);
-    bhi = c - abig;
-    blo = dey - bhi;
-    err1 = bexdey1 - (ahi * bhi);
-    err2 = err1 - (alo * bhi);
-    err3 = err2 - (ahi * blo);
-    bexdey0 = (alo * blo) - err3;
-    dexbey1 = (dex * bey);
-    c = (SPLITTER * dex);
-    abig = (c - dex);
-    ahi = c - abig;
-    alo = dex - ahi;
-    c = (SPLITTER * bey);
-    abig = (c - bey);
-    bhi = c - abig;
-    blo = bey - bhi;
-    err1 = dexbey1 - (ahi * bhi);
-    err2 = err1 - (alo * bhi);
-    err3 = err2 - (ahi * blo);
-    dexbey0 = (alo * blo) - err3;
-    _i = (bexdey0 - dexbey0);
-    bvirt = (bexdey0 - _i);
-    avirt = _i + bvirt;
-    bround = bvirt - dexbey0;
-    around = bexdey0 - avirt;
-    bd[0] = around + bround;
-    _j = (bexdey1 + _i);
-    bvirt = (_j - bexdey1);
-    avirt = _j - bvirt;
-    bround = _i - bvirt;
-    around = bexdey1 - avirt;
-    _0 = around + bround;
-    _i = (_0 - dexbey1);
-    bvirt = (_0 - _i);
-    avirt = _i + bvirt;
-    bround = bvirt - dexbey1;
-    around = _0 - avirt;
-    bd[1] = around + bround;
-    bd3 = (_j + _i);
-    bvirt = (bd3 - _j);
-    avirt = bd3 - bvirt;
-    bround = _i - bvirt;
-    around = _j - avirt;
-    bd[2] = around + bround;
-    bd[3] = bd3;
-
-    temp8alen = scale(4, cd, bez, temp8a);
-    temp8blen = scale(4, bd, -cez, temp8b);
-    temp8clen = scale(4, bc, dez, temp8c);
-    temp16len = sum(temp8alen, temp8a,
-                    temp8blen, temp8b, temp16);
-    temp24len = sum(temp8clen, temp8c,
-                    temp16len, temp16, temp24);
-    temp48len =
-      scale(temp24len, temp24, aex, temp48);
-    xlen = scale(temp48len, temp48, -aex, xdet);
-    temp48len =
-      scale(temp24len, temp24, aey, temp48);
-    ylen = scale(temp48len, temp48, -aey, ydet);
-    temp48len =
-      scale(temp24len, temp24, aez, temp48);
-    zlen = scale(temp48len, temp48, -aez, zdet);
-    xylen = sum(xlen, xdet, ylen, ydet, xydet);
-    alen = sum(xylen, xydet, zlen, zdet, adet);
-
-    temp8alen = scale(4, da, cez, temp8a);
-    temp8blen = scale(4, ac, dez, temp8b);
-    temp8clen = scale(4, cd, aez, temp8c);
-    temp16len = sum(temp8alen, temp8a,
-                    temp8blen, temp8b, temp16);
-    temp24len = sum(temp8clen, temp8c,
-                    temp16len, temp16, temp24);
-    temp48len =
-      scale(temp24len, temp24, bex, temp48);
-    xlen = scale(temp48len, temp48, bex, xdet);
-    temp48len =
-      scale(temp24len, temp24, bey, temp48);
-    ylen = scale(temp48len, temp48, bey, ydet);
-    temp48len =
-      scale(temp24len, temp24, bez, temp48);
-    zlen = scale(temp48len, temp48, bez, zdet);
-    xylen = sum(xlen, xdet, ylen, ydet, xydet);
-    blen = sum(xylen, xydet, zlen, zdet, bdet);
-
-    temp8alen = scale(4, ab, dez, temp8a);
-    temp8blen = scale(4, bd, aez, temp8b);
-    temp8clen = scale(4, da, bez, temp8c);
-    temp16len = sum(temp8alen, temp8a,
-                    temp8blen, temp8b, temp16);
-    temp24len = sum(temp8clen, temp8c,
-                    temp16len, temp16, temp24);
-    temp48len =
-      scale(temp24len, temp24, cex, temp48);
-    xlen = scale(temp48len, temp48, -cex, xdet);
-    temp48len =
-      scale(temp24len, temp24, cey, temp48);
-    ylen = scale(temp48len, temp48, -cey, ydet);
-    temp48len =
-      scale(temp24len, temp24, cez, temp48);
-    zlen = scale(temp48len, temp48, -cez, zdet);
-    xylen = sum(xlen, xdet, ylen, ydet, xydet);
-    clen = sum(xylen, xydet, zlen, zdet, cdet);
-
-    temp8alen = scale(4, bc, aez, temp8a);
-    temp8blen = scale(4, ac, -bez, temp8b);
-    temp8clen = scale(4, ab, cez, temp8c);
-    temp16len = sum(temp8alen, temp8a,
-                    temp8blen, temp8b, temp16);
-    temp24len = sum(temp8clen, temp8c,
-                    temp16len, temp16, temp24);
-    temp48len =
-      scale(temp24len, temp24, dex, temp48);
-    xlen = scale(temp48len, temp48, dex, xdet);
-    temp48len =
-      scale(temp24len, temp24, dey, temp48);
-    ylen = scale(temp48len, temp48, dey, ydet);
-    temp48len =
-      scale(temp24len, temp24, dez, temp48);
-    zlen = scale(temp48len, temp48, dez, zdet);
-    xylen = sum(xlen, xdet, ylen, ydet, xydet);
-    dlen = sum(xylen, xydet, zlen, zdet, ddet);
-
-    ablen = sum(alen, adet, blen, bdet, abdet);
-    cdlen = sum(clen, cdet, dlen, ddet, cddet);
-    finlength =
-      sum(ablen, abdet, cdlen, cddet, fin1);
-
-    det = estimate(finlength, fin1);
-    errbound = isperrboundB * permanent;
-    if (Math.abs(det) >= errbound) {
-      return det;
-    }
-
-    bvirt = (pa[0] - aex);
-    avirt = aex + bvirt;
-    bround = bvirt - pe[0];
-    around = pa[0] - avirt;
-    aextail = around + bround;
-    bvirt = (pa[1] - aey);
-    avirt = aey + bvirt;
-    bround = bvirt - pe[1];
-    around = pa[1] - avirt;
-    aeytail = around + bround;
-    bvirt = (pa[2] - aez);
-    avirt = aez + bvirt;
-    bround = bvirt - pe[2];
-    around = pa[2] - avirt;
-    aeztail = around + bround;
-    bvirt = (pb[0] - bex);
-    avirt = bex + bvirt;
-    bround = bvirt - pe[0];
-    around = pb[0] - avirt;
-    bextail = around + bround;
-    bvirt = (pb[1] - bey);
-    avirt = bey + bvirt;
-    bround = bvirt - pe[1];
-    around = pb[1] - avirt;
-    beytail = around + bround;
-    bvirt = (pb[2] - bez);
-    avirt = bez + bvirt;
-    bround = bvirt - pe[2];
-    around = pb[2] - avirt;
-    beztail = around + bround;
-    bvirt = (pc[0] - cex);
-    avirt = cex + bvirt;
-    bround = bvirt - pe[0];
-    around = pc[0] - avirt;
-    cextail = around + bround;
-    bvirt = (pc[1] - cey);
-    avirt = cey + bvirt;
-    bround = bvirt - pe[1];
-    around = pc[1] - avirt;
-    ceytail = around + bround;
-    bvirt = (pc[2] - cez);
-    avirt = cez + bvirt;
-    bround = bvirt - pe[2];
-    around = pc[2] - avirt;
-    ceztail = around + bround;
-    bvirt = (pd[0] - dex);
-    avirt = dex + bvirt;
-    bround = bvirt - pe[0];
-    around = pd[0] - avirt;
-    dextail = around + bround;
-    bvirt = (pd[1] - dey);
-    avirt = dey + bvirt;
-    bround = bvirt - pe[1];
-    around = pd[1] - avirt;
-    deytail = around + bround;
-    bvirt = (pd[2] - dez);
-    avirt = dez + bvirt;
-    bround = bvirt - pe[2];
-    around = pd[2] - avirt;
-    deztail = around + bround;
     if ((aextail == 0.0) && (aeytail == 0.0) && (aeztail == 0.0)
       && (bextail == 0.0) && (beytail == 0.0) && (beztail == 0.0)
       && (cextail == 0.0) && (ceytail == 0.0) && (ceztail == 0.0)
       && (dextail == 0.0) && (deytail == 0.0) && (deztail == 0.0)) {
-      return det;
-    }
+      return det; }
 
-    errbound =
-      isperrboundC * permanent + resulterrbound * ((det) >= 0.0 ? (det)
-                                                                :
-                                                   -(det));
-    abeps = (aex * beytail + bey * aextail)
+    errbound = isperrboundC * permanent + resulterrbound * Math.abs(det);
+    final double abeps = (aex * beytail + bey * aextail)
       - (aey * bextail + bex * aeytail);
-    bceps = (bex * ceytail + cey * bextail)
+    final double bceps = (bex * ceytail + cey * bextail)
       - (bey * cextail + cex * beytail);
-    cdeps = (cex * deytail + dey * cextail)
+    final double cdeps = (cex * deytail + dey * cextail)
       - (cey * dextail + dex * ceytail);
-    daeps = (dex * aeytail + aey * dextail)
+    final double daeps = (dex * aeytail + aey * dextail)
       - (dey * aextail + aex * deytail);
-    aceps = (aex * ceytail + cey * aextail)
+    final double aceps = (aex * ceytail + cey * aextail)
       - (aey * cextail + cex * aeytail);
-    bdeps = (bex * deytail + dey * bextail)
+    final double bdeps = (bex * deytail + dey * bextail)
       - (bey * dextail + dex * beytail);
+
+    final double da3 = da.term3();
+    final double ac3 = ac.term3();
+    final double cd3 = cd.term3();
+    final double bc3 = bc.term3();
+    final double ab3 = ab.term3();
+    final double bd3 = bd.term3();
+
     det += (((bex * bex + bey * bey + bez * bez)
       * ((cez * daeps + dez * aceps + aez * cdeps)
       + (ceztail * da3 + deztail * ac3 + aeztail * cd3))
@@ -1289,14 +844,12 @@ public final class Adapt implements Predicate {
       * (bez * cd3 - cez * bd3 + dez * bc3)
       + (cex * cextail + cey * ceytail + cez * ceztail)
       * (dez * ab3 + aez * bd3 + bez * da3)));
-    if (Math.abs(det) >= errbound) {
-      return det;
-    }
 
-    return new Exact().insphere(pa, pb, pc, pd, pe);
-  }
+    if (Math.abs(det) >= errbound) { return det; }
+    return new Exact().insphere(pa, pb, pc, pd, pe); }
 
   //--------------------------------------------------------------------
+
   private static final double isperrboundA =
     (16.0 + 224.0 * EPSILON) * EPSILON;
 
@@ -1305,84 +858,70 @@ public final class Adapt implements Predicate {
                                 final double[] pc,
                                 final double[] pd,
                                 final double[] pe) {
-    double aex, bex, cex, dex;
-    double aey, bey, cey, dey;
-    double aez, bez, cez, dez;
-    double aexbey, bexaey, bexcey, cexbey, cexdey, dexcey, dexaey,
-      aexdey;
-    double aexcey, cexaey, bexdey, dexbey;
-    double alift, blift, clift, dlift;
-    double ab, bc, cd, da, ac, bd;
-    double abc, bcd, cda, dab;
-    double aezplus, bezplus, cezplus, dezplus;
-    double aexbeyplus, bexaeyplus, bexceyplus, cexbeyplus;
-    double cexdeyplus, dexceyplus, dexaeyplus, aexdeyplus;
-    double aexceyplus, cexaeyplus, bexdeyplus, dexbeyplus;
-    double det;
-    double permanent, errbound;
+    final double aex = pa[0] - pe[0];
+    final double bex = pb[0] - pe[0];
+    final double cex = pc[0] - pe[0];
+    final double dex = pd[0] - pe[0];
+    final double aey = pa[1] - pe[1];
+    final double bey = pb[1] - pe[1];
+    final double cey = pc[1] - pe[1];
+    final double dey = pd[1] - pe[1];
+    final double aez = pa[2] - pe[2];
+    final double bez = pb[2] - pe[2];
+    final double cez = pc[2] - pe[2];
+    final double dez = pd[2] - pe[2];
 
-    aex = pa[0] - pe[0];
-    bex = pb[0] - pe[0];
-    cex = pc[0] - pe[0];
-    dex = pd[0] - pe[0];
-    aey = pa[1] - pe[1];
-    bey = pb[1] - pe[1];
-    cey = pc[1] - pe[1];
-    dey = pd[1] - pe[1];
-    aez = pa[2] - pe[2];
-    bez = pb[2] - pe[2];
-    cez = pc[2] - pe[2];
-    dez = pd[2] - pe[2];
+    // TODO: simple double crossProduct(double,double,double,double)
+    final double aexbey = aex * bey;
+    final double bexaey = bex * aey;
+    final double ab = aexbey - bexaey;
+    final double bexcey = bex * cey;
+    final double cexbey = cex * bey;
+    final double bc = bexcey - cexbey;
+    final double cexdey = cex * dey;
+    final double dexcey = dex * cey;
+    final double cd = cexdey - dexcey;
+    final double dexaey = dex * aey;
+    final double aexdey = aex * dey;
+    final double da = dexaey - aexdey;
+    final double aexcey = aex * cey;
+    final double cexaey = cex * aey;
+    final double ac = aexcey - cexaey;
+    final double bexdey = bex * dey;
+    final double dexbey = dex * bey;
+    final double bd = bexdey - dexbey;
 
-    aexbey = aex * bey;
-    bexaey = bex * aey;
-    ab = aexbey - bexaey;
-    bexcey = bex * cey;
-    cexbey = cex * bey;
-    bc = bexcey - cexbey;
-    cexdey = cex * dey;
-    dexcey = dex * cey;
-    cd = cexdey - dexcey;
-    dexaey = dex * aey;
-    aexdey = aex * dey;
-    da = dexaey - aexdey;
+    final double abc = aez * bc - bez * ac + cez * ab;
+    final double bcd = bez * cd - cez * bd + dez * bc;
+    final double cda = cez * da + dez * ac + aez * cd;
+    final double dab = dez * ab + aez * bd + bez * da;
 
-    aexcey = aex * cey;
-    cexaey = cex * aey;
-    ac = aexcey - cexaey;
-    bexdey = bex * dey;
-    dexbey = dex * bey;
-    bd = bexdey - dexbey;
+    final double alift = aex * aex + aey * aey + aez * aez;
+    final double blift = bex * bex + bey * bey + bez * bez;
+    final double clift = cex * cex + cey * cey + cez * cez;
+    final double dlift = dex * dex + dey * dey + dez * dez;
 
-    abc = aez * bc - bez * ac + cez * ab;
-    bcd = bez * cd - cez * bd + dez * bc;
-    cda = cez * da + dez * ac + aez * cd;
-    dab = dez * ab + aez * bd + bez * da;
+    final double det =
+      (dlift * abc - clift * dab)
+      + (blift * cda - alift * bcd);
 
-    alift = aex * aex + aey * aey + aez * aez;
-    blift = bex * bex + bey * bey + bez * bez;
-    clift = cex * cex + cey * cey + cez * cez;
-    dlift = dex * dex + dey * dey + dez * dez;
-
-    det = (dlift * abc - clift * dab) + (blift * cda - alift * bcd);
-
-    aezplus = ((aez) >= 0.0 ? (aez) : -(aez));
-    bezplus = ((bez) >= 0.0 ? (bez) : -(bez));
-    cezplus = ((cez) >= 0.0 ? (cez) : -(cez));
-    dezplus = ((dez) >= 0.0 ? (dez) : -(dez));
-    aexbeyplus = ((aexbey) >= 0.0 ? (aexbey) : -(aexbey));
-    bexaeyplus = ((bexaey) >= 0.0 ? (bexaey) : -(bexaey));
-    bexceyplus = ((bexcey) >= 0.0 ? (bexcey) : -(bexcey));
-    cexbeyplus = ((cexbey) >= 0.0 ? (cexbey) : -(cexbey));
-    cexdeyplus = ((cexdey) >= 0.0 ? (cexdey) : -(cexdey));
-    dexceyplus = ((dexcey) >= 0.0 ? (dexcey) : -(dexcey));
-    dexaeyplus = ((dexaey) >= 0.0 ? (dexaey) : -(dexaey));
-    aexdeyplus = ((aexdey) >= 0.0 ? (aexdey) : -(aexdey));
-    aexceyplus = ((aexcey) >= 0.0 ? (aexcey) : -(aexcey));
-    cexaeyplus = ((cexaey) >= 0.0 ? (cexaey) : -(cexaey));
-    bexdeyplus = ((bexdey) >= 0.0 ? (bexdey) : -(bexdey));
-    dexbeyplus = ((dexbey) >= 0.0 ? (dexbey) : -(dexbey));
-    permanent = ((cexdeyplus + dexceyplus) * bezplus
+    final double aezplus = Math.abs(aez);
+    final double bezplus = Math.abs(bez);
+    final double cezplus = Math.abs(cez);
+    final double dezplus = Math.abs(dez);
+    final double aexbeyplus = Math.abs(aexbey);
+    final double bexaeyplus = Math.abs(bexaey);
+    final double bexceyplus = Math.abs(bexcey);
+    final double cexbeyplus = Math.abs(cexbey);
+    final double cexdeyplus = Math.abs(cexdey);
+    final double dexceyplus = Math.abs(dexcey);
+    final double dexaeyplus = Math.abs(dexaey);
+    final double aexdeyplus = Math.abs(aexdey);
+    final double aexceyplus = Math.abs(aexcey);
+    final double cexaeyplus = Math.abs(cexaey);
+    final double bexdeyplus = Math.abs(bexdey);
+    final double dexbeyplus = Math.abs(dexbey);
+    final double permanent = ((cexdeyplus + dexceyplus) * bezplus
       + (dexbeyplus + bexdeyplus) * cezplus
       + (bexceyplus + cexbeyplus) * dezplus)
       * alift
@@ -1398,11 +937,11 @@ public final class Adapt implements Predicate {
       + (cexaeyplus + aexceyplus) * bezplus
       + (aexbeyplus + bexaeyplus) * cezplus)
       * dlift;
-    errbound = isperrboundA * permanent;
-    if ((det > errbound) || (-det > errbound)) { return det; }
+    final double errbound = isperrboundA * permanent;
+    if (Math.abs(det) > errbound) { return det; }
 
-    return insphere(pa, pb, pc, pd, pe, permanent);
-  }
+    return insphere(pa, pb, pc, pd, pe, permanent); }
+
   //--------------------------------------------------------------------
   // construction
   //--------------------------------------------------------------------
