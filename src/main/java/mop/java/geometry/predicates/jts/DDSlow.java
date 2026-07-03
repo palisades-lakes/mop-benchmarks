@@ -1,12 +1,13 @@
 package mop.java.geometry.predicates.jts;
 
 import mop.java.geometry.predicates.Predicate;
+import org.apache.commons.geometry.euclidean.twod.Vector2D;
 import org.locationtech.jts.math.DD;
 
 /** From org.locationtech.jts.triangulate.quadedge.TrianglePredicate
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-05-19
+ * @version 2026-07-03
  */
 
 public final class DDSlow implements Predicate {
@@ -26,15 +27,15 @@ public final class DDSlow implements Predicate {
   //--------------------------------------------------------------------
 
   @Override
-  public final double orient2d (final double[] a,
-                                final double[] b,
-                                final double[] c) {
-    final DD ax = DD.valueOf(a[0]);
-    final DD ay = DD.valueOf(a[1]);
-    final DD bx = DD.valueOf(b[0]);
-    final DD by = DD.valueOf(b[1]);
-    final DD cx = DD.valueOf(c[0]);
-    final DD cy = DD.valueOf(c[1]);
+  public final double orient2d (final Vector2D a,
+                                final Vector2D b,
+                                final Vector2D c) {
+    final DD ax = DD.valueOf(a.getX());
+    final DD ay = DD.valueOf(a.getY());
+    final DD bx = DD.valueOf(b.getX());
+    final DD by = DD.valueOf(b.getY());
+    final DD cx = DD.valueOf(c.getX());
+    final DD cy = DD.valueOf(c.getY());
 
     return triAreaDDSlow(ax,ay,bx,by,cx,cy).doubleValue(); }
 

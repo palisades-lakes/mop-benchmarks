@@ -1,10 +1,10 @@
 package mop.java.test.geometry.predicates;
 
 import mop.java.geometry.predicates.*;
+import org.apache.commons.geometry.euclidean.twod.Vector2D;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
 import java.util.List;
 
 //----------------------------------------------------------------
@@ -15,7 +15,7 @@ import java.util.List;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-05-19
+ * @version 2026-07-03
  */
 
 public final class Orient2DTest {
@@ -25,13 +25,13 @@ public final class Orient2DTest {
                                           final Predicate gold,
                                           final Predicate pred,
                                           final List<Predicate> predicates,
-                                          final double[] p0,
-                                          final double[] p1,
-                                          final double[] p2) {
+                                          final Vector2D p0,
+                                          final Vector2D p1,
+                                          final Vector2D p2) {
     StringBuilder msg = new StringBuilder("\norient2d(" +
-                                            Arrays.toString(p0) + "," +
-                                            Arrays.toString(p1) + "," +
-                                            Arrays.toString(p2) + ")" +
+                                            p0 + "," +
+                                            p1 + "," +
+                                            p2 + ")" +
                                             "\ngold=" + gold + ", truth=" + truth +
                                             "\npred=" + pred +
                                             " -> " + Double.toHexString(
@@ -44,9 +44,9 @@ public final class Orient2DTest {
   //--------------------------------------------------------------
 
   private static final void orient2D (final List<Predicate> predicates,
-                                      final double[] p0,
-                                      final double[] p1,
-                                      final double[] p2) {
+                                      final Vector2D p0,
+                                      final Vector2D p1,
+                                      final Vector2D p2) {
     final Predicate gold = Common.truth();
     final double trueAreaX2 = gold.orient2d(p0, p1, p2);
     for (final Predicate p : predicates) {
@@ -63,10 +63,10 @@ public final class Orient2DTest {
 
   @Test
   public final void testOrient2D () {
-    final double[] p0 = new double[] { 0.0, 0.0, };
-    final double[] p1 = new double[] { 1.0, 1.0, };
-    final double[] p2 = new double[] { -1.0, 1.0, };
-    final double[] p3 = new double[] { -1.0, -1.0, };
+    final Vector2D p0 = Vector2D.of( 0.0, 0.0);
+    final Vector2D p1 = Vector2D.of( 1.0, 1.0);
+    final Vector2D p2 = Vector2D.of( -1.0, 1.0);
+    final Vector2D p3 = Vector2D.of( -1.0, -1.0);
 
     final List<Predicate> predicates = Common.orient2dPredicates();
     orient2D(predicates, p0, p1, p2);
@@ -83,6 +83,19 @@ public final class Orient2DTest {
     orient2D(predicates, p0, p1, p3);
   }
 
+  //--------------------------------------------------------------
+
+//  @Test
+//  public final void laplaceTest () {
+//    final List<Predicate> predicates = Common.inCirclePredicates();
+//    final int n = 12;
+//    final UniformRandomProvider urp =
+//      PRNG.well44497b("seeds/Well44497b-2019-01-05.txt");
+//    final Generator laplaceGenerator =
+//      Doubles.laplaceGenerator(n, 2, urp, 0.0, 1.0);
+//    final double[][] p = (double[][]) laplaceGenerator.next();
+//    for (int i = 0; i < n-3; i++) {
+//      orient2D(predicates, p[i], p[i+1], p[i+2], p[i+3]);} }
 
   //--------------------------------------------------------------
 }

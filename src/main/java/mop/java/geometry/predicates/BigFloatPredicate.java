@@ -1,12 +1,13 @@
 package mop.java.geometry.predicates;
 
 import mop.java.numbers.BigFloat;
+import org.apache.commons.geometry.euclidean.twod.Vector2D;
 
 /** Standard calculations implemented in BigFloat.
  * Should be exact, up to BigFloat resolution.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-06-9
+ * @version 2026-07-03
  */
 
 public final class BigFloatPredicate implements Predicate {
@@ -23,16 +24,17 @@ public final class BigFloatPredicate implements Predicate {
   //  Also, triangle translation could be done just once.
   //  Consider boolean predicate, so can return the sign of the
   //  final BigFloat.
+  // TODO: BigFloatVector, Vector<BigFloat>...
 
-  public final double orient2d (final double[] pa,
-                                final double[] pb,
-                                final double[] pc) {
-    final BigFloat ax = BigFloat.valueOf(pa[0]);
-    final BigFloat ay = BigFloat.valueOf(pa[1]);
-    final BigFloat bx = BigFloat.valueOf(pb[0]);
-    final BigFloat by = BigFloat.valueOf(pb[1]);
-    final BigFloat cx = BigFloat.valueOf(pc[0]);
-    final BigFloat cy = BigFloat.valueOf(pc[1]);
+  public final double orient2d (final Vector2D pa,
+                                final Vector2D pb,
+                                final Vector2D pc) {
+    final BigFloat ax = BigFloat.valueOf(pa.getX());
+    final BigFloat ay = BigFloat.valueOf(pa.getY());
+    final BigFloat bx = BigFloat.valueOf(pb.getX());
+    final BigFloat by = BigFloat.valueOf(pb.getY());
+    final BigFloat cx = BigFloat.valueOf(pc.getX());
+    final BigFloat cy = BigFloat.valueOf(pc.getY());
     final BigFloat acx = ax.subtract(cx);
     final BigFloat acy = ay.subtract(cy);
     final BigFloat bcx = bx.subtract(cx);

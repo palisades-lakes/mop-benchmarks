@@ -74,7 +74,7 @@ package mop.java.geometry.predicates.macro;
  *   even <code>BigInteger</code> to extend range.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-05-15
+ * @version 2026-05-17
  */
 
 // strictfp unnecessary for JDK17 and later

@@ -1,12 +1,13 @@
 package mop.java.geometry.predicates.jts;
 
 import mop.java.geometry.predicates.Predicate;
+import org.apache.commons.geometry.euclidean.twod.Vector2D;
 import org.locationtech.jts.math.DD;
 
 /** From org.locationtech.jts.triangulate.quadedge.TrianglePredicate
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-05-19
+ * @version 2026-07-03
  */
 
 public final class DDFast implements Predicate {
@@ -32,10 +33,12 @@ public final class DDFast implements Predicate {
   //--------------------------------------------------------------------
 
   @Override
-  public final double orient2d (final double[] a,
-                                final double[] b,
-                                final double[] c) {
-    return triAreaDDFast(a,b,c).doubleValue(); }
+  public final double orient2d (final Vector2D a,
+                                final Vector2D b,
+                                final Vector2D c) {
+    return
+      triAreaDDFast(a.toArray(),b.toArray(),c.toArray())
+      .doubleValue(); }
 
 
   //--------------------------------------------------------------------

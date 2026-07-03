@@ -7,6 +7,7 @@ package mop.java.geometry.predicates.macro;
 // algorithm classes
 
 import mop.java.geometry.predicates.Predicate;
+import org.apache.commons.geometry.euclidean.twod.Vector2D;
 
 /**
  * Adaptive precision floating point based on:
@@ -77,7 +78,7 @@ import mop.java.geometry.predicates.Predicate;
  *   even <code>BigInteger</code> to extend range.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-05-14
+ * @version 2026-07-03
  */
 
 // strictfp unnecessary for JDK17 and later
@@ -86,21 +87,20 @@ public final class FastMacro implements Predicate {
   //--------------------------------------------------------------------
   // orient2d
   //--------------------------------------------------------------------
-  public final double orient2d (final double[] pa,
-                                final double[] pb,
-                                final double[] pc) {
-    double acx, bcx, acy, bcy;
 
-    acx = pa[0] - pc[0];
-    bcx = pb[0] - pc[0];
-    acy = pa[1] - pc[1];
-    bcy = pb[1] - pc[1];
-    return acx * bcy - acy * bcx;
-  }
+  public final double orient2d (final Vector2D pa,
+                                final Vector2D pb,
+                                final Vector2D pc) {
+    final double acx = pa.getX() - pc.getX();
+    final double bcx = pb.getX() - pc.getX();
+    final double acy = pa.getY() - pc.getY();
+    final double bcy = pb.getY() - pc.getY();
+    return acx * bcy - acy * bcx; }
 
   //--------------------------------------------------------------------
   // orient3d
   //--------------------------------------------------------------------
+
   public final double orient3d (final double[] pa,
                                 final double[] pb,
                                 final double[] pc,

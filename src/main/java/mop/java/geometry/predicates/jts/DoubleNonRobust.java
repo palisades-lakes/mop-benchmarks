@@ -1,11 +1,12 @@
 package mop.java.geometry.predicates.jts;
 
 import mop.java.geometry.predicates.Predicate;
+import org.apache.commons.geometry.euclidean.twod.Vector2D;
 
 /** From org.locationtech.jts.triangulate.quadedge.TrianglePredicate
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-05-20
+ * @version 2026-07-03
  */
 
 public final class DoubleNonRobust implements Predicate {
@@ -28,10 +29,10 @@ public final class DoubleNonRobust implements Predicate {
   //--------------------------------------------------------------------
 
   @Override
-  public final double orient2d (final double[] a,
-                                final double[] b,
-                                final double[] c) {
-    return triArea(a,b,c); }
+  public final double orient2d (final Vector2D a,
+                                final Vector2D b,
+                                final Vector2D c) {
+    return triArea(a.toArray(),b.toArray(),c.toArray()); }
 
   //--------------------------------------------------------------------
   // incircle

@@ -8,10 +8,11 @@ package mop.java.geometry.predicates.macro;
 
 import mop.java.geometry.predicates.Predicate;
 import mop.java.numbers.XDouble;
+import org.apache.commons.geometry.euclidean.twod.Vector2D;
 
 import static mop.java.geometry.predicates.macro.Expansion.SPLITTER;
-import static mop.java.geometry.predicates.Expansion.scale;
-import static mop.java.geometry.predicates.Expansion.sum;
+import static mop.java.geometry.predicates.macro.Expansion.scale_expansion_zeroelim;
+import static mop.java.geometry.predicates.macro.Expansion.fast_expansion_sum_zeroelim;
 
 /**
  * More exact tests.  Robust.
@@ -84,7 +85,7 @@ import static mop.java.geometry.predicates.Expansion.sum;
  *   even <code>BigInteger</code> to extend range.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-06-25
+ * @version 2026-07-03
  */
 
 // strictfp unnecessary for JDK17 and later
@@ -437,98 +438,98 @@ public final class SlowMacro implements Predicate {
 
     ; axcy[7] = axcy7;
 
-    temp16len = sum(8, bxcy, 8, cxby, temp16);
+    temp16len = fast_expansion_sum_zeroelim(8, bxcy, 8, cxby, temp16);
 
-    xlen = scale(temp16len, temp16, adx, detx);
-    xxlen = scale(xlen, detx, adx, detxx);
-    xtlen = scale(temp16len, temp16, adxtail, detxt);
-    xxtlen = scale(xtlen, detxt, adx, detxxt);
+    xlen = scale_expansion_zeroelim(temp16len, temp16, adx, detx);
+    xxlen = scale_expansion_zeroelim(xlen, detx, adx, detxx);
+    xtlen = scale_expansion_zeroelim(temp16len, temp16, adxtail, detxt);
+    xxtlen = scale_expansion_zeroelim(xtlen, detxt, adx, detxxt);
     for (i = 0; i < xxtlen; i++) {
       detxxt[i] *= 2.0;
     }
-    xtxtlen = scale(xtlen, detxt, adxtail, detxtxt);
+    xtxtlen = scale_expansion_zeroelim(xtlen, detxt, adxtail, detxtxt);
     x1len =
-      sum(xxlen, detxx, xxtlen, detxxt, x1);
+      fast_expansion_sum_zeroelim(xxlen, detxx, xxtlen, detxxt, x1);
     x2len =
-      sum(x1len, x1, xtxtlen, detxtxt, x2);
+      fast_expansion_sum_zeroelim(x1len, x1, xtxtlen, detxtxt, x2);
 
-    ylen = scale(temp16len, temp16, ady, dety);
-    yylen = scale(ylen, dety, ady, detyy);
-    ytlen = scale(temp16len, temp16, adytail, detyt);
-    yytlen = scale(ytlen, detyt, ady, detyyt);
+    ylen = scale_expansion_zeroelim(temp16len, temp16, ady, dety);
+    yylen = scale_expansion_zeroelim(ylen, dety, ady, detyy);
+    ytlen = scale_expansion_zeroelim(temp16len, temp16, adytail, detyt);
+    yytlen = scale_expansion_zeroelim(ytlen, detyt, ady, detyyt);
     for (i = 0; i < yytlen; i++) {
       detyyt[i] *= 2.0;
     }
-    ytytlen = scale(ytlen, detyt, adytail, detytyt);
+    ytytlen = scale_expansion_zeroelim(ytlen, detyt, adytail, detytyt);
     y1len =
-      sum(yylen, detyy, yytlen, detyyt, y1);
+      fast_expansion_sum_zeroelim(yylen, detyy, yytlen, detyyt, y1);
     y2len =
-      sum(y1len, y1, ytytlen, detytyt, y2);
+      fast_expansion_sum_zeroelim(y1len, y1, ytytlen, detytyt, y2);
 
-    alen = sum(x2len, x2, y2len, y2, adet);
+    alen = fast_expansion_sum_zeroelim(x2len, x2, y2len, y2, adet);
 
-    temp16len = sum(8, cxay, 8, axcy, temp16);
+    temp16len = fast_expansion_sum_zeroelim(8, cxay, 8, axcy, temp16);
 
-    xlen = scale(temp16len, temp16, bdx, detx);
-    xxlen = scale(xlen, detx, bdx, detxx);
-    xtlen = scale(temp16len, temp16, bdxtail, detxt);
-    xxtlen = scale(xtlen, detxt, bdx, detxxt);
+    xlen = scale_expansion_zeroelim(temp16len, temp16, bdx, detx);
+    xxlen = scale_expansion_zeroelim(xlen, detx, bdx, detxx);
+    xtlen = scale_expansion_zeroelim(temp16len, temp16, bdxtail, detxt);
+    xxtlen = scale_expansion_zeroelim(xtlen, detxt, bdx, detxxt);
     for (i = 0; i < xxtlen; i++) {
       detxxt[i] *= 2.0;
     }
-    xtxtlen = scale(xtlen, detxt, bdxtail, detxtxt);
+    xtxtlen = scale_expansion_zeroelim(xtlen, detxt, bdxtail, detxtxt);
     x1len =
-      sum(xxlen, detxx, xxtlen, detxxt, x1);
+      fast_expansion_sum_zeroelim(xxlen, detxx, xxtlen, detxxt, x1);
     x2len =
-      sum(x1len, x1, xtxtlen, detxtxt, x2);
+      fast_expansion_sum_zeroelim(x1len, x1, xtxtlen, detxtxt, x2);
 
-    ylen = scale(temp16len, temp16, bdy, dety);
-    yylen = scale(ylen, dety, bdy, detyy);
-    ytlen = scale(temp16len, temp16, bdytail, detyt);
-    yytlen = scale(ytlen, detyt, bdy, detyyt);
+    ylen = scale_expansion_zeroelim(temp16len, temp16, bdy, dety);
+    yylen = scale_expansion_zeroelim(ylen, dety, bdy, detyy);
+    ytlen = scale_expansion_zeroelim(temp16len, temp16, bdytail, detyt);
+    yytlen = scale_expansion_zeroelim(ytlen, detyt, bdy, detyyt);
     for (i = 0; i < yytlen; i++) {
       detyyt[i] *= 2.0;
     }
-    ytytlen = scale(ytlen, detyt, bdytail, detytyt);
+    ytytlen = scale_expansion_zeroelim(ytlen, detyt, bdytail, detytyt);
     y1len =
-      sum(yylen, detyy, yytlen, detyyt, y1);
+      fast_expansion_sum_zeroelim(yylen, detyy, yytlen, detyyt, y1);
     y2len =
-      sum(y1len, y1, ytytlen, detytyt, y2);
+      fast_expansion_sum_zeroelim(y1len, y1, ytytlen, detytyt, y2);
 
-    blen = sum(x2len, x2, y2len, y2, bdet);
+    blen = fast_expansion_sum_zeroelim(x2len, x2, y2len, y2, bdet);
 
-    temp16len = sum(8, axby, 8, bxay, temp16);
+    temp16len = fast_expansion_sum_zeroelim(8, axby, 8, bxay, temp16);
 
-    xlen = scale(temp16len, temp16, cdx, detx);
-    xxlen = scale(xlen, detx, cdx, detxx);
-    xtlen = scale(temp16len, temp16, cdxtail, detxt);
-    xxtlen = scale(xtlen, detxt, cdx, detxxt);
+    xlen = scale_expansion_zeroelim(temp16len, temp16, cdx, detx);
+    xxlen = scale_expansion_zeroelim(xlen, detx, cdx, detxx);
+    xtlen = scale_expansion_zeroelim(temp16len, temp16, cdxtail, detxt);
+    xxtlen = scale_expansion_zeroelim(xtlen, detxt, cdx, detxxt);
     for (i = 0; i < xxtlen; i++) {
       detxxt[i] *= 2.0;
     }
-    xtxtlen = scale(xtlen, detxt, cdxtail, detxtxt);
+    xtxtlen = scale_expansion_zeroelim(xtlen, detxt, cdxtail, detxtxt);
     x1len =
-      sum(xxlen, detxx, xxtlen, detxxt, x1);
+      fast_expansion_sum_zeroelim(xxlen, detxx, xxtlen, detxxt, x1);
     x2len =
-      sum(x1len, x1, xtxtlen, detxtxt, x2);
+      fast_expansion_sum_zeroelim(x1len, x1, xtxtlen, detxtxt, x2);
 
-    ylen = scale(temp16len, temp16, cdy, dety);
-    yylen = scale(ylen, dety, cdy, detyy);
-    ytlen = scale(temp16len, temp16, cdytail, detyt);
-    yytlen = scale(ytlen, detyt, cdy, detyyt);
+    ylen = scale_expansion_zeroelim(temp16len, temp16, cdy, dety);
+    yylen = scale_expansion_zeroelim(ylen, dety, cdy, detyy);
+    ytlen = scale_expansion_zeroelim(temp16len, temp16, cdytail, detyt);
+    yytlen = scale_expansion_zeroelim(ytlen, detyt, cdy, detyyt);
     for (i = 0; i < yytlen; i++) {
       detyyt[i] *= 2.0;
     }
-    ytytlen = scale(ytlen, detyt, cdytail, detytyt);
+    ytytlen = scale_expansion_zeroelim(ytlen, detyt, cdytail, detytyt);
     y1len =
-      sum(yylen, detyy, yytlen, detyyt, y1);
+      fast_expansion_sum_zeroelim(yylen, detyy, yytlen, detyyt, y1);
     y2len =
-      sum(y1len, y1, ytytlen, detytyt, y2);
+      fast_expansion_sum_zeroelim(y1len, y1, ytytlen, detytyt, y2);
 
-    clen = sum(x2len, x2, y2len, y2, cdet);
+    clen = fast_expansion_sum_zeroelim(x2len, x2, y2len, y2, cdet);
 
-    ablen = sum(alen, adet, blen, bdet, abdet);
-    sum(ablen, abdet, clen, cdet, deter);
+    ablen = fast_expansion_sum_zeroelim(alen, adet, blen, bdet, abdet);
+    fast_expansion_sum_zeroelim(ablen, abdet, clen, cdet, deter);
 //    incorrect rounding to double!
 //    return deter[deterlen - 1];
     // TODO: this is ignoring deterlen!
@@ -538,8 +539,9 @@ public final class SlowMacro implements Predicate {
   // orient2d
   //--------------------------------------------------------------------
   // TODO: seems to return 2xsigned area
-  public final double orient2d (final double[] pa, final double[] pb,
-                                final double[] pc) {
+  public final double orient2d (final Vector2D pa,
+                                final Vector2D pb,
+                                final Vector2D pc) {
     double acx, acy, bcx, bcy; double acxtail, acytail;
     double bcxtail, bcytail; double negate, negatetail;
     double[] axby = new double[8]; double[] bxay = new double[8];
@@ -549,16 +551,16 @@ public final class SlowMacro implements Predicate {
     double a0hi, a0lo, a1hi, a1lo, bhi, blo; double err1, err2, err3;
     double _i, _j, _k, _l, _m, _n; double _0, _1, _2;
 
-    acx = (pa[0] - pc[0]); bvirt = (pa[0] - acx); avirt = acx + bvirt;
-    bround = bvirt - pc[0]; around = pa[0] - avirt;
-    acxtail = around + bround; acy = (pa[1] - pc[1]);
-    bvirt = (pa[1] - acy); avirt = acy + bvirt; bround = bvirt - pc[1];
-    around = pa[1] - avirt; acytail = around + bround;
-    bcx = (pb[0] - pc[0]); bvirt = (pb[0] - bcx); avirt = bcx + bvirt;
-    bround = bvirt - pc[0]; around = pb[0] - avirt;
-    bcxtail = around + bround; bcy = (pb[1] - pc[1]);
-    bvirt = (pb[1] - bcy); avirt = bcy + bvirt; bround = bvirt - pc[1];
-    around = pb[1] - avirt; bcytail = around + bround;
+    acx = (pa.getX() - pc.getX()); bvirt = (pa.getX() - acx); avirt = acx + bvirt;
+    bround = bvirt - pc.getX(); around = pa.getX() - avirt;
+    acxtail = around + bround; acy = (pa.getY() - pc.getY());
+    bvirt = (pa.getY() - acy); avirt = acy + bvirt; bround = bvirt - pc.getY();
+    around = pa.getY() - avirt; acytail = around + bround;
+    bcx = (pb.getX() - pc.getX()); bvirt = (pb.getX() - bcx); avirt = bcx + bvirt;
+    bround = bvirt - pc.getX(); around = pb.getX() - avirt;
+    bcxtail = around + bround; bcy = (pb.getY() - pc.getY());
+    bvirt = (pb.getY() - bcy); avirt = bcy + bvirt; bround = bvirt - pc.getY();
+    around = pb.getY() - avirt; bcytail = around + bround;
 
     c = (SPLITTER * acxtail); abig = (c - acxtail); a0hi = c - abig;
     a0lo = acxtail - a0hi; c = (SPLITTER * bcytail);
@@ -656,7 +658,7 @@ public final class SlowMacro implements Predicate {
     avirt = bxay7 - bvirt; bround = _k - bvirt; around = _m - avirt;
     bxay[6] = around + bround; bxay[7] = bxay7;
 
-    deterlen = sum(8, axby, 8, bxay, deter);
+    deterlen = fast_expansion_sum_zeroelim(8, axby, 8, bxay, deter);
 
     return deter[deterlen - 1];
   }
@@ -1001,33 +1003,33 @@ public final class SlowMacro implements Predicate {
 
     ; axcy[7] = axcy7;
 
-    temp16len = sum(8, bxcy, 8, cxby, temp16);
+    temp16len = fast_expansion_sum_zeroelim(8, bxcy, 8, cxby, temp16);
     temp32len =
-      scale(temp16len, temp16, adz, temp32);
+      scale_expansion_zeroelim(temp16len, temp16, adz, temp32);
     temp32tlen =
-      scale(temp16len, temp16, adztail, temp32t);
-    alen = sum(temp32len, temp32, temp32tlen,
-               temp32t, adet);
+      scale_expansion_zeroelim(temp16len, temp16, adztail, temp32t);
+    alen = fast_expansion_sum_zeroelim(temp32len, temp32, temp32tlen,
+                                       temp32t, adet);
 
-    temp16len = sum(8, cxay, 8, axcy, temp16);
+    temp16len = fast_expansion_sum_zeroelim(8, cxay, 8, axcy, temp16);
     temp32len =
-      scale(temp16len, temp16, bdz, temp32);
+      scale_expansion_zeroelim(temp16len, temp16, bdz, temp32);
     temp32tlen =
-      scale(temp16len, temp16, bdztail, temp32t);
-    blen = sum(temp32len, temp32, temp32tlen,
-               temp32t, bdet);
+      scale_expansion_zeroelim(temp16len, temp16, bdztail, temp32t);
+    blen = fast_expansion_sum_zeroelim(temp32len, temp32, temp32tlen,
+                                       temp32t, bdet);
 
-    temp16len = sum(8, axby, 8, bxay, temp16);
+    temp16len = fast_expansion_sum_zeroelim(8, axby, 8, bxay, temp16);
     temp32len =
-      scale(temp16len, temp16, cdz, temp32);
+      scale_expansion_zeroelim(temp16len, temp16, cdz, temp32);
     temp32tlen =
-      scale(temp16len, temp16, cdztail, temp32t);
-    clen = sum(temp32len, temp32, temp32tlen,
-               temp32t, cdet);
+      scale_expansion_zeroelim(temp16len, temp16, cdztail, temp32t);
+    clen = fast_expansion_sum_zeroelim(temp32len, temp32, temp32tlen,
+                                       temp32t, cdet);
 
-    ablen = sum(alen, adet, blen, bdet, abdet);
+    ablen = fast_expansion_sum_zeroelim(alen, adet, blen, bdet, abdet);
     deterlen =
-      sum(ablen, abdet, clen, cdet, deter);
+      fast_expansion_sum_zeroelim(ablen, abdet, clen, cdet, deter);
 
     return deter[deterlen - 1];
   }
@@ -1214,7 +1216,7 @@ public final class SlowMacro implements Predicate {
     bxay[6] = around + bround
 
     ; bxay[7] = bxay7;
-    ablen = sum(8, axby, 8, bxay, ab);
+    ablen = fast_expansion_sum_zeroelim(8, axby, 8, bxay, ab);
     c = (SPLITTER * bextail); abig = (c - bextail); a0hi = c - abig;
     a0lo = bextail - a0hi; c = (SPLITTER * ceytail);
     abig = (c - ceytail); bhi = c - abig; blo = ceytail - bhi;
@@ -1313,7 +1315,7 @@ public final class SlowMacro implements Predicate {
     cxby[6] = around + bround
 
     ; cxby[7] = cxby7;
-    bclen = sum(8, bxcy, 8, cxby, bc);
+    bclen = fast_expansion_sum_zeroelim(8, bxcy, 8, cxby, bc);
     c = (SPLITTER * cextail); abig = (c - cextail); a0hi = c - abig;
     a0lo = cextail - a0hi; c = (SPLITTER * deytail);
     abig = (c - deytail); bhi = c - abig; blo = deytail - bhi;
@@ -1412,7 +1414,7 @@ public final class SlowMacro implements Predicate {
     dxcy[6] = around + bround
 
     ; dxcy[7] = dxcy7;
-    cdlen = sum(8, cxdy, 8, dxcy, cd);
+    cdlen = fast_expansion_sum_zeroelim(8, cxdy, 8, dxcy, cd);
     c = (SPLITTER * dextail); abig = (c - dextail); a0hi = c - abig;
     a0lo = dextail - a0hi; c = (SPLITTER * aeytail);
     abig = (c - aeytail); bhi = c - abig; blo = aeytail - bhi;
@@ -1511,7 +1513,7 @@ public final class SlowMacro implements Predicate {
     axdy[6] = around + bround
 
     ; axdy[7] = axdy7;
-    dalen = sum(8, dxay, 8, axdy, da);
+    dalen = fast_expansion_sum_zeroelim(8, dxay, 8, axdy, da);
     c = (SPLITTER * aextail); abig = (c - aextail); a0hi = c - abig;
     a0lo = aextail - a0hi; c = (SPLITTER * ceytail);
     abig = (c - ceytail); bhi = c - abig; blo = ceytail - bhi;
@@ -1610,7 +1612,7 @@ public final class SlowMacro implements Predicate {
     cxay[6] = around + bround
 
     ; cxay[7] = cxay7;
-    aclen = sum(8, axcy, 8, cxay, ac);
+    aclen = fast_expansion_sum_zeroelim(8, axcy, 8, cxay, ac);
     c = (SPLITTER * bextail); abig = (c - bextail); a0hi = c - abig;
     a0lo = bextail - a0hi; c = (SPLITTER * deytail);
     abig = (c - deytail); bhi = c - abig; blo = deytail - bhi;
@@ -1709,244 +1711,244 @@ public final class SlowMacro implements Predicate {
     dxby[6] = around + bround
 
     ; dxby[7] = dxby7;
-    bdlen = sum(8, bxdy, 8, dxby, bd);
+    bdlen = fast_expansion_sum_zeroelim(8, bxdy, 8, dxby, bd);
 
-    temp32alen = scale(cdlen, cd, -bez, temp32a);
-    temp32blen = scale(cdlen, cd, -beztail, temp32b);
+    temp32alen = scale_expansion_zeroelim(cdlen, cd, -bez, temp32a);
+    temp32blen = scale_expansion_zeroelim(cdlen, cd, -beztail, temp32b);
     temp64alen =
-      sum(temp32alen, temp32a, temp32blen,
-          temp32b, temp64a);
-    temp32alen = scale(bdlen, bd, cez, temp32a);
-    temp32blen = scale(bdlen, bd, ceztail, temp32b);
+      fast_expansion_sum_zeroelim(temp32alen, temp32a, temp32blen,
+                                  temp32b, temp64a);
+    temp32alen = scale_expansion_zeroelim(bdlen, bd, cez, temp32a);
+    temp32blen = scale_expansion_zeroelim(bdlen, bd, ceztail, temp32b);
     temp64blen =
-      sum(temp32alen, temp32a, temp32blen,
-          temp32b, temp64b);
-    temp32alen = scale(bclen, bc, -dez, temp32a);
-    temp32blen = scale(bclen, bc, -deztail, temp32b);
+      fast_expansion_sum_zeroelim(temp32alen, temp32a, temp32blen,
+                                  temp32b, temp64b);
+    temp32alen = scale_expansion_zeroelim(bclen, bc, -dez, temp32a);
+    temp32blen = scale_expansion_zeroelim(bclen, bc, -deztail, temp32b);
     temp64clen =
-      sum(temp32alen, temp32a, temp32blen,
-          temp32b, temp64c); temp128len =
-      sum(temp64alen, temp64a, temp64blen,
-          temp64b, temp128); temp192len =
-      sum(temp64clen, temp64c, temp128len,
-          temp128, temp192);
-    xlen = scale(temp192len, temp192, aex, detx);
-    xxlen = scale(xlen, detx, aex, detxx);xtlen =
-      scale(temp192len, temp192, aextail, detxt);
-    xxtlen = scale(xtlen, detxt, aex, detxxt);
+      fast_expansion_sum_zeroelim(temp32alen, temp32a, temp32blen,
+                                  temp32b, temp64c); temp128len =
+      fast_expansion_sum_zeroelim(temp64alen, temp64a, temp64blen,
+                                  temp64b, temp128); temp192len =
+      fast_expansion_sum_zeroelim(temp64clen, temp64c, temp128len,
+                                  temp128, temp192);
+    xlen = scale_expansion_zeroelim(temp192len, temp192, aex, detx);
+    xxlen = scale_expansion_zeroelim(xlen, detx, aex, detxx);xtlen =
+      scale_expansion_zeroelim(temp192len, temp192, aextail, detxt);
+    xxtlen = scale_expansion_zeroelim(xtlen, detxt, aex, detxxt);
     for (i = 0; i < xxtlen; i++) {
       detxxt[i] *= 2.0;
     }
-    xtxtlen = scale(xtlen, detxt, aextail, detxtxt);
+    xtxtlen = scale_expansion_zeroelim(xtlen, detxt, aextail, detxtxt);
     x1len =
-      sum(xxlen, detxx, xxtlen, detxxt, x1);
+      fast_expansion_sum_zeroelim(xxlen, detxx, xxtlen, detxxt, x1);
     x2len =
-      sum(x1len, x1, xtxtlen, detxtxt, x2);
-    ylen = scale(temp192len, temp192, aey, dety);
-    yylen = scale(ylen, dety, aey, detyy);ytlen =
-      scale(temp192len, temp192, aeytail, detyt);
-    yytlen = scale(ytlen, detyt, aey, detyyt);
+      fast_expansion_sum_zeroelim(x1len, x1, xtxtlen, detxtxt, x2);
+    ylen = scale_expansion_zeroelim(temp192len, temp192, aey, dety);
+    yylen = scale_expansion_zeroelim(ylen, dety, aey, detyy);ytlen =
+      scale_expansion_zeroelim(temp192len, temp192, aeytail, detyt);
+    yytlen = scale_expansion_zeroelim(ytlen, detyt, aey, detyyt);
     for (i = 0; i < yytlen; i++) {
       detyyt[i] *= 2.0;
     }
-    ytytlen = scale(ytlen, detyt, aeytail, detytyt);
+    ytytlen = scale_expansion_zeroelim(ytlen, detyt, aeytail, detytyt);
     y1len =
-      sum(yylen, detyy, yytlen, detyyt, y1);
+      fast_expansion_sum_zeroelim(yylen, detyy, yytlen, detyyt, y1);
     y2len =
-      sum(y1len, y1, ytytlen, detytyt, y2);
-    zlen = scale(temp192len, temp192, aez, detz);
-    zzlen = scale(zlen, detz, aez, detzz);ztlen =
-      scale(temp192len, temp192, aeztail, detzt);
-    zztlen = scale(ztlen, detzt, aez, detzzt);
+      fast_expansion_sum_zeroelim(y1len, y1, ytytlen, detytyt, y2);
+    zlen = scale_expansion_zeroelim(temp192len, temp192, aez, detz);
+    zzlen = scale_expansion_zeroelim(zlen, detz, aez, detzz);ztlen =
+      scale_expansion_zeroelim(temp192len, temp192, aeztail, detzt);
+    zztlen = scale_expansion_zeroelim(ztlen, detzt, aez, detzzt);
     for (i = 0; i < zztlen; i++) {
       detzzt[i] *= 2.0;
     }
-    ztztlen = scale(ztlen, detzt, aeztail, detztzt);
+    ztztlen = scale_expansion_zeroelim(ztlen, detzt, aeztail, detztzt);
     z1len =
-      sum(zzlen, detzz, zztlen, detzzt, z1);
+      fast_expansion_sum_zeroelim(zzlen, detzz, zztlen, detzzt, z1);
     z2len =
-      sum(z1len, z1, ztztlen, detztzt, z2);
-    xylen = sum(x2len, x2, y2len, y2, detxy);
-    alen = sum(z2len, z2, xylen, detxy, adet);
+      fast_expansion_sum_zeroelim(z1len, z1, ztztlen, detztzt, z2);
+    xylen = fast_expansion_sum_zeroelim(x2len, x2, y2len, y2, detxy);
+    alen = fast_expansion_sum_zeroelim(z2len, z2, xylen, detxy, adet);
 
-    temp32alen = scale(dalen, da, cez, temp32a);
-    temp32blen = scale(dalen, da, ceztail, temp32b);
+    temp32alen = scale_expansion_zeroelim(dalen, da, cez, temp32a);
+    temp32blen = scale_expansion_zeroelim(dalen, da, ceztail, temp32b);
     temp64alen =
-      sum(temp32alen, temp32a, temp32blen,
-          temp32b, temp64a);
-    temp32alen = scale(aclen, ac, dez, temp32a);
-    temp32blen = scale(aclen, ac, deztail, temp32b);
+      fast_expansion_sum_zeroelim(temp32alen, temp32a, temp32blen,
+                                  temp32b, temp64a);
+    temp32alen = scale_expansion_zeroelim(aclen, ac, dez, temp32a);
+    temp32blen = scale_expansion_zeroelim(aclen, ac, deztail, temp32b);
     temp64blen =
-      sum(temp32alen, temp32a, temp32blen,
-          temp32b, temp64b);
-    temp32alen = scale(cdlen, cd, aez, temp32a);
-    temp32blen = scale(cdlen, cd, aeztail, temp32b);
+      fast_expansion_sum_zeroelim(temp32alen, temp32a, temp32blen,
+                                  temp32b, temp64b);
+    temp32alen = scale_expansion_zeroelim(cdlen, cd, aez, temp32a);
+    temp32blen = scale_expansion_zeroelim(cdlen, cd, aeztail, temp32b);
     temp64clen =
-      sum(temp32alen, temp32a, temp32blen,
-          temp32b, temp64c); temp128len =
-      sum(temp64alen, temp64a, temp64blen,
-          temp64b, temp128); temp192len =
-      sum(temp64clen, temp64c, temp128len,
-          temp128, temp192);
-    xlen = scale(temp192len, temp192, bex, detx);
-    xxlen = scale(xlen, detx, bex, detxx);xtlen =
-      scale(temp192len, temp192, bextail, detxt);
-    xxtlen = scale(xtlen, detxt, bex, detxxt);
+      fast_expansion_sum_zeroelim(temp32alen, temp32a, temp32blen,
+                                  temp32b, temp64c); temp128len =
+      fast_expansion_sum_zeroelim(temp64alen, temp64a, temp64blen,
+                                  temp64b, temp128); temp192len =
+      fast_expansion_sum_zeroelim(temp64clen, temp64c, temp128len,
+                                  temp128, temp192);
+    xlen = scale_expansion_zeroelim(temp192len, temp192, bex, detx);
+    xxlen = scale_expansion_zeroelim(xlen, detx, bex, detxx);xtlen =
+      scale_expansion_zeroelim(temp192len, temp192, bextail, detxt);
+    xxtlen = scale_expansion_zeroelim(xtlen, detxt, bex, detxxt);
     for (i = 0; i < xxtlen; i++) {
       detxxt[i] *= 2.0;
     }
-    xtxtlen = scale(xtlen, detxt, bextail, detxtxt);
+    xtxtlen = scale_expansion_zeroelim(xtlen, detxt, bextail, detxtxt);
     x1len =
-      sum(xxlen, detxx, xxtlen, detxxt, x1);
+      fast_expansion_sum_zeroelim(xxlen, detxx, xxtlen, detxxt, x1);
     x2len =
-      sum(x1len, x1, xtxtlen, detxtxt, x2);
-    ylen = scale(temp192len, temp192, bey, dety);
-    yylen = scale(ylen, dety, bey, detyy);ytlen =
-      scale(temp192len, temp192, beytail, detyt);
-    yytlen = scale(ytlen, detyt, bey, detyyt);
+      fast_expansion_sum_zeroelim(x1len, x1, xtxtlen, detxtxt, x2);
+    ylen = scale_expansion_zeroelim(temp192len, temp192, bey, dety);
+    yylen = scale_expansion_zeroelim(ylen, dety, bey, detyy);ytlen =
+      scale_expansion_zeroelim(temp192len, temp192, beytail, detyt);
+    yytlen = scale_expansion_zeroelim(ytlen, detyt, bey, detyyt);
     for (i = 0; i < yytlen; i++) {
       detyyt[i] *= 2.0;
     }
-    ytytlen = scale(ytlen, detyt, beytail, detytyt);
+    ytytlen = scale_expansion_zeroelim(ytlen, detyt, beytail, detytyt);
     y1len =
-      sum(yylen, detyy, yytlen, detyyt, y1);
+      fast_expansion_sum_zeroelim(yylen, detyy, yytlen, detyyt, y1);
     y2len =
-      sum(y1len, y1, ytytlen, detytyt, y2);
-    zlen = scale(temp192len, temp192, bez, detz);
-    zzlen = scale(zlen, detz, bez, detzz);ztlen =
-      scale(temp192len, temp192, beztail, detzt);
-    zztlen = scale(ztlen, detzt, bez, detzzt);
+      fast_expansion_sum_zeroelim(y1len, y1, ytytlen, detytyt, y2);
+    zlen = scale_expansion_zeroelim(temp192len, temp192, bez, detz);
+    zzlen = scale_expansion_zeroelim(zlen, detz, bez, detzz);ztlen =
+      scale_expansion_zeroelim(temp192len, temp192, beztail, detzt);
+    zztlen = scale_expansion_zeroelim(ztlen, detzt, bez, detzzt);
     for (i = 0; i < zztlen; i++) {
       detzzt[i] *= 2.0;
     }
-    ztztlen = scale(ztlen, detzt, beztail, detztzt);
+    ztztlen = scale_expansion_zeroelim(ztlen, detzt, beztail, detztzt);
     z1len =
-      sum(zzlen, detzz, zztlen, detzzt, z1);
+      fast_expansion_sum_zeroelim(zzlen, detzz, zztlen, detzzt, z1);
     z2len =
-      sum(z1len, z1, ztztlen, detztzt, z2);
-    xylen = sum(x2len, x2, y2len, y2, detxy);
-    blen = sum(z2len, z2, xylen, detxy, bdet);
+      fast_expansion_sum_zeroelim(z1len, z1, ztztlen, detztzt, z2);
+    xylen = fast_expansion_sum_zeroelim(x2len, x2, y2len, y2, detxy);
+    blen = fast_expansion_sum_zeroelim(z2len, z2, xylen, detxy, bdet);
 
-    temp32alen = scale(ablen, ab, -dez, temp32a);
-    temp32blen = scale(ablen, ab, -deztail, temp32b);
+    temp32alen = scale_expansion_zeroelim(ablen, ab, -dez, temp32a);
+    temp32blen = scale_expansion_zeroelim(ablen, ab, -deztail, temp32b);
     temp64alen =
-      sum(temp32alen, temp32a, temp32blen,
-          temp32b, temp64a);
-    temp32alen = scale(bdlen, bd, -aez, temp32a);
-    temp32blen = scale(bdlen, bd, -aeztail, temp32b);
+      fast_expansion_sum_zeroelim(temp32alen, temp32a, temp32blen,
+                                  temp32b, temp64a);
+    temp32alen = scale_expansion_zeroelim(bdlen, bd, -aez, temp32a);
+    temp32blen = scale_expansion_zeroelim(bdlen, bd, -aeztail, temp32b);
     temp64blen =
-      sum(temp32alen, temp32a, temp32blen,
-          temp32b, temp64b);
-    temp32alen = scale(dalen, da, -bez, temp32a);
-    temp32blen = scale(dalen, da, -beztail, temp32b);
+      fast_expansion_sum_zeroelim(temp32alen, temp32a, temp32blen,
+                                  temp32b, temp64b);
+    temp32alen = scale_expansion_zeroelim(dalen, da, -bez, temp32a);
+    temp32blen = scale_expansion_zeroelim(dalen, da, -beztail, temp32b);
     temp64clen =
-      sum(temp32alen, temp32a, temp32blen,
-          temp32b, temp64c); temp128len =
-      sum(temp64alen, temp64a, temp64blen,
-          temp64b, temp128); temp192len =
-      sum(temp64clen, temp64c, temp128len,
-          temp128, temp192);
-    xlen = scale(temp192len, temp192, cex, detx);
-    xxlen = scale(xlen, detx, cex, detxx);xtlen =
-      scale(temp192len, temp192, cextail, detxt);
-    xxtlen = scale(xtlen, detxt, cex, detxxt);
+      fast_expansion_sum_zeroelim(temp32alen, temp32a, temp32blen,
+                                  temp32b, temp64c); temp128len =
+      fast_expansion_sum_zeroelim(temp64alen, temp64a, temp64blen,
+                                  temp64b, temp128); temp192len =
+      fast_expansion_sum_zeroelim(temp64clen, temp64c, temp128len,
+                                  temp128, temp192);
+    xlen = scale_expansion_zeroelim(temp192len, temp192, cex, detx);
+    xxlen = scale_expansion_zeroelim(xlen, detx, cex, detxx);xtlen =
+      scale_expansion_zeroelim(temp192len, temp192, cextail, detxt);
+    xxtlen = scale_expansion_zeroelim(xtlen, detxt, cex, detxxt);
     for (i = 0; i < xxtlen; i++) {
       detxxt[i] *= 2.0;
     }
-    xtxtlen = scale(xtlen, detxt, cextail, detxtxt);
+    xtxtlen = scale_expansion_zeroelim(xtlen, detxt, cextail, detxtxt);
     x1len =
-      sum(xxlen, detxx, xxtlen, detxxt, x1);
+      fast_expansion_sum_zeroelim(xxlen, detxx, xxtlen, detxxt, x1);
     x2len =
-      sum(x1len, x1, xtxtlen, detxtxt, x2);
-    ylen = scale(temp192len, temp192, cey, dety);
-    yylen = scale(ylen, dety, cey, detyy);ytlen =
-      scale(temp192len, temp192, ceytail, detyt);
-    yytlen = scale(ytlen, detyt, cey, detyyt);
+      fast_expansion_sum_zeroelim(x1len, x1, xtxtlen, detxtxt, x2);
+    ylen = scale_expansion_zeroelim(temp192len, temp192, cey, dety);
+    yylen = scale_expansion_zeroelim(ylen, dety, cey, detyy);ytlen =
+      scale_expansion_zeroelim(temp192len, temp192, ceytail, detyt);
+    yytlen = scale_expansion_zeroelim(ytlen, detyt, cey, detyyt);
     for (i = 0; i < yytlen; i++) {
       detyyt[i] *= 2.0;
     }
-    ytytlen = scale(ytlen, detyt, ceytail, detytyt);
+    ytytlen = scale_expansion_zeroelim(ytlen, detyt, ceytail, detytyt);
     y1len =
-      sum(yylen, detyy, yytlen, detyyt, y1);
+      fast_expansion_sum_zeroelim(yylen, detyy, yytlen, detyyt, y1);
     y2len =
-      sum(y1len, y1, ytytlen, detytyt, y2);
-    zlen = scale(temp192len, temp192, cez, detz);
-    zzlen = scale(zlen, detz, cez, detzz);ztlen =
-      scale(temp192len, temp192, ceztail, detzt);
-    zztlen = scale(ztlen, detzt, cez, detzzt);
+      fast_expansion_sum_zeroelim(y1len, y1, ytytlen, detytyt, y2);
+    zlen = scale_expansion_zeroelim(temp192len, temp192, cez, detz);
+    zzlen = scale_expansion_zeroelim(zlen, detz, cez, detzz);ztlen =
+      scale_expansion_zeroelim(temp192len, temp192, ceztail, detzt);
+    zztlen = scale_expansion_zeroelim(ztlen, detzt, cez, detzzt);
     for (i = 0; i < zztlen; i++) {
       detzzt[i] *= 2.0;
     }
-    ztztlen = scale(ztlen, detzt, ceztail, detztzt);
+    ztztlen = scale_expansion_zeroelim(ztlen, detzt, ceztail, detztzt);
     z1len =
-      sum(zzlen, detzz, zztlen, detzzt, z1);
+      fast_expansion_sum_zeroelim(zzlen, detzz, zztlen, detzzt, z1);
     z2len =
-      sum(z1len, z1, ztztlen, detztzt, z2);
-    xylen = sum(x2len, x2, y2len, y2, detxy);
-    clen = sum(z2len, z2, xylen, detxy, cdet);
+      fast_expansion_sum_zeroelim(z1len, z1, ztztlen, detztzt, z2);
+    xylen = fast_expansion_sum_zeroelim(x2len, x2, y2len, y2, detxy);
+    clen = fast_expansion_sum_zeroelim(z2len, z2, xylen, detxy, cdet);
 
-    temp32alen = scale(bclen, bc, aez, temp32a);
-    temp32blen = scale(bclen, bc, aeztail, temp32b);
+    temp32alen = scale_expansion_zeroelim(bclen, bc, aez, temp32a);
+    temp32blen = scale_expansion_zeroelim(bclen, bc, aeztail, temp32b);
     temp64alen =
-      sum(temp32alen, temp32a, temp32blen,
-          temp32b, temp64a);
-    temp32alen = scale(aclen, ac, -bez, temp32a);
-    temp32blen = scale(aclen, ac, -beztail, temp32b);
+      fast_expansion_sum_zeroelim(temp32alen, temp32a, temp32blen,
+                                  temp32b, temp64a);
+    temp32alen = scale_expansion_zeroelim(aclen, ac, -bez, temp32a);
+    temp32blen = scale_expansion_zeroelim(aclen, ac, -beztail, temp32b);
     temp64blen =
-      sum(temp32alen, temp32a, temp32blen,
-          temp32b, temp64b);
-    temp32alen = scale(ablen, ab, cez, temp32a);
-    temp32blen = scale(ablen, ab, ceztail, temp32b);
+      fast_expansion_sum_zeroelim(temp32alen, temp32a, temp32blen,
+                                  temp32b, temp64b);
+    temp32alen = scale_expansion_zeroelim(ablen, ab, cez, temp32a);
+    temp32blen = scale_expansion_zeroelim(ablen, ab, ceztail, temp32b);
     temp64clen =
-      sum(temp32alen, temp32a, temp32blen,
-          temp32b, temp64c); temp128len =
-      sum(temp64alen, temp64a, temp64blen,
-          temp64b, temp128); temp192len =
-      sum(temp64clen, temp64c, temp128len,
-          temp128, temp192);
-    xlen = scale(temp192len, temp192, dex, detx);
-    xxlen = scale(xlen, detx, dex, detxx);xtlen =
-      scale(temp192len, temp192, dextail, detxt);
-    xxtlen = scale(xtlen, detxt, dex, detxxt);
+      fast_expansion_sum_zeroelim(temp32alen, temp32a, temp32blen,
+                                  temp32b, temp64c); temp128len =
+      fast_expansion_sum_zeroelim(temp64alen, temp64a, temp64blen,
+                                  temp64b, temp128); temp192len =
+      fast_expansion_sum_zeroelim(temp64clen, temp64c, temp128len,
+                                  temp128, temp192);
+    xlen = scale_expansion_zeroelim(temp192len, temp192, dex, detx);
+    xxlen = scale_expansion_zeroelim(xlen, detx, dex, detxx);xtlen =
+      scale_expansion_zeroelim(temp192len, temp192, dextail, detxt);
+    xxtlen = scale_expansion_zeroelim(xtlen, detxt, dex, detxxt);
     for (i = 0; i < xxtlen; i++) {
       detxxt[i] *= 2.0;
     }
-    xtxtlen = scale(xtlen, detxt, dextail, detxtxt);
+    xtxtlen = scale_expansion_zeroelim(xtlen, detxt, dextail, detxtxt);
     x1len =
-      sum(xxlen, detxx, xxtlen, detxxt, x1);
+      fast_expansion_sum_zeroelim(xxlen, detxx, xxtlen, detxxt, x1);
     x2len =
-      sum(x1len, x1, xtxtlen, detxtxt, x2);
-    ylen = scale(temp192len, temp192, dey, dety);
-    yylen = scale(ylen, dety, dey, detyy);ytlen =
-      scale(temp192len, temp192, deytail, detyt);
-    yytlen = scale(ytlen, detyt, dey, detyyt);
+      fast_expansion_sum_zeroelim(x1len, x1, xtxtlen, detxtxt, x2);
+    ylen = scale_expansion_zeroelim(temp192len, temp192, dey, dety);
+    yylen = scale_expansion_zeroelim(ylen, dety, dey, detyy);ytlen =
+      scale_expansion_zeroelim(temp192len, temp192, deytail, detyt);
+    yytlen = scale_expansion_zeroelim(ytlen, detyt, dey, detyyt);
     for (i = 0; i < yytlen; i++) {
       detyyt[i] *= 2.0;
     }
-    ytytlen = scale(ytlen, detyt, deytail, detytyt);
+    ytytlen = scale_expansion_zeroelim(ytlen, detyt, deytail, detytyt);
     y1len =
-      sum(yylen, detyy, yytlen, detyyt, y1);
+      fast_expansion_sum_zeroelim(yylen, detyy, yytlen, detyyt, y1);
     y2len =
-      sum(y1len, y1, ytytlen, detytyt, y2);
-    zlen = scale(temp192len, temp192, dez, detz);
-    zzlen = scale(zlen, detz, dez, detzz);ztlen =
-      scale(temp192len, temp192, deztail, detzt);
-    zztlen = scale(ztlen, detzt, dez, detzzt);
+      fast_expansion_sum_zeroelim(y1len, y1, ytytlen, detytyt, y2);
+    zlen = scale_expansion_zeroelim(temp192len, temp192, dez, detz);
+    zzlen = scale_expansion_zeroelim(zlen, detz, dez, detzz);ztlen =
+      scale_expansion_zeroelim(temp192len, temp192, deztail, detzt);
+    zztlen = scale_expansion_zeroelim(ztlen, detzt, dez, detzzt);
     for (i = 0; i < zztlen; i++) {
       detzzt[i] *= 2.0;
     }
-    ztztlen = scale(ztlen, detzt, deztail, detztzt);
+    ztztlen = scale_expansion_zeroelim(ztlen, detzt, deztail, detztzt);
     z1len =
-      sum(zzlen, detzz, zztlen, detzzt, z1);
+      fast_expansion_sum_zeroelim(zzlen, detzz, zztlen, detzzt, z1);
     z2len =
-      sum(z1len, z1, ztztlen, detztzt, z2);
-    xylen = sum(x2len, x2, y2len, y2, detxy);
-    dlen = sum(z2len, z2, xylen, detxy, ddet);
+      fast_expansion_sum_zeroelim(z1len, z1, ztztlen, detztzt, z2);
+    xylen = fast_expansion_sum_zeroelim(x2len, x2, y2len, y2, detxy);
+    dlen = fast_expansion_sum_zeroelim(z2len, z2, xylen, detxy, ddet);
 
-    ablen = sum(alen, adet, blen, bdet, abdet);
-    cdlen = sum(clen, cdet, dlen, ddet, cddet);
+    ablen = fast_expansion_sum_zeroelim(alen, adet, blen, bdet, abdet);
+    cdlen = fast_expansion_sum_zeroelim(clen, cdet, dlen, ddet, cddet);
     deterlen =
-      sum(ablen, abdet, cdlen, cddet, deter);
+      fast_expansion_sum_zeroelim(ablen, abdet, cdlen, cddet, deter);
 
     return deter[deterlen - 1];
   }

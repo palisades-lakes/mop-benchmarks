@@ -1,12 +1,13 @@
 package mop.java.geometry.predicates;
 
 import mop.java.numbers.RationalFloat;
+import org.apache.commons.geometry.euclidean.twod.Vector2D;
 
 /** Standard calculations implemented in RationalFloat.
  * Should be exact, up to RationalFloat resolution.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-06-30
+ * @version 2026-07-03
  */
 
 public final class RationalFloatPredicate implements Predicate {
@@ -19,20 +20,21 @@ public final class RationalFloatPredicate implements Predicate {
   // orient2d
   //--------------------------------------------------------------------
   // TODO: reduce the number of RationalFloat instances.
-  //  For example, implement RationalFloat.sum(double,double);
+  //  For example, implement RationalFloat.add/subtract(double,double);
   //  Also, triangle translation could be done just once.
   //  Consider boolean predicate, so can return the sign of the
   //  final RationalFloat.
+  // TODO: RationalFloatVector, RationalFloatTriangle...
 
-  public final double orient2d (final double[] pa,
-                                final double[] pb,
-                                final double[] pc) {
-    final RationalFloat ax = RationalFloat.valueOf(pa[0]);
-    final RationalFloat ay = RationalFloat.valueOf(pa[1]);
-    final RationalFloat bx = RationalFloat.valueOf(pb[0]);
-    final RationalFloat by = RationalFloat.valueOf(pb[1]);
-    final RationalFloat cx = RationalFloat.valueOf(pc[0]);
-    final RationalFloat cy = RationalFloat.valueOf(pc[1]);
+  public final double orient2d (final Vector2D pa,
+                                final Vector2D pb,
+                                final Vector2D pc) {
+    final RationalFloat ax = RationalFloat.valueOf(pa.getX());
+    final RationalFloat ay = RationalFloat.valueOf(pa.getY());
+    final RationalFloat bx = RationalFloat.valueOf(pb.getX());
+    final RationalFloat by = RationalFloat.valueOf(pb.getY());
+    final RationalFloat cx = RationalFloat.valueOf(pc.getX());
+    final RationalFloat cy = RationalFloat.valueOf(pc.getY());
     final RationalFloat acx = ax.subtract(cx);
     final RationalFloat acy = ay.subtract(cy);
     final RationalFloat bcx = bx.subtract(cx);

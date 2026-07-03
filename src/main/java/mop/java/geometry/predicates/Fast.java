@@ -6,6 +6,8 @@ package mop.java.geometry.predicates;
 // split into Expansion manipulation and fast, slow, exact, adaptive
 // algorithm classes
 
+import org.apache.commons.geometry.euclidean.twod.Vector2D;
+
 /** Approximate predicates, nonrobust.
  * <p>>
  * Adaptive precision floating point based on:
@@ -76,7 +78,7 @@ package mop.java.geometry.predicates;
  *   even <code>BigInteger</code> to extend range.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-06-30
+ * @version 2026-07-03
  */
 
 public final class Fast implements Predicate {
@@ -85,13 +87,13 @@ public final class Fast implements Predicate {
   // orient2d
   //--------------------------------------------------------------------
 
-  public final double orient2d (final double[] pa,
-                                final double[] pb,
-                                final double[] pc) {
-    final double acx = pa[0] - pc[0];
-    final double bcx = pb[0] - pc[0];
-    final double acy = pa[1] - pc[1];
-    final double bcy = pb[1] - pc[1];
+  public final double orient2d (final Vector2D pa,
+                                final Vector2D pb,
+                                final Vector2D pc) {
+    final double acx = pa.getX() - pc.getX();
+    final double bcx = pb.getX() - pc.getX();
+    final double acy = pa.getY() - pc.getY();
+    final double bcy = pb.getY() - pc.getY();
     return (acx * bcy) - (acy * bcx); }
 
   //--------------------------------------------------------------------

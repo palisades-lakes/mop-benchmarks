@@ -8,6 +8,7 @@ package mop.java.geometry.predicates.macro;
 // algorithm classes
 
 import mop.java.geometry.predicates.Predicate;
+import org.apache.commons.geometry.euclidean.twod.Vector2D;
 
 import static mop.java.geometry.predicates.macro.Expansion.*;
 
@@ -82,7 +83,7 @@ import static mop.java.geometry.predicates.macro.Expansion.*;
    *   even <code>BigInteger</code> to extend range.
    *
    * @author palisades dot lakes at gmail dot com,
-   * @version 2026-05-15
+   * @version 2026-07-03
    */
 
 // strictfp unnecessary for JDK17 and later
@@ -101,9 +102,9 @@ import static mop.java.geometry.predicates.macro.Expansion.*;
     private static final double ccwerrboundC =
       (9.0 + 64.0 * EPSILON) * EPSILON * EPSILON;
 
-    final double orient2d (final double[] pa,
-                           final double[] pb,
-                           final double[] pc,
+    final double orient2d (final Vector2D pa,
+                           final Vector2D pb,
+                           final Vector2D pc,
                            final double detsum) {
       double acx, acy, bcx, bcy;
       double acxtail, acytail, bcxtail, bcytail;
@@ -130,10 +131,10 @@ import static mop.java.geometry.predicates.macro.Expansion.*;
       double _i, _j;
       double _0;
 
-      acx = (pa[0] - pc[0]);
-      bcx = (pb[0] - pc[0]);
-      acy = (pa[1] - pc[1]);
-      bcy = (pb[1] - pc[1]);
+      acx = (pa.getX() - pc.getX());
+      bcx = (pb.getX() - pc.getX());
+      acy = (pa.getY() - pc.getY());
+      bcy = (pb.getY() - pc.getY());
 
       detleft = (acx * bcy);
       c = (SPLITTER * acx);
@@ -195,25 +196,25 @@ import static mop.java.geometry.predicates.macro.Expansion.*;
         return det;
       }
 
-      bvirt = (pa[0] - acx);
+      bvirt = (pa.getX() - acx);
       avirt = acx + bvirt;
-      bround = bvirt - pc[0];
-      around = pa[0] - avirt;
+      bround = bvirt - pc.getX();
+      around = pa.getX() - avirt;
       acxtail = around + bround;
-      bvirt = (pb[0] - bcx);
+      bvirt = (pb.getX() - bcx);
       avirt = bcx + bvirt;
-      bround = bvirt - pc[0];
-      around = pb[0] - avirt;
+      bround = bvirt - pc.getX();
+      around = pb.getX() - avirt;
       bcxtail = around + bround;
-      bvirt = (pa[1] - acy);
+      bvirt = (pa.getY() - acy);
       avirt = acy + bvirt;
-      bround = bvirt - pc[1];
-      around = pa[1] - avirt;
+      bround = bvirt - pc.getY();
+      around = pa.getY() - avirt;
       acytail = around + bround;
-      bvirt = (pb[1] - bcy);
+      bvirt = (pb.getY() - bcy);
       avirt = bcy + bvirt;
-      bround = bvirt - pc[1];
-      around = pb[1] - avirt;
+      bround = bvirt - pc.getY();
+      around = pb.getY() - avirt;
       bcytail = around + bround;
 
       if ((acxtail == 0.0) && (acytail == 0.0)
@@ -394,11 +395,10 @@ import static mop.java.geometry.predicates.macro.Expansion.*;
 
     //--------------------------------------------------------------------
 
-    public final double orient2d (final double[] pa,
-                                  final double[] pb,
-                                  final double[] pc) {
-      return new DefaultMacro().orient2d(pa, pb, pc);
-    }
+    public final double orient2d (final Vector2D pa,
+                                  final Vector2D pb,
+                                  final Vector2D pc) {
+      return new DefaultMacro().orient2d(pa, pb, pc); }
 
     //--------------------------------------------------------------------
     // orient3d

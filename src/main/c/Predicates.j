@@ -4,7 +4,7 @@
 // split into Expansion manipulation and fast, slow, exact, adaptive
 // algorithm classes
 
-import static mop.java.geometry.predicates.Expansion.*;
+import static mop.java.geometry.predicates.macro.Expansion.*;
 
 /**
  * Adaptive precision floating point based on:

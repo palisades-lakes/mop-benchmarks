@@ -8,6 +8,7 @@ package mop.java.geometry.predicates;
 
 import mop.java.numbers.Hilo;
 import mop.java.numbers.XDouble;
+import org.apache.commons.geometry.euclidean.twod.Vector2D;
 
 /**
  * More exact tests.  Robust.
@@ -94,14 +95,15 @@ public final class Slow implements Predicate {
   // orient2d
   //--------------------------------------------------------------------
   // TODO: seems to return 2xsigned area
+  // TODO: XDoubleVector, XDoubleTriangle...
 
-  public final double orient2d (final double[] pa,
-                                final double[] pb,
-                                final double[] pc) {
-    final Hilo ax = Hilo.twoDiff(pa[0], pc[0]);
-    final Hilo ay = Hilo.twoDiff(pa[1], pc[1]);
-    final Hilo bx = Hilo.twoDiff(pb[0], pc[0]);
-    final Hilo by = Hilo.twoDiff(pb[1], pc[1]);
+  public final double orient2d (final Vector2D pa,
+                                final Vector2D pb,
+                                final Vector2D pc) {
+    final Hilo ax = Hilo.twoDiff(pa.getX(), pc.getX());
+    final Hilo ay = Hilo.twoDiff(pa.getY(), pc.getY());
+    final Hilo bx = Hilo.twoDiff(pb.getX(), pc.getX());
+    final Hilo by = Hilo.twoDiff(pb.getY(), pc.getY());
 
     final XDouble axby = XDouble.twoTwoProduct(ax, by);
     final XDouble bxay = XDouble.twoTwoProduct(bx, ay);

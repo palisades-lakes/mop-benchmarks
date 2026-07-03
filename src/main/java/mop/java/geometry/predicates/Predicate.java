@@ -6,6 +6,8 @@ package mop.java.geometry.predicates;
 // split into Expansion manipulation and fast, slow, exact, adaptive
 // algorithm classes
 
+import org.apache.commons.geometry.euclidean.twod.Vector2D;
+
 /**
  * Specify the geometry predicates.
  * <ul>
@@ -109,9 +111,9 @@ public interface Predicate {
    * input points are collinear or nearly so.
    */
 
-  default double orient2d (final double[] pa,
-                           final double[] pb,
-                           final double[] pc) {
+  default double orient2d (final Vector2D pa,
+                           final Vector2D pb,
+                           final Vector2D pc) {
     throw new UnsupportedOperationException(
       getClass().getSimpleName()); }
 

@@ -24,7 +24,7 @@ import java.util.List;
 /** Common code for geometry predicate tests.
   *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-06-25
+ * @version 2026-07-03
  */
 
 public final class Common {
@@ -42,13 +42,19 @@ public final class Common {
     final Predicate exact = new Exact();
     final Predicate fast = new Fast();
     final Predicate slow = new Slow();
+    final Predicate adaptMacro = new AdaptMacro();
+    final Predicate defaultMacro = new DefaultMacro();
+    final Predicate exactMacro = new ExactMacro();
+    final Predicate fastMacro = new FastMacro();
+    final Predicate slowMacro = new SlowMacro();
     return List.of(
       // JTS
       ddFast,ddSlow,doubleNonRobust,
       // mine
       rationalFloat,bigFloat,
       // Shewchuk predicates.c
-      exact,adapt,fast,slow); }
+      exact,adapt,fast,slow,
+      exactMacro, adaptMacro, defaultMacro, fastMacro, slowMacro); }
 
   public static final List<Predicate> inCirclePredicates () {
     final Predicate ddFast = new DDFast();

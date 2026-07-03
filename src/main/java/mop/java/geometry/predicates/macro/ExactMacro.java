@@ -8,6 +8,7 @@ package mop.java.geometry.predicates.macro;
 
 import mop.java.geometry.predicates.Predicate;
 import mop.java.numbers.XDouble;
+import org.apache.commons.geometry.euclidean.twod.Vector2D;
 
 import static mop.java.geometry.predicates.macro.Expansion.*;
 
@@ -82,7 +83,7 @@ import static mop.java.geometry.predicates.macro.Expansion.*;
  *   even <code>BigInteger</code> to extend range.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-05-15
+ * @version 2026-07-03
  */
 
 // strictfp unnecessary for JDK17 and later
@@ -95,9 +96,9 @@ public final class ExactMacro implements Predicate {
   //--------------------------------------------------------------------
   // orient2d
   //--------------------------------------------------------------------
-  public final double orient2d (final double[] pa,
-                                final double[] pb,
-                                final double[] pc) {
+  public final double orient2d (final Vector2D pa,
+                                final Vector2D pb,
+                                final Vector2D pc) {
     double axby1, axcy1, bxcy1, bxay1, cxay1, cxby1;
     double axby0, axcy0, bxcy0, bxay0, cxay0, cxby0;
     double[] aterms = new double[4];
@@ -117,16 +118,16 @@ public final class ExactMacro implements Predicate {
     double _i, _j;
     double _0;
 
-    axby1 = (pa[0] * pb[1]); c = (SPLITTER * pa[0]);
-    abig = (c - pa[0]); ahi = c - abig; alo = pa[0] - ahi;
-    c = (SPLITTER * pb[1]); abig = (c - pb[1]);
-    bhi = c - abig; blo = pb[1] - bhi; err1 = axby1 - (ahi * bhi);
+    axby1 = (pa.getX() * pb.getY()); c = (SPLITTER * pa.getX());
+    abig = (c - pa.getX()); ahi = c - abig; alo = pa.getX() - ahi;
+    c = (SPLITTER * pb.getY()); abig = (c - pb.getY());
+    bhi = c - abig; blo = pb.getY() - bhi; err1 = axby1 - (ahi * bhi);
     err2 = err1 - (alo * bhi); err3 = err2 - (ahi * blo);
     axby0 = (alo * blo) - err3;
-    axcy1 = (pa[0] * pc[1]); c = (SPLITTER * pa[0]);
-    abig = (c - pa[0]); ahi = c - abig; alo = pa[0] - ahi;
-    c = (SPLITTER * pc[1]); abig = (c - pc[1]);
-    bhi = c - abig; blo = pc[1] - bhi; err1 = axcy1 - (ahi * bhi);
+    axcy1 = (pa.getX() * pc.getY()); c = (SPLITTER * pa.getX());
+    abig = (c - pa.getX()); ahi = c - abig; alo = pa.getX() - ahi;
+    c = (SPLITTER * pc.getY()); abig = (c - pc.getY());
+    bhi = c - abig; blo = pc.getY() - bhi; err1 = axcy1 - (ahi * bhi);
     err2 = err1 - (alo * bhi); err3 = err2 - (ahi * blo);
     axcy0 = (alo * blo) - err3;
     _i = (axby0 - axcy0); bvirt = (axby0 - _i);
@@ -143,16 +144,16 @@ public final class ExactMacro implements Predicate {
     aterms[2] = around + bround;
     aterms[3] = aterms3;
 
-    bxcy1 = (pb[0] * pc[1]); c = (SPLITTER * pb[0]);
-    abig = (c - pb[0]); ahi = c - abig; alo = pb[0] - ahi;
-    c = (SPLITTER * pc[1]); abig = (c - pc[1]);
-    bhi = c - abig; blo = pc[1] - bhi; err1 = bxcy1 - (ahi * bhi);
+    bxcy1 = (pb.getX() * pc.getY()); c = (SPLITTER * pb.getX());
+    abig = (c - pb.getX()); ahi = c - abig; alo = pb.getX() - ahi;
+    c = (SPLITTER * pc.getY()); abig = (c - pc.getY());
+    bhi = c - abig; blo = pc.getY() - bhi; err1 = bxcy1 - (ahi * bhi);
     err2 = err1 - (alo * bhi); err3 = err2 - (ahi * blo);
     bxcy0 = (alo * blo) - err3;
-    bxay1 = (pb[0] * pa[1]); c = (SPLITTER * pb[0]);
-    abig = (c - pb[0]); ahi = c - abig; alo = pb[0] - ahi;
-    c = (SPLITTER * pa[1]); abig = (c - pa[1]);
-    bhi = c - abig; blo = pa[1] - bhi; err1 = bxay1 - (ahi * bhi);
+    bxay1 = (pb.getX() * pa.getY()); c = (SPLITTER * pb.getX());
+    abig = (c - pb.getX()); ahi = c - abig; alo = pb.getX() - ahi;
+    c = (SPLITTER * pa.getY()); abig = (c - pa.getY());
+    bhi = c - abig; blo = pa.getY() - bhi; err1 = bxay1 - (ahi * bhi);
     err2 = err1 - (alo * bhi); err3 = err2 - (ahi * blo);
     bxay0 = (alo * blo) - err3;
     _i = (bxcy0 - bxay0); bvirt = (bxcy0 - _i);
@@ -168,16 +169,16 @@ public final class ExactMacro implements Predicate {
     bterms[2] = around + bround;
     bterms[3] = bterms3;
 
-    cxay1 = (pc[0] * pa[1]); c = (SPLITTER * pc[0]);
-    abig = (c - pc[0]); ahi = c - abig; alo = pc[0] - ahi;
-    c = (SPLITTER * pa[1]); abig = (c - pa[1]);
-    bhi = c - abig; blo = pa[1] - bhi; err1 = cxay1 - (ahi * bhi);
+    cxay1 = (pc.getX() * pa.getY()); c = (SPLITTER * pc.getX());
+    abig = (c - pc.getX()); ahi = c - abig; alo = pc.getX() - ahi;
+    c = (SPLITTER * pa.getY()); abig = (c - pa.getY());
+    bhi = c - abig; blo = pa.getY() - bhi; err1 = cxay1 - (ahi * bhi);
     err2 = err1 - (alo * bhi); err3 = err2 - (ahi * blo);
     cxay0 = (alo * blo) - err3;
-    cxby1 = (pc[0] * pb[1]); c = (SPLITTER * pc[0]);
-    abig = (c - pc[0]); ahi = c - abig; alo = pc[0] - ahi;
-    c = (SPLITTER * pb[1]); abig = (c - pb[1]);
-    bhi = c - abig; blo = pb[1] - bhi; err1 = cxby1 - (ahi * bhi);
+    cxby1 = (pc.getX() * pb.getY()); c = (SPLITTER * pc.getX());
+    abig = (c - pc.getX()); ahi = c - abig; alo = pc.getX() - ahi;
+    c = (SPLITTER * pb.getY()); abig = (c - pb.getY());
+    bhi = c - abig; blo = pb.getY() - bhi; err1 = cxby1 - (ahi * bhi);
     err2 = err1 - (alo * bhi); err3 = err2 - (ahi * blo);
     cxby0 = (alo * blo) - err3;
     _i = (cxay0 - cxby0); bvirt = (cxay0 - _i);

@@ -134,7 +134,6 @@ public final class InCircleTest {
     // inCircle(Common.inCirclePredicates(), p1, p2, p1, p4);
   }
   //--------------------------------------------------------------
-  // 2026-05-21: failing, may be Expansion rounding to double?
 
   @Test
   public final void laplaceTest () {

@@ -5,19 +5,18 @@ import mop.java.prng.GeneratorBase;
 
 import java.util.function.Function;
 
-/**
- * Generators of pseudo-random geometric objects as zero-arity
+/** Generators of pseudo-random geometric objects as zero-arity
  * 'functions' that return different values on each call.
  * <br>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-05-15
+ * @version 2026-07-03
  */
 
 public final class Generators {
 
   //--------------------------------------------------------------
-  // For now just generate doubel2 and double[3]
+  // For now just generate double[2] and double[3]
   // Later:
   // Constructors for:
   // <ol>
@@ -65,10 +64,7 @@ public final class Generators {
       @Override
       public final Object next () {
         final double[] coords = (double[]) coordinateGenerator.next();
-        return constructor.apply(coords);
-      }
-    };
-  }
+        return constructor.apply(coords); } }; }
 
   //--------------------------------------------------------------
 //  private static final String SEED0 =

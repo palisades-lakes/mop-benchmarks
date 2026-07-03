@@ -2,6 +2,7 @@ package mop.java.geometry.predicates;
 
 import mop.java.numbers.Hilo;
 import mop.java.numbers.XDouble;
+import org.apache.commons.geometry.euclidean.twod.Vector2D;
 
 /** Exact tests.  Robust.
  * <br>
@@ -12,7 +13,7 @@ import mop.java.numbers.XDouble;
  *   profiling.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-06-30
+ * @version 2026-07-03
  */
 
 public final class Exact implements Predicate {
@@ -66,22 +67,20 @@ public final class Exact implements Predicate {
   // orient2d
   //--------------------------------------------------------------------
   // TODO: seems to return signed area, not 2xsigned area
-  // TODO: returns 1.0 for a co-linear triangle,
-  //  where one vtx is the mean of the other 2.
 
-  public final double orient2d (final double[] pa,
-                                final double[] pb,
-                                final double[] pc) {
-    final Hilo axby = Hilo.product(pa[0],pb[1]);
-    final Hilo axcy = Hilo.product(pa[0],pc[1]);
+  public final double orient2d (final Vector2D pa,
+                                final Vector2D pb,
+                                final Vector2D pc) {
+    final Hilo axby = Hilo.product(pa.getX(),pb.getY());
+    final Hilo axcy = Hilo.product(pa.getX(),pc.getY());
     final XDouble aterms = XDouble.twoTwoDiff(axby,axcy);
 
-    final Hilo bxcy = Hilo.product(pb[0],pc[1]);
-    final Hilo bxay = Hilo.product(pb[0],pa[1]);
+    final Hilo bxcy = Hilo.product(pb.getX(),pc.getY());
+    final Hilo bxay = Hilo.product(pb.getX(),pa.getY());
     final XDouble bterms = XDouble.twoTwoDiff(bxcy,bxay);
 
-    final Hilo cxay = Hilo.product(pc[0],pa[1]);
-    final Hilo cxby = Hilo.product(pc[0],pb[1]);
+    final Hilo cxay = Hilo.product(pc.getX(),pa.getY());
+    final Hilo cxby = Hilo.product(pc.getX(),pb.getY());
     final XDouble cterms = XDouble.twoTwoDiff(cxay,cxby);
 
     return aterms.add(bterms).add(cterms).doubleValue(); }

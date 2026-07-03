@@ -8,6 +8,7 @@ package mop.java.geometry.predicates;
 
 import mop.java.numbers.Hilo;
 import mop.java.numbers.XDouble;
+import org.apache.commons.geometry.euclidean.twod.Vector2D;
 
 /** Adaptive 'exact' tests. Robust.
  * 'Exact' seems to mean boolean predicate, that is, the sign of the
@@ -81,7 +82,7 @@ import mop.java.numbers.XDouble;
  *   even <code>BigInteger</code> to extend range.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-07-01
+ * @version 2026-07-03
  */
 
 // strictfp (may be) necessary for JDK16 and earlier
@@ -424,15 +425,17 @@ public final class Adapt implements Predicate {
   private static final double ccwerrboundC =
     (9.0 + 64.0 * EPSILON) * EPSILON * EPSILON;
 
-  private static final double orient2d (final double[] pa,
-                                        final double[] pb,
-                                        final double[] pc,
+  private static final double orient2d (final Vector2D pa,
+                                        final Vector2D pb,
+                                        final Vector2D pc,
                                         final double detsum) {
-
-    final double acx = (pa[0] - pc[0]);
-    final double bcx = (pb[0] - pc[0]);
-    final double acy = (pa[1] - pc[1]);
-    final double bcy = (pb[1] - pc[1]);
+  // TODO: difference vectors cached in Triangle object
+    final Vector2D ac = pa.subtract(pc);
+    final Vector2D bc = pb.subtract(pc);
+    final double acx = ac.getX();
+    final double acy = ac.getY();
+    final double bcx = bc.getX();
+    final double bcy = bc.getY();
 
     final Hilo detleft = Hilo.product(acx,bcy);
     final Hilo detright = Hilo.product(acy,bcx);
@@ -442,10 +445,10 @@ public final class Adapt implements Predicate {
     double errbound = ccwerrboundB * detsum;
     if (Math.abs(det) >= errbound) { return det; }
 
-    final double acxtail = Hilo.twoDiffTail(pa[0],pc[0],acx);
-    final double bcxtail = Hilo.twoDiffTail(pb[0],pc[0],bcx);
-    final double acytail = Hilo.twoDiffTail(pa[1],pc[1],acy);
-    final double bcytail = Hilo.twoDiffTail(pb[1],pc[1],bcy);
+    final double acxtail = Hilo.twoDiffTail(pa.getX(),pc.getX(),acx);
+    final double bcxtail = Hilo.twoDiffTail(pb.getX(),pc.getX(),bcx);
+    final double acytail = Hilo.twoDiffTail(pa.getY(),pc.getY(),acy);
+    final double bcytail = Hilo.twoDiffTail(pb.getY(),pc.getY(),bcy);
     if ((acxtail == 0.0) && (acytail == 0.0)
       && (bcxtail == 0.0) && (bcytail == 0.0)) {
       return det; }
@@ -469,18 +472,23 @@ public final class Adapt implements Predicate {
             .doubleValue(); }
 
   //--------------------------------------------------------------------
+
   private static final double ccwerrboundA =
     (3.0 + 16.0 * EPSILON) * EPSILON;
 
   private static final double o3derrboundA =
     (7.0 + 56.0 * EPSILON) * EPSILON;
 
-  public final double orient2d (final double[] pa,
-                                final double[] pb,
-                                final double[] pc) {
+  public final double orient2d (final Vector2D pa,
+                                final Vector2D pb,
+                                final Vector2D pc) {
 
-    final double detleft = (pa[0] - pc[0]) * (pb[1] - pc[1]);
-    final double detright = (pa[1] - pc[1]) * (pb[0] - pc[0]);
+    // TODO: difference vectors cached in Triangle object
+    final Vector2D ac = pa.subtract(pc);
+    final Vector2D bc = pb.subtract(pc);
+
+    final double detleft = ac.getX() * bc.getY();
+    final double detright = ac.getY() * bc.getX();
     final double det = detleft - detright;
     final double detsum;
     if (detleft > 0.0) {

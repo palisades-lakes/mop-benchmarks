@@ -7,6 +7,7 @@ package mop.java.geometry.predicates.macro;
 // algorithm classes
 
 import mop.java.geometry.predicates.Predicate;
+import org.apache.commons.geometry.euclidean.twod.Vector2D;
 
 import static mop.java.geometry.predicates.macro.Expansion.EPSILON;
 
@@ -81,7 +82,7 @@ import static mop.java.geometry.predicates.macro.Expansion.EPSILON;
  *   even <code>BigInteger</code> to extend range.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-06-25
+ * @version 2026-07-03
  */
 
 // strictfp unnecessary for JDK17 and later
@@ -97,14 +98,14 @@ public final class DefaultMacro implements Predicate {
   private static final double ccwerrboundA =
     (3.0 + 16.0 * EPSILON) * EPSILON;
 
-  public final double orient2d (final double[] pa,
-                                final double[] pb,
-                                final double[] pc) {
+  public final double orient2d (final Vector2D pa,
+                                final Vector2D pb,
+                                final Vector2D pc) {
     double detleft, detright, det;
     double detsum, errbound;
 
-    detleft = (pa[0] - pc[0]) * (pb[1] - pc[1]);
-    detright = (pa[1] - pc[1]) * (pb[0] - pc[0]);
+    detleft = (pa.getX() - pc.getX()) * (pb.getY() - pc.getY());
+    detright = (pa.getY() - pc.getY()) * (pb.getX() - pc.getX());
     det = detleft - detright;
 
     if (detleft > 0.0) {
