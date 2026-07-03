@@ -94,7 +94,7 @@ public final class Slow implements Predicate {
   //--------------------------------------------------------------------
   // orient2d
   //--------------------------------------------------------------------
-  // TODO: seems to return 2xsigned area
+ // TODO: seems to return 2xsigned area
   // TODO: XDoubleVector, XDoubleTriangle...
 
   public final double orient2d (final Vector2D pa,
@@ -104,7 +104,6 @@ public final class Slow implements Predicate {
     final Hilo ay = Hilo.twoDiff(pa.getY(), pc.getY());
     final Hilo bx = Hilo.twoDiff(pb.getX(), pc.getX());
     final Hilo by = Hilo.twoDiff(pb.getY(), pc.getY());
-
     final XDouble axby = XDouble.twoTwoProduct(ax, by);
     final XDouble bxay = XDouble.twoTwoProduct(bx, ay);
     return axby.subtract(bxay).doubleValue(); }

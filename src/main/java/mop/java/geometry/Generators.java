@@ -49,7 +49,7 @@ public final class Generators {
 //                     final double sigma)
   //--------------------------------------------------------------
 
-//  public static final Function<double[], Vector2D>
+//  public static final Function<double[], Object>
 //    vector2D = Vector2D::of;
 //  public static final Function<double[], Vector3D>
 //    vector3D = Vector3D::of;

@@ -535,7 +535,6 @@ public final class Doubles implements Set {
   //--------------------------------------------------------------
   // generators
   //--------------------------------------------------------------
-
   // TODO: extend generators using function composition!!!
 
   /** Maximum exponent for double generation such that a double

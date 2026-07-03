@@ -39,7 +39,7 @@ public final class Common {
     final Predicate bigFloat = new BigFloatPredicate();
     final Predicate rationalFloat = new RationalFloatPredicate();
     final Predicate adapt = new Adapt();
-    final Predicate exact = new Exact();
+    //final Predicate exact = new Exact();
     final Predicate fast = new Fast();
     final Predicate slow = new Slow();
     final Predicate adaptMacro = new AdaptMacro();
@@ -53,7 +53,8 @@ public final class Common {
       // mine
       rationalFloat,bigFloat,
       // Shewchuk predicates.c
-      exact,adapt,fast,slow,
+      //exact,
+      adapt,fast,slow,
       exactMacro, adaptMacro, defaultMacro, fastMacro, slowMacro); }
 
   public static final List<Predicate> inCirclePredicates () {
@@ -84,11 +85,11 @@ public final class Common {
       exactMacro, adaptMacro, defaultMacro, fastMacro, slowMacro
       ); }
 
-  public static final List<Predicate> makePredicates () {
+  public static final List<Predicate> orient3dPredicates () {
     final Predicate bigFloat = new BigFloatPredicate();
     final Predicate rationalFloat = new RationalFloatPredicate();
     final Predicate adapt = new Adapt();
-    final Predicate exact = new Exact();
+    //final Predicate exact = new Exact();
     final Predicate fast = new Fast();
     final Predicate slow = new Slow();
     final Predicate adaptMacro = new AdaptMacro();
@@ -100,7 +101,28 @@ public final class Common {
       // mine
       rationalFloat,bigFloat,
       // Shewchuk predicates.c
-      exact,adapt,fast,slow,
+      //exact,
+      adapt,fast,slow,
+      exactMacro, adaptMacro, defaultMacro, fastMacro, slowMacro); }
+
+  public static final List<Predicate> inSpherePredicates () {
+    final Predicate bigFloat = new BigFloatPredicate();
+    final Predicate rationalFloat = new RationalFloatPredicate();
+    final Predicate adapt = new Adapt();
+    //final Predicate exact = new Exact();
+    final Predicate fast = new Fast();
+    final Predicate slow = new Slow();
+    final Predicate adaptMacro = new AdaptMacro();
+    final Predicate defaultMacro = new DefaultMacro();
+    final Predicate exactMacro = new ExactMacro();
+    final Predicate fastMacro = new FastMacro();
+    final Predicate slowMacro = new SlowMacro();
+    return List.of(
+      // mine
+      rationalFloat,bigFloat,
+      // Shewchuk predicates.c
+      //exact,
+      adapt,fast,slow,
       exactMacro, adaptMacro, defaultMacro, fastMacro, slowMacro); }
 
   // ground truth predicate.

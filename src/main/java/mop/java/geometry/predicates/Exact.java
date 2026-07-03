@@ -21,6 +21,27 @@ public final class Exact implements Predicate {
   public final boolean isExact () { return true; }
 
   //--------------------------------------------------------------------
+  // orient2d
+  //--------------------------------------------------------------------
+
+  public final double orient2d (final Vector2D pa,
+                                final Vector2D pb,
+                                final Vector2D pc) {
+    final Hilo axby = Hilo.product(pa.getX(),pb.getY());
+    final Hilo axcy = Hilo.product(pa.getX(),pc.getY());
+    final XDouble aterms = XDouble.twoTwoDiff(axby,axcy);
+
+    final Hilo bxcy = Hilo.product(pb.getX(),pc.getY());
+    final Hilo bxay = Hilo.product(pb.getX(),pa.getY());
+    final XDouble bterms = XDouble.twoTwoDiff(bxcy,bxay);
+
+    final Hilo cxay = Hilo.product(pc.getX(),pa.getY());
+    final Hilo cxby = Hilo.product(pc.getX(),pb.getY());
+    final XDouble cterms = XDouble.twoTwoDiff(cxay,cxby);
+
+    return aterms.add(bterms).add(cterms).doubleValue(); }
+
+  //--------------------------------------------------------------------
 
   private static final XDouble det (final double[] a,
                                     final boolean subtractFlag,
@@ -62,28 +83,6 @@ public final class Exact implements Predicate {
     //final XDouble det = adet.add(bdet).add(cdet.add(ddet));
     final XDouble det = adet.add(bdet).add(cdet).add(ddet);
     return det.doubleValue(); }
-
-  //--------------------------------------------------------------------
-  // orient2d
-  //--------------------------------------------------------------------
-  // TODO: seems to return signed area, not 2xsigned area
-
-  public final double orient2d (final Vector2D pa,
-                                final Vector2D pb,
-                                final Vector2D pc) {
-    final Hilo axby = Hilo.product(pa.getX(),pb.getY());
-    final Hilo axcy = Hilo.product(pa.getX(),pc.getY());
-    final XDouble aterms = XDouble.twoTwoDiff(axby,axcy);
-
-    final Hilo bxcy = Hilo.product(pb.getX(),pc.getY());
-    final Hilo bxay = Hilo.product(pb.getX(),pa.getY());
-    final XDouble bterms = XDouble.twoTwoDiff(bxcy,bxay);
-
-    final Hilo cxay = Hilo.product(pc.getX(),pa.getY());
-    final Hilo cxby = Hilo.product(pc.getX(),pb.getY());
-    final XDouble cterms = XDouble.twoTwoDiff(cxay,cxby);
-
-    return aterms.add(bterms).add(cterms).doubleValue(); }
 
   //--------------------------------------------------------------------
   // orient3d

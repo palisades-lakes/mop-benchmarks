@@ -107,7 +107,7 @@ public final class ExactMacro implements Predicate {
     double aterms3, bterms3, cterms3;
     double[] v = new double[8];
     double[] w = new double[12];
-    int vlength, wlength;
+    int vlength;
 
     double bvirt;
     double avirt, bround, around;
@@ -195,9 +195,9 @@ public final class ExactMacro implements Predicate {
     cterms[3] = cterms3;
 
     vlength = fast_expansion_sum_zeroelim(4, aterms, 4, bterms, v);
-    wlength = fast_expansion_sum_zeroelim(vlength, v, 4, cterms, w);
+    fast_expansion_sum_zeroelim(vlength, v, 4, cterms, w);
 
-    return w[wlength - 1];
+    return XDouble.unsafe(w).doubleValue();
   }
 
   //--------------------------------------------------------------------
@@ -226,7 +226,6 @@ public final class ExactMacro implements Predicate {
     double[] abdet = new double[48], cddet = new double[48];
     int ablen, cdlen;
     double[] deter = new double[96];
-    int deterlen;
     int i;
 
     double bvirt;
@@ -396,10 +395,9 @@ public final class ExactMacro implements Predicate {
 
     ablen = fast_expansion_sum_zeroelim(alen, adet, blen, bdet, abdet);
     cdlen = fast_expansion_sum_zeroelim(clen, cdet, dlen, ddet, cddet);
-    deterlen =
-      fast_expansion_sum_zeroelim(ablen, abdet, cdlen, cddet, deter);
+    fast_expansion_sum_zeroelim(ablen, abdet, cdlen, cddet, deter);
 
-    return deter[deterlen - 1];
+    return XDouble.unsafe(deter).doubleValue();
   }
 
   //--------------------------------------------------------------------

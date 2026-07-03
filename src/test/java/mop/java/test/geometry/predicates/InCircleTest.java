@@ -138,7 +138,7 @@ public final class InCircleTest {
   @Test
   public final void laplaceTest () {
     final List<Predicate> predicates = Common.inCirclePredicates();
-    final int n = 12;
+    final int n = 21;
     final UniformRandomProvider urp =
       PRNG.well44497b("seeds/Well44497b-2019-01-05.txt");
     final Generator laplaceGenerator =

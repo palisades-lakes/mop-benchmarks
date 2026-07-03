@@ -530,9 +530,7 @@ public final class SlowMacro implements Predicate {
 
     ablen = fast_expansion_sum_zeroelim(alen, adet, blen, bdet, abdet);
     fast_expansion_sum_zeroelim(ablen, abdet, clen, cdet, deter);
-//    incorrect rounding to double!
-//    return deter[deterlen - 1];
-    // TODO: this is ignoring deterlen!
+
    return XDouble.unsafe(deter).doubleValue(); }
 
   //--------------------------------------------------------------------
@@ -658,9 +656,9 @@ public final class SlowMacro implements Predicate {
     avirt = bxay7 - bvirt; bround = _k - bvirt; around = _m - avirt;
     bxay[6] = around + bround; bxay[7] = bxay7;
 
-    deterlen = fast_expansion_sum_zeroelim(8, axby, 8, bxay, deter);
+    fast_expansion_sum_zeroelim(8, axby, 8, bxay, deter);
 
-    return deter[deterlen - 1];
+    return XDouble.unsafe(deter).doubleValue();
   }
 
   //--------------------------------------------------------------------
@@ -1028,10 +1026,9 @@ public final class SlowMacro implements Predicate {
                                        temp32t, cdet);
 
     ablen = fast_expansion_sum_zeroelim(alen, adet, blen, bdet, abdet);
-    deterlen =
-      fast_expansion_sum_zeroelim(ablen, abdet, clen, cdet, deter);
+    fast_expansion_sum_zeroelim(ablen, abdet, clen, cdet, deter);
 
-    return deter[deterlen - 1];
+    return XDouble.unsafe(deter).doubleValue();
   }
 
   //--------------------------------------------------------------------
@@ -1947,10 +1944,9 @@ public final class SlowMacro implements Predicate {
 
     ablen = fast_expansion_sum_zeroelim(alen, adet, blen, bdet, abdet);
     cdlen = fast_expansion_sum_zeroelim(clen, cdet, dlen, ddet, cddet);
-    deterlen =
-      fast_expansion_sum_zeroelim(ablen, abdet, cdlen, cddet, deter);
+    fast_expansion_sum_zeroelim(ablen, abdet, cdlen, cddet, deter);
 
-    return deter[deterlen - 1];
+    return XDouble.unsafe(deter).doubleValue();
   }
 
   //--------------------------------------------------------------------

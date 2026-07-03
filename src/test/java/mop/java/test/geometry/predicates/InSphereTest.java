@@ -1,6 +1,10 @@
 package mop.java.test.geometry.predicates;
 
 import mop.java.geometry.predicates.*;
+import mop.java.numbers.Doubles;
+import mop.java.prng.Generator;
+import mop.java.prng.PRNG;
+import org.apache.commons.rng.UniformRandomProvider;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -15,7 +19,7 @@ import java.util.List;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-06-30
+ * @version 2026-07-03
  */
 
 public final class InSphereTest {
@@ -38,9 +42,10 @@ public final class InSphereTest {
         Arrays.toString(p3) + "," +
         Arrays.toString(p4) + ")" +
         "\ngold=" + gold +
-        ", truth=" + truth +
+        "\n -> " + Double.toHexString(truth) +
         "\npred=" + pred +
-        " -> " + Double.toHexString(pred.insphere(p0, p1, p2,p3,p4)));
+        "\n -> " +
+        Double.toHexString(pred.insphere(p0, p1, p2,p3,p4)));
     for (final Predicate p : predicates) {
       msg.append("\n").append(p).append(" -> ")
          .append(Double.toHexString(p.insphere(p0, p1, p2,p3,p4))); }
@@ -74,8 +79,19 @@ public final class InSphereTest {
     final double[] p2 = new double[] { 0.0, 1.0, 0.0};
     final double[] p3 = new double[] { 0.0, 0.0, 1.0};
     final double[] p4 = new double[] { 1.0, 1.0, 1.0};
-    inSphere(Common.makePredicates(), p0, p1, p2, p3, p4); }
+    inSphere(Common.inSpherePredicates(), p0, p1, p2, p3, p4); }
 
-  //--------------------------------------------------------------
+  @Test
+  public final void laplaceTest () {
+    final List<Predicate> predicates = Common.inSpherePredicates();
+    final int n = 23;
+    final UniformRandomProvider urp =
+      PRNG.well44497b("seeds/Well44497b-2019-01-05.txt");
+    final Generator laplaceGenerator =
+      Doubles.laplaceGenerator(n, 3, urp, 0.0, 1.0);
+    final double[][] p = (double[][]) laplaceGenerator.next();
+    for (int i = 0; i < n-4; i++) {
+      inSphere(predicates, p[i], p[i+1], p[i+2], p[i+3], p[i+4]);} }
+//--------------------------------------------------------------
 }
 //--------------------------------------------------------------

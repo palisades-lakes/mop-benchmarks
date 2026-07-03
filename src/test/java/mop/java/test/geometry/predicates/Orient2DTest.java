@@ -28,14 +28,11 @@ public final class Orient2DTest {
                                           final Vector2D p0,
                                           final Vector2D p1,
                                           final Vector2D p2) {
-    StringBuilder msg = new StringBuilder("\norient2d(" +
-                                            p0 + "," +
-                                            p1 + "," +
-                                            p2 + ")" +
-                                            "\ngold=" + gold + ", truth=" + truth +
-                                            "\npred=" + pred +
-                                            " -> " + Double.toHexString(
-      pred.orient2d(p0, p1, p2)));
+    final StringBuilder msg = new StringBuilder(
+      "\norient2d(" + p0 + "," + p1 + "," + p2 + ")" +
+        "\ngold=" + gold + "\n-> " + Double.toHexString(truth) +
+        "\npred=" + pred + "\n-> " + Double.toHexString(
+          pred.orient2d(p0, p1, p2)));
     for (final Predicate p : predicates) {
       msg.append("\n").append(p).append(" -> ")
          .append(Double.toHexString(p.orient2d(p0, p1, p2))); }
@@ -84,18 +81,22 @@ public final class Orient2DTest {
   }
 
   //--------------------------------------------------------------
+  // Exact failing in last bit.
 
 //  @Test
 //  public final void laplaceTest () {
-//    final List<Predicate> predicates = Common.inCirclePredicates();
+//    final List<Predicate> predicates = Common.orient2dPredicates();
 //    final int n = 12;
 //    final UniformRandomProvider urp =
 //      PRNG.well44497b("seeds/Well44497b-2019-01-05.txt");
 //    final Generator laplaceGenerator =
 //      Doubles.laplaceGenerator(n, 2, urp, 0.0, 1.0);
 //    final double[][] p = (double[][]) laplaceGenerator.next();
-//    for (int i = 0; i < n-3; i++) {
-//      orient2D(predicates, p[i], p[i+1], p[i+2], p[i+3]);} }
+//    for (int i = 0; i < n-2; i++) {
+//      orient2D(predicates,
+//               Vector2D.of(p[i]),
+//               Vector2D.of(p[i+1]),
+//               Vector2D.of(p[i+2]));} }
 
   //--------------------------------------------------------------
 }
