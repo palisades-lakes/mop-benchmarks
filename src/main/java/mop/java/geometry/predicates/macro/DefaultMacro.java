@@ -7,6 +7,7 @@ package mop.java.geometry.predicates.macro;
 // algorithm classes
 
 import mop.java.geometry.predicates.Predicate;
+import org.apache.commons.geometry.euclidean.threed.Vector3D;
 import org.apache.commons.geometry.euclidean.twod.Vector2D;
 
 import static mop.java.geometry.predicates.macro.Expansion.EPSILON;
@@ -142,24 +143,24 @@ public final class DefaultMacro implements Predicate {
   private static final double o3derrboundA =
     (7.0 + 56.0 * EPSILON) * EPSILON;
 
-  public final double orient3d (final double[] pa,
-                                final double[] pb,
-                                final double[] pc,
-                                final double[] pd) {
+  public final double orient3d (final Vector3D pa,
+                                final Vector3D pb,
+                                final Vector3D pc,
+                                final Vector3D pd) {
     double adx, bdx, cdx, ady, bdy, cdy, adz, bdz, cdz;
     double bdxcdy, cdxbdy, cdxady, adxcdy, adxbdy, bdxady;
     double det;
     double permanent, errbound;
 
-    adx = pa[0] - pd[0];
-    bdx = pb[0] - pd[0];
-    cdx = pc[0] - pd[0];
-    ady = pa[1] - pd[1];
-    bdy = pb[1] - pd[1];
-    cdy = pc[1] - pd[1];
-    adz = pa[2] - pd[2];
-    bdz = pb[2] - pd[2];
-    cdz = pc[2] - pd[2];
+    adx = pa.getX() - pd.getX();
+    bdx = pb.getX() - pd.getX();
+    cdx = pc.getX() - pd.getX();
+    ady = pa.getY() - pd.getY();
+    bdy = pb.getY() - pd.getY();
+    cdy = pc.getY() - pd.getY();
+    adz = pa.getZ() - pd.getZ();
+    bdz = pb.getZ() - pd.getZ();
+    cdz = pc.getZ() - pd.getZ();
 
     bdxcdy = bdx * cdy;
     cdxbdy = cdx * bdy;

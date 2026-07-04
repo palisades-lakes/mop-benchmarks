@@ -8,6 +8,7 @@ package mop.java.geometry.predicates;
 
 import mop.java.numbers.Hilo;
 import mop.java.numbers.XDouble;
+import org.apache.commons.geometry.euclidean.threed.Vector3D;
 import org.apache.commons.geometry.euclidean.twod.Vector2D;
 
 /**
@@ -161,19 +162,19 @@ public final class Slow implements Predicate {
   //--------------------------------------------------------------------
   // orient3d
   //--------------------------------------------------------------------
-  public final double orient3d (final double[] pa,
-                                final double[] pb,
-                                final double[] pc,
-                                final double[] pd) {
-    final Hilo adx = Hilo.twoDiff(pa[0], pd[0]);
-    final Hilo ady = Hilo.twoDiff(pa[1], pd[1]);
-    final Hilo adz = Hilo.twoDiff(pa[2], pd[2]);
-    final Hilo bdx = Hilo.twoDiff(pb[0], pd[0]);
-    final Hilo bdy = Hilo.twoDiff(pb[1], pd[1]);
-    final Hilo bdz = Hilo.twoDiff(pb[2], pd[2]);
-    final Hilo cdx = Hilo.twoDiff(pc[0], pd[0]);
-    final Hilo cdy = Hilo.twoDiff(pc[1], pd[1]);
-    final Hilo cdz = Hilo.twoDiff(pc[2], pd[2]);
+  public final double orient3d (final Vector3D pa,
+                                final Vector3D pb,
+                                final Vector3D pc,
+                                final Vector3D pd) {
+    final Hilo adx = Hilo.twoDiff(pa.getX(), pd.getX());
+    final Hilo ady = Hilo.twoDiff(pa.getY(), pd.getY());
+    final Hilo adz = Hilo.twoDiff(pa.getZ(), pd.getZ());
+    final Hilo bdx = Hilo.twoDiff(pb.getX(), pd.getX());
+    final Hilo bdy = Hilo.twoDiff(pb.getY(), pd.getY());
+    final Hilo bdz = Hilo.twoDiff(pb.getZ(), pd.getZ());
+    final Hilo cdx = Hilo.twoDiff(pc.getX(), pd.getX());
+    final Hilo cdy = Hilo.twoDiff(pc.getY(), pd.getY());
+    final Hilo cdz = Hilo.twoDiff(pc.getZ(), pd.getZ());
 
     final XDouble axby = XDouble.twoTwoProduct(adx, bdy);
     final XDouble bxay = XDouble.twoTwoProduct(bdx, ady.negate());

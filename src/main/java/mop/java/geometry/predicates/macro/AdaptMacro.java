@@ -8,6 +8,7 @@ package mop.java.geometry.predicates.macro;
 // algorithm classes
 
 import mop.java.geometry.predicates.Predicate;
+import org.apache.commons.geometry.euclidean.threed.Vector3D;
 import org.apache.commons.geometry.euclidean.twod.Vector2D;
 
 import static mop.java.geometry.predicates.macro.Expansion.*;
@@ -410,17 +411,16 @@ import static mop.java.geometry.predicates.macro.Expansion.*;
 
     //--------------------------------------------------------------------
 
-    public final double orient3d (final double[] pa,
-                                  final double[] pb,
-                                  final double[] pc,
-                                  final double[] pd) {
-      return new DefaultMacro().orient3d(pa, pb, pc, pd);
-    }
+    public final double orient3d (final Vector3D pa,
+                                  final Vector3D pb,
+                                  final Vector3D pc,
+                                  final Vector3D pd) {
+      return new DefaultMacro().orient3d(pa, pb, pc, pd); }
 
-    public final double orient3d (final double[] pa,
-                                  final double[] pb,
-                                  final double[] pc,
-                                  final double[] pd,
+    public final double orient3d (final Vector3D pa,
+                                  final Vector3D pb,
+                                  final Vector3D pc,
+                                  final Vector3D pd,
                                   final double permanent) {
       double adx, bdx, cdx, ady, bdy, cdy, adz, bdz, cdz;
       double det, errbound;
@@ -477,15 +477,15 @@ import static mop.java.geometry.predicates.macro.Expansion.*;
       double _i, _j, _k;
       double _0;
 
-      adx = (pa[0] - pd[0]);
-      bdx = (pb[0] - pd[0]);
-      cdx = (pc[0] - pd[0]);
-      ady = (pa[1] - pd[1]);
-      bdy = (pb[1] - pd[1]);
-      cdy = (pc[1] - pd[1]);
-      adz = (pa[2] - pd[2]);
-      bdz = (pb[2] - pd[2]);
-      cdz = (pc[2] - pd[2]);
+      adx = (pa.getX() - pd.getX());
+      bdx = (pb.getX() - pd.getX());
+      cdx = (pc.getX() - pd.getX());
+      ady = (pa.getY() - pd.getY());
+      bdy = (pb.getY() - pd.getY());
+      cdy = (pc.getY() - pd.getY());
+      adz = (pa.getZ() - pd.getZ());
+      bdz = (pb.getZ() - pd.getZ());
+      cdz = (pc.getZ() - pd.getZ());
 
       bdxcdy1 = (bdx * cdy);
       c = (SPLITTER * bdx);
@@ -656,50 +656,50 @@ import static mop.java.geometry.predicates.macro.Expansion.*;
         return det;
       }
 
-      bvirt = (pa[0] - adx);
+      bvirt = (pa.getX() - adx);
       avirt = adx + bvirt;
-      bround = bvirt - pd[0];
-      around = pa[0] - avirt;
+      bround = bvirt - pd.getX();
+      around = pa.getX() - avirt;
       adxtail = around + bround;
-      bvirt = (pb[0] - bdx);
+      bvirt = (pb.getX() - bdx);
       avirt = bdx + bvirt;
-      bround = bvirt - pd[0];
-      around = pb[0] - avirt;
+      bround = bvirt - pd.getX();
+      around = pb.getX() - avirt;
       bdxtail = around + bround;
-      bvirt = (pc[0] - cdx);
+      bvirt = (pc.getX() - cdx);
       avirt = cdx + bvirt;
-      bround = bvirt - pd[0];
-      around = pc[0] - avirt;
+      bround = bvirt - pd.getX();
+      around = pc.getX() - avirt;
       cdxtail = around + bround;
-      bvirt = (pa[1] - ady);
+      bvirt = (pa.getY() - ady);
       avirt = ady + bvirt;
-      bround = bvirt - pd[1];
-      around = pa[1] - avirt;
+      bround = bvirt - pd.getY();
+      around = pa.getY() - avirt;
       adytail = around + bround;
-      bvirt = (pb[1] - bdy);
+      bvirt = (pb.getY() - bdy);
       avirt = bdy + bvirt;
-      bround = bvirt - pd[1];
-      around = pb[1] - avirt;
+      bround = bvirt - pd.getY();
+      around = pb.getY() - avirt;
       bdytail = around + bround;
-      bvirt = (pc[1] - cdy);
+      bvirt = (pc.getY() - cdy);
       avirt = cdy + bvirt;
-      bround = bvirt - pd[1];
-      around = pc[1] - avirt;
+      bround = bvirt - pd.getY();
+      around = pc.getY() - avirt;
       cdytail = around + bround;
-      bvirt = (pa[2] - adz);
+      bvirt = (pa.getZ() - adz);
       avirt = adz + bvirt;
-      bround = bvirt - pd[2];
-      around = pa[2] - avirt;
+      bround = bvirt - pd.getZ();
+      around = pa.getZ() - avirt;
       adztail = around + bround;
-      bvirt = (pb[2] - bdz);
+      bvirt = (pb.getZ() - bdz);
       avirt = bdz + bvirt;
-      bround = bvirt - pd[2];
-      around = pb[2] - avirt;
+      bround = bvirt - pd.getZ();
+      around = pb.getZ() - avirt;
       bdztail = around + bround;
-      bvirt = (pc[2] - cdz);
+      bvirt = (pc.getZ() - cdz);
       avirt = cdz + bvirt;
-      bround = bvirt - pd[2];
-      around = pc[2] - avirt;
+      bround = bvirt - pd.getZ();
+      around = pc.getZ() - avirt;
       cdztail = around + bround;
 
       if ((adxtail == 0.0) && (bdxtail == 0.0) && (cdxtail == 0.0)
@@ -721,9 +721,7 @@ import static mop.java.geometry.predicates.macro.Expansion.*;
         + (cdz * ((adx * bdytail + bdy * adxtail)
         - (ady * bdxtail + bdx * adytail))
         + cdztail * (adx * bdy - ady * bdx));
-      if ((det >= errbound) || (-det >= errbound)) {
-        return det;
-      }
+      if ((det >= errbound) || (-det >= errbound)) { return det; }
 
       finnow = fin1;
       finother = fin2;

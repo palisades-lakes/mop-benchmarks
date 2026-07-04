@@ -1,6 +1,7 @@
 package mop.java.geometry.predicates;
 
 import mop.java.numbers.BigFloat;
+import org.apache.commons.geometry.euclidean.threed.Vector3D;
 import org.apache.commons.geometry.euclidean.twod.Vector2D;
 
 /** Standard calculations implemented in BigFloat.
@@ -47,22 +48,22 @@ public final class BigFloatPredicate implements Predicate {
   //--------------------------------------------------------------------
   // TODO: rewrite as vector operations
 
-  public final double orient3d (final double[] pa,
-                                final double[] pb,
-                                final double[] pc,
-                                final double[] pd) {
-    final BigFloat ax = BigFloat.valueOf(pa[0]);
-    final BigFloat ay = BigFloat.valueOf(pa[1]);
-    final BigFloat az = BigFloat.valueOf(pa[2]);
-    final BigFloat bx = BigFloat.valueOf(pb[0]);
-    final BigFloat by = BigFloat.valueOf(pb[1]);
-    final BigFloat bz = BigFloat.valueOf(pb[2]);
-    final BigFloat cx = BigFloat.valueOf(pc[0]);
-    final BigFloat cy = BigFloat.valueOf(pc[1]);
-    final BigFloat cz = BigFloat.valueOf(pc[2]);
-    final BigFloat dx = BigFloat.valueOf(pd[0]);
-    final BigFloat dy = BigFloat.valueOf(pd[1]);
-    final BigFloat dz = BigFloat.valueOf(pd[2]);
+  public final double orient3d (final Vector3D pa,
+                                final Vector3D pb,
+                                final Vector3D pc,
+                                final Vector3D pd) {
+    final BigFloat ax = BigFloat.valueOf(pa.getX());
+    final BigFloat ay = BigFloat.valueOf(pa.getY());
+    final BigFloat az = BigFloat.valueOf(pa.getZ());
+    final BigFloat bx = BigFloat.valueOf(pb.getX());
+    final BigFloat by = BigFloat.valueOf(pb.getY());
+    final BigFloat bz = BigFloat.valueOf(pb.getZ());
+    final BigFloat cx = BigFloat.valueOf(pc.getX());
+    final BigFloat cy = BigFloat.valueOf(pc.getY());
+    final BigFloat cz = BigFloat.valueOf(pc.getZ());
+    final BigFloat dx = BigFloat.valueOf(pd.getX());
+    final BigFloat dy = BigFloat.valueOf(pd.getY());
+    final BigFloat dz = BigFloat.valueOf(pd.getZ());
     final BigFloat adx = ax.subtract(dx);
     final BigFloat bdx = bx.subtract(dx);
     final BigFloat cdx = cx.subtract(dx);

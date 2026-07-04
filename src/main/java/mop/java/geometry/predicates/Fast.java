@@ -6,6 +6,7 @@ package mop.java.geometry.predicates;
 // split into Expansion manipulation and fast, slow, exact, adaptive
 // algorithm classes
 
+import org.apache.commons.geometry.euclidean.threed.Vector3D;
 import org.apache.commons.geometry.euclidean.twod.Vector2D;
 
 /** Approximate predicates, nonrobust.
@@ -100,19 +101,19 @@ public final class Fast implements Predicate {
   // orient3d
   //--------------------------------------------------------------------
 
-  public final double orient3d (final double[] pa,
-                                final double[] pb,
-                                final double[] pc,
-                                final double[] pd) {
-    final double adx = pa[0] - pd[0];
-    final double bdx = pb[0] - pd[0];
-    final double cdx = pc[0] - pd[0];
-    final double ady = pa[1] - pd[1];
-    final double bdy = pb[1] - pd[1];
-    final double cdy = pc[1] - pd[1];
-    final double adz = pa[2] - pd[2];
-    final double bdz = pb[2] - pd[2];
-    final double cdz = pc[2] - pd[2];
+  public final double orient3d (final Vector3D pa,
+                                final Vector3D pb,
+                                final Vector3D pc,
+                                final Vector3D pd) {
+    final double adx = pa.getX() - pd.getX();
+    final double bdx = pb.getX() - pd.getX();
+    final double cdx = pc.getX() - pd.getX();
+    final double ady = pa.getY() - pd.getY();
+    final double bdy = pb.getY() - pd.getY();
+    final double cdy = pc.getY() - pd.getY();
+    final double adz = pa.getZ() - pd.getZ();
+    final double bdz = pb.getZ() - pd.getZ();
+    final double cdz = pc.getZ() - pd.getZ();
 
     return (adx * ((bdy * cdz) - (bdz * cdy))) +
       (bdx * ((cdy * adz) - (cdz * ady))) +

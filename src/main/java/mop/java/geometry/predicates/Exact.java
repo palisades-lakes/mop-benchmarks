@@ -2,6 +2,7 @@ package mop.java.geometry.predicates;
 
 import mop.java.numbers.Hilo;
 import mop.java.numbers.XDouble;
+import org.apache.commons.geometry.euclidean.threed.Vector3D;
 import org.apache.commons.geometry.euclidean.twod.Vector2D;
 
 /** Exact tests.  Robust.
@@ -89,27 +90,27 @@ public final class Exact implements Predicate {
   // orient3d
   //--------------------------------------------------------------------
 
-  public final double orient3d (final double[] pa,
-                                final double[] pb,
-                                final double[] pc,
-                                final double[] pd) {
-    final Hilo axby = Hilo.product(pa[0],pb[1]);
-    final Hilo bxay = Hilo.product(pb[0],pa[1]);
+  public final double orient3d (final Vector3D pa,
+                                final Vector3D pb,
+                                final Vector3D pc,
+                                final Vector3D pd) {
+    final Hilo axby = Hilo.product(pa.getX(),pb.getY());
+    final Hilo bxay = Hilo.product(pb.getX(),pa.getY());
     final XDouble ab = XDouble.twoTwoDiff(axby,bxay);
-    final Hilo bxcy = Hilo.product(pb[0],pc[1]);
-    final Hilo cxby = Hilo.product(pc[0],pb[1]);
+    final Hilo bxcy = Hilo.product(pb.getX(),pc.getY());
+    final Hilo cxby = Hilo.product(pc.getX(),pb.getY());
     final XDouble bc = XDouble.twoTwoDiff(bxcy,cxby);
-    final Hilo cxdy = Hilo.product(pc[0],pd[1]);
-    final Hilo dxcy = Hilo.product(pd[0],pc[1]);
+    final Hilo cxdy = Hilo.product(pc.getX(),pd.getY());
+    final Hilo dxcy = Hilo.product(pd.getX(),pc.getY());
     final XDouble cd = XDouble.twoTwoDiff(cxdy,dxcy);
-    final Hilo dxay = Hilo.product(pd[0],pa[1]);
-    final Hilo axdy = Hilo.product(pa[0],pd[1]);
+    final Hilo dxay = Hilo.product(pd.getX(),pa.getY());
+    final Hilo axdy = Hilo.product(pa.getX(),pd.getY());
     final XDouble da = XDouble.twoTwoDiff(dxay,axdy);
-    final Hilo axcy = Hilo.product(pa[0],pc[1]);
-    final Hilo cxay = Hilo.product(pc[0],pa[1]);
+    final Hilo axcy = Hilo.product(pa.getX(),pc.getY());
+    final Hilo cxay = Hilo.product(pc.getX(),pa.getY());
     final XDouble ac = XDouble.twoTwoDiff(axcy,cxay);
-    final Hilo bxdy = Hilo.product(pb[0],pd[1]);
-    final Hilo dxby = Hilo.product(pd[0],pb[1]);
+    final Hilo bxdy = Hilo.product(pb.getX(),pd.getY());
+    final Hilo dxby = Hilo.product(pd.getX(),pb.getY());
     final XDouble bd = XDouble.twoTwoDiff(bxdy,dxby);
 
     final XDouble cda = cd.add(da).add(ac);
@@ -117,10 +118,10 @@ public final class Exact implements Predicate {
     final XDouble abc = ab.add(bc).subtract(ac);
     final XDouble bcd = bc.add(cd).subtract(bd);
 
-    final XDouble adet = bcd.multiply(pa[2]);
-    final XDouble bdet = cda.multiply(-pb[2]);
-    final XDouble cdet = dab.multiply(pc[2]);
-    final XDouble ddet = abc.multiply(-pd[2]);
+    final XDouble adet = bcd.multiply(pa.getZ());
+    final XDouble bdet = cda.multiply(-pb.getZ());
+    final XDouble cdet = dab.multiply(pc.getZ());
+    final XDouble ddet = abc.multiply(-pd.getZ());
 
     return adet.add(bdet).add(cdet).add(ddet).doubleValue(); }
 

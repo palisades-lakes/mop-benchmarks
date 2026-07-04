@@ -6,6 +6,7 @@ package mop.java.geometry.predicates;
 // split into Expansion manipulation and fast, slow, exact, adaptive
 // algorithm classes
 
+import org.apache.commons.geometry.euclidean.threed.Vector3D;
 import org.apache.commons.geometry.euclidean.twod.Vector2D;
 
 /**
@@ -159,10 +160,10 @@ public interface Predicate {
    * orient3d() is usually quite fast, but will run more slowly when the
    * input points are coplanar or nearly so.
    */
-  default double orient3d (final double[] pa,
-                           final double[] pb,
-                           final double[] pc,
-                           final double[] pd) {
+  default double orient3d (final Vector3D pa,
+                           final Vector3D pb,
+                           final Vector3D pc,
+                           final Vector3D pd) {
     throw new UnsupportedOperationException(
       getClass().getSimpleName()); }
 

@@ -8,6 +8,7 @@ package mop.java.geometry.predicates;
 
 import mop.java.numbers.Hilo;
 import mop.java.numbers.XDouble;
+import org.apache.commons.geometry.euclidean.threed.Vector3D;
 import org.apache.commons.geometry.euclidean.twod.Vector2D;
 
 /** Adaptive 'exact' tests. Robust.
@@ -515,20 +516,20 @@ public final class Adapt implements Predicate {
 
   //--------------------------------------------------------------------
 
-  public final double orient3d (final double[] pa,
-                                final double[] pb,
-                                final double[] pc,
-                                final double[] pd,
+  public final double orient3d (final Vector3D pa,
+                                final Vector3D pb,
+                                final Vector3D pc,
+                                final Vector3D pd,
                                 final double permanent) {
-    final double adx = (pa[0] - pd[0]);
-    final double bdx = (pb[0] - pd[0]);
-    final double cdx = (pc[0] - pd[0]);
-    final double ady = (pa[1] - pd[1]);
-    final double bdy = (pb[1] - pd[1]);
-    final double cdy = (pc[1] - pd[1]);
-    final double adz = (pa[2] - pd[2]);
-    final double bdz = (pb[2] - pd[2]);
-    final double cdz = (pc[2] - pd[2]);
+    final double adx = (pa.getX() - pd.getX());
+    final double bdx = (pb.getX() - pd.getX());
+    final double cdx = (pc.getX() - pd.getX());
+    final double ady = (pa.getY() - pd.getY());
+    final double bdy = (pb.getY() - pd.getY());
+    final double cdy = (pc.getY() - pd.getY());
+    final double adz = (pa.getZ() - pd.getZ());
+    final double bdz = (pb.getZ() - pd.getZ());
+    final double cdz = (pc.getZ() - pd.getZ());
 
     final Hilo bdxcdy = Hilo.product(bdx,cdy);
     final Hilo cdxbdy = Hilo.product(cdx,bdy);
@@ -547,15 +548,15 @@ public final class Adapt implements Predicate {
     double errbound = o3derrboundB * permanent;
     if (Math.abs(det) >= errbound) { return det; }
 
-    final double adxtail = Hilo.twoDiffTail(pa[0],pd[0],adx);
-    final double bdxtail = Hilo.twoDiffTail(pb[0],pd[0],bdx);
-    final double cdxtail = Hilo.twoDiffTail(pc[0],pd[0],cdx);
-    final double adytail = Hilo.twoDiffTail(pa[1],pd[1],ady);
-    final double bdytail = Hilo.twoDiffTail(pb[1],pd[1],bdy);
-    final double cdytail = Hilo.twoDiffTail(pc[1],pd[1],cdy);
-    final double adztail = Hilo.twoDiffTail(pa[2],pd[2],adz);
-    final double bdztail = Hilo.twoDiffTail(pb[2],pd[2],bdz);
-    final double cdztail = Hilo.twoDiffTail(pc[2],pd[2],cdz);
+    final double adxtail = Hilo.twoDiffTail(pa.getX(),pd.getX(),adx);
+    final double bdxtail = Hilo.twoDiffTail(pb.getX(),pd.getX(),bdx);
+    final double cdxtail = Hilo.twoDiffTail(pc.getX(),pd.getX(),cdx);
+    final double adytail = Hilo.twoDiffTail(pa.getY(),pd.getY(),ady);
+    final double bdytail = Hilo.twoDiffTail(pb.getY(),pd.getY(),bdy);
+    final double cdytail = Hilo.twoDiffTail(pc.getY(),pd.getY(),cdy);
+    final double adztail = Hilo.twoDiffTail(pa.getZ(),pd.getZ(),adz);
+    final double bdztail = Hilo.twoDiffTail(pb.getZ(),pd.getZ(),bdz);
+    final double cdztail = Hilo.twoDiffTail(pc.getZ(),pd.getZ(),cdz);
 
     if ((adxtail == 0.0) && (bdxtail == 0.0) && (cdxtail == 0.0)
       && (adytail == 0.0) && (bdytail == 0.0) && (cdytail == 0.0)
@@ -682,21 +683,21 @@ public final class Adapt implements Predicate {
 
     return finnow.doubleValue(); }
 
-  public final double orient3d (final double[] pa,
-                                final double[] pb,
-                                final double[] pc,
-                                final double[] pd) {
+  public final double orient3d (final Vector3D pa,
+                                final Vector3D pb,
+                                final Vector3D pc,
+                                final Vector3D pd) {
 
 
-    final double adx = pa[0] - pd[0];
-    final double bdx = pb[0] - pd[0];
-    final double cdx = pc[0] - pd[0];
-    final double ady = pa[1] - pd[1];
-    final double bdy = pb[1] - pd[1];
-    final double cdy = pc[1] - pd[1];
-    final double adz = pa[2] - pd[2];
-    final double bdz = pb[2] - pd[2];
-    final double cdz = pc[2] - pd[2];
+    final double adx = pa.getX() - pd.getX();
+    final double bdx = pb.getX() - pd.getX();
+    final double cdx = pc.getX() - pd.getX();
+    final double ady = pa.getY() - pd.getY();
+    final double bdy = pb.getY() - pd.getY();
+    final double cdy = pc.getY() - pd.getY();
+    final double adz = pa.getZ() - pd.getZ();
+    final double bdz = pb.getZ() - pd.getZ();
+    final double cdz = pc.getZ() - pd.getZ();
 
     final double bdxcdy = bdx * cdy;
     final double cdxbdy = cdx * bdy;

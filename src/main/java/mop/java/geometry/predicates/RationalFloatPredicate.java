@@ -1,6 +1,7 @@
 package mop.java.geometry.predicates;
 
 import mop.java.numbers.RationalFloat;
+import org.apache.commons.geometry.euclidean.threed.Vector3D;
 import org.apache.commons.geometry.euclidean.twod.Vector2D;
 
 /** Standard calculations implemented in RationalFloat.
@@ -47,22 +48,22 @@ public final class RationalFloatPredicate implements Predicate {
   //--------------------------------------------------------------------
   // TODO: rewrite as vector operations
 
-  public final double orient3d (final double[] pa,
-                                final double[] pb,
-                                final double[] pc,
-                                final double[] pd) {
-    final RationalFloat ax = RationalFloat.valueOf(pa[0]);
-    final RationalFloat ay = RationalFloat.valueOf(pa[1]);
-    final RationalFloat az = RationalFloat.valueOf(pa[2]);
-    final RationalFloat bx = RationalFloat.valueOf(pb[0]);
-    final RationalFloat by = RationalFloat.valueOf(pb[1]);
-    final RationalFloat bz = RationalFloat.valueOf(pb[2]);
-    final RationalFloat cx = RationalFloat.valueOf(pc[0]);
-    final RationalFloat cy = RationalFloat.valueOf(pc[1]);
-    final RationalFloat cz = RationalFloat.valueOf(pc[2]);
-    final RationalFloat dx = RationalFloat.valueOf(pd[0]);
-    final RationalFloat dy = RationalFloat.valueOf(pd[1]);
-    final RationalFloat dz = RationalFloat.valueOf(pd[2]);
+  public final double orient3d (final Vector3D pa,
+                                final Vector3D pb,
+                                final Vector3D pc,
+                                final Vector3D pd) {
+    final RationalFloat ax = RationalFloat.valueOf(pa.getX());
+    final RationalFloat ay = RationalFloat.valueOf(pa.getY());
+    final RationalFloat az = RationalFloat.valueOf(pa.getZ());
+    final RationalFloat bx = RationalFloat.valueOf(pb.getX());
+    final RationalFloat by = RationalFloat.valueOf(pb.getY());
+    final RationalFloat bz = RationalFloat.valueOf(pb.getZ());
+    final RationalFloat cx = RationalFloat.valueOf(pc.getX());
+    final RationalFloat cy = RationalFloat.valueOf(pc.getY());
+    final RationalFloat cz = RationalFloat.valueOf(pc.getZ());
+    final RationalFloat dx = RationalFloat.valueOf(pd.getX());
+    final RationalFloat dy = RationalFloat.valueOf(pd.getY());
+    final RationalFloat dz = RationalFloat.valueOf(pd.getZ());
     final RationalFloat adx = ax.subtract(dx);
     final RationalFloat bdx = bx.subtract(dx);
     final RationalFloat cdx = cx.subtract(dx);
@@ -76,11 +77,9 @@ public final class RationalFloatPredicate implements Predicate {
     return
       adx.multiply(bdy.multiply(cdz).subtract(bdz.multiply(cdy)))
          .add(
-           bdx.multiply(cdy.multiply(adz).subtract(cdz.multiply(ady)))
-             )
+           bdx.multiply(cdy.multiply(adz).subtract(cdz.multiply(ady))))
          .add(
-           cdx.multiply(ady.multiply(bdz).subtract(adz.multiply(bdy)))
-             )
+           cdx.multiply(ady.multiply(bdz).subtract(adz.multiply(bdy))))
          .doubleValue(); }
 
 
