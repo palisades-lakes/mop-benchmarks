@@ -82,7 +82,7 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
  *   even <code>BigInteger</code> to extend range.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-07-03
+ * @version 2026-07-04
  */
 
 // strictfp (may be) necessary for JDK16 and earlier
@@ -121,20 +121,20 @@ public final class Adapt implements Predicate {
              .add(axtbc.multiply(2*adx))
              .add(cc.multiply(adxtail).multiply(bdy)); }
 
-  private static final double incircle (final double[] pa,
-                                        final double[] pb,
-                                        final double[] pc,
-                                        final double[] pd,
+  private static final double incircle (final Vector2D pa,
+                                        final Vector2D pb,
+                                        final Vector2D pc,
+                                        final Vector2D pd,
                                         final double permanent) {
     // TODO: should this be Hilo.twoDiff? see calls to towDiffTail below
     // TODO: convert to vector ops.
     // TODO: subtract d from other vecs before calling
-    final double adx = (pa[0] - pd[0]);
-    final double ady = (pa[1] - pd[1]);
-    final double bdx = (pb[0] - pd[0]);
-    final double bdy = (pb[1] - pd[1]);
-    final double cdx = (pc[0] - pd[0]);
-    final double cdy = (pc[1] - pd[1]);
+    final double adx = (pa.getX() - pd.getX());
+    final double ady = (pa.getY() - pd.getY());
+    final double bdx = (pb.getX() - pd.getX());
+    final double bdy = (pb.getY() - pd.getY());
+    final double cdx = (pc.getX() - pd.getX());
+    final double cdy = (pc.getY() - pd.getY());
 
     // TODO: XDouble.crossProduct?
     final XDouble bc = XDouble.twoTwoDiff(
@@ -162,12 +162,12 @@ public final class Adapt implements Predicate {
     double det = finnow.doubleValue();
     if (Math.abs(det) >= iccerrboundB * permanent) { return det; }
 
-    final double adxtail = Hilo.twoDiffTail(pa[0], pd[0], adx);
-    final double adytail = Hilo.twoDiffTail(pa[1], pd[1], ady);
-    final double bdxtail = Hilo.twoDiffTail(pb[0], pd[0], bdx);
-    final double bdytail = Hilo.twoDiffTail(pb[1], pd[1], bdy);
-    final double cdxtail = Hilo.twoDiffTail(pc[0], pd[0], cdx);
-    final double cdytail = Hilo.twoDiffTail(pc[1], pd[1], cdy);
+    final double adxtail = Hilo.twoDiffTail(pa.getX(), pd.getX(), adx);
+    final double adytail = Hilo.twoDiffTail(pa.getY(), pd.getY(), ady);
+    final double bdxtail = Hilo.twoDiffTail(pb.getX(), pd.getX(), bdx);
+    final double bdytail = Hilo.twoDiffTail(pb.getY(), pd.getY(), bdy);
+    final double cdxtail = Hilo.twoDiffTail(pc.getX(), pd.getX(), cdx);
+    final double cdytail = Hilo.twoDiffTail(pc.getY(), pd.getY(), cdy);
 
     final boolean axtail = (adxtail != 0.0);
     final boolean aytail = (adytail != 0.0);
@@ -374,20 +374,20 @@ public final class Adapt implements Predicate {
 
   //--------------------------------------------------------------------
 
-  public final double incircle (final double[] pa,
-                                final double[] pb,
-                                final double[] pc,
-                                final double[] pd) {
-    final double adx = pa[0] - pd[0];
-    final double ady = pa[1] - pd[1];
+  public final double incircle (final Vector2D pa,
+                                final Vector2D pb,
+                                final Vector2D pc,
+                                final Vector2D pd) {
+    final double adx = pa.getX() - pd.getX();
+    final double ady = pa.getY() - pd.getY();
     final double alift = (adx * adx) + (ady * ady);
 
-    final double bdx = pb[0] - pd[0];
-    final double bdy = pb[1] - pd[1];
+    final double bdx = pb.getX() - pd.getX();
+    final double bdy = pb.getY() - pd.getY();
     final double blift = (bdx * bdx) + (bdy * bdy);
 
-    final double cdx = pc[0] - pd[0];
-    final double cdy = pc[1] - pd[1];
+    final double cdx = pc.getX() - pd.getX();
+    final double cdy = pc.getY() - pd.getY();
     final double clift = (cdx * cdx) + (cdy * cdy);
 
     final double bdxcdy = bdx * cdy;

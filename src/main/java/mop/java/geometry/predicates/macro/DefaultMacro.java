@@ -82,7 +82,7 @@ import static mop.java.geometry.predicates.macro.Expansion.EPSILON;
  *   even <code>BigInteger</code> to extend range.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-07-03
+ * @version 2026-07-04
  */
 
 // strictfp unnecessary for JDK17 and later
@@ -201,22 +201,22 @@ public final class DefaultMacro implements Predicate {
   private static final double iccerrboundA =
     (10.0 + 96.0 * EPSILON) * EPSILON;
 
-  public final double incircle (final double[] pa,
-                                final double[] pb,
-                                final double[] pc,
-                                final double[] pd) {
+  public final double incircle (final Vector2D pa,
+                                final Vector2D pb,
+                                final Vector2D pc,
+                                final Vector2D pd) {
     double adx, bdx, cdx, ady, bdy, cdy;
     double bdxcdy, cdxbdy, cdxady, adxcdy, adxbdy, bdxady;
     double alift, blift, clift;
     double det;
     double permanent, errbound;
 
-    adx = pa[0] - pd[0];
-    bdx = pb[0] - pd[0];
-    cdx = pc[0] - pd[0];
-    ady = pa[1] - pd[1];
-    bdy = pb[1] - pd[1];
-    cdy = pc[1] - pd[1];
+    adx = pa.getX() - pd.getX();
+    bdx = pb.getX() - pd.getX();
+    cdx = pc.getX() - pd.getX();
+    ady = pa.getY() - pd.getY();
+    bdy = pb.getY() - pd.getY();
+    cdy = pc.getY() - pd.getY();
 
     bdxcdy = bdx * cdy;
     cdxbdy = cdx * bdy;

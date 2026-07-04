@@ -1,12 +1,13 @@
 package mop.java.geometry.predicates.jts;
 
 import mop.java.geometry.predicates.Predicate;
+import org.apache.commons.geometry.euclidean.twod.Vector2D;
 import org.locationtech.jts.math.DD;
 
 /** From org.locationtech.jts.triangulate.quadedge.TrianglePredicate
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-07-03
+ * @version 2026-07-04
  */
 
 public final class DDNormalized implements Predicate {
@@ -16,16 +17,16 @@ public final class DDNormalized implements Predicate {
   //--------------------------------------------------------------------
   /** TrianglePredicate.isInCircleNonRobust.
    */
-  public final double incircle (final double[] a,
-                                final double[] b,
-                                final double[] c,
-                                final double[] p) {
-    DD adx = DD.valueOf(a[0]).selfSubtract(p[0]);
-    DD ady = DD.valueOf(a[1]).selfSubtract(p[1]);
-    DD bdx = DD.valueOf(b[0]).selfSubtract(p[0]);
-    DD bdy = DD.valueOf(b[1]).selfSubtract(p[1]);
-    DD cdx = DD.valueOf(c[0]).selfSubtract(p[0]);
-    DD cdy = DD.valueOf(c[1]).selfSubtract(p[1]);
+  public final double incircle (final Vector2D a,
+                                final Vector2D b,
+                                final Vector2D c,
+                                final Vector2D p) {
+    DD adx = DD.valueOf(a.getX()).selfSubtract(p.getX());
+    DD ady = DD.valueOf(a.getY()).selfSubtract(p.getY());
+    DD bdx = DD.valueOf(b.getX()).selfSubtract(p.getX());
+    DD bdy = DD.valueOf(b.getY()).selfSubtract(p.getY());
+    DD cdx = DD.valueOf(c.getX()).selfSubtract(p.getX());
+    DD cdy = DD.valueOf(c.getY()).selfSubtract(p.getY());
 
     DD abdet = adx.multiply(bdy).selfSubtract(bdx.multiply(ady));
     DD bcdet = bdx.multiply(cdy).selfSubtract(cdx.multiply(bdy));

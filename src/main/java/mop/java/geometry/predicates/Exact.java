@@ -44,13 +44,13 @@ public final class Exact implements Predicate {
 
   //--------------------------------------------------------------------
 
-  private static final XDouble det (final double[] a,
+  private static final XDouble det (final Vector2D a,
                                     final boolean subtractFlag,
                                     final XDouble bc,
                                     final XDouble cd,
                                     final XDouble bd,
                                     final int flip) {
-    final double ax = a[0], ay = a[1];
+    final double ax = a.getX(), ay = a.getY();
     // TODO: XDouble.add(XDouble,XDouble) to skip one object creation?
     //  ...and XDouble.addSubtract(XDouble,XDouble)
     // TODO: XDouble.multiplyBySquare(double)?
@@ -63,10 +63,10 @@ public final class Exact implements Predicate {
           bcd.multiply(ay).multiply(flip*ay)); }
 
 
-  public final double incircle (final double[] a,
-                                final double[] b,
-                                final double[] c,
-                                final double[] d) {
+  public final double incircle (final Vector2D a,
+                                final Vector2D b,
+                                final Vector2D c,
+                                final Vector2D d) {
     final XDouble ab = XDouble.crossProduct(a,b);
     final XDouble bc = XDouble.crossProduct(b,c);
     final XDouble cd = XDouble.crossProduct(c,d);

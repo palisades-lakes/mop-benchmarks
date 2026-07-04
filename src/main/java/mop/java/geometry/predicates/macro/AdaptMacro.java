@@ -83,7 +83,7 @@ import static mop.java.geometry.predicates.macro.Expansion.*;
    *   even <code>BigInteger</code> to extend range.
    *
    * @author palisades dot lakes at gmail dot com,
-   * @version 2026-07-03
+   * @version 2026-07-04
    */
 
 // strictfp unnecessary for JDK17 and later
@@ -1942,16 +1942,16 @@ import static mop.java.geometry.predicates.macro.Expansion.*;
     private static final double iccerrboundB =
       (4.0 + 48.0 * EPSILON) * EPSILON;
 
-    public final double incircle (final double[] pa,
-                                  final double[] pb,
-                                  final double[] pc,
-                                  final double[] pd) {
+    public final double incircle (final Vector2D pa,
+                                  final Vector2D pb,
+                                  final Vector2D pc,
+                                  final Vector2D pd) {
       return new DefaultMacro().incircle(pa, pb, pc, pd); }
 
-    final double incircle (final double[] pa,
-                           final double[] pb,
-                           final double[] pc,
-                           final double[] pd,
+    final double incircle (final Vector2D pa,
+                           final Vector2D pb,
+                           final Vector2D pc,
+                           final Vector2D pd,
                            final double permanent) {
       double adx, bdx, cdx, ady, bdy, cdy;
       double det, errbound;
@@ -2038,12 +2038,12 @@ import static mop.java.geometry.predicates.macro.Expansion.*;
       double _i, _j;
       double _0;
 
-      adx = (pa[0] - pd[0]);
-      bdx = (pb[0] - pd[0]);
-      cdx = (pc[0] - pd[0]);
-      ady = (pa[1] - pd[1]);
-      bdy = (pb[1] - pd[1]);
-      cdy = (pc[1] - pd[1]);
+      adx = (pa.getX() - pd.getX());
+      bdx = (pb.getX() - pd.getX());
+      cdx = (pc.getX() - pd.getX());
+      ady = (pa.getY() - pd.getY());
+      bdy = (pb.getY() - pd.getY());
+      cdy = (pc.getY() - pd.getY());
 
       bdxcdy1 = (bdx * cdy);
       c = (SPLITTER * bdx);
@@ -2229,35 +2229,35 @@ import static mop.java.geometry.predicates.macro.Expansion.*;
         return det;
       }
 
-      bvirt = (pa[0] - adx);
+      bvirt = (pa.getX() - adx);
       avirt = adx + bvirt;
-      bround = bvirt - pd[0];
-      around = pa[0] - avirt;
+      bround = bvirt - pd.getX();
+      around = pa.getX() - avirt;
       adxtail = around + bround;
-      bvirt = (pa[1] - ady);
+      bvirt = (pa.getY() - ady);
       avirt = ady + bvirt;
-      bround = bvirt - pd[1];
-      around = pa[1] - avirt;
+      bround = bvirt - pd.getY();
+      around = pa.getY() - avirt;
       adytail = around + bround;
-      bvirt = (pb[0] - bdx);
+      bvirt = (pb.getX() - bdx);
       avirt = bdx + bvirt;
-      bround = bvirt - pd[0];
-      around = pb[0] - avirt;
+      bround = bvirt - pd.getX();
+      around = pb.getX() - avirt;
       bdxtail = around + bround;
-      bvirt = (pb[1] - bdy);
+      bvirt = (pb.getY() - bdy);
       avirt = bdy + bvirt;
-      bround = bvirt - pd[1];
-      around = pb[1] - avirt;
+      bround = bvirt - pd.getY();
+      around = pb.getY() - avirt;
       bdytail = around + bround;
-      bvirt = (pc[0] - cdx);
+      bvirt = (pc.getX() - cdx);
       avirt = cdx + bvirt;
-      bround = bvirt - pd[0];
-      around = pc[0] - avirt;
+      bround = bvirt - pd.getX();
+      around = pc.getX() - avirt;
       cdxtail = around + bround;
-      bvirt = (pc[1] - cdy);
+      bvirt = (pc.getY() - cdy);
       avirt = cdy + bvirt;
-      bround = bvirt - pd[1];
-      around = pc[1] - avirt;
+      bround = bvirt - pd.getY();
+      around = pc.getY() - avirt;
       cdytail = around + bround;
       if ((adxtail == 0.0) && (bdxtail == 0.0) && (cdxtail == 0.0)
         && (adytail == 0.0) && (bdytail == 0.0) && (cdytail == 0.0)) {

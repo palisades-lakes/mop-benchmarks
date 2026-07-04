@@ -80,7 +80,7 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
  *   even <code>BigInteger</code> to extend range.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-07-01
+ * @version 2026-07-04
  */
 
 // strictfp unnecessary for JDK17 and later
@@ -142,17 +142,17 @@ public final class Slow implements Predicate {
    * <code>pa,pb,pc</code>, negative means outside.
    */
 
-  public final double incircle (final double[] pa,
-                                final double[] pb,
-                                final double[] pc,
-                                final double[] pd) {
+  public final double incircle (final Vector2D pa,
+                                final Vector2D pb,
+                                final Vector2D pc,
+                                final Vector2D pd) {
 
-    final Hilo ax = Hilo.twoDiff(pa[0], pd[0]);
-    final Hilo ay = Hilo.twoDiff(pa[1], pd[1]);
-    final Hilo bx = Hilo.twoDiff(pb[0], pd[0]);
-    final Hilo by = Hilo.twoDiff(pb[1], pd[1]);
-    final Hilo cx = Hilo.twoDiff(pc[0], pd[0]);
-    final Hilo cy = Hilo.twoDiff(pc[1], pd[1]);
+    final Hilo ax = Hilo.twoDiff(pa.getX(), pd.getX());
+    final Hilo ay = Hilo.twoDiff(pa.getY(), pd.getY());
+    final Hilo bx = Hilo.twoDiff(pb.getX(), pd.getX());
+    final Hilo by = Hilo.twoDiff(pb.getY(), pd.getY());
+    final Hilo cx = Hilo.twoDiff(pc.getX(), pd.getX());
+    final Hilo cy = Hilo.twoDiff(pc.getY(), pd.getY());
     final XDouble ad = det(bx,by,cx,cy,ax,ay);
     final XDouble bd = det(cx,cy,ax,ay,bx,by);
     final XDouble cd = det(ax,ay,bx,by,cx,cy);

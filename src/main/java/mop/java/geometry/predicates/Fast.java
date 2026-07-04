@@ -78,7 +78,7 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
  *   even <code>BigInteger</code> to extend range.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-07-03
+ * @version 2026-07-04
  */
 
 public final class Fast implements Predicate {
@@ -123,16 +123,16 @@ public final class Fast implements Predicate {
   // incircle
   //--------------------------------------------------------------------
 
-  public final double incircle (final double[] pa,
-                                final double[] pb,
-                                final double[] pc,
-                                final double[] pd) {
-    final double adx = pa[0] - pd[0];
-    final double ady = pa[1] - pd[1];
-    final double bdx = pb[0] - pd[0];
-    final double bdy = pb[1] - pd[1];
-    final double cdx = pc[0] - pd[0];
-    final double cdy = pc[1] - pd[1];
+  public final double incircle (final Vector2D pa,
+                                final Vector2D pb,
+                                final Vector2D pc,
+                                final Vector2D pd) {
+    final double adx = pa.getX() - pd.getX();
+    final double ady = pa.getY() - pd.getY();
+    final double bdx = pb.getX() - pd.getX();
+    final double bdy = pb.getY() - pd.getY();
+    final double cdx = pc.getX() - pd.getX();
+    final double cdy = pc.getY() - pd.getY();
 
     final double abdet = (adx * bdy) - (bdx * ady);
     final double bcdet = (bdx * cdy) - (cdx * bdy);

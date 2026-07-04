@@ -7,7 +7,7 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
  * Should be exact, up to BigFloat resolution.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-07-03
+ * @version 2026-07-04
  */
 
 public final class BigFloatPredicate implements Predicate {
@@ -88,19 +88,19 @@ public final class BigFloatPredicate implements Predicate {
   // incircle
   //--------------------------------------------------------------------
 
-  public final double incircle (final double[] pa,
-                                final double[] pb,
-                                final double[] pc,
-                                final double[] pd) {
+  public final double incircle (final Vector2D pa,
+                                final Vector2D pb,
+                                final Vector2D pc,
+                                final Vector2D pd) {
     // TODO: move BigFloat creation to BigFloat.subtract(double,double)
-    final BigFloat ax = BigFloat.valueOf(pa[0]);
-    final BigFloat ay = BigFloat.valueOf(pa[1]);
-    final BigFloat bx = BigFloat.valueOf(pb[0]);
-    final BigFloat by = BigFloat.valueOf(pb[1]);
-    final BigFloat cx = BigFloat.valueOf(pc[0]);
-    final BigFloat cy = BigFloat.valueOf(pc[1]);
-    final BigFloat dx = BigFloat.valueOf(pd[0]);
-    final BigFloat dy = BigFloat.valueOf(pd[1]);
+    final BigFloat ax = BigFloat.valueOf(pa.getX());
+    final BigFloat ay = BigFloat.valueOf(pa.getY());
+    final BigFloat bx = BigFloat.valueOf(pb.getX());
+    final BigFloat by = BigFloat.valueOf(pb.getY());
+    final BigFloat cx = BigFloat.valueOf(pc.getX());
+    final BigFloat cy = BigFloat.valueOf(pc.getY());
+    final BigFloat dx = BigFloat.valueOf(pd.getX());
+    final BigFloat dy = BigFloat.valueOf(pd.getY());
     final BigFloat adx = ax.subtract(dx);
     final BigFloat bdx = bx.subtract(dx);
     final BigFloat cdx = cx.subtract(dx);

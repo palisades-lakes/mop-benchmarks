@@ -2,6 +2,7 @@ package mop.java.numbers;
 
 import com.carrotsearch.hppc.DoubleArrayList;
 import com.carrotsearch.hppc.procedures.DoubleProcedure;
+import org.apache.commons.geometry.euclidean.twod.Vector2D;
 
 /** Major difference from predicates.c is attempt to handle
  * non-finite values, under- and over-flow, etc.
@@ -613,12 +614,20 @@ public final class XDouble implements Comparable<XDouble> {
     final Hilo x1y0 = Hilo.product(x1,y0);
     return twoTwoDiff(x0y1,x1y0); }
 
-  public static final XDouble crossProduct (final double[] a,
-                                            final double[] b) {
+//  public static final XDouble crossProduct (final double[] a,
+//                                            final double[] b) {
+//    // TODO: next breaks Exact.incircle!?
+////    return crossProduct(a[0],a[1],b[0],b[1]); }
+//    final XDouble axby = twoProduct(a[0], b[1]);
+//    final XDouble bxay = twoProduct(b[0], a[1]);
+//    return axby.subtract(bxay); }
+
+  public static final XDouble crossProduct (final Vector2D a,
+                                            final Vector2D b) {
     // TODO: next breaks Exact.incircle!?
 //    return crossProduct(a[0],a[1],b[0],b[1]); }
-    final XDouble axby = twoProduct(a[0], b[1]);
-    final XDouble bxay = twoProduct(b[0], a[1]);
+    final XDouble axby = twoProduct(a.getX(), b.getY());
+    final XDouble bxay = twoProduct(b.getX(), a.getY());
     return axby.subtract(bxay); }
 
   //--------------------------------------------------------------------

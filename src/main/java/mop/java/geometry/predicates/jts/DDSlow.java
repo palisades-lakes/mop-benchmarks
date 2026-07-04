@@ -7,7 +7,7 @@ import org.locationtech.jts.math.DD;
 /** From org.locationtech.jts.triangulate.quadedge.TrianglePredicate
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-07-03
+ * @version 2026-07-04
  */
 
 public final class DDSlow implements Predicate {
@@ -44,18 +44,18 @@ public final class DDSlow implements Predicate {
   //--------------------------------------------------------------------
   /** TrianglePredicate.isInCircleNonRobust.
    */
-  public final double incircle (final double[] a,
-                                final double[] b,
-                                final double[] c,
-                                final double[] p) {
-    DD px = DD.valueOf(p[0]);
-    DD py = DD.valueOf(p[1]);
-    DD ax = DD.valueOf(a[0]);
-    DD ay = DD.valueOf(a[1]);
-    DD bx = DD.valueOf(b[0]);
-    DD by = DD.valueOf(b[1]);
-    DD cx = DD.valueOf(c[0]);
-    DD cy = DD.valueOf(c[1]);
+  public final double incircle (final Vector2D a,
+                                final Vector2D b,
+                                final Vector2D c,
+                                final Vector2D p) {
+    DD px = DD.valueOf(p.getX());
+    DD py = DD.valueOf(p.getY());
+    DD ax = DD.valueOf(a.getX());
+    DD ay = DD.valueOf(a.getY());
+    DD bx = DD.valueOf(b.getX());
+    DD by = DD.valueOf(b.getY());
+    DD cx = DD.valueOf(c.getX());
+    DD cy = DD.valueOf(c.getY());
 
     DD aTerm = (ax.multiply(ax).add(ay.multiply(ay)))
       .multiply(triAreaDDSlow(bx, by, cx, cy, px, py));

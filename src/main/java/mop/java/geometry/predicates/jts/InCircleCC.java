@@ -1,11 +1,12 @@
 package mop.java.geometry.predicates.jts;
 
 import mop.java.geometry.predicates.Predicate;
+import org.apache.commons.geometry.euclidean.twod.Vector2D;
 
 /** From org.locationtech.jts.triangulate.quadedge.TrianglePredicate
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-05-19
+ * @version 2026-07-04
  */
 
 @SuppressWarnings("unused")
@@ -26,10 +27,11 @@ public final class InCircleCC implements Predicate {
    *          the [1,1] entry of the matrix
    * @return the determinant
    */
-  private static double det(double m00, double m01, double m10, double m11)
-  {
-    return m00 * m11 - m01 * m10;
-  }
+  private static double det (final double m00,
+                             final double m01,
+                             final double m10,
+                             final double m11) {
+    return m00 * m11 - m01 * m10; }
   //--------------------------------------------------------------------
   /** org.locationtech.jts.geom.Triangle
    * Computes the circumcentre of a triangle. The circumcentre is the centre of
@@ -45,15 +47,15 @@ public final class InCircleCC implements Predicate {
    * to the origin to improve the accuracy of computation. (See <i>Lecture Notes
    * on Geometric Robustness</i>, Jonathan Richard Shewchuk, 1999).
    */
-  private static final double[] circumcentre (final double[] a,
-                                              final double[] b,
-                                              final double[] c) {
-    final double cx = c[0];
-    final double cy = c[1];
-    final double ax = a[0] - cx;
-    final double ay = a[1] - cy;
-    final double bx = b[0] - cx;
-    final double by = b[1] - cy;
+  private static final Vector2D circumcentre (final Vector2D a,
+                                              final Vector2D b,
+                                              final Vector2D c) {
+    final double cx = c.getX();
+    final double cy = c.getY();
+    final double ax = a.getX() - cx;
+    final double ay = a.getY() - cy;
+    final double bx = b.getX() - cx;
+    final double by = b.getY() - cy;
 
     final double denom = 2 * det(ax, ay, bx, by);
     // TODO: singular triangle => denom = 0
@@ -69,8 +71,8 @@ public final class InCircleCC implements Predicate {
         return a; }
       // else triangle is a line segment, center is pt at infinity
       // TODO: immutable singleton?
-      return new double[] { Double.POSITIVE_INFINITY,
-                            Double.POSITIVE_INFINITY }; }
+      return Vector2D.of(Double.POSITIVE_INFINITY,
+                            Double.POSITIVE_INFINITY); }
     final double numx = det(ay,
                             ax * ax + ay * ay, by,
                             bx * bx + by * by);
@@ -81,7 +83,7 @@ public final class InCircleCC implements Predicate {
     final double ccx = cx - numx / denom;
     final double ccy = cy + numy / denom;
 
-    return new double[] { ccx, ccy, }; }
+    return Vector2D.of(ccx, ccy); }
 
   /**
    * Computes the length of the vector (x,y).
@@ -105,9 +107,9 @@ public final class InCircleCC implements Predicate {
    * @param c a point
    * @return the 2-dimensional Euclidean distance between the locations
    */
-  private static double distance (final double[] a, final double[] c) {
-    double dx = a[0] - c[0];
-    double dy = a[1] - c[1];
+  private static double distance (final Vector2D a, final Vector2D c) {
+    double dx = a.getX() - c.getX();
+    double dy = a.getY() - c.getY();
     return hypot(dx, dy);
   }
 
@@ -116,11 +118,11 @@ public final class InCircleCC implements Predicate {
   //--------------------------------------------------------------------
   /** TrianglePredicate.isInCircleNonRobust.
    */
-  public final double incircle (final double[] a,
-                                final double[] b,
-                                final double[] c,
-                                final double[] p) {
-    final double[] cc = circumcentre(a, b, c);
+  public final double incircle (final Vector2D a,
+                                final Vector2D b,
+                                final Vector2D c,
+                                final Vector2D p) {
+    final Vector2D cc = circumcentre(a, b, c);
     // sign reversed from JTS for consistency with other predicates
     // TODO: could we use squared distance?
     return distance(a,cc) - distance(p, cc);

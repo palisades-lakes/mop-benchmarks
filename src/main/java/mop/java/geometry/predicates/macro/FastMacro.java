@@ -78,7 +78,7 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
  *   even <code>BigInteger</code> to extend range.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-07-03
+ * @version 2026-07-04
  */
 
 // strictfp unnecessary for JDK17 and later
@@ -128,20 +128,20 @@ public final class FastMacro implements Predicate {
   //--------------------------------------------------------------------
   // incircle
   //--------------------------------------------------------------------
-  public final double incircle (final double[] pa,
-                                final double[] pb,
-                                final double[] pc,
-                                final double[] pd) {
+  public final double incircle (final Vector2D pa,
+                                final Vector2D pb,
+                                final Vector2D pc,
+                                final Vector2D pd) {
     double adx, ady, bdx, bdy, cdx, cdy;
     double abdet, bcdet, cadet;
     double alift, blift, clift;
 
-    adx = pa[0] - pd[0];
-    ady = pa[1] - pd[1];
-    bdx = pb[0] - pd[0];
-    bdy = pb[1] - pd[1];
-    cdx = pc[0] - pd[0];
-    cdy = pc[1] - pd[1];
+    adx = pa.getX() - pd.getX();
+    ady = pa.getY() - pd.getY();
+    bdx = pb.getX() - pd.getX();
+    bdy = pb.getY() - pd.getY();
+    cdx = pc.getX() - pd.getX();
+    cdy = pc.getY() - pd.getY();
 
     abdet = adx * bdy - bdx * ady;
     bcdet = bdx * cdy - cdx * bdy;

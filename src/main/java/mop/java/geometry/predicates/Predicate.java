@@ -77,7 +77,7 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
  *   even <code>BigInteger</code> to extend range.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-06-30
+ * @version 2026-07-04
  */
 
 public interface Predicate {
@@ -135,10 +135,10 @@ public interface Predicate {
    * incircle() is usually quite fast, but will run more slowly when the
    * input points are cocircular or nearly so.
    */
-  default double incircle (final double[] pa,
-                           final double[] pb,
-                           final double[] pc,
-                           final double[] pd) {
+  default double incircle (final Vector2D pa,
+                           final Vector2D pb,
+                           final Vector2D pc,
+                           final Vector2D pd) {
     throw new UnsupportedOperationException(getClass().getSimpleName()); }
 
   //--------------------------------------------------------------------

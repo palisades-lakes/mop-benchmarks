@@ -1,11 +1,12 @@
 package mop.java.geometry.predicates.jts;
 
 import mop.java.geometry.predicates.Predicate;
+import org.apache.commons.geometry.euclidean.twod.Vector2D;
 
 /** From org.locationtech.jts.triangulate.quadedge.TrianglePredicate
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-05-19
+ * @version 2026-07-04
  */
 
 public final class InCircleNormalized implements Predicate {
@@ -15,16 +16,16 @@ public final class InCircleNormalized implements Predicate {
   //--------------------------------------------------------------------
   /** TrianglePredicate.isInCircleNonRobust.
    */
-  public final double incircle (final double[] a,
-                                final double[] b,
-                                final double[] c,
-                                final double[] p) {
-    double adx = a[0] - p[0];
-    double ady = a[1] - p[1];
-    double bdx = b[0] - p[0];
-    double bdy = b[1] - p[1];
-    double cdx = c[0] - p[0];
-    double cdy = c[1] - p[1];
+  public final double incircle (final Vector2D a,
+                                final Vector2D b,
+                                final Vector2D c,
+                                final Vector2D p) {
+    double adx = a.getX() - p.getX();
+    double ady = a.getY() - p.getY();
+    double bdx = b.getX() - p.getX();
+    double bdy = b.getY() - p.getY();
+    double cdx = c.getX() - p.getX();
+    double cdy = c.getY() - p.getY();
 
     double abdet = adx * bdy - bdx * ady;
     double bcdet = bdx * cdy - cdx * bdy;

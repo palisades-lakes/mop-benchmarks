@@ -6,11 +6,11 @@ import mop.java.geometry.predicates.Predicate;
 import mop.java.numbers.Doubles;
 import mop.java.prng.Generator;
 import mop.java.prng.PRNG;
+import org.apache.commons.geometry.euclidean.twod.Vector2D;
 import org.apache.commons.rng.UniformRandomProvider;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
 import java.util.List;
 
 //----------------------------------------------------------------
@@ -20,7 +20,7 @@ import java.util.List;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-06-25
+ * @version 2026-07-04
  */
 
 public final class InCircleTest {
@@ -31,15 +31,12 @@ public final class InCircleTest {
                                         final double check,
                                         final Predicate gold,
                                         final Predicate pred,
-                                        final double[] p0,
-                                        final double[] p1,
-                                        final double[] p2,
-                                        final double[] p3) {
+                                        final Vector2D p0,
+                                        final Vector2D p1,
+                                        final Vector2D p2,
+                                        final Vector2D p3) {
     final String msg = "\ninCircle(" +
-      Arrays.toString(p0) + "," +
-      Arrays.toString(p1) + "," +
-      Arrays.toString(p2) + "," +
-      Arrays.toString(p3) + ")" +
+      p0 + "," + p1 + "," + p2 + "," + p3 + ")" +
       "\ngold=" + gold + " -> " + Double.toHexString(truth) +
       "\npred=" + pred + " -> " + Double.toHexString(check) +
       "\ndiff=" + Double.toHexString(truth - check) +
@@ -51,16 +48,12 @@ public final class InCircleTest {
                                           final Predicate gold,
                                           final Predicate pred,
                                           final List<Predicate> predicates,
-                                          final double[] p0,
-                                          final double[] p1,
-                                          final double[] p2,
-                                          final double[] p3) {
+                                          final Vector2D p0,
+                                          final Vector2D p1,
+                                          final Vector2D p2,
+                                          final Vector2D p3) {
     final StringBuilder msg = new StringBuilder(
-      "\ninCircle(" +
-        Arrays.toString(p0) + "," +
-        Arrays.toString(p1) + "," +
-        Arrays.toString(p2) + "," +
-        Arrays.toString(p3) + ")" +
+      "\ninCircle(" + p0 + "," + p1 + "," + p2 + "," + p3 + ")" +
         "\ngold=" + gold + " -> " + Double.toHexString(truth) +
         "\npred=" + pred + " -> " + Double.toHexString(check));
     msg.append("\ndiff=").append(Double.toHexString(truth-check));
@@ -76,10 +69,10 @@ public final class InCircleTest {
    * brutal macro-expanded AdaptMacro.
    */
 
-  private static final void adaptTest (final double[] p0,
-                                       final double[] p1,
-                                       final double[] p2,
-                                       final double[] p3) {
+  private static final void adaptTest (final Vector2D p0,
+                                       final Vector2D p1,
+                                       final Vector2D p2,
+                                       final Vector2D p3) {
     final Predicate gold = new AdaptMacro();
     final Predicate p = new Adapt();
 
@@ -93,10 +86,10 @@ public final class InCircleTest {
   //--------------------------------------------------------------
 
   private static final void inCircle (final List<Predicate> predicates,
-                                      final double[] p0,
-                                      final double[] p1,
-                                      final double[] p2,
-                                      final double[] p3) {
+                                      final Vector2D p0,
+                                      final Vector2D p1,
+                                      final Vector2D p2,
+                                      final Vector2D p3) {
     adaptTest(p0,p1,p2,p3);
     final Predicate gold = Common.truth();
     final double trueInc = gold.incircle(p0, p1, p2, p3);
@@ -118,11 +111,11 @@ public final class InCircleTest {
 
   @Test
   public final void simpleTest () {
-    final double[] p0 = new double[] { 0.0, 0.0, };
-    final double[] p1 = new double[] { 1.0, 1.0, };
-    final double[] p2 = new double[] { -1.0, 1.0, };
-    final double[] p3 = new double[] { -1.0, -1.0, };
-    final double[] p4 = new double[] { 1.0, -1.0, };
+    final Vector2D p0 =  Vector2D.of( 0.0, 0.0);
+    final Vector2D p1 =  Vector2D.of( 1.0, 1.0);
+    final Vector2D p2 =  Vector2D.of( -1.0, 1.0);
+    final Vector2D p3 =  Vector2D.of( -1.0, -1.0);
+    final Vector2D p4 =  Vector2D.of( 1.0, -1.0);
 
     final List<Predicate> predicates = Common.inCirclePredicates();
     inCircle(predicates, p1, p2, p3, p0);
@@ -145,7 +138,11 @@ public final class InCircleTest {
       Doubles.laplaceGenerator(n, 2, urp, 0.0, 1.0);
     final double[][] p = (double[][]) laplaceGenerator.next();
     for (int i = 0; i < n-3; i++) {
-      inCircle(predicates, p[i], p[i+1], p[i+2], p[i+3]);} }
+      inCircle(predicates,
+               Vector2D.of(p[i]),
+               Vector2D.of(p[i+1]),
+               Vector2D.of(p[i+2]),
+               Vector2D.of(p[i+3]));} }
   //--------------------------------------------------------------
 }
 //--------------------------------------------------------------
