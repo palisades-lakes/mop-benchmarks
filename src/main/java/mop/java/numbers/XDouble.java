@@ -504,6 +504,7 @@ public final class XDouble implements Comparable<XDouble> {
     if (terms.isEmpty()) { assert null != ZERO; return ZERO; }
     // TODO: is compress() a good idea?
     return new XDouble(compress(terms)); }
+//    return new XDouble(terms); }
 
   // TODO: make this private, public version should clone terms.
   public static final XDouble unsafe (final double[] terms) {
@@ -543,33 +544,21 @@ public final class XDouble implements Comparable<XDouble> {
   private static final double[] twoOneDiff (final double ahi,
                                             final double alo,
                                             final double b) {
-    final Hilo ix0 = Hilo.twoDiff(alo, b);
-    final Hilo x2x1 = Hilo.twoSum(ahi, ix0.hi());
-    return new double[] {ix0.lo(), x2x1.lo(), x2x1.hi(), }; }
+    final Hilo _ix0 = Hilo.twoDiff(alo, b);
+    final Hilo x2x1 = Hilo.twoSum(ahi, _ix0.hi());
+    return new double[] { _ix0.lo(), x2x1.lo(), x2x1.hi(), }; }
 
   // TODO: rename to subtract
   public static final XDouble twoTwoDiff (final Hilo a,
                                           final Hilo b) {
     // Two_One_Diff(a1, a0, b0, _j, _0, x0);
-    final double[] x00j = twoOneDiff(a.hi(),a.lo(),b.lo());
-    // Two_One_Diff(_j, _0, b.hi(), x3, x2, x1)
-    final double[] x123 = twoOneDiff(x00j[2],x00j[1],b.hi());
-    final DoubleArrayList terms = new DoubleArrayList(4);
-    if (0.0!=x00j[0]) { terms.add(x00j[0]); }
-    for (int i=1;i<x123.length;i++) {
-      if (0.0!= x123[i]) { terms.add(x123[i]); }  }
-    if (terms.isEmpty()) { return ZERO; }
+    final double[] _j_0x0 = twoOneDiff(a.hi(),a.lo(),b.lo());
+    // Two_One_Diff(_j, _0, b1, x3, x2, x1)
+    final double[] x123 = twoOneDiff(_j_0x0[2],_j_0x0[1],b.hi());
+    final double[] terms =
+      new double[] { _j_0x0[0],x123[0],x123[1],x123[2] };
     return unsafe(terms); }
 
-//  public static final XDouble twoSum (final double a, final double b) {
-//    final double x = (a + b);
-//    //Two_Sum_Tail(a, b, x, y);
-//    final double bvirt = (x - a);
-//    final double avirt = x - bvirt;
-//    final double bround = b - bvirt;
-//    final double around = a - avirt;
-//    final double y = around + bround;
-//    return unsafe(DoubleArrayList.from(y, x)); }
 
   public static final XDouble twoSum (final double a, final double b) {
     final Hilo hilo = Hilo.twoSum(a,b);

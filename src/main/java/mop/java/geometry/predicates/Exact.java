@@ -13,7 +13,7 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
  *   profiling.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-07-03
+ * @version 2026-07-04
  */
 
 public final class Exact implements Predicate {
@@ -27,6 +27,7 @@ public final class Exact implements Predicate {
   public final double orient2d (final Vector2D pa,
                                 final Vector2D pb,
                                 final Vector2D pc) {
+
     final Hilo axby = Hilo.product(pa.getX(),pb.getY());
     final Hilo axcy = Hilo.product(pa.getX(),pc.getY());
     final XDouble aterms = XDouble.twoTwoDiff(axby,axcy);

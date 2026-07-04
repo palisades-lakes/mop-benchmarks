@@ -24,7 +24,7 @@ import java.util.List;
 /** Common code for geometry predicate tests.
   *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-07-03
+ * @version 2026-07-04
  */
 
 public final class Common {
@@ -39,7 +39,7 @@ public final class Common {
     final Predicate bigFloat = new BigFloatPredicate();
     final Predicate rationalFloat = new RationalFloatPredicate();
     final Predicate adapt = new Adapt();
-    //final Predicate exact = new Exact();
+    final Predicate exact = new Exact();
     final Predicate fast = new Fast();
     final Predicate slow = new Slow();
     final Predicate adaptMacro = new AdaptMacro();
@@ -53,7 +53,7 @@ public final class Common {
       // mine
       rationalFloat,bigFloat,
       // Shewchuk predicates.c
-      //exact,
+      exact,
       adapt,fast,slow,
       exactMacro, adaptMacro, defaultMacro, fastMacro, slowMacro); }
 
@@ -89,7 +89,7 @@ public final class Common {
     final Predicate bigFloat = new BigFloatPredicate();
     final Predicate rationalFloat = new RationalFloatPredicate();
     final Predicate adapt = new Adapt();
-    //final Predicate exact = new Exact();
+    final Predicate exact = new Exact();
     final Predicate fast = new Fast();
     final Predicate slow = new Slow();
     final Predicate adaptMacro = new AdaptMacro();
@@ -101,7 +101,7 @@ public final class Common {
       // mine
       rationalFloat,bigFloat,
       // Shewchuk predicates.c
-      //exact,
+      exact,
       adapt,fast,slow,
       exactMacro, adaptMacro, defaultMacro, fastMacro, slowMacro); }
 
@@ -109,7 +109,7 @@ public final class Common {
     final Predicate bigFloat = new BigFloatPredicate();
     final Predicate rationalFloat = new RationalFloatPredicate();
     final Predicate adapt = new Adapt();
-    //final Predicate exact = new Exact();
+    final Predicate exact = new Exact();
     final Predicate fast = new Fast();
     final Predicate slow = new Slow();
     final Predicate adaptMacro = new AdaptMacro();
@@ -121,7 +121,7 @@ public final class Common {
       // mine
       rationalFloat,bigFloat,
       // Shewchuk predicates.c
-      //exact,
+      exact,
       adapt,fast,slow,
       exactMacro, adaptMacro, defaultMacro, fastMacro, slowMacro); }
 

@@ -357,8 +357,8 @@ public record Hilo (double hi, double lo)
     return new Hilo(x, y); }
 
   public static final Hilo twoSum (final double a, final double b) {
-    final double x = (a + b);
-    final double bvirt = (x - a);
+    final double x = a + b;
+    final double bvirt = x - a;
     final double avirt = x - bvirt;
     final double bround = b - bvirt;
     final double around = a - avirt;
@@ -495,7 +495,7 @@ public record Hilo (double hi, double lo)
 
 
   // modular predicates.c version: breaks Exact.incircle()
-//  public static final Hilo twoProduct (final double a,
+//  public static final Hilo product (final double a,
 //                                       final double b) {
 //    final double x = (a * b);
 //    //Two_Product_Tail(a, b, x, y)

@@ -251,12 +251,12 @@
 /*   unrolled versions of Expansion_Sum().                                   */
 
 #define Two_One_Sum(a1, a0, b, x2, x1, x0) \
-  Two_Sum(a0, b , _i, x0); \
+  Two_Sum(a0, b, _i, x0); \
   Two_Sum(a1, _i, x2, x1)
 
  #define Two_One_Diff(a1, a0, b, x2, x1, x0) \
- Two_Diff(a0, b , _i, x0); \
-  Two_Sum( a1, _i, x2, x1)
+  Two_Diff(a0, b, _i, x0); \
+  Two_Sum(a1, _i, x2, x1)
 
 #define Two_Two_Sum(a1, a0, b1, b0, x3, x2, x1, x0) \
   Two_One_Sum(a1, a0, b0, _j, _0, x0); \
