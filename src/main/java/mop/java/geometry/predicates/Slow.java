@@ -228,24 +228,24 @@ public final class Slow implements Predicate {
            .add(detzz).add(detzzt).add(detztzt); }
 
   //--------------------------------------------------------------------
-  public final double insphere (final double[] pa,
-                                final double[] pb,
-                                final double[] pc,
-                                final double[] pd,
-                                final double[] pe) {
+  public final double insphere (final Vector3D pa,
+                                final Vector3D pb,
+                                final Vector3D pc,
+                                final Vector3D pd,
+                                final Vector3D pe) {
 
-    final Hilo aex = Hilo.twoDiff(pa[0], pe[0]);
-    final Hilo aey = Hilo.twoDiff(pa[1], pe[1]);
-    final Hilo aez = Hilo.twoDiff(pa[2], pe[2]);
-    final Hilo bex = Hilo.twoDiff(pb[0], pe[0]);
-    final Hilo bey = Hilo.twoDiff(pb[1], pe[1]);
-    final Hilo bez = Hilo.twoDiff(pb[2], pe[2]);
-    final Hilo cex = Hilo.twoDiff(pc[0], pe[0]);
-    final Hilo cey = Hilo.twoDiff(pc[1], pe[1]);
-    final Hilo cez = Hilo.twoDiff(pc[2], pe[2]);
-    final Hilo dex = Hilo.twoDiff(pd[0], pe[0]);
-    final Hilo dey = Hilo.twoDiff(pd[1], pe[1]);
-    final Hilo dez = Hilo.twoDiff(pd[2], pe[2]);
+    final Hilo aex = Hilo.twoDiff(pa.getX(), pe.getX());
+    final Hilo aey = Hilo.twoDiff(pa.getY(), pe.getY());
+    final Hilo aez = Hilo.twoDiff(pa.getZ(), pe.getZ());
+    final Hilo bex = Hilo.twoDiff(pb.getX(), pe.getX());
+    final Hilo bey = Hilo.twoDiff(pb.getY(), pe.getY());
+    final Hilo bez = Hilo.twoDiff(pb.getZ(), pe.getZ());
+    final Hilo cex = Hilo.twoDiff(pc.getX(), pe.getX());
+    final Hilo cey = Hilo.twoDiff(pc.getY(), pe.getY());
+    final Hilo cez = Hilo.twoDiff(pc.getZ(), pe.getZ());
+    final Hilo dex = Hilo.twoDiff(pd.getX(), pe.getX());
+    final Hilo dey = Hilo.twoDiff(pd.getY(), pe.getY());
+    final Hilo dez = Hilo.twoDiff(pd.getZ(), pe.getZ());
 
     final XDouble ab = XDouble.crossProduct(aex,aey,bex,bey);
     final XDouble bc = XDouble.crossProduct(bex,bey,cex,cey);

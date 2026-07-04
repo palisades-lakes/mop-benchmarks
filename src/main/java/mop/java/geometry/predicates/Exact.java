@@ -130,87 +130,87 @@ public final class Exact implements Predicate {
   // insphere
   //--------------------------------------------------------------------
 
-  public final double insphere (final double[] pa,
-                                final double[] pb,
-                                final double[] pc,
-                                final double[] pd,
-                                final double[] pe) {
+  public final double insphere (final Vector3D pa,
+                                final Vector3D pb,
+                                final Vector3D pc,
+                                final Vector3D pd,
+                                final Vector3D pe) {
 
     // TODO: XDouble.cross2D?
-    final XDouble ab = XDouble.twoTwoDiff(Hilo.product(pa[0],pb[1]),
-                                          Hilo.product(pb[0],pa[1]));
-    final XDouble bc = XDouble.twoTwoDiff(Hilo.product(pb[0],pc[1]),
-                                          Hilo.product(pc[0],pb[1]));
-    final XDouble cd = XDouble.twoTwoDiff(Hilo.product(pc[0],pd[1]),
-                                          Hilo.product(pd[0],pc[1]));
-    final XDouble de = XDouble.twoTwoDiff(Hilo.product(pd[0],pe[1]),
-                                          Hilo.product(pe[0],pd[1]));
-    final XDouble ea = XDouble.twoTwoDiff(Hilo.product(pe[0],pa[1]),
-                                          Hilo.product(pa[0],pe[1]));
-    final XDouble ac = XDouble.twoTwoDiff(Hilo.product(pa[0],pc[1]),
-                                          Hilo.product(pc[0],pa[1]));
-    final XDouble bd = XDouble.twoTwoDiff(Hilo.product(pb[0],pd[1]),
-                                          Hilo.product(pd[0],pb[1]));
-    final XDouble ce = XDouble.twoTwoDiff(Hilo.product(pc[0],pe[1]),
-                                          Hilo.product(pe[0],pc[1]));
-    final  XDouble da = XDouble.twoTwoDiff(Hilo.product(pd[0],pa[1]),
-                                           Hilo.product(pa[0],pd[1]));
-    final XDouble eb = XDouble.twoTwoDiff(Hilo.product(pe[0],pb[1]),
-                                          Hilo.product(pb[0],pe[1]));
-    final XDouble abc = ab.multiply(pc[2])
-                          .add(bc.multiply(pa[2]))
-                          .add(ac.multiply(-pb[2]));
-    final XDouble bcd = bc.multiply(pd[2])
-                          .add(cd.multiply(pb[2]))
-                          .add(bd.multiply(-pc[2]));
-    final XDouble cde = cd.multiply(pe[2])
-                          .add(de.multiply(pc[2]))
-                          .add(ce.multiply(-pd[2]));
-    final XDouble dea = de.multiply(pa[2])
-                          .add(ea.multiply(pd[2]))
-                          .add(da.multiply(-pe[2]));
-    final XDouble eab = ea.multiply(pb[2])
-                          .add(ab.multiply(pe[2]))
-                          .add(eb.multiply(-pa[2]));
-    final XDouble abd = ab.multiply(pd[2])
-                          .add(bd.multiply(pa[2]))
-                          .add(da.multiply(pb[2]));
-    final XDouble bce = bc.multiply(pe[2])
-                          .add(ce.multiply(pb[2]))
-                          .add(eb.multiply(pc[2]));
-    final XDouble cda = cd.multiply(pa[2])
-                          .add(da.multiply(pc[2]))
-                          .add(ac.multiply(pd[2]));
-    final XDouble deb = de.multiply(pb[2])
-                          .add(eb.multiply(pd[2]))
-                          .add(bd.multiply(pe[2]));
-    final XDouble eac = ea.multiply(pc[2])
-                          .add(ac.multiply(pe[2]))
-                          .add(ce.multiply(pa[2]));
+    final XDouble ab = XDouble.twoTwoDiff(Hilo.product(pa.getX(),pb.getY()),
+                                          Hilo.product(pb.getX(),pa.getY()));
+    final XDouble bc = XDouble.twoTwoDiff(Hilo.product(pb.getX(),pc.getY()),
+                                          Hilo.product(pc.getX(),pb.getY()));
+    final XDouble cd = XDouble.twoTwoDiff(Hilo.product(pc.getX(),pd.getY()),
+                                          Hilo.product(pd.getX(),pc.getY()));
+    final XDouble de = XDouble.twoTwoDiff(Hilo.product(pd.getX(),pe.getY()),
+                                          Hilo.product(pe.getX(),pd.getY()));
+    final XDouble ea = XDouble.twoTwoDiff(Hilo.product(pe.getX(),pa.getY()),
+                                          Hilo.product(pa.getX(),pe.getY()));
+    final XDouble ac = XDouble.twoTwoDiff(Hilo.product(pa.getX(),pc.getY()),
+                                          Hilo.product(pc.getX(),pa.getY()));
+    final XDouble bd = XDouble.twoTwoDiff(Hilo.product(pb.getX(),pd.getY()),
+                                          Hilo.product(pd.getX(),pb.getY()));
+    final XDouble ce = XDouble.twoTwoDiff(Hilo.product(pc.getX(),pe.getY()),
+                                          Hilo.product(pe.getX(),pc.getY()));
+    final  XDouble da = XDouble.twoTwoDiff(Hilo.product(pd.getX(),pa.getY()),
+                                           Hilo.product(pa.getX(),pd.getY()));
+    final XDouble eb = XDouble.twoTwoDiff(Hilo.product(pe.getX(),pb.getY()),
+                                          Hilo.product(pb.getX(),pe.getY()));
+    final XDouble abc = ab.multiply(pc.getZ())
+                          .add(bc.multiply(pa.getZ()))
+                          .add(ac.multiply(-pb.getZ()));
+    final XDouble bcd = bc.multiply(pd.getZ())
+                          .add(cd.multiply(pb.getZ()))
+                          .add(bd.multiply(-pc.getZ()));
+    final XDouble cde = cd.multiply(pe.getZ())
+                          .add(de.multiply(pc.getZ()))
+                          .add(ce.multiply(-pd.getZ()));
+    final XDouble dea = de.multiply(pa.getZ())
+                          .add(ea.multiply(pd.getZ()))
+                          .add(da.multiply(-pe.getZ()));
+    final XDouble eab = ea.multiply(pb.getZ())
+                          .add(ab.multiply(pe.getZ()))
+                          .add(eb.multiply(-pa.getZ()));
+    final XDouble abd = ab.multiply(pd.getZ())
+                          .add(bd.multiply(pa.getZ()))
+                          .add(da.multiply(pb.getZ()));
+    final XDouble bce = bc.multiply(pe.getZ())
+                          .add(ce.multiply(pb.getZ()))
+                          .add(eb.multiply(pc.getZ()));
+    final XDouble cda = cd.multiply(pa.getZ())
+                          .add(da.multiply(pc.getZ()))
+                          .add(ac.multiply(pd.getZ()));
+    final XDouble deb = de.multiply(pb.getZ())
+                          .add(eb.multiply(pd.getZ()))
+                          .add(bd.multiply(pe.getZ()));
+    final XDouble eac = ea.multiply(pc.getZ())
+                          .add(ac.multiply(pe.getZ()))
+                          .add(ce.multiply(pa.getZ()));
     final XDouble bcde = cde.add(bce).subtract(deb.add(bcd));
-    final XDouble adet = bcde.multiply(pa[0]).multiply(pa[0])
-                             .add(bcde.multiply(pa[1]).multiply(pa[1]))
-                             .add(bcde.multiply(pa[2]).multiply(pa[2]));
+    final XDouble adet = bcde.multiply(pa.getX()).multiply(pa.getX())
+                             .add(bcde.multiply(pa.getY()).multiply(pa.getY()))
+                             .add(bcde.multiply(pa.getZ()).multiply(pa.getZ()));
 
     final XDouble cdea = dea.add(cda).subtract(eac.add(cde));
-    final XDouble bdet = cdea.multiply(pb[0]).multiply(pb[0])
-                             .add(cdea.multiply(pb[1]).multiply(pb[1]))
-                             .add(cdea.multiply(pb[2]).multiply(pb[2]));
+    final XDouble bdet = cdea.multiply(pb.getX()).multiply(pb.getX())
+                             .add(cdea.multiply(pb.getY()).multiply(pb.getY()))
+                             .add(cdea.multiply(pb.getZ()).multiply(pb.getZ()));
 
     final XDouble deab = eab.add(deb).subtract(abd.add(dea));
-    final XDouble cdet = deab.multiply(pc[0]).multiply(pc[0])
-                             .add(deab.multiply(pc[1]).multiply(pc[1]))
-                             .add(deab.multiply(pc[2]).multiply(pc[2]));
+    final XDouble cdet = deab.multiply(pc.getX()).multiply(pc.getX())
+                             .add(deab.multiply(pc.getY()).multiply(pc.getY()))
+                             .add(deab.multiply(pc.getZ()).multiply(pc.getZ()));
 
     final XDouble eabc = abc.add(eac).subtract(bce.add(eab));
-    final XDouble ddet = eabc.multiply(pd[0]).multiply(pd[0])
-                             .add(eabc.multiply(pd[1]).multiply(pd[1]))
-                             .add(eabc.multiply(pd[2]).multiply(pd[2]));
+    final XDouble ddet = eabc.multiply(pd.getX()).multiply(pd.getX())
+                             .add(eabc.multiply(pd.getY()).multiply(pd.getY()))
+                             .add(eabc.multiply(pd.getZ()).multiply(pd.getZ()));
 
     final XDouble abcd = bcd.add(abd).subtract(cda.add(abc));
-    final XDouble edet = abcd.multiply(pe[0]).multiply(pe[0])
-                             .add(abcd.multiply(pe[1]).multiply(pe[1]))
-                             .add(abcd.multiply(pe[2]).multiply(pe[2]));
+    final XDouble edet = abcd.multiply(pe.getX()).multiply(pe.getX())
+                             .add(abcd.multiply(pe.getY()).multiply(pe.getY()))
+                             .add(abcd.multiply(pe.getZ()).multiply(pe.getZ()));
 
     return adet.add(bdet).add(cdet).add(ddet).add(edet).doubleValue(); }
 

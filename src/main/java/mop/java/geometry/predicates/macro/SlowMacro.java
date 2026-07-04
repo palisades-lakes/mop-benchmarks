@@ -1035,9 +1035,9 @@ public final class SlowMacro implements Predicate {
   //--------------------------------------------------------------------
   // insphere
   //--------------------------------------------------------------------
-  public final double insphere (final double[] pa, final double[] pb,
-                                final double[] pc, final double[] pd,
-                                final double[] pe) {
+  public final double insphere (final Vector3D pa, final Vector3D pb,
+                                final Vector3D pc, final Vector3D pd,
+                                final Vector3D pe) {
     double aex, bex, cex, dex, aey, bey, cey, dey, aez, bez, cez, dez;
     double aextail, bextail, cextail, dextail;
     double aeytail, beytail, ceytail, deytail;
@@ -1085,36 +1085,36 @@ public final class SlowMacro implements Predicate {
     double a0hi, a0lo, a1hi, a1lo, bhi, blo; double err1, err2, err3;
     double _i, _j, _k, _l, _m, _n; double _0, _1, _2;
 
-    aex = (pa[0] - pe[0]); bvirt = (pa[0] - aex); avirt = aex + bvirt;
-    bround = bvirt - pe[0]; around = pa[0] - avirt;
-    aextail = around + bround; aey = (pa[1] - pe[1]);
-    bvirt = (pa[1] - aey); avirt = aey + bvirt; bround = bvirt - pe[1];
-    around = pa[1] - avirt; aeytail = around + bround;
-    aez = (pa[2] - pe[2]); bvirt = (pa[2] - aez); avirt = aez + bvirt;
-    bround = bvirt - pe[2]; around = pa[2] - avirt;
-    aeztail = around + bround; bex = (pb[0] - pe[0]);
-    bvirt = (pb[0] - bex); avirt = bex + bvirt; bround = bvirt - pe[0];
-    around = pb[0] - avirt; bextail = around + bround;
-    bey = (pb[1] - pe[1]); bvirt = (pb[1] - bey); avirt = bey + bvirt;
-    bround = bvirt - pe[1]; around = pb[1] - avirt;
-    beytail = around + bround; bez = (pb[2] - pe[2]);
-    bvirt = (pb[2] - bez); avirt = bez + bvirt; bround = bvirt - pe[2];
-    around = pb[2] - avirt; beztail = around + bround;
-    cex = (pc[0] - pe[0]); bvirt = (pc[0] - cex); avirt = cex + bvirt;
-    bround = bvirt - pe[0]; around = pc[0] - avirt;
-    cextail = around + bround; cey = (pc[1] - pe[1]);
-    bvirt = (pc[1] - cey); avirt = cey + bvirt; bround = bvirt - pe[1];
-    around = pc[1] - avirt; ceytail = around + bround;
-    cez = (pc[2] - pe[2]); bvirt = (pc[2] - cez); avirt = cez + bvirt;
-    bround = bvirt - pe[2]; around = pc[2] - avirt;
-    ceztail = around + bround; dex = (pd[0] - pe[0]);
-    bvirt = (pd[0] - dex); avirt = dex + bvirt; bround = bvirt - pe[0];
-    around = pd[0] - avirt; dextail = around + bround;
-    dey = (pd[1] - pe[1]); bvirt = (pd[1] - dey); avirt = dey + bvirt;
-    bround = bvirt - pe[1]; around = pd[1] - avirt;
-    deytail = around + bround; dez = (pd[2] - pe[2]);
-    bvirt = (pd[2] - dez); avirt = dez + bvirt; bround = bvirt - pe[2];
-    around = pd[2] - avirt; deztail = around + bround;
+    aex = (pa.getX() - pe.getX()); bvirt = (pa.getX() - aex); avirt = aex + bvirt;
+    bround = bvirt - pe.getX(); around = pa.getX() - avirt;
+    aextail = around + bround; aey = (pa.getY() - pe.getY());
+    bvirt = (pa.getY() - aey); avirt = aey + bvirt; bround = bvirt - pe.getY();
+    around = pa.getY() - avirt; aeytail = around + bround;
+    aez = (pa.getZ() - pe.getZ()); bvirt = (pa.getZ() - aez); avirt = aez + bvirt;
+    bround = bvirt - pe.getZ(); around = pa.getZ() - avirt;
+    aeztail = around + bround; bex = (pb.getX() - pe.getX());
+    bvirt = (pb.getX() - bex); avirt = bex + bvirt; bround = bvirt - pe.getX();
+    around = pb.getX() - avirt; bextail = around + bround;
+    bey = (pb.getY() - pe.getY()); bvirt = (pb.getY() - bey); avirt = bey + bvirt;
+    bround = bvirt - pe.getY(); around = pb.getY() - avirt;
+    beytail = around + bround; bez = (pb.getZ() - pe.getZ());
+    bvirt = (pb.getZ() - bez); avirt = bez + bvirt; bround = bvirt - pe.getZ();
+    around = pb.getZ() - avirt; beztail = around + bround;
+    cex = (pc.getX() - pe.getX()); bvirt = (pc.getX() - cex); avirt = cex + bvirt;
+    bround = bvirt - pe.getX(); around = pc.getX() - avirt;
+    cextail = around + bround; cey = (pc.getY() - pe.getY());
+    bvirt = (pc.getY() - cey); avirt = cey + bvirt; bround = bvirt - pe.getY();
+    around = pc.getY() - avirt; ceytail = around + bround;
+    cez = (pc.getZ() - pe.getZ()); bvirt = (pc.getZ() - cez); avirt = cez + bvirt;
+    bround = bvirt - pe.getZ(); around = pc.getZ() - avirt;
+    ceztail = around + bround; dex = (pd.getX() - pe.getX());
+    bvirt = (pd.getX() - dex); avirt = dex + bvirt; bround = bvirt - pe.getX();
+    around = pd.getX() - avirt; dextail = around + bround;
+    dey = (pd.getY() - pe.getY()); bvirt = (pd.getY() - dey); avirt = dey + bvirt;
+    bround = bvirt - pe.getY(); around = pd.getY() - avirt;
+    deytail = around + bround; dez = (pd.getZ() - pe.getZ());
+    bvirt = (pd.getZ() - dez); avirt = dez + bvirt; bround = bvirt - pe.getZ();
+    around = pd.getZ() - avirt; deztail = around + bround;
 
     c = (SPLITTER * aextail); abig = (c - aextail); a0hi = c - abig;
     a0lo = aextail - a0hi; c = (SPLITTER * beytail);

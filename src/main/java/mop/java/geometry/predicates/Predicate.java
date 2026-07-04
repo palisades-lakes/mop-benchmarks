@@ -188,11 +188,11 @@ public interface Predicate {
    * input points are co-spherical or nearly so.
    */
 
-  default double insphere (final double[] pa,
-                           final double[] pb,
-                           final double[] pc,
-                           final double[] pd,
-                           final double[] pe) {
+  default double insphere (final Vector3D pa,
+                           final Vector3D pb,
+                           final Vector3D pc,
+                           final Vector3D pd,
+                           final Vector3D pe) {
     throw new UnsupportedOperationException(getClass().getSimpleName()); }
   //-------------------------------------------------------------------
 } // end class

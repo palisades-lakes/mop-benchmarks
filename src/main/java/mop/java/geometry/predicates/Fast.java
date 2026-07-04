@@ -148,23 +148,23 @@ public final class Fast implements Predicate {
   // insphere
   //--------------------------------------------------------------------
 
-  public final double insphere (final double[] pa,
-                                final double[] pb,
-                                final double[] pc,
-                                final double[] pd,
-                                final double[] pe) {
-    final double aex = pa[0] - pe[0];
-    final double bex = pb[0] - pe[0];
-    final double cex = pc[0] - pe[0];
-    final double dex = pd[0] - pe[0];
-    final double aey = pa[1] - pe[1];
-    final double bey = pb[1] - pe[1];
-    final double cey = pc[1] - pe[1];
-    final double dey = pd[1] - pe[1];
-    final double aez = pa[2] - pe[2];
-    final double bez = pb[2] - pe[2];
-    final double cez = pc[2] - pe[2];
-    final double dez = pd[2] - pe[2];
+  public final double insphere (final Vector3D pa,
+                                final Vector3D pb,
+                                final Vector3D pc,
+                                final Vector3D pd,
+                                final Vector3D pe) {
+    final double aex = pa.getX() - pe.getX();
+    final double bex = pb.getX() - pe.getX();
+    final double cex = pc.getX() - pe.getX();
+    final double dex = pd.getX() - pe.getX();
+    final double aey = pa.getY() - pe.getY();
+    final double bey = pb.getY() - pe.getY();
+    final double cey = pc.getY() - pe.getY();
+    final double dey = pd.getY() - pe.getY();
+    final double aez = pa.getZ() - pe.getZ();
+    final double bez = pb.getZ() - pe.getZ();
+    final double cez = pc.getZ() - pe.getZ();
+    final double dez = pd.getZ() - pe.getZ();
 
     final double ab = (aex * bey) - (bex * aey);
     final double bc = (bex * cey) - (cex * bey);

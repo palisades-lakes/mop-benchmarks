@@ -3422,18 +3422,18 @@ import static mop.java.geometry.predicates.macro.Expansion.*;
     private static final double isperrboundC =
       (71.0 + 1408.0 * EPSILON) * EPSILON * EPSILON;
 
-    public final double insphere (final double[] pa,
-                                  final double[] pb,
-                                  final double[] pc,
-                                  final double[] pd,
-                                  final double[] pe) {
+    public final double insphere (final Vector3D pa,
+                                  final Vector3D pb,
+                                  final Vector3D pc,
+                                  final Vector3D pd,
+                                  final Vector3D pe) {
       return new DefaultMacro().insphere(pa,pb,pc,pd,pe); }
 
-    final double insphere (final double[] pa,
-                           final double[] pb,
-                           final double[] pc,
-                           final double[] pd,
-                           final double[] pe,
+    final double insphere (final Vector3D pa,
+                           final Vector3D pb,
+                           final Vector3D pc,
+                           final Vector3D pd,
+                           final Vector3D pe,
                            final double permanent) {
       double aex, bex, cex, dex, aey, bey, cey, dey, aez, bez, cez, dez;
       double det, errbound;
@@ -3479,18 +3479,18 @@ import static mop.java.geometry.predicates.macro.Expansion.*;
       double _i, _j;
       double _0;
 
-      aex = (pa[0] - pe[0]);
-      bex = (pb[0] - pe[0]);
-      cex = (pc[0] - pe[0]);
-      dex = (pd[0] - pe[0]);
-      aey = (pa[1] - pe[1]);
-      bey = (pb[1] - pe[1]);
-      cey = (pc[1] - pe[1]);
-      dey = (pd[1] - pe[1]);
-      aez = (pa[2] - pe[2]);
-      bez = (pb[2] - pe[2]);
-      cez = (pc[2] - pe[2]);
-      dez = (pd[2] - pe[2]);
+      aex = (pa.getX() - pe.getX());
+      bex = (pb.getX() - pe.getX());
+      cex = (pc.getX() - pe.getX());
+      dex = (pd.getX() - pe.getX());
+      aey = (pa.getY() - pe.getY());
+      bey = (pb.getY() - pe.getY());
+      cey = (pc.getY() - pe.getY());
+      dey = (pd.getY() - pe.getY());
+      aez = (pa.getZ() - pe.getZ());
+      bez = (pb.getZ() - pe.getZ());
+      cez = (pc.getZ() - pe.getZ());
+      dez = (pd.getZ() - pe.getZ());
 
       aexbey1 = (aex * bey);
       c = (SPLITTER * aex);
@@ -3891,65 +3891,65 @@ import static mop.java.geometry.predicates.macro.Expansion.*;
         return det;
       }
 
-      bvirt = (pa[0] - aex);
+      bvirt = (pa.getX() - aex);
       avirt = aex + bvirt;
-      bround = bvirt - pe[0];
-      around = pa[0] - avirt;
+      bround = bvirt - pe.getX();
+      around = pa.getX() - avirt;
       aextail = around + bround;
-      bvirt = (pa[1] - aey);
+      bvirt = (pa.getY() - aey);
       avirt = aey + bvirt;
-      bround = bvirt - pe[1];
-      around = pa[1] - avirt;
+      bround = bvirt - pe.getY();
+      around = pa.getY() - avirt;
       aeytail = around + bround;
-      bvirt = (pa[2] - aez);
+      bvirt = (pa.getZ() - aez);
       avirt = aez + bvirt;
-      bround = bvirt - pe[2];
-      around = pa[2] - avirt;
+      bround = bvirt - pe.getZ();
+      around = pa.getZ() - avirt;
       aeztail = around + bround;
-      bvirt = (pb[0] - bex);
+      bvirt = (pb.getX() - bex);
       avirt = bex + bvirt;
-      bround = bvirt - pe[0];
-      around = pb[0] - avirt;
+      bround = bvirt - pe.getX();
+      around = pb.getX() - avirt;
       bextail = around + bround;
-      bvirt = (pb[1] - bey);
+      bvirt = (pb.getY() - bey);
       avirt = bey + bvirt;
-      bround = bvirt - pe[1];
-      around = pb[1] - avirt;
+      bround = bvirt - pe.getY();
+      around = pb.getY() - avirt;
       beytail = around + bround;
-      bvirt = (pb[2] - bez);
+      bvirt = (pb.getZ() - bez);
       avirt = bez + bvirt;
-      bround = bvirt - pe[2];
-      around = pb[2] - avirt;
+      bround = bvirt - pe.getZ();
+      around = pb.getZ() - avirt;
       beztail = around + bround;
-      bvirt = (pc[0] - cex);
+      bvirt = (pc.getX() - cex);
       avirt = cex + bvirt;
-      bround = bvirt - pe[0];
-      around = pc[0] - avirt;
+      bround = bvirt - pe.getX();
+      around = pc.getX() - avirt;
       cextail = around + bround;
-      bvirt = (pc[1] - cey);
+      bvirt = (pc.getY() - cey);
       avirt = cey + bvirt;
-      bround = bvirt - pe[1];
-      around = pc[1] - avirt;
+      bround = bvirt - pe.getY();
+      around = pc.getY() - avirt;
       ceytail = around + bround;
-      bvirt = (pc[2] - cez);
+      bvirt = (pc.getZ() - cez);
       avirt = cez + bvirt;
-      bround = bvirt - pe[2];
-      around = pc[2] - avirt;
+      bround = bvirt - pe.getZ();
+      around = pc.getZ() - avirt;
       ceztail = around + bround;
-      bvirt = (pd[0] - dex);
+      bvirt = (pd.getX() - dex);
       avirt = dex + bvirt;
-      bround = bvirt - pe[0];
-      around = pd[0] - avirt;
+      bround = bvirt - pe.getX();
+      around = pd.getX() - avirt;
       dextail = around + bround;
-      bvirt = (pd[1] - dey);
+      bvirt = (pd.getY() - dey);
       avirt = dey + bvirt;
-      bround = bvirt - pe[1];
-      around = pd[1] - avirt;
+      bround = bvirt - pe.getY();
+      around = pd.getY() - avirt;
       deytail = around + bround;
-      bvirt = (pd[2] - dez);
+      bvirt = (pd.getZ() - dez);
       avirt = dez + bvirt;
-      bround = bvirt - pe[2];
-      around = pd[2] - avirt;
+      bround = bvirt - pe.getZ();
+      around = pd.getZ() - avirt;
       deztail = around + bround;
       if ((aextail == 0.0) && (aeytail == 0.0) && (aeztail == 0.0)
         && (bextail == 0.0) && (beytail == 0.0) && (beztail == 0.0)

@@ -750,27 +750,27 @@ public final class Adapt implements Predicate {
   private static final double isperrboundC =
     (71.0 + 1408.0 * EPSILON) * EPSILON * EPSILON;
 
-  private static final double insphere (final double[] pa,
-                                        final double[] pb,
-                                        final double[] pc,
-                                        final double[] pd,
-                                        final double[] pe,
+  private static final double insphere (final Vector3D pa,
+                                        final Vector3D pb,
+                                        final Vector3D pc,
+                                        final Vector3D pd,
+                                        final Vector3D pe,
                                         final double permanent) {
-    final double aex = (pa[0] - pe[0]);
-    final double aey = (pa[1] - pe[1]);
-    final double aez = (pa[2] - pe[2]);
+    final double aex = (pa.getX() - pe.getX());
+    final double aey = (pa.getY() - pe.getY());
+    final double aez = (pa.getZ() - pe.getZ());
 
-    final double bex = (pb[0] - pe[0]);
-    final double bey = (pb[1] - pe[1]);
-    final double bez = (pb[2] - pe[2]);
+    final double bex = (pb.getX() - pe.getX());
+    final double bey = (pb.getY() - pe.getY());
+    final double bez = (pb.getZ() - pe.getZ());
 
-    final double cex = (pc[0] - pe[0]);
-    final double cey = (pc[1] - pe[1]);
-    final double cez = (pc[2] - pe[2]);
+    final double cex = (pc.getX() - pe.getX());
+    final double cey = (pc.getY() - pe.getY());
+    final double cez = (pc.getZ() - pe.getZ());
 
-    final double dex = (pd[0] - pe[0]);
-    final double dey = (pd[1] - pe[1]);
-    final double dez = (pd[2] - pe[2]);
+    final double dex = (pd.getX() - pe.getX());
+    final double dey = (pd.getY() - pe.getY());
+    final double dez = (pd.getZ() - pe.getZ());
 
     final XDouble ab = XDouble.crossProduct(aex,aey,bex,bey);
     final XDouble bc = XDouble.crossProduct(bex,bey,cex,cey);
@@ -793,18 +793,18 @@ public final class Adapt implements Predicate {
     double errbound = isperrboundB * permanent;
     if (Math.abs(det) >= errbound) { return det; }
 
-    final double aextail = Hilo.twoDiffTail(pa[0], pe[0], aex);
-    final double aeytail = Hilo.twoDiffTail(pa[1], pe[1], aey);
-    final double aeztail = Hilo.twoDiffTail(pa[2], pe[2], aez);
-    final double bextail = Hilo.twoDiffTail(pb[0], pe[0], bex);
-    final double beytail = Hilo.twoDiffTail(pb[1], pe[1], bey);
-    final double beztail = Hilo.twoDiffTail(pb[2], pe[2], bez);
-    final double cextail = Hilo.twoDiffTail(pc[0], pe[0], cex);
-    final double ceytail = Hilo.twoDiffTail(pc[1], pe[1], cey);
-    final double ceztail = Hilo.twoDiffTail(pc[2], pe[2], cez);
-    final double dextail = Hilo.twoDiffTail(pd[0], pe[0], dex);
-    final double deytail = Hilo.twoDiffTail(pd[1], pe[1], dey);
-    final double deztail = Hilo.twoDiffTail(pd[2], pe[2], dez);
+    final double aextail = Hilo.twoDiffTail(pa.getX(), pe.getX(), aex);
+    final double aeytail = Hilo.twoDiffTail(pa.getY(), pe.getY(), aey);
+    final double aeztail = Hilo.twoDiffTail(pa.getZ(), pe.getZ(), aez);
+    final double bextail = Hilo.twoDiffTail(pb.getX(), pe.getX(), bex);
+    final double beytail = Hilo.twoDiffTail(pb.getY(), pe.getY(), bey);
+    final double beztail = Hilo.twoDiffTail(pb.getZ(), pe.getZ(), bez);
+    final double cextail = Hilo.twoDiffTail(pc.getX(), pe.getX(), cex);
+    final double ceytail = Hilo.twoDiffTail(pc.getY(), pe.getY(), cey);
+    final double ceztail = Hilo.twoDiffTail(pc.getZ(), pe.getZ(), cez);
+    final double dextail = Hilo.twoDiffTail(pd.getX(), pe.getX(), dex);
+    final double deytail = Hilo.twoDiffTail(pd.getY(), pe.getY(), dey);
+    final double deztail = Hilo.twoDiffTail(pd.getZ(), pe.getZ(), dez);
 
     if ((aextail == 0.0) && (aeytail == 0.0) && (aeztail == 0.0)
       && (bextail == 0.0) && (beytail == 0.0) && (beztail == 0.0)
@@ -862,23 +862,23 @@ public final class Adapt implements Predicate {
   private static final double isperrboundA =
     (16.0 + 224.0 * EPSILON) * EPSILON;
 
-  public final double insphere (final double[] pa,
-                                final double[] pb,
-                                final double[] pc,
-                                final double[] pd,
-                                final double[] pe) {
-    final double aex = pa[0] - pe[0];
-    final double bex = pb[0] - pe[0];
-    final double cex = pc[0] - pe[0];
-    final double dex = pd[0] - pe[0];
-    final double aey = pa[1] - pe[1];
-    final double bey = pb[1] - pe[1];
-    final double cey = pc[1] - pe[1];
-    final double dey = pd[1] - pe[1];
-    final double aez = pa[2] - pe[2];
-    final double bez = pb[2] - pe[2];
-    final double cez = pc[2] - pe[2];
-    final double dez = pd[2] - pe[2];
+  public final double insphere (final Vector3D pa,
+                                final Vector3D pb,
+                                final Vector3D pc,
+                                final Vector3D pd,
+                                final Vector3D pe) {
+    final double aex = pa.getX() - pe.getX();
+    final double bex = pb.getX() - pe.getX();
+    final double cex = pc.getX() - pe.getX();
+    final double dex = pd.getX() - pe.getX();
+    final double aey = pa.getY() - pe.getY();
+    final double bey = pb.getY() - pe.getY();
+    final double cey = pc.getY() - pe.getY();
+    final double dey = pd.getY() - pe.getY();
+    final double aez = pa.getZ() - pe.getZ();
+    final double bez = pb.getZ() - pe.getZ();
+    final double cez = pc.getZ() - pe.getZ();
+    final double dez = pd.getZ() - pe.getZ();
 
     // TODO: simple double crossProduct(double,double,double,double)
     final double aexbey = aex * bey;

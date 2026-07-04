@@ -158,11 +158,11 @@ public final class FastMacro implements Predicate {
   // insphere
   //--------------------------------------------------------------------
 
-  public final double insphere (final double[] pa,
-                                final double[] pb,
-                                final double[] pc,
-                                final double[] pd,
-                                final double[] pe) {
+  public final double insphere (final Vector3D pa,
+                                final Vector3D pb,
+                                final Vector3D pc,
+                                final Vector3D pd,
+                                final Vector3D pe) {
     double aex, bex, cex, dex;
     double aey, bey, cey, dey;
     double aez, bez, cez, dez;
@@ -170,18 +170,18 @@ public final class FastMacro implements Predicate {
     double ab, bc, cd, da, ac, bd;
     double abc, bcd, cda, dab;
 
-    aex = pa[0] - pe[0];
-    bex = pb[0] - pe[0];
-    cex = pc[0] - pe[0];
-    dex = pd[0] - pe[0];
-    aey = pa[1] - pe[1];
-    bey = pb[1] - pe[1];
-    cey = pc[1] - pe[1];
-    dey = pd[1] - pe[1];
-    aez = pa[2] - pe[2];
-    bez = pb[2] - pe[2];
-    cez = pc[2] - pe[2];
-    dez = pd[2] - pe[2];
+    aex = pa.getX() - pe.getX();
+    bex = pb.getX() - pe.getX();
+    cex = pc.getX() - pe.getX();
+    dex = pd.getX() - pe.getX();
+    aey = pa.getY() - pe.getY();
+    bey = pb.getY() - pe.getY();
+    cey = pc.getY() - pe.getY();
+    dey = pd.getY() - pe.getY();
+    aez = pa.getZ() - pe.getZ();
+    bez = pb.getZ() - pe.getZ();
+    cez = pc.getZ() - pe.getZ();
+    dez = pd.getZ() - pe.getZ();
 
     ab = aex * bey - bex * aey;
     bc = bex * cey - cex * bey;
