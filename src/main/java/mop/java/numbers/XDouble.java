@@ -94,11 +94,11 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
  *   even <code>BigInteger</code> to extend range.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-07-01
+ * @version 2026-07-04
  */
 
-//@SuppressWarnings("unused")
-public final class XDouble implements Comparable<XDouble> {
+public final class XDouble
+  implements Comparable<XDouble>, Ringlike<XDouble> {
 
   /** Non-overlapping doubles, lowest order term first.
    */
