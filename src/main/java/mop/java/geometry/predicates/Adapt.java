@@ -138,21 +138,21 @@ public final class Adapt implements Predicate {
     final double cdy = (pc.getY() - pd.getY());
 
     // TODO: XDouble.crossProduct?
-    final XDouble bc = XDouble.twoTwoDiff(
+    final XDouble bc = XDouble.subtract(
       Hilo.product(bdx, cdy),
       Hilo.product(cdx, bdy));
     // TODO: XDouble l2norm2, scale2
     final XDouble adet = bc.multiply(adx).multiply(adx)
                            .add(bc.multiply(ady).multiply(ady));
 
-    final XDouble ca = XDouble.twoTwoDiff(
+    final XDouble ca = XDouble.subtract(
       Hilo.product(cdx, ady),
       Hilo.product(adx, cdy));
     final XDouble bdet = ca.multiply(bdx).multiply(bdx)
                            .add(
                              ca.multiply(bdy).multiply(bdy));
 
-    final XDouble ab = XDouble.twoTwoDiff(
+    final XDouble ab = XDouble.subtract(
       Hilo.product(adx, bdy),
       Hilo.product(bdx, ady));
     final XDouble cdet = ab.multiply(cdx).multiply(cdx)
@@ -163,12 +163,12 @@ public final class Adapt implements Predicate {
     double det = finnow.doubleValue();
     if (Math.abs(det) >= iccerrboundB * permanent) { return det; }
 
-    final double adxtail = Hilo.twoDiffTail(pa.getX(), pd.getX(), adx);
-    final double adytail = Hilo.twoDiffTail(pa.getY(), pd.getY(), ady);
-    final double bdxtail = Hilo.twoDiffTail(pb.getX(), pd.getX(), bdx);
-    final double bdytail = Hilo.twoDiffTail(pb.getY(), pd.getY(), bdy);
-    final double cdxtail = Hilo.twoDiffTail(pc.getX(), pd.getX(), cdx);
-    final double cdytail = Hilo.twoDiffTail(pc.getY(), pd.getY(), cdy);
+    final double adxtail = Hilo.subtractTail(pa.getX(), pd.getX(), adx);
+    final double adytail = Hilo.subtractTail(pa.getY(), pd.getY(), ady);
+    final double bdxtail = Hilo.subtractTail(pb.getX(), pd.getX(), bdx);
+    final double bdytail = Hilo.subtractTail(pb.getY(), pd.getY(), bdy);
+    final double cdxtail = Hilo.subtractTail(pc.getX(), pd.getX(), cdx);
+    final double cdytail = Hilo.subtractTail(pc.getY(), pd.getY(), cdy);
 
     final boolean axtail = (adxtail != 0.0);
     final boolean aytail = (adytail != 0.0);
@@ -244,14 +244,14 @@ public final class Adapt implements Predicate {
     final XDouble bct, bctt;
     if (atail) {
       if (btail || ctail) {
-        final XDouble u = XDouble.twoTwoSum(
+        final XDouble u = XDouble.sum(
           Hilo.product(bdxtail, cdy),
           Hilo.product(bdx, cdytail));
-        final XDouble v = XDouble.twoTwoSum(
+        final XDouble v = XDouble.sum(
           Hilo.product(cdxtail, -bdy),
           Hilo.product(cdx, -bdytail));
         bct = u.add(v);
-        bctt = XDouble.twoTwoDiff(
+        bctt = XDouble.subtract(
           Hilo.product(bdxtail, cdytail),
           Hilo.product(cdxtail, bdytail)); }
       else { bct = bctt = XDouble.ZERO; }
@@ -288,14 +288,14 @@ public final class Adapt implements Predicate {
     final XDouble cat, catt;
     if (btail) {
       if (ctail || atail) {
-        final XDouble u = XDouble.twoTwoSum(
+        final XDouble u = XDouble.sum(
           Hilo.product(cdxtail, ady),
           Hilo.product(cdx, adytail));
-        final XDouble v = XDouble.twoTwoSum(
+        final XDouble v = XDouble.sum(
           Hilo.product(adxtail, -cdy),
           Hilo.product(adx, -cdytail));
         cat = u.add(v);
-        catt = XDouble.twoTwoDiff(
+        catt = XDouble.subtract(
           Hilo.product(cdxtail, adytail),
           Hilo.product(adxtail, cdytail)); }
       else { cat = catt = XDouble.ZERO; }
@@ -333,13 +333,13 @@ public final class Adapt implements Predicate {
     final XDouble abt, abtt;
     if (ctail) {
       if (atail || btail) {
-        final XDouble u = XDouble.twoTwoSum(
+        final XDouble u = XDouble.sum(
           Hilo.product(adxtail, bdy), Hilo.product(adx, bdytail));
 
-        final XDouble v = XDouble.twoTwoSum(
+        final XDouble v = XDouble.sum(
           Hilo.product(bdxtail, -ady), Hilo.product(bdx, -adytail));
         abt = u.add(v);
-        abtt = XDouble.twoTwoDiff(
+        abtt = XDouble.subtract(
           Hilo.product(adxtail, bdytail),
           Hilo.product(bdxtail, adytail)); }
       else { abt = abtt = XDouble.ZERO; }
@@ -440,16 +440,16 @@ public final class Adapt implements Predicate {
 
     final Hilo detleft = Hilo.product(acx,bcy);
     final Hilo detright = Hilo.product(acy,bcx);
-    final XDouble B = XDouble.twoTwoDiff(detleft,detright);
+    final XDouble B = XDouble.subtract(detleft, detright);
 
     double det = B.doubleValue();
     double errbound = ccwerrboundB * detsum;
     if (Math.abs(det) >= errbound) { return det; }
 
-    final double acxtail = Hilo.twoDiffTail(pa.getX(),pc.getX(),acx);
-    final double bcxtail = Hilo.twoDiffTail(pb.getX(),pc.getX(),bcx);
-    final double acytail = Hilo.twoDiffTail(pa.getY(),pc.getY(),acy);
-    final double bcytail = Hilo.twoDiffTail(pb.getY(),pc.getY(),bcy);
+    final double acxtail = Hilo.subtractTail(pa.getX(), pc.getX(), acx);
+    final double bcxtail = Hilo.subtractTail(pb.getX(), pc.getX(), bcx);
+    final double acytail = Hilo.subtractTail(pa.getY(), pc.getY(), acy);
+    final double bcytail = Hilo.subtractTail(pb.getY(), pc.getY(), bcy);
     if ((acxtail == 0.0) && (acytail == 0.0)
       && (bcxtail == 0.0) && (bcytail == 0.0)) {
       return det; }
@@ -459,15 +459,15 @@ public final class Adapt implements Predicate {
     if (Math.abs(det) >= errbound) { return det; }
 
     return B.add(
-              XDouble.twoTwoDiff(
+              XDouble.subtract(
                 Hilo.product(acxtail, bcy),
                 Hilo.product(acytail, bcx)))
             .add(
-              XDouble.twoTwoDiff(
+              XDouble.subtract(
                 Hilo.product(acx, bcytail),
                 Hilo.product(acy, bcxtail)))
             .add(
-              XDouble.twoTwoDiff(
+              XDouble.subtract(
                 Hilo.product(acxtail, bcytail),
                 Hilo.product(acytail, bcxtail)))
             .doubleValue(); }
@@ -533,30 +533,30 @@ public final class Adapt implements Predicate {
 
     final Hilo bdxcdy = Hilo.product(bdx,cdy);
     final Hilo cdxbdy = Hilo.product(cdx,bdy);
-    final XDouble bc = XDouble.twoTwoDiff(bdxcdy,cdxbdy);
+    final XDouble bc = XDouble.subtract(bdxcdy, cdxbdy);
     final XDouble adet = bc.multiply(adz);
     final Hilo cdxady = Hilo.product(cdx,ady);
     final Hilo adxcdy = Hilo.product(adx,cdy);
-    final XDouble ca = XDouble.twoTwoDiff(cdxady,adxcdy);
+    final XDouble ca = XDouble.subtract(cdxady, adxcdy);
     final XDouble bdet = ca.multiply(bdz);
     final Hilo adxbdy = Hilo.product(adx,bdy);
     final Hilo bdxady = Hilo.product(bdx,ady);
-    final XDouble ab = XDouble.twoTwoDiff(adxbdy,bdxady);
+    final XDouble ab = XDouble.subtract(adxbdy, bdxady);
     final XDouble cdet = ab.multiply(cdz);
     XDouble finnow = adet.add(bdet).add(cdet);
     double det = finnow.doubleValue();
     double errbound = o3derrboundB * permanent;
     if (Math.abs(det) >= errbound) { return det; }
 
-    final double adxtail = Hilo.twoDiffTail(pa.getX(),pd.getX(),adx);
-    final double bdxtail = Hilo.twoDiffTail(pb.getX(),pd.getX(),bdx);
-    final double cdxtail = Hilo.twoDiffTail(pc.getX(),pd.getX(),cdx);
-    final double adytail = Hilo.twoDiffTail(pa.getY(),pd.getY(),ady);
-    final double bdytail = Hilo.twoDiffTail(pb.getY(),pd.getY(),bdy);
-    final double cdytail = Hilo.twoDiffTail(pc.getY(),pd.getY(),cdy);
-    final double adztail = Hilo.twoDiffTail(pa.getZ(),pd.getZ(),adz);
-    final double bdztail = Hilo.twoDiffTail(pb.getZ(),pd.getZ(),bdz);
-    final double cdztail = Hilo.twoDiffTail(pc.getZ(),pd.getZ(),cdz);
+    final double adxtail = Hilo.subtractTail(pa.getX(), pd.getX(), adx);
+    final double bdxtail = Hilo.subtractTail(pb.getX(), pd.getX(), bdx);
+    final double cdxtail = Hilo.subtractTail(pc.getX(), pd.getX(), cdx);
+    final double adytail = Hilo.subtractTail(pa.getY(), pd.getY(), ady);
+    final double bdytail = Hilo.subtractTail(pb.getY(), pd.getY(), bdy);
+    final double cdytail = Hilo.subtractTail(pc.getY(), pd.getY(), cdy);
+    final double adztail = Hilo.subtractTail(pa.getZ(), pd.getZ(), adz);
+    final double bdztail = Hilo.subtractTail(pb.getZ(), pd.getZ(), bdz);
+    final double cdztail = Hilo.subtractTail(pc.getZ(), pd.getZ(), cdz);
 
     if ((adxtail == 0.0) && (bdxtail == 0.0) && (cdxtail == 0.0)
       && (adytail == 0.0) && (bdytail == 0.0) && (cdytail == 0.0)
@@ -579,49 +579,49 @@ public final class Adapt implements Predicate {
     if (adxtail == 0.0) {
       if (adytail == 0.0) { at_b = at_c = XDouble.ZERO; }
       else {
-        at_b = XDouble.twoProduct(-adytail, bdx);
-        at_c = XDouble.twoProduct(adytail, cdx); } }
+        at_b = XDouble.product(-adytail, bdx);
+        at_c = XDouble.product(adytail, cdx); } }
     else {
       if (adytail == 0.0) {
-        at_b = XDouble.twoProduct(adxtail, bdy);
-        at_c = XDouble.twoProduct(-adxtail, cdy);}
+        at_b = XDouble.product(adxtail, bdy);
+        at_c = XDouble.product(-adxtail, cdy);}
       else {
-        at_b = XDouble.twoTwoDiff(Hilo.product(adxtail, bdy),
-                                  Hilo.product(adytail, bdx));
-        at_c = XDouble.twoTwoDiff(Hilo.product(adytail, cdx),
-                                  Hilo.product(adxtail, cdy)); } }
+        at_b = XDouble.subtract(Hilo.product(adxtail, bdy),
+                                Hilo.product(adytail, bdx));
+        at_c = XDouble.subtract(Hilo.product(adytail, cdx),
+                                Hilo.product(adxtail, cdy)); } }
 
     final XDouble bt_c, bt_a;
     if (bdxtail == 0.0) {
       if (bdytail == 0.0) { bt_c = bt_a = XDouble.ZERO; }
       else {
-        bt_c = XDouble.twoProduct(-bdytail, cdx);
-        bt_a = XDouble.twoProduct(bdytail, adx); } }
+        bt_c = XDouble.product(-bdytail, cdx);
+        bt_a = XDouble.product(bdytail, adx); } }
     else {
       if (bdytail == 0.0) {
-        bt_c = XDouble.twoProduct(bdxtail, cdy);
-        bt_a = XDouble.twoProduct(-bdxtail, ady);}
+        bt_c = XDouble.product(bdxtail, cdy);
+        bt_a = XDouble.product(-bdxtail, ady);}
       else {
-        bt_c = XDouble.twoTwoDiff(Hilo.product(bdxtail, cdy),
-                                  Hilo.product(bdytail, cdx));
-        bt_a = XDouble.twoTwoDiff(Hilo.product(bdytail, adx),
-                                  Hilo.product(bdxtail, ady)); } }
+        bt_c = XDouble.subtract(Hilo.product(bdxtail, cdy),
+                                Hilo.product(bdytail, cdx));
+        bt_a = XDouble.subtract(Hilo.product(bdytail, adx),
+                                Hilo.product(bdxtail, ady)); } }
 
     final XDouble ct_a, ct_b;
     if (cdxtail == 0.0) {
       if (cdytail == 0.0) { ct_a = ct_b = XDouble.ZERO; }
       else {
-        ct_a = XDouble.twoProduct(-cdytail, adx);
-        ct_b = XDouble.twoProduct(cdytail, bdx); } }
+        ct_a = XDouble.product(-cdytail, adx);
+        ct_b = XDouble.product(cdytail, bdx); } }
     else {
       if (cdytail == 0.0) {
-        ct_a = XDouble.twoProduct(cdxtail, ady);
-        ct_b = XDouble.twoProduct(-cdxtail, bdy);}
+        ct_a = XDouble.product(cdxtail, ady);
+        ct_b = XDouble.product(-cdxtail, bdy);}
       else {
-        ct_a = XDouble.twoTwoDiff(Hilo.product(cdxtail, ady),
-                                  Hilo.product(cdytail, adx));
-        ct_b = XDouble.twoTwoDiff(Hilo.product(cdytail, bdx),
-                                  Hilo.product(cdxtail, bdy)); } }
+        ct_a = XDouble.subtract(Hilo.product(cdxtail, ady),
+                                Hilo.product(cdytail, adx));
+        ct_b = XDouble.subtract(Hilo.product(cdytail, bdx),
+                                Hilo.product(cdxtail, bdy)); } }
 
     final XDouble bct = bt_c.add(ct_b);
     final XDouble cat = ct_a.add(at_c);
@@ -638,44 +638,44 @@ public final class Adapt implements Predicate {
     if (adxtail != 0.0) {
       if (bdytail != 0.0) {
         final Hilo adxt_bdyt = Hilo.product(adxtail,bdytail);
-        finnow = finnow.add(XDouble.twoOneProduct(adxt_bdyt,cdz));
+        finnow = finnow.add(XDouble.product(adxt_bdyt, cdz));
         if (cdztail != 0.0) {
           finnow = finnow.add(
-            XDouble.twoOneProduct(adxt_bdyt,cdztail)); } }
+            XDouble.product(adxt_bdyt, cdztail)); } }
 
       if (cdytail != 0.0) {
         final Hilo adxt_cdyt =  Hilo.product(-adxtail,cdytail);
-        finnow = finnow.add(XDouble.twoOneProduct(adxt_cdyt,bdz));
+        finnow = finnow.add(XDouble.product(adxt_cdyt, bdz));
         if (bdztail != 0.0) {
           finnow = finnow.add(
-            XDouble.twoOneProduct(adxt_cdyt,bdztail)); } } }
+            XDouble.product(adxt_cdyt, bdztail)); } } }
 
     if (bdxtail != 0.0) {
       if (cdytail != 0.0) {
         final Hilo bdxt_cdy = Hilo.product(bdxtail,cdytail);
-        finnow = finnow.add(XDouble.twoOneProduct(bdxt_cdy,adz));
+        finnow = finnow.add(XDouble.product(bdxt_cdy, adz));
         if (adztail != 0.0) {
           finnow = finnow.add(
-            XDouble.twoOneProduct(bdxt_cdy,adztail)); } }
+            XDouble.product(bdxt_cdy, adztail)); } }
       if (adytail != 0.0) {
         final Hilo bdxt_adyt =  Hilo.product(-bdxtail,adytail);
-        finnow = finnow.add(XDouble.twoOneProduct(bdxt_adyt,cdz));
+        finnow = finnow.add(XDouble.product(bdxt_adyt, cdz));
         if (cdztail != 0.0) {
           finnow = finnow.add(
-            XDouble.twoOneProduct(bdxt_adyt,cdztail)); } } }
+            XDouble.product(bdxt_adyt, cdztail)); } } }
     if (cdxtail != 0.0) {
       if (adytail != 0.0) {
         final Hilo cdxt_adyt = Hilo.product(cdxtail,adytail);
-        finnow = finnow.add(XDouble.twoOneProduct(cdxt_adyt,bdz));
+        finnow = finnow.add(XDouble.product(cdxt_adyt, bdz));
         if (bdztail != 0.0) {
           finnow = finnow.add(
-            XDouble.twoOneProduct(cdxt_adyt,bdztail)); } }
+            XDouble.product(cdxt_adyt, bdztail)); } }
       if (bdytail != 0.0) {
         final Hilo cdxt_bdyt =  Hilo.product(-cdxtail,bdytail);
-        finnow = finnow.add(XDouble.twoOneProduct(cdxt_bdyt,adz));
+        finnow = finnow.add(XDouble.product(cdxt_bdyt, adz));
         if (adztail != 0.0) {
           finnow = finnow.add(
-            XDouble.twoOneProduct(cdxt_bdyt,adztail)); } } }
+            XDouble.product(cdxt_bdyt, adztail)); } } }
 
     if (adztail != 0.0) { finnow = finnow.add(bct.multiply(adztail)); }
     if (bdztail != 0.0) { finnow = finnow.add(cat.multiply(bdztail)); }
@@ -793,18 +793,18 @@ public final class Adapt implements Predicate {
     double errbound = isperrboundB * permanent;
     if (Math.abs(det) >= errbound) { return det; }
 
-    final double aextail = Hilo.twoDiffTail(pa.getX(), pe.getX(), aex);
-    final double aeytail = Hilo.twoDiffTail(pa.getY(), pe.getY(), aey);
-    final double aeztail = Hilo.twoDiffTail(pa.getZ(), pe.getZ(), aez);
-    final double bextail = Hilo.twoDiffTail(pb.getX(), pe.getX(), bex);
-    final double beytail = Hilo.twoDiffTail(pb.getY(), pe.getY(), bey);
-    final double beztail = Hilo.twoDiffTail(pb.getZ(), pe.getZ(), bez);
-    final double cextail = Hilo.twoDiffTail(pc.getX(), pe.getX(), cex);
-    final double ceytail = Hilo.twoDiffTail(pc.getY(), pe.getY(), cey);
-    final double ceztail = Hilo.twoDiffTail(pc.getZ(), pe.getZ(), cez);
-    final double dextail = Hilo.twoDiffTail(pd.getX(), pe.getX(), dex);
-    final double deytail = Hilo.twoDiffTail(pd.getY(), pe.getY(), dey);
-    final double deztail = Hilo.twoDiffTail(pd.getZ(), pe.getZ(), dez);
+    final double aextail = Hilo.subtractTail(pa.getX(), pe.getX(), aex);
+    final double aeytail = Hilo.subtractTail(pa.getY(), pe.getY(), aey);
+    final double aeztail = Hilo.subtractTail(pa.getZ(), pe.getZ(), aez);
+    final double bextail = Hilo.subtractTail(pb.getX(), pe.getX(), bex);
+    final double beytail = Hilo.subtractTail(pb.getY(), pe.getY(), bey);
+    final double beztail = Hilo.subtractTail(pb.getZ(), pe.getZ(), bez);
+    final double cextail = Hilo.subtractTail(pc.getX(), pe.getX(), cex);
+    final double ceytail = Hilo.subtractTail(pc.getY(), pe.getY(), cey);
+    final double ceztail = Hilo.subtractTail(pc.getZ(), pe.getZ(), cez);
+    final double dextail = Hilo.subtractTail(pd.getX(), pe.getX(), dex);
+    final double deytail = Hilo.subtractTail(pd.getY(), pe.getY(), dey);
+    final double deztail = Hilo.subtractTail(pd.getZ(), pe.getZ(), dez);
 
     if ((aextail == 0.0) && (aeytail == 0.0) && (aeztail == 0.0)
       && (bextail == 0.0) && (beytail == 0.0) && (beztail == 0.0)

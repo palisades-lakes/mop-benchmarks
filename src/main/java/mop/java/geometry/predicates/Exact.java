@@ -31,15 +31,15 @@ public final class Exact implements Predicate {
 
     final Hilo axby = Hilo.product(pa.getX(),pb.getY());
     final Hilo axcy = Hilo.product(pa.getX(),pc.getY());
-    final XDouble aterms = XDouble.twoTwoDiff(axby,axcy);
+    final XDouble aterms = XDouble.subtract(axby, axcy);
 
     final Hilo bxcy = Hilo.product(pb.getX(),pc.getY());
     final Hilo bxay = Hilo.product(pb.getX(),pa.getY());
-    final XDouble bterms = XDouble.twoTwoDiff(bxcy,bxay);
+    final XDouble bterms = XDouble.subtract(bxcy, bxay);
 
     final Hilo cxay = Hilo.product(pc.getX(),pa.getY());
     final Hilo cxby = Hilo.product(pc.getX(),pb.getY());
-    final XDouble cterms = XDouble.twoTwoDiff(cxay,cxby);
+    final XDouble cterms = XDouble.subtract(cxay, cxby);
 
     return aterms.add(bterms).add(cterms).doubleValue(); }
 
@@ -96,22 +96,22 @@ public final class Exact implements Predicate {
                                     final Vector3D pd) {
     final Hilo axby = Hilo.product(pa.getX(),pb.getY());
     final Hilo bxay = Hilo.product(pb.getX(),pa.getY());
-    final XDouble ab = XDouble.twoTwoDiff(axby,bxay);
+    final XDouble ab = XDouble.subtract(axby, bxay);
     final Hilo bxcy = Hilo.product(pb.getX(),pc.getY());
     final Hilo cxby = Hilo.product(pc.getX(),pb.getY());
-    final XDouble bc = XDouble.twoTwoDiff(bxcy,cxby);
+    final XDouble bc = XDouble.subtract(bxcy, cxby);
     final Hilo cxdy = Hilo.product(pc.getX(),pd.getY());
     final Hilo dxcy = Hilo.product(pd.getX(),pc.getY());
-    final XDouble cd = XDouble.twoTwoDiff(cxdy,dxcy);
+    final XDouble cd = XDouble.subtract(cxdy, dxcy);
     final Hilo dxay = Hilo.product(pd.getX(),pa.getY());
     final Hilo axdy = Hilo.product(pa.getX(),pd.getY());
-    final XDouble da = XDouble.twoTwoDiff(dxay,axdy);
+    final XDouble da = XDouble.subtract(dxay, axdy);
     final Hilo axcy = Hilo.product(pa.getX(),pc.getY());
     final Hilo cxay = Hilo.product(pc.getX(),pa.getY());
-    final XDouble ac = XDouble.twoTwoDiff(axcy,cxay);
+    final XDouble ac = XDouble.subtract(axcy, cxay);
     final Hilo bxdy = Hilo.product(pb.getX(),pd.getY());
     final Hilo dxby = Hilo.product(pd.getX(),pb.getY());
-    final XDouble bd = XDouble.twoTwoDiff(bxdy,dxby);
+    final XDouble bd = XDouble.subtract(bxdy, dxby);
 
     final XDouble cda = cd.add(da).add(ac);
     final XDouble dab = da.add(ab).add(bd);
@@ -137,26 +137,26 @@ public final class Exact implements Predicate {
                                 final Vector3D pe) {
 
     // TODO: XDouble.cross2D?
-    final XDouble ab = XDouble.twoTwoDiff(Hilo.product(pa.getX(),pb.getY()),
-                                          Hilo.product(pb.getX(),pa.getY()));
-    final XDouble bc = XDouble.twoTwoDiff(Hilo.product(pb.getX(),pc.getY()),
-                                          Hilo.product(pc.getX(),pb.getY()));
-    final XDouble cd = XDouble.twoTwoDiff(Hilo.product(pc.getX(),pd.getY()),
-                                          Hilo.product(pd.getX(),pc.getY()));
-    final XDouble de = XDouble.twoTwoDiff(Hilo.product(pd.getX(),pe.getY()),
-                                          Hilo.product(pe.getX(),pd.getY()));
-    final XDouble ea = XDouble.twoTwoDiff(Hilo.product(pe.getX(),pa.getY()),
-                                          Hilo.product(pa.getX(),pe.getY()));
-    final XDouble ac = XDouble.twoTwoDiff(Hilo.product(pa.getX(),pc.getY()),
-                                          Hilo.product(pc.getX(),pa.getY()));
-    final XDouble bd = XDouble.twoTwoDiff(Hilo.product(pb.getX(),pd.getY()),
-                                          Hilo.product(pd.getX(),pb.getY()));
-    final XDouble ce = XDouble.twoTwoDiff(Hilo.product(pc.getX(),pe.getY()),
-                                          Hilo.product(pe.getX(),pc.getY()));
-    final  XDouble da = XDouble.twoTwoDiff(Hilo.product(pd.getX(),pa.getY()),
-                                           Hilo.product(pa.getX(),pd.getY()));
-    final XDouble eb = XDouble.twoTwoDiff(Hilo.product(pe.getX(),pb.getY()),
-                                          Hilo.product(pb.getX(),pe.getY()));
+    final XDouble ab = XDouble.subtract(Hilo.product(pa.getX(), pb.getY()),
+                                        Hilo.product(pb.getX(),pa.getY()));
+    final XDouble bc = XDouble.subtract(Hilo.product(pb.getX(), pc.getY()),
+                                        Hilo.product(pc.getX(),pb.getY()));
+    final XDouble cd = XDouble.subtract(Hilo.product(pc.getX(), pd.getY()),
+                                        Hilo.product(pd.getX(),pc.getY()));
+    final XDouble de = XDouble.subtract(Hilo.product(pd.getX(), pe.getY()),
+                                        Hilo.product(pe.getX(),pd.getY()));
+    final XDouble ea = XDouble.subtract(Hilo.product(pe.getX(), pa.getY()),
+                                        Hilo.product(pa.getX(),pe.getY()));
+    final XDouble ac = XDouble.subtract(Hilo.product(pa.getX(), pc.getY()),
+                                        Hilo.product(pc.getX(),pa.getY()));
+    final XDouble bd = XDouble.subtract(Hilo.product(pb.getX(), pd.getY()),
+                                        Hilo.product(pd.getX(),pb.getY()));
+    final XDouble ce = XDouble.subtract(Hilo.product(pc.getX(), pe.getY()),
+                                        Hilo.product(pe.getX(),pc.getY()));
+    final  XDouble da = XDouble.subtract(Hilo.product(pd.getX(), pa.getY()),
+                                         Hilo.product(pa.getX(),pd.getY()));
+    final XDouble eb = XDouble.subtract(Hilo.product(pe.getX(), pb.getY()),
+                                        Hilo.product(pb.getX(),pe.getY()));
     final XDouble abc = ab.multiply(pc.getZ())
                           .add(bc.multiply(pa.getZ()))
                           .add(ac.multiply(-pb.getZ()));

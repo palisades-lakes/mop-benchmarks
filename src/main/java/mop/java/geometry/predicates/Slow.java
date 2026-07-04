@@ -101,12 +101,12 @@ public final class Slow implements Predicate {
   public final double signedArea (final Vector2D pa,
                                   final Vector2D pb,
                                   final Vector2D pc) {
-    final Hilo ax = Hilo.twoDiff(pa.getX(), pc.getX());
-    final Hilo ay = Hilo.twoDiff(pa.getY(), pc.getY());
-    final Hilo bx = Hilo.twoDiff(pb.getX(), pc.getX());
-    final Hilo by = Hilo.twoDiff(pb.getY(), pc.getY());
-    final XDouble axby = XDouble.twoTwoProduct(ax, by);
-    final XDouble bxay = XDouble.twoTwoProduct(bx, ay);
+    final Hilo ax = Hilo.subtract(pa.getX(), pc.getX());
+    final Hilo ay = Hilo.subtract(pa.getY(), pc.getY());
+    final Hilo bx = Hilo.subtract(pb.getX(), pc.getX());
+    final Hilo by = Hilo.subtract(pb.getY(), pc.getY());
+    final XDouble axby = XDouble.product(ax, by);
+    final XDouble bxay = XDouble.product(bx, ay);
     return axby.subtract(bxay).doubleValue(); }
 
   //--------------------------------------------------------------------
@@ -120,8 +120,8 @@ public final class Slow implements Predicate {
                                     final Hilo cx,
                                     final Hilo cy) {
 
-    final XDouble axby = XDouble.twoTwoProduct(ax, by);
-    final XDouble bxay = XDouble.twoTwoProduct(bx, ay);
+    final XDouble axby = XDouble.product(ax, by);
+    final XDouble bxay = XDouble.product(bx, ay);
     final XDouble sum = axby.subtract(bxay);
 
     final XDouble sxhihi = sum.multiply(cx.hi()).multiply(cx.hi());
@@ -148,12 +148,12 @@ public final class Slow implements Predicate {
                                 final Vector2D pc,
                                 final Vector2D pd) {
 
-    final Hilo ax = Hilo.twoDiff(pa.getX(), pd.getX());
-    final Hilo ay = Hilo.twoDiff(pa.getY(), pd.getY());
-    final Hilo bx = Hilo.twoDiff(pb.getX(), pd.getX());
-    final Hilo by = Hilo.twoDiff(pb.getY(), pd.getY());
-    final Hilo cx = Hilo.twoDiff(pc.getX(), pd.getX());
-    final Hilo cy = Hilo.twoDiff(pc.getY(), pd.getY());
+    final Hilo ax = Hilo.subtract(pa.getX(), pd.getX());
+    final Hilo ay = Hilo.subtract(pa.getY(), pd.getY());
+    final Hilo bx = Hilo.subtract(pb.getX(), pd.getX());
+    final Hilo by = Hilo.subtract(pb.getY(), pd.getY());
+    final Hilo cx = Hilo.subtract(pc.getX(), pd.getX());
+    final Hilo cy = Hilo.subtract(pc.getY(), pd.getY());
     final XDouble ad = det(bx,by,cx,cy,ax,ay);
     final XDouble bd = det(cx,cy,ax,ay,bx,by);
     final XDouble cd = det(ax,ay,bx,by,cx,cy);
@@ -166,22 +166,22 @@ public final class Slow implements Predicate {
                                     final Vector3D pb,
                                     final Vector3D pc,
                                     final Vector3D pd) {
-    final Hilo adx = Hilo.twoDiff(pa.getX(), pd.getX());
-    final Hilo ady = Hilo.twoDiff(pa.getY(), pd.getY());
-    final Hilo adz = Hilo.twoDiff(pa.getZ(), pd.getZ());
-    final Hilo bdx = Hilo.twoDiff(pb.getX(), pd.getX());
-    final Hilo bdy = Hilo.twoDiff(pb.getY(), pd.getY());
-    final Hilo bdz = Hilo.twoDiff(pb.getZ(), pd.getZ());
-    final Hilo cdx = Hilo.twoDiff(pc.getX(), pd.getX());
-    final Hilo cdy = Hilo.twoDiff(pc.getY(), pd.getY());
-    final Hilo cdz = Hilo.twoDiff(pc.getZ(), pd.getZ());
+    final Hilo adx = Hilo.subtract(pa.getX(), pd.getX());
+    final Hilo ady = Hilo.subtract(pa.getY(), pd.getY());
+    final Hilo adz = Hilo.subtract(pa.getZ(), pd.getZ());
+    final Hilo bdx = Hilo.subtract(pb.getX(), pd.getX());
+    final Hilo bdy = Hilo.subtract(pb.getY(), pd.getY());
+    final Hilo bdz = Hilo.subtract(pb.getZ(), pd.getZ());
+    final Hilo cdx = Hilo.subtract(pc.getX(), pd.getX());
+    final Hilo cdy = Hilo.subtract(pc.getY(), pd.getY());
+    final Hilo cdz = Hilo.subtract(pc.getZ(), pd.getZ());
 
-    final XDouble axby = XDouble.twoTwoProduct(adx, bdy);
-    final XDouble bxay = XDouble.twoTwoProduct(bdx, ady.negate());
-    final XDouble bxcy = XDouble.twoTwoProduct(bdx, cdy);
-    final XDouble cxby = XDouble.twoTwoProduct(cdx, bdy.negate());
-    final XDouble cxay = XDouble.twoTwoProduct(cdx, ady);
-    final XDouble axcy = XDouble.twoTwoProduct(adx, cdy.negate());
+    final XDouble axby = XDouble.product(adx, bdy);
+    final XDouble bxay = XDouble.product(bdx, ady.negate());
+    final XDouble bxcy = XDouble.product(bdx, cdy);
+    final XDouble cxby = XDouble.product(cdx, bdy.negate());
+    final XDouble cxay = XDouble.product(cdx, ady);
+    final XDouble axcy = XDouble.product(adx, cdy.negate());
 
     final XDouble adet = bxcy.add(cxby).multiply(adz);
     final XDouble bdet = cxay.add(axcy).multiply(bdz);
@@ -234,18 +234,18 @@ public final class Slow implements Predicate {
                                 final Vector3D pd,
                                 final Vector3D pe) {
 
-    final Hilo aex = Hilo.twoDiff(pa.getX(), pe.getX());
-    final Hilo aey = Hilo.twoDiff(pa.getY(), pe.getY());
-    final Hilo aez = Hilo.twoDiff(pa.getZ(), pe.getZ());
-    final Hilo bex = Hilo.twoDiff(pb.getX(), pe.getX());
-    final Hilo bey = Hilo.twoDiff(pb.getY(), pe.getY());
-    final Hilo bez = Hilo.twoDiff(pb.getZ(), pe.getZ());
-    final Hilo cex = Hilo.twoDiff(pc.getX(), pe.getX());
-    final Hilo cey = Hilo.twoDiff(pc.getY(), pe.getY());
-    final Hilo cez = Hilo.twoDiff(pc.getZ(), pe.getZ());
-    final Hilo dex = Hilo.twoDiff(pd.getX(), pe.getX());
-    final Hilo dey = Hilo.twoDiff(pd.getY(), pe.getY());
-    final Hilo dez = Hilo.twoDiff(pd.getZ(), pe.getZ());
+    final Hilo aex = Hilo.subtract(pa.getX(), pe.getX());
+    final Hilo aey = Hilo.subtract(pa.getY(), pe.getY());
+    final Hilo aez = Hilo.subtract(pa.getZ(), pe.getZ());
+    final Hilo bex = Hilo.subtract(pb.getX(), pe.getX());
+    final Hilo bey = Hilo.subtract(pb.getY(), pe.getY());
+    final Hilo bez = Hilo.subtract(pb.getZ(), pe.getZ());
+    final Hilo cex = Hilo.subtract(pc.getX(), pe.getX());
+    final Hilo cey = Hilo.subtract(pc.getY(), pe.getY());
+    final Hilo cez = Hilo.subtract(pc.getZ(), pe.getZ());
+    final Hilo dex = Hilo.subtract(pd.getX(), pe.getX());
+    final Hilo dey = Hilo.subtract(pd.getY(), pe.getY());
+    final Hilo dez = Hilo.subtract(pd.getZ(), pe.getZ());
 
     final XDouble ab = XDouble.crossProduct(aex,aey,bex,bey);
     final XDouble bc = XDouble.crossProduct(bex,bey,cex,cey);

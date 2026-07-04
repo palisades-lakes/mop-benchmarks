@@ -106,7 +106,7 @@ public final class Hilos implements Set {
       public Object next () {
         final boolean edge = choose.sample() > dp;
         if (edge) { return edgeCases.sample(); }
-        return Hilo.twoSum(g.nextDouble(), g.nextDouble()); } }; }
+        return Hilo.sum(g.nextDouble(), g.nextDouble()); } }; }
 
 //  public static final Generator
 //  fromDoubleGenerator (final int n,
