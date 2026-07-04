@@ -538,9 +538,9 @@ public final class SlowMacro implements Predicate {
   // orient2d
   //--------------------------------------------------------------------
   // TODO: seems to return 2xsigned area
-  public final double orient2d (final Vector2D pa,
-                                final Vector2D pb,
-                                final Vector2D pc) {
+  public final double signedArea (final Vector2D pa,
+                                  final Vector2D pb,
+                                  final Vector2D pc) {
     double acx, acy, bcx, bcy; double acxtail, acytail;
     double bcxtail, bcytail; double negate, negatetail;
     double[] axby = new double[8]; double[] bxay = new double[8];
@@ -665,8 +665,8 @@ public final class SlowMacro implements Predicate {
   //--------------------------------------------------------------------
   // orient3d
   //--------------------------------------------------------------------
-  public final double orient3d (final Vector3D pa, final Vector3D pb,
-                                final Vector3D pc, final Vector3D pd) {
+  public final double signedVolume (final Vector3D pa, final Vector3D pb,
+                                    final Vector3D pc, final Vector3D pd) {
     double adx, ady, adz, bdx, bdy, bdz, cdx, cdy, cdz;
     double adxtail, adytail, adztail; double bdxtail, bdytail, bdztail;
     double cdxtail, cdytail, cdztail; double negate, negatetail;

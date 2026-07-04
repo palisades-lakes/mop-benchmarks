@@ -480,9 +480,9 @@ public final class Adapt implements Predicate {
   private static final double o3derrboundA =
     (7.0 + 56.0 * EPSILON) * EPSILON;
 
-  public final double orient2d (final Vector2D pa,
-                                final Vector2D pb,
-                                final Vector2D pc) {
+  public final double signedArea (final Vector2D pa,
+                                  final Vector2D pb,
+                                  final Vector2D pc) {
 
     // TODO: difference vectors cached in Triangle object
     final Vector2D ac = pa.subtract(pc);
@@ -683,10 +683,10 @@ public final class Adapt implements Predicate {
 
     return finnow.doubleValue(); }
 
-  public final double orient3d (final Vector3D pa,
-                                final Vector3D pb,
-                                final Vector3D pc,
-                                final Vector3D pd) {
+  public final double signedVolume (final Vector3D pa,
+                                    final Vector3D pb,
+                                    final Vector3D pc,
+                                    final Vector3D pd) {
 
 
     final double adx = pa.getX() - pd.getX();

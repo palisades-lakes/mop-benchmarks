@@ -15,14 +15,14 @@ import java.util.List;
 
 /** Geometry predicates.
  * <pre>
- * mvn -Dtest=mop.java.test.geometry.predicates.Orient2DTest test
+ * mvn -Dtest=mop.java.test.geometry.predicates.SignedAreaTest test
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-07-03
+ * @version 2026-07-04
  */
 
-public final class Orient2DTest {
+public final class SignedAreaTest {
 
   //--------------------------------------------------------------
   private static final String failureMsg (final double truth,
@@ -36,22 +36,22 @@ public final class Orient2DTest {
       "\norient2d(" + p0 + "," + p1 + "," + p2 + ")" +
         "\ngold=" + gold + "\n-> " + Double.toHexString(truth) +
         "\npred=" + pred + "\n-> " + Double.toHexString(
-          pred.orient2d(p0, p1, p2)));
+          pred.signedArea(p0, p1, p2)));
     for (final Predicate p : predicates) {
       msg.append("\n").append(p).append(" -> ")
-         .append(Double.toHexString(p.orient2d(p0, p1, p2))); }
+         .append(Double.toHexString(p.signedArea(p0, p1, p2))); }
     return msg + "\n"; }
 
   //--------------------------------------------------------------
 
-  private static final void orient2D (final List<Predicate> predicates,
-                                      final Vector2D p0,
-                                      final Vector2D p1,
-                                      final Vector2D p2) {
+  private static final void signedArea (final List<Predicate> predicates,
+                                        final Vector2D p0,
+                                        final Vector2D p1,
+                                        final Vector2D p2) {
     final Predicate gold = Common.truth();
-    final double trueAreaX2 = gold.orient2d(p0, p1, p2);
+    final double trueAreaX2 = gold.signedArea(p0, p1, p2);
     for (final Predicate p : predicates) {
-      final double areaX2 = p.orient2d(p0, p1, p2);
+      final double areaX2 = p.signedArea(p0, p1, p2);
       if (p.isExact()) {
         // with delta=0.0 handles +0 vs -0 'correctly'
         Assertions.assertEquals(
@@ -63,25 +63,25 @@ public final class Orient2DTest {
           failureMsg(trueAreaX2,gold,p,predicates,p0,p1,p2)); } } }
 
   @Test
-  public final void testOrient2D () {
+  public final void testSignedArea () {
     final Vector2D p0 = Vector2D.of( 0.0, 0.0);
     final Vector2D p1 = Vector2D.of( 1.0, 1.0);
     final Vector2D p2 = Vector2D.of( -1.0, 1.0);
     final Vector2D p3 = Vector2D.of( -1.0, -1.0);
 
     final List<Predicate> predicates = Common.orient2dPredicates();
-    orient2D(predicates, p0, p1, p2);
+    signedArea(predicates, p0, p1, p2);
     // reverse
-    orient2D(predicates, p1, p0, p2);
+    signedArea(predicates, p1, p0, p2);
     // 1 pt singular
-    orient2D(predicates, p0, p0, p0);
+    signedArea(predicates, p0, p0, p0);
     // 2 pt line segment
-    orient2D(predicates,p0, p2, p0);
+    signedArea(predicates, p0, p2, p0);
     // TODO: Slow returns -1, not 0
-    orient2D(predicates,p0, p0, p2);
+    signedArea(predicates, p0, p0, p2);
     //orient2D(List.of(new Adapt(),new Fast()),p0, p0, p2);
     // Co-linear triangle
-    orient2D(predicates, p0, p1, p3);
+    signedArea(predicates, p0, p1, p3);
   }
 
   //--------------------------------------------------------------
@@ -97,10 +97,10 @@ public final class Orient2DTest {
       Doubles.laplaceGenerator(n, 2, urp, 0.0, 1.0);
     final double[][] p = (double[][]) laplaceGenerator.next();
     for (int i = 0; i < n-2; i++) {
-      orient2D(predicates,
-               Vector2D.of(p[i]),
-               Vector2D.of(p[i+1]),
-               Vector2D.of(p[i+2]));} }
+      signedArea(predicates,
+                 Vector2D.of(p[i]),
+                 Vector2D.of(p[i+1]),
+                 Vector2D.of(p[i+2]));} }
 
   //--------------------------------------------------------------
 }

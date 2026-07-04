@@ -27,9 +27,9 @@ public final class DDSlow implements Predicate {
   //--------------------------------------------------------------------
 
   @Override
-  public final double orient2d (final Vector2D a,
-                                final Vector2D b,
-                                final Vector2D c) {
+  public final double signedArea (final Vector2D a,
+                                  final Vector2D b,
+                                  final Vector2D c) {
     final DD ax = DD.valueOf(a.getX());
     final DD ay = DD.valueOf(a.getY());
     final DD bx = DD.valueOf(b.getX());

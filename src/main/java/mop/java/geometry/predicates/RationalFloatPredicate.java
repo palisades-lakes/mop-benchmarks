@@ -27,9 +27,9 @@ public final class RationalFloatPredicate implements Predicate {
   //  final RationalFloat.
   // TODO: RationalFloatVector, RationalFloatTriangle...
 
-  public final double orient2d (final Vector2D pa,
-                                final Vector2D pb,
-                                final Vector2D pc) {
+  public final double signedArea (final Vector2D pa,
+                                  final Vector2D pb,
+                                  final Vector2D pc) {
     final RationalFloat ax = RationalFloat.valueOf(pa.getX());
     final RationalFloat ay = RationalFloat.valueOf(pa.getY());
     final RationalFloat bx = RationalFloat.valueOf(pb.getX());
@@ -48,10 +48,10 @@ public final class RationalFloatPredicate implements Predicate {
   //--------------------------------------------------------------------
   // TODO: rewrite as vector operations
 
-  public final double orient3d (final Vector3D pa,
-                                final Vector3D pb,
-                                final Vector3D pc,
-                                final Vector3D pd) {
+  public final double signedVolume (final Vector3D pa,
+                                    final Vector3D pb,
+                                    final Vector3D pc,
+                                    final Vector3D pd) {
     final RationalFloat ax = RationalFloat.valueOf(pa.getX());
     final RationalFloat ay = RationalFloat.valueOf(pa.getY());
     final RationalFloat az = RationalFloat.valueOf(pa.getZ());

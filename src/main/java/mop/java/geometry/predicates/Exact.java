@@ -25,9 +25,9 @@ public final class Exact implements Predicate {
   // orient2d
   //--------------------------------------------------------------------
 
-  public final double orient2d (final Vector2D pa,
-                                final Vector2D pb,
-                                final Vector2D pc) {
+  public final double signedArea (final Vector2D pa,
+                                  final Vector2D pb,
+                                  final Vector2D pc) {
 
     final Hilo axby = Hilo.product(pa.getX(),pb.getY());
     final Hilo axcy = Hilo.product(pa.getX(),pc.getY());
@@ -90,10 +90,10 @@ public final class Exact implements Predicate {
   // orient3d
   //--------------------------------------------------------------------
 
-  public final double orient3d (final Vector3D pa,
-                                final Vector3D pb,
-                                final Vector3D pc,
-                                final Vector3D pd) {
+  public final double signedVolume (final Vector3D pa,
+                                    final Vector3D pb,
+                                    final Vector3D pc,
+                                    final Vector3D pd) {
     final Hilo axby = Hilo.product(pa.getX(),pb.getY());
     final Hilo bxay = Hilo.product(pb.getX(),pa.getY());
     final XDouble ab = XDouble.twoTwoDiff(axby,bxay);

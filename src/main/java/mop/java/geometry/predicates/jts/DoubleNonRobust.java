@@ -31,9 +31,9 @@ public final class DoubleNonRobust implements Predicate {
   //--------------------------------------------------------------------
 
   @Override
-  public final double orient2d (final Vector2D a,
-                                final Vector2D b,
-                                final Vector2D c) {
+  public final double signedArea (final Vector2D a,
+                                  final Vector2D b,
+                                  final Vector2D c) {
     return triArea(a,b,c); }
 
   //--------------------------------------------------------------------

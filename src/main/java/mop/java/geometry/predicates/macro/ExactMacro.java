@@ -97,9 +97,9 @@ public final class ExactMacro implements Predicate {
   //--------------------------------------------------------------------
   // orient2d
   //--------------------------------------------------------------------
-  public final double orient2d (final Vector2D pa,
-                                final Vector2D pb,
-                                final Vector2D pc) {
+  public final double signedArea (final Vector2D pa,
+                                  final Vector2D pb,
+                                  final Vector2D pc) {
     double axby1, axcy1, bxcy1, bxay1, cxay1, cxby1;
     double axby0, axcy0, bxcy0, bxay0, cxay0, cxby0;
     double[] aterms = new double[4];
@@ -204,10 +204,10 @@ public final class ExactMacro implements Predicate {
   //--------------------------------------------------------------------
   // orient3d
   //--------------------------------------------------------------------
-  public final double orient3d (final Vector3D pa,
-                                final Vector3D pb,
-                                final Vector3D pc,
-                                final Vector3D pd) {
+  public final double signedVolume (final Vector3D pa,
+                                    final Vector3D pb,
+                                    final Vector3D pc,
+                                    final Vector3D pd) {
     double axby1, bxcy1, cxdy1, dxay1, axcy1, bxdy1;
     double bxay1, cxby1, dxcy1, axdy1, cxay1, dxby1;
     double axby0, bxcy0, cxdy0, dxay0, axcy0, bxdy0;

@@ -105,16 +105,16 @@ public interface Predicate {
    * <br>
    * Exact, Slow, and Default use exact arithmetic to ensure a correct
    * answer. The result returned is the determinant of a matrix.  In
-   * orient2d() only, this determinant is computed adaptively, in the
+   * signedArea() only, this determinant is computed adaptively, in the
    * sense that exact arithmetic is used only to the degree it is needed
    * to ensure that the returned value has the correct sign.  Hence,
-   * orient2d() is usually quite fast, but will run more slowly when the
+   * signedArea() is usually quite fast, but will run more slowly when the
    * input points are collinear or nearly so.
    */
 
-  default double orient2d (final Vector2D pa,
-                           final Vector2D pb,
-                           final Vector2D pc) {
+  default double signedArea (final Vector2D pa,
+                             final Vector2D pb,
+                             final Vector2D pc) {
     throw new UnsupportedOperationException(
       getClass().getSimpleName()); }
 
@@ -130,7 +130,7 @@ public interface Predicate {
    * <br>
    * Exact, Slow, and Default use exact arithmetic to ensure a correct
    * answer. The result returned is the determinant of a matrix.  In
-   * orient3d() only, this determinant is computed adaptively, in the
+   * signedVolume() only, this determinant is computed adaptively, in the
    * sense that exact arithmetic is used only to the degree it is needed
    * to ensure that the returned value has the correct sign.  Hence,
    * incircle() is usually quite fast, but will run more slowly when the
@@ -154,16 +154,16 @@ public interface Predicate {
    * <br>
    * Exact, Slow, and Default use exact arithmetic to ensure a correct
    * answer. The result returned is the determinant of a matrix.  In
-   * orient3d() only, this determinant is computed adaptively, in the
+   * signedVolume() only, this determinant is computed adaptively, in the
    * sense that exact arithmetic is used only to the degree it is needed
    * to ensure that the returned value has the correct sign.  Hence,
-   * orient3d() is usually quite fast, but will run more slowly when the
+   * signedVolume() is usually quite fast, but will run more slowly when the
    * input points are coplanar or nearly so.
    */
-  default double orient3d (final Vector3D pa,
-                           final Vector3D pb,
-                           final Vector3D pc,
-                           final Vector3D pd) {
+  default double signedVolume (final Vector3D pa,
+                               final Vector3D pb,
+                               final Vector3D pc,
+                               final Vector3D pd) {
     throw new UnsupportedOperationException(
       getClass().getSimpleName()); }
 
@@ -173,7 +173,7 @@ public interface Predicate {
    * passing through pa, pb, pc, and pd; a negative value if it lies
    * outside; and zero if the five points are co-spherical.  The points
    * pa, pb, pc, and pd must be ordered so that they have a positive
-   * orientation (as defined by orient3d()), or the sign of the result
+   * orientation (as defined by signedVolume()), or the sign of the result
    * will be reversed.
    * <br>
    * Only Fast and Default should be used; the other two are for
@@ -181,7 +181,7 @@ public interface Predicate {
    * <br>
    * Exact, Slow, and Default use exact arithmetic to ensure a correct
    * answer. The result returned is the determinant of a matrix.  In
-   * orient3d() only, this determinant is computed adaptively, in the
+   * signedVolume() only, this determinant is computed adaptively, in the
    * sense that exact arithmetic is used only to the degree it is needed
    * to ensure that the returned value has the correct sign.  Hence,
    * incircle() is usually quite fast, but will run more slowly when the

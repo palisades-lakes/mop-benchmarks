@@ -98,9 +98,9 @@ public final class Slow implements Predicate {
  // TODO: seems to return 2xsigned area
   // TODO: XDoubleVector, XDoubleTriangle...
 
-  public final double orient2d (final Vector2D pa,
-                                final Vector2D pb,
-                                final Vector2D pc) {
+  public final double signedArea (final Vector2D pa,
+                                  final Vector2D pb,
+                                  final Vector2D pc) {
     final Hilo ax = Hilo.twoDiff(pa.getX(), pc.getX());
     final Hilo ay = Hilo.twoDiff(pa.getY(), pc.getY());
     final Hilo bx = Hilo.twoDiff(pb.getX(), pc.getX());
@@ -162,10 +162,10 @@ public final class Slow implements Predicate {
   //--------------------------------------------------------------------
   // orient3d
   //--------------------------------------------------------------------
-  public final double orient3d (final Vector3D pa,
-                                final Vector3D pb,
-                                final Vector3D pc,
-                                final Vector3D pd) {
+  public final double signedVolume (final Vector3D pa,
+                                    final Vector3D pb,
+                                    final Vector3D pc,
+                                    final Vector3D pd) {
     final Hilo adx = Hilo.twoDiff(pa.getX(), pd.getX());
     final Hilo ady = Hilo.twoDiff(pa.getY(), pd.getY());
     final Hilo adz = Hilo.twoDiff(pa.getZ(), pd.getZ());

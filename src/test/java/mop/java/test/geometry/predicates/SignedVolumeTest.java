@@ -14,14 +14,14 @@ import java.util.List;
 //----------------------------------------------------------------
 /** Common code for geometry predicate tests.
  * <pre>
- * mvn -Dtest=mop.java.test.geometry.predicates.Orient3DTest test
+ * mvn -Dtest=mop.java.test.geometry.predicates.SignedVolumeTest test
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
  * @version 2026-07-04
  */
 
-public final class Orient3DTest {
+public final class SignedVolumeTest {
 
   //--------------------------------------------------------------
   private static final String failureMsg (final double truth,
@@ -44,23 +44,23 @@ public final class Orient3DTest {
         (p3) + ")" +
         "\ngold=" + gold + "\n-> " + Double.toHexString(truth) +
         "\npred=" + pred + "\n-> " + Double.toHexString(
-    pred.orient3d(p0, p1, p2, p3)));
+    pred.signedVolume(p0, p1, p2, p3)));
     for (final Predicate p : predicates) {
       msg.append("\n").append(p).append(" -> ")
-         .append(Double.toHexString(p.orient3d(p0, p1, p2,p3))); }
+         .append(Double.toHexString(p.signedVolume(p0, p1, p2, p3))); }
     return msg + "\n"; }
 
   //--------------------------------------------------------------
 
-  private static final void orient3D (final List<Predicate> predicates,
-                                      final Vector3D p0,
-                                      final Vector3D p1,
-                                      final Vector3D p2,
-                                      final Vector3D p3) {
+  private static final void signedVolume (final List<Predicate> predicates,
+                                          final Vector3D p0,
+                                          final Vector3D p1,
+                                          final Vector3D p2,
+                                          final Vector3D p3) {
     final Predicate gold = Common.truth();
-    final double trueVol = gold.orient3d(p0, p1, p2, p3);
+    final double trueVol = gold.signedVolume(p0, p1, p2, p3);
     for (final Predicate p : predicates) {
-      final double vol = p.orient3d(p0, p1, p2, p3);
+      final double vol = p.signedVolume(p0, p1, p2, p3);
       if (p.isExact()) {
         // with delta=0.0 handles +0 vs -0 'correctly'
         Assertions.assertEquals(
@@ -73,12 +73,12 @@ public final class Orient3DTest {
           failureMsg(trueVol,gold,p,predicates,p0,p1,p2,p3)); } } }
 
   @Test
-  public final void testOrient3D () {
+  public final void testSignedVolume () {
     final Vector3D p0 =Vector3D.of(0.0, 0.0, 0.0);
     final Vector3D p1 =Vector3D.of(1.0, 0.0, 0.0);
     final Vector3D p2 =Vector3D.of(0.0, 1.0, 0.0);
     final Vector3D p3 =Vector3D.of(0.0, 0.0, 1.0);
-    orient3D(Common.orient3dPredicates(), p0, p1, p2, p3); }
+    signedVolume(Common.orient3dPredicates(), p0, p1, p2, p3); }
 
   @Test
   public final void laplaceTest () {
@@ -90,11 +90,11 @@ public final class Orient3DTest {
       Doubles.laplaceGenerator(n, 3, urp, 0.0, 1.0);
     final double[][] p = (double[][]) laplaceGenerator.next();
     for (int i = 0; i < n-3; i++) {
-      orient3D(predicates,
-               Vector3D.of(p[i]),
-               Vector3D.of(p[i+1]),
-               Vector3D.of(p[i+2]),
-               Vector3D.of(p[i+3]));} }
+      signedVolume(predicates,
+                   Vector3D.of(p[i]),
+                   Vector3D.of(p[i+1]),
+                   Vector3D.of(p[i+2]),
+                   Vector3D.of(p[i+3]));} }
 //--------------------------------------------------------------
 }
 //--------------------------------------------------------------
