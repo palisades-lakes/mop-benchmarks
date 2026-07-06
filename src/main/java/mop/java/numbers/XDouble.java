@@ -503,7 +503,7 @@ public final class XDouble
     return multiply(b.hi()).add(multiply(b.lo())); }
 
   // TODO: this version of scale() breaks all the Shewchuk predicates,
-  //  while naive version only breaks Slow.incircle().
+  //  while naive version only breaks Slow.inCircle().
   //  In both cases, the difference from BigFloat is the absolute
   //  value of the ulp of the BigFloat rounded to double?
   //
@@ -602,7 +602,7 @@ public final class XDouble
 
   public static final XDouble crossProduct (final Vector2D a,
                                             final Vector2D b) {
-    // TODO: next breaks Exact.incircle!?
+    // TODO: next breaks Exact.inCircle!?
 //    return crossProduct(a[0],a[1],b[0],b[1]); }
     final XDouble axby = product(a.getX(), b.getY());
     final XDouble bxay = product(b.getX(), a.getY());

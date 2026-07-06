@@ -1,6 +1,17 @@
 package mop.java.test.geometry.predicates;
 
-import mop.java.geometry.predicates.*;
+import mop.java.geometry.predicates.tetrahedron.Adapt;
+import mop.java.geometry.predicates.tetrahedron.BigFloatTetrahedron3D;
+import mop.java.geometry.predicates.tetrahedron.Exact;
+import mop.java.geometry.predicates.tetrahedron.Fast;
+import mop.java.geometry.predicates.tetrahedron.RationalFloatTetrahedron3D;
+import mop.java.geometry.predicates.tetrahedron.Slow;
+import mop.java.geometry.predicates.tetrahedron.Tetrahedron3D;
+import mop.java.geometry.predicates.tetrahedron.macro.AdaptMacro;
+import mop.java.geometry.predicates.tetrahedron.macro.DefaultMacro;
+import mop.java.geometry.predicates.tetrahedron.macro.ExactMacro;
+import mop.java.geometry.predicates.tetrahedron.macro.FastMacro;
+import mop.java.geometry.predicates.tetrahedron.macro.SlowMacro;
 import mop.java.numbers.Doubles;
 import mop.java.prng.Generator;
 import mop.java.prng.PRNG;
@@ -13,29 +24,53 @@ import java.util.List;
 
 //----------------------------------------------------------------
 
-/** Common code for geometry predicate tests.
- * <pre>
+/** <pre>
  * mvn -Dtest=mop.java.test.geometry.predicates.InSphereTest test
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-07-04
+ * @version 2026-07-06
  */
 
 public final class InSphereTest {
 
+  // ground truth predicate.
+  public static final Tetrahedron3D truth () {
+    return new BigFloatTetrahedron3D(); }
+
+
+  public static final List<Tetrahedron3D> inSphereTetrahedra () {
+    final Tetrahedron3D bigFloat = new BigFloatTetrahedron3D();
+    final Tetrahedron3D rationalFloat = new RationalFloatTetrahedron3D();
+    final Tetrahedron3D adapt = new Adapt();
+    final Tetrahedron3D exact = new Exact();
+    final Tetrahedron3D fast = new Fast();
+    final Tetrahedron3D slow = new Slow();
+    final Tetrahedron3D adaptMacro = new AdaptMacro();
+    final Tetrahedron3D defaultMacro = new DefaultMacro();
+    final Tetrahedron3D exactMacro = new ExactMacro();
+    final Tetrahedron3D fastMacro = new FastMacro();
+    final Tetrahedron3D slowMacro = new SlowMacro();
+    return List.of(
+      // mine
+      rationalFloat,bigFloat,
+      // Shewchuk predicates.c
+      exact,
+      adapt,fast,slow,
+      exactMacro, adaptMacro, defaultMacro, fastMacro, slowMacro); }
+
   //--------------------------------------------------------------
   private static final String failureMsg (final double truth,
-                                          final Predicate gold,
-                                          final Predicate pred,
-                                          final List<Predicate> predicates,
+                                          final Tetrahedron3D gold,
+                                          final Tetrahedron3D pred,
+                                          final List<Tetrahedron3D> predicates,
                                           final Vector3D p0,
                                           final Vector3D p1,
                                           final Vector3D p2,
                                           final Vector3D p3,
                                           final Vector3D p4) {
     final StringBuilder msg = new StringBuilder(
-      "\ninsphere(" +
+      "\ninSphere(" +
         (p0) + "," +
         (p1) + "," +
         (p2) + "," +
@@ -45,24 +80,24 @@ public final class InSphereTest {
         "\n -> " + Double.toHexString(truth) +
         "\npred=" + pred +
         "\n -> " +
-        Double.toHexString(pred.insphere(p0, p1, p2,p3,p4)));
-    for (final Predicate p : predicates) {
+        Double.toHexString(pred.inSphere(p0, p1, p2,p3,p4)));
+    for (final Tetrahedron3D p : predicates) {
       msg.append("\n").append(p).append(" -> ")
-         .append(Double.toHexString(p.insphere(p0, p1, p2,p3,p4))); }
+         .append(Double.toHexString(p.inSphere(p0, p1, p2,p3,p4))); }
     return msg + "\n"; }
   //--------------------------------------------------------------
 
-  private static final void inSphere (final List<Predicate> predicates,
+  private static final void inSphere (final List<Tetrahedron3D> predicates,
                                       final Vector3D p0,
                                       final Vector3D p1,
                                       final Vector3D p2,
                                       final Vector3D p3,
                                       final Vector3D p4) {
-    final Predicate gold = Common.truth();
-    final double trueInc = gold.insphere(p0, p1, p2, p3, p4);
-    for (final Predicate p : predicates) {
-      final double inc = p.insphere(p0, p1, p2, p3,p4);
-      if (p.isExact()) {
+    final Tetrahedron3D gold = truth();
+    final double trueInc = gold.inSphere(p0, p1, p2, p3, p4);
+    for (final Tetrahedron3D p : predicates) {
+      final double inc = p.inSphere(p0, p1, p2, p3,p4);
+      if (p.inSphereExact()) {
         // with delta=0.0 handles +0 vs -0 'correctly'
         Assertions.assertEquals(
           trueInc, inc, 0.0,
@@ -79,11 +114,11 @@ public final class InSphereTest {
     final Vector3D p2 = Vector3D.of(0.0, 1.0, 0.0);
     final Vector3D p3 = Vector3D.of(0.0, 0.0, 1.0);
     final Vector3D p4 = Vector3D.of(1.0, 1.0, 1.0);
-    inSphere(Common.inSpherePredicates(), p0, p1, p2, p3, p4); }
+    inSphere(inSphereTetrahedra(), p0, p1, p2, p3, p4); }
 
   @Test
   public final void laplaceTest () {
-    final List<Predicate> predicates = Common.inSpherePredicates();
+    final List<Tetrahedron3D> predicates = inSphereTetrahedra();
     final int n = 55;
     final UniformRandomProvider urp =
       PRNG.well44497b("seeds/Well44497b-2019-01-05.txt");

@@ -1,4 +1,4 @@
-package mop.java.geometry.predicates.macro;
+package mop.java.geometry.predicates.tetrahedron.macro;
 // 2026-05-14
 // macro expand predicates.c via https://godbolt.org/
 // minimal changes to compile as java
@@ -6,11 +6,10 @@ package mop.java.geometry.predicates.macro;
 // split into Expansion manipulation and fast, slow, exact, adaptive
 // algorithm classes
 
-import mop.java.geometry.predicates.Predicate;
+import mop.java.geometry.predicates.tetrahedron.Tetrahedron3D;
 import org.apache.commons.geometry.euclidean.threed.Vector3D;
-import org.apache.commons.geometry.euclidean.twod.Vector2D;
 
-import static mop.java.geometry.predicates.macro.Expansion.EPSILON;
+import static mop.java.geometry.predicates.Expansion.EPSILON;
 
 /**
  * AdaptMacroive tests.  Robust.
@@ -83,62 +82,14 @@ import static mop.java.geometry.predicates.macro.Expansion.EPSILON;
  *   even <code>BigInteger</code> to extend range.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-07-04
+ * @version 2026-07-06
  */
 
 // strictfp unnecessary for JDK17 and later
-public final class DefaultMacro implements Predicate {
+public final class DefaultMacro extends Tetrahedron3D {
 
   //--------------------------------------------------------------------
-
-  public final boolean isExact () { return false; }
-
-  //--------------------------------------------------------------------
-  // orient2d
-  //--------------------------------------------------------------------
-  private static final double ccwerrboundA =
-    (3.0 + 16.0 * EPSILON) * EPSILON;
-
-  public final double signedArea (final Vector2D pa,
-                                  final Vector2D pb,
-                                  final Vector2D pc) {
-    double detleft, detright, det;
-    double detsum, errbound;
-
-    detleft = (pa.getX() - pc.getX()) * (pb.getY() - pc.getY());
-    detright = (pa.getY() - pc.getY()) * (pb.getX() - pc.getX());
-    det = detleft - detright;
-
-    if (detleft > 0.0) {
-      if (detright <= 0.0) {
-        return det;
-      }
-      else {
-        detsum = detleft + detright;
-      }
-    }
-    else if (detleft < 0.0) {
-      if (detright >= 0.0) {
-        return det;
-      }
-      else {
-        detsum = -detleft - detright;
-      }
-    }
-    else {
-      return det;
-    }
-
-    errbound = ccwerrboundA * detsum;
-    if ((det >= errbound) || (-det >= errbound)) {
-      return det;
-    }
-
-    return new AdaptMacro().orient2d(pa, pb, pc, detsum);
-  }
-
-  //--------------------------------------------------------------------
-  // orient3d
+  // signedVolume
   //--------------------------------------------------------------------
   private static final double o3derrboundA =
     (7.0 + 56.0 * EPSILON) * EPSILON;
@@ -193,73 +144,17 @@ public final class DefaultMacro implements Predicate {
       return det;
     }
 
-    return new AdaptMacro().orient3d(pa, pb, pc, pd, permanent);
+    return new AdaptMacro().signedVolume(pa, pb, pc, pd, permanent);
   }
 
   //--------------------------------------------------------------------
-  // incircle
+  // inSphere
   //--------------------------------------------------------------------
-  private static final double iccerrboundA =
-    (10.0 + 96.0 * EPSILON) * EPSILON;
 
-  public final double incircle (final Vector2D pa,
-                                final Vector2D pb,
-                                final Vector2D pc,
-                                final Vector2D pd) {
-    double adx, bdx, cdx, ady, bdy, cdy;
-    double bdxcdy, cdxbdy, cdxady, adxcdy, adxbdy, bdxady;
-    double alift, blift, clift;
-    double det;
-    double permanent, errbound;
-
-    adx = pa.getX() - pd.getX();
-    bdx = pb.getX() - pd.getX();
-    cdx = pc.getX() - pd.getX();
-    ady = pa.getY() - pd.getY();
-    bdy = pb.getY() - pd.getY();
-    cdy = pc.getY() - pd.getY();
-
-    bdxcdy = bdx * cdy;
-    cdxbdy = cdx * bdy;
-    alift = adx * adx + ady * ady;
-
-    cdxady = cdx * ady;
-    adxcdy = adx * cdy;
-    blift = bdx * bdx + bdy * bdy;
-
-    adxbdy = adx * bdy;
-    bdxady = bdx * ady;
-    clift = cdx * cdx + cdy * cdy;
-
-    det = alift * (bdxcdy - cdxbdy)
-      + blift * (cdxady - adxcdy)
-      + clift * (adxbdy - bdxady);
-
-    permanent =
-      (((bdxcdy) >= 0.0 ? (bdxcdy) : -(bdxcdy)) + ((cdxbdy) >= 0.0
-                                                   ? (cdxbdy)
-                                                   : -(cdxbdy))) * alift
-        + (((cdxady) >= 0.0 ? (cdxady) : -(cdxady)) + ((adxcdy) >= 0.0
-                                                       ? (adxcdy)
-                                                       : -(adxcdy))) * blift
-        + (((adxbdy) >= 0.0 ? (adxbdy) : -(adxbdy)) + ((bdxady) >= 0.0
-                                                       ? (bdxady)
-                                                       : -(bdxady))) * clift;
-    errbound = iccerrboundA * permanent;
-    if ((det > errbound) || (-det > errbound)) {
-      return det;
-    }
-
-    return new AdaptMacro().incircle(pa, pb, pc, pd, permanent);
-  }
-
-  //--------------------------------------------------------------------
-  // insphere
-  //--------------------------------------------------------------------
   private static final double isperrboundA =
     (16.0 + 224.0 * EPSILON) * EPSILON;
 
-  public final double insphere (final Vector3D pa,
+  public final double inSphere (final Vector3D pa,
                                 final Vector3D pb,
                                 final Vector3D pc,
                                 final Vector3D pd,
@@ -360,7 +255,7 @@ public final class DefaultMacro implements Predicate {
     errbound = isperrboundA * permanent;
     if ((det > errbound) || (-det > errbound)) { return det; }
 
-    return new AdaptMacro().insphere(pa, pb, pc, pd, pe, permanent);
+    return new AdaptMacro().inSphere(pa, pb, pc, pd, pe, permanent);
   }
   //--------------------------------------------------------------------
   // construction

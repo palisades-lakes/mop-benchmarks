@@ -1,4 +1,4 @@
-package mop.java.geometry.predicates.macro;
+package mop.java.geometry.predicates;
 // 2026-05-14
 // macro expand predicates.c via https://godbolt.org/
 // minimal changes to compile as java
@@ -74,7 +74,7 @@ package mop.java.geometry.predicates.macro;
  *   even <code>BigInteger</code> to extend range.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-05-17
+ * @version 2026-07-06
  */
 
 // strictfp unnecessary for JDK17 and later
@@ -112,8 +112,8 @@ public final class Expansion {
   // initialize some constants
   //--------------------------------------------------------------------
 
-  static final double EPSILON = 0x1.0p-53;
-  static final double SPLITTER = 0x1.0000002p27;
+  public static final double EPSILON = 0x1.0p-53;
+  public static final double SPLITTER = 0x1.0000002p27;
 
 //  static {
 //    double check = 1.0;
@@ -135,7 +135,7 @@ public final class Expansion {
 //    System.out.println("SPLITTER=" + Double.toHexString(SPLITTER));
 //  }
 
-  static final double resulterrbound =
+  public static final double resulterrbound =
     (3.0 + 8.0 * EPSILON) * EPSILON;
 
   //--------------------------------------------------------------------

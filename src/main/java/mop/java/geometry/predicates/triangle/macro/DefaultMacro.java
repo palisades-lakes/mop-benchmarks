@@ -1,0 +1,121 @@
+package mop.java.geometry.predicates.triangle.macro;
+// 2026-05-14
+// macro expand predicates.c via https://godbolt.org/
+// minimal changes to compile as java
+// 2026-05-15
+// split into Expansion manipulation and fast, slow, exact, adaptive
+// algorithm classes
+
+import mop.java.geometry.predicates.triangle.Triangle2D;
+import org.apache.commons.geometry.euclidean.twod.Vector2D;
+
+import static mop.java.geometry.predicates.Expansion.EPSILON;
+
+/** Adaptive tests.  Robust.
+ *
+ * @author palisades dot lakes at gmail dot com,
+ * @version 2026-07-06
+ */
+
+// strictfp unnecessary for JDK17 and later
+public final class DefaultMacro extends Triangle2D {
+
+  //--------------------------------------------------------------------
+  private static final double ccwerrboundA =
+    (3.0 + 16.0 * EPSILON) * EPSILON;
+
+  public final double signedArea (final Vector2D pa,
+                                  final Vector2D pb,
+                                  final Vector2D pc) {
+    double detleft, detright, det;
+    double detsum, errbound;
+
+    detleft = (pa.getX() - pc.getX()) * (pb.getY() - pc.getY());
+    detright = (pa.getY() - pc.getY()) * (pb.getX() - pc.getX());
+    det = detleft - detright;
+
+    if (detleft > 0.0) {
+      if (detright <= 0.0) { return det; }
+      else { detsum = detleft + detright; } }
+    else if (detleft < 0.0) {
+      if (detright >= 0.0) { return det; }
+      else { detsum = -detleft - detright; }
+    }
+    else {
+      return det;
+    }
+
+    errbound = ccwerrboundA * detsum;
+    if ((det >= errbound) || (-det >= errbound)) {
+      return det;
+    }
+
+    return new AdaptMacro().signedArea(pa, pb, pc, detsum);
+  }
+
+  //--------------------------------------------------------------------
+  // inCircle
+  //--------------------------------------------------------------------
+  private static final double iccerrboundA =
+    (10.0 + 96.0 * EPSILON) * EPSILON;
+
+  public final double inCircle (final Vector2D pa,
+                                final Vector2D pb,
+                                final Vector2D pc,
+                                final Vector2D pd) {
+    double adx, bdx, cdx, ady, bdy, cdy;
+    double bdxcdy, cdxbdy, cdxady, adxcdy, adxbdy, bdxady;
+    double alift, blift, clift;
+    double det;
+    double permanent, errbound;
+
+    adx = pa.getX() - pd.getX();
+    bdx = pb.getX() - pd.getX();
+    cdx = pc.getX() - pd.getX();
+    ady = pa.getY() - pd.getY();
+    bdy = pb.getY() - pd.getY();
+    cdy = pc.getY() - pd.getY();
+
+    bdxcdy = bdx * cdy;
+    cdxbdy = cdx * bdy;
+    alift = adx * adx + ady * ady;
+
+    cdxady = cdx * ady;
+    adxcdy = adx * cdy;
+    blift = bdx * bdx + bdy * bdy;
+
+    adxbdy = adx * bdy;
+    bdxady = bdx * ady;
+    clift = cdx * cdx + cdy * cdy;
+
+    det = alift * (bdxcdy - cdxbdy)
+      + blift * (cdxady - adxcdy)
+      + clift * (adxbdy - bdxady);
+
+    permanent =
+      (((bdxcdy) >= 0.0 ? (bdxcdy) : -(bdxcdy)) + ((cdxbdy) >= 0.0
+                                                   ? (cdxbdy)
+                                                   : -(cdxbdy))) * alift
+        + (((cdxady) >= 0.0 ? (cdxady) : -(cdxady)) + ((adxcdy) >= 0.0
+                                                       ? (adxcdy)
+                                                       : -(adxcdy))) * blift
+        + (((adxbdy) >= 0.0 ? (adxbdy) : -(adxbdy)) + ((bdxady) >= 0.0
+                                                       ? (bdxady)
+                                                       : -(bdxady))) * clift;
+    errbound = iccerrboundA * permanent;
+    if ((det > errbound) || (-det > errbound)) {
+      return det;
+    }
+
+    return new AdaptMacro().inCircle(pa, pb, pc, pd, permanent);
+  }
+
+  //--------------------------------------------------------------------
+  // construction
+  //--------------------------------------------------------------------
+
+  public DefaultMacro () { super(); }
+
+  //-------------------------------------------------------------------
+} // end class
+//-------------------------------------------------------------------

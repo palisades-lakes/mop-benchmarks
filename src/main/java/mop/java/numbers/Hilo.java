@@ -182,7 +182,7 @@ public record Hilo (double hi, double lo)
     //  or replace ulp constraint --- is non-overlapping different?
     return new Hilo(hi,lo); }
 
-  // modular predicates.c version: breaks Exact.incircle()
+  // modular predicates.c version: breaks Exact.inCircle()
 //  public static final Hilo product (final double a,
 //                                       final double b) {
 //    final double x = (a * b);

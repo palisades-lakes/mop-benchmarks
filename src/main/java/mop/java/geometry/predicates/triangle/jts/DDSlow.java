@@ -1,6 +1,6 @@
-package mop.java.geometry.predicates.jts;
+package mop.java.geometry.predicates.triangle.jts;
 
-import mop.java.geometry.predicates.Predicate;
+import mop.java.geometry.predicates.triangle.Triangle2D;
 import org.apache.commons.geometry.euclidean.twod.Vector2D;
 import org.locationtech.jts.math.DD;
 
@@ -10,7 +10,7 @@ import org.locationtech.jts.math.DD;
  * @version 2026-07-04
  */
 
-public final class DDSlow implements Predicate {
+public final class DDSlow extends Triangle2D {
 
 //--------------------------------------------------------------------
 
@@ -40,11 +40,11 @@ public final class DDSlow implements Predicate {
     return triAreaDDSlow(ax,ay,bx,by,cx,cy).doubleValue(); }
 
   //--------------------------------------------------------------------
-  // incircle
+  // inCircle
   //--------------------------------------------------------------------
   /** TrianglePredicate.isInCircleNonRobust.
    */
-  public final double incircle (final Vector2D a,
+  public final double inCircle (final Vector2D a,
                                 final Vector2D b,
                                 final Vector2D c,
                                 final Vector2D p) {

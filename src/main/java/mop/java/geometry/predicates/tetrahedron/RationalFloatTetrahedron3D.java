@@ -1,52 +1,21 @@
-package mop.java.geometry.predicates;
+package mop.java.geometry.predicates.tetrahedron;
 
 import mop.java.numbers.RationalFloat;
 import org.apache.commons.geometry.euclidean.threed.Vector3D;
-import org.apache.commons.geometry.euclidean.twod.Vector2D;
 
 /** Standard calculations implemented in RationalFloat.
  * Should be exact, up to RationalFloat resolution.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-07-04
+ * @version 2026-07-06
  */
 
-public final class RationalFloatPredicate implements Predicate {
+public final class RationalFloatTetrahedron3D extends Tetrahedron3D {
 
-  //--------------------------------------------------------------------
-
-  public final boolean isExact () { return true; }
-
-  //--------------------------------------------------------------------
-  // orient2d
-  //--------------------------------------------------------------------
-  // TODO: reduce the number of RationalFloat instances.
-  //  For example, implement RationalFloat.add/subtract(double,double);
-  //  Also, triangle translation could be done just once.
-  //  Consider boolean predicate, so can return the sign of the
-  //  final RationalFloat.
-  // TODO: RationalFloatVector, RationalFloatTriangle...
-
-  public final double signedArea (final Vector2D pa,
-                                  final Vector2D pb,
-                                  final Vector2D pc) {
-    final RationalFloat ax = RationalFloat.valueOf(pa.getX());
-    final RationalFloat ay = RationalFloat.valueOf(pa.getY());
-    final RationalFloat bx = RationalFloat.valueOf(pb.getX());
-    final RationalFloat by = RationalFloat.valueOf(pb.getY());
-    final RationalFloat cx = RationalFloat.valueOf(pc.getX());
-    final RationalFloat cy = RationalFloat.valueOf(pc.getY());
-    final RationalFloat acx = ax.subtract(cx);
-    final RationalFloat acy = ay.subtract(cy);
-    final RationalFloat bcx = bx.subtract(cx);
-    final RationalFloat bcy = by.subtract(cy);
-    return
-      ((acx.multiply(bcy)).subtract(acy.multiply(bcx))).doubleValue(); }
-
-  //--------------------------------------------------------------------
-  // orient3d
   //--------------------------------------------------------------------
   // TODO: rewrite as vector operations
+
+  public final boolean signedVolumeExact () { return true; }
 
   public final double signedVolume (final Vector3D pa,
                                     final Vector3D pb,
@@ -82,47 +51,13 @@ public final class RationalFloatPredicate implements Predicate {
            cdx.multiply(ady.multiply(bdz).subtract(adz.multiply(bdy))))
          .doubleValue(); }
 
-
   //--------------------------------------------------------------------
-  // incircle
-  //--------------------------------------------------------------------
-
-  public final double incircle (final Vector2D pa,
-                                final Vector2D pb,
-                                final Vector2D pc,
-                                final Vector2D pd) {
-    final RationalFloat ax = RationalFloat.valueOf(pa.getX());
-    final RationalFloat ay = RationalFloat.valueOf(pa.getY());
-    final RationalFloat bx = RationalFloat.valueOf(pb.getX());
-    final RationalFloat by = RationalFloat.valueOf(pb.getY());
-    final RationalFloat cx = RationalFloat.valueOf(pc.getX());
-    final RationalFloat cy = RationalFloat.valueOf(pc.getY());
-    final RationalFloat dx = RationalFloat.valueOf(pd.getX());
-    final RationalFloat dy = RationalFloat.valueOf(pd.getY());
-    final RationalFloat adx = ax.subtract(dx);
-    final RationalFloat bdx = bx.subtract(dx);
-    final RationalFloat cdx = cx.subtract(dx);
-    final RationalFloat ady = ay.subtract(dy);
-    final RationalFloat bdy = by.subtract(dy);
-    final RationalFloat cdy = cy.subtract(dy);
-
-    final RationalFloat abdet = adx.multiply(bdy).subtract(bdx.multiply(ady));
-    final RationalFloat bcdet = bdx.multiply(cdy).subtract(cdx.multiply(bdy));
-    final RationalFloat cadet = cdx.multiply(ady).subtract(adx.multiply(cdy));
-    final RationalFloat alift = adx.multiply(adx).add(ady.multiply(ady));
-    final RationalFloat blift = bdx.multiply(bdx).add(bdy.multiply(bdy));
-    final RationalFloat clift = cdx.multiply(cdx).add(cdy.multiply(cdy));
-
-    return alift.multiply(bcdet)
-                .add(blift.multiply(cadet))
-                .add(clift.multiply(abdet))
-                .doubleValue(); }
-
-  //--------------------------------------------------------------------
-  // insphere
+  // inSphere
   //--------------------------------------------------------------------
 
-  public final double insphere (final Vector3D pa,
+  public final boolean inSphereExact () { return true; }
+
+  public final double inSphere (final Vector3D pa,
                                 final Vector3D pb,
                                 final Vector3D pc,
                                 final Vector3D pd,
@@ -188,7 +123,7 @@ public final class RationalFloatPredicate implements Predicate {
   //--------------------------------------------------------------------
   // TODO: singleton?
 
-  public RationalFloatPredicate () { super(); }
+  public RationalFloatTetrahedron3D () { super(); }
 
   //-------------------------------------------------------------------
 } // end class

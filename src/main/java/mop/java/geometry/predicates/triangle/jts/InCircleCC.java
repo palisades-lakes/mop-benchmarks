@@ -1,16 +1,16 @@
-package mop.java.geometry.predicates.jts;
+package mop.java.geometry.predicates.triangle.jts;
 
-import mop.java.geometry.predicates.Predicate;
+import mop.java.geometry.predicates.triangle.Triangle2D;
 import org.apache.commons.geometry.euclidean.twod.Vector2D;
 
 /** From org.locationtech.jts.triangulate.quadedge.TrianglePredicate
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-07-04
+ * @version 2026-07-06
  */
 
 @SuppressWarnings("unused")
-public final class InCircleCC implements Predicate {
+public final class InCircleCC extends Triangle2D {
 
   //--------------------------------------------------------------------
   /**
@@ -114,11 +114,11 @@ public final class InCircleCC implements Predicate {
   }
 
   //--------------------------------------------------------------------
-  // incircle
+  // inCircle
   //--------------------------------------------------------------------
   /** TrianglePredicate.isInCircleNonRobust.
    */
-  public final double incircle (final Vector2D a,
+  public final double inCircle (final Vector2D a,
                                 final Vector2D b,
                                 final Vector2D c,
                                 final Vector2D p) {
