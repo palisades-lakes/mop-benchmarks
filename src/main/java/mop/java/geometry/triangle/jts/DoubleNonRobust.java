@@ -31,24 +31,25 @@ public final class DoubleNonRobust extends Triangle2D {
   //--------------------------------------------------------------------
 
   @Override
-  public final double signedArea (final Vector2D a,
-                                  final Vector2D b,
-                                  final Vector2D c) {
-    return triArea(a,b,c); }
+  public final double signedArea (final Vector2D pa, final Vector2D pb,
+                                  final Vector2D pc) {
+    return triArea(pa, pb, pc); }
 
   //--------------------------------------------------------------------
   // inCircle
   //--------------------------------------------------------------------
   /** TrianglePredicate.isInCircleNonRobust.
    */
-  public final double inCircle (final Vector2D a,
-                                final Vector2D b,
-                                final Vector2D c,
-                                final Vector2D p) {
-    return (a.getX() * a.getX() + a.getY() * a.getY()) * triArea(b, c, p)
-        - (b.getX() * b.getX() + b.getY() * b.getY()) * triArea(a, c, p)
-        + (c.getX() * c.getX() + c.getY() * c.getY()) * triArea(a, b, p)
-        - (p.getX() * p.getX() + p.getY() * p.getY()) * triArea(a, b, c); }
+  public final double inCircle (final Vector2D pa, final Vector2D pb,
+                                final Vector2D pc, final Vector2D p) {
+    return (pa.getX() * pa.getX() + pa.getY() * pa.getY()) * triArea(pb,
+                                                                     pc, p)
+        - (pb.getX() * pb.getX() + pb.getY() * pb.getY()) * triArea(pa,
+                                                                    pc, p)
+        + (pc.getX() * pc.getX() + pc.getY() * pc.getY()) * triArea(pa,
+                                                                    pb, p)
+        - (p.getX() * p.getX() + p.getY() * p.getY()) * triArea(pa, pb,
+                                                                pc); }
 
   //--------------------------------------------------------------------
   // construction

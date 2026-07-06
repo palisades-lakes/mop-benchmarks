@@ -43,18 +43,16 @@ public final class RationalFloatTriangle2D extends Triangle2D {
 
   public final boolean inCircleExact () { return true; }
 
-  public final double inCircle (final Vector2D pa,
-                                final Vector2D pb,
-                                final Vector2D pc,
-                                final Vector2D pd) {
+  public final double inCircle (final Vector2D pa, final Vector2D pb,
+                                final Vector2D pc, final Vector2D p) {
     final RationalFloat ax = RationalFloat.valueOf(pa.getX());
     final RationalFloat ay = RationalFloat.valueOf(pa.getY());
     final RationalFloat bx = RationalFloat.valueOf(pb.getX());
     final RationalFloat by = RationalFloat.valueOf(pb.getY());
     final RationalFloat cx = RationalFloat.valueOf(pc.getX());
     final RationalFloat cy = RationalFloat.valueOf(pc.getY());
-    final RationalFloat dx = RationalFloat.valueOf(pd.getX());
-    final RationalFloat dy = RationalFloat.valueOf(pd.getY());
+    final RationalFloat dx = RationalFloat.valueOf(p.getX());
+    final RationalFloat dy = RationalFloat.valueOf(p.getY());
     final RationalFloat adx = ax.subtract(dx);
     final RationalFloat bdx = bx.subtract(dx);
     final RationalFloat cdx = cx.subtract(dx);

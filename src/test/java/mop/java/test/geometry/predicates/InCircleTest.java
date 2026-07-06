@@ -105,7 +105,7 @@ public final class InCircleTest {
     if (null != predicates) {
     for (final Triangle2D p : predicates) {
       msg.append("\n").append(p).append(" ->\n")
-         .append(Double.toHexString(p.inCircle(p0, p1, p2, p3))); } }
+         .append(Double.toHexString(p.inCircle(p0,p1,p2,p3))); } }
     return msg + "\n"; }
 
   //--------------------------------------------------------------
@@ -119,8 +119,8 @@ public final class InCircleTest {
                                        final Vector2D p3) {
     final Triangle2D gold = new AdaptMacro();
     final Triangle2D p = new Adapt();
-    final double trueInc = gold.inCircle(p0, p1, p2, p3);
-    final double inc = p.inCircle(p0, p1, p2, p3);
+    final double trueInc = gold.inCircle(p0,p1,p2,p3);
+    final double inc = p.inCircle(p0,p1,p2,p3);
     // with delta=0.0 handles +0 vs -0 'correctly'
     Assertions.assertEquals(
       trueInc, inc, 0.0,
@@ -135,9 +135,9 @@ public final class InCircleTest {
                                       final Vector2D p3) {
     adaptTest(p0,p1,p2,p3);
     final Triangle2D gold = truth();
-    final double trueInc = gold.inCircle(p0, p1, p2, p3);
+    final double trueInc = gold.inCircle(p0,p1,p2,p3);
     for (final Triangle2D p : predicates) {
-      final double inc = p.inCircle(p0, p1, p2, p3);
+      final double inc = p.inCircle(p0,p1,p2,p3);
 //      if (p instanceof Slow) {
 //        System.out.println(debugMsg(trueInc,inc,gold,p,p0,p1,p2,p3)); }
       if (p.inCircleExact()) {

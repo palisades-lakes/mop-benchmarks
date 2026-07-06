@@ -24,8 +24,7 @@ public final class DefaultMacro extends Triangle2D {
   private static final double ccwerrboundA =
     (3.0 + 16.0 * EPSILON) * EPSILON;
 
-  public final double signedArea (final Vector2D pa,
-                                  final Vector2D pb,
+  public final double signedArea (final Vector2D pa, final Vector2D pb,
                                   final Vector2D pc) {
     double detleft, detright, det;
     double detsum, errbound;
@@ -59,22 +58,20 @@ public final class DefaultMacro extends Triangle2D {
   private static final double iccerrboundA =
     (10.0 + 96.0 * EPSILON) * EPSILON;
 
-  public final double inCircle (final Vector2D pa,
-                                final Vector2D pb,
-                                final Vector2D pc,
-                                final Vector2D pd) {
+  public final double inCircle (final Vector2D pa, final Vector2D pb,
+                                final Vector2D pc, final Vector2D p) {
     double adx, bdx, cdx, ady, bdy, cdy;
     double bdxcdy, cdxbdy, cdxady, adxcdy, adxbdy, bdxady;
     double alift, blift, clift;
     double det;
     double permanent, errbound;
 
-    adx = pa.getX() - pd.getX();
-    bdx = pb.getX() - pd.getX();
-    cdx = pc.getX() - pd.getX();
-    ady = pa.getY() - pd.getY();
-    bdy = pb.getY() - pd.getY();
-    cdy = pc.getY() - pd.getY();
+    adx = pa.getX() - p.getX();
+    bdx = pb.getX() - p.getX();
+    cdx = pc.getX() - p.getX();
+    ady = pa.getY() - p.getY();
+    bdy = pb.getY() - p.getY();
+    cdy = pc.getY() - p.getY();
 
     bdxcdy = bdx * cdy;
     cdxbdy = cdx * bdy;
@@ -107,7 +104,7 @@ public final class DefaultMacro extends Triangle2D {
       return det;
     }
 
-    return new AdaptMacro().inCircle(pa, pb, pc, pd, permanent);
+    return new AdaptMacro().inCircle(pa, pb, pc, p, permanent);
   }
 
   //--------------------------------------------------------------------

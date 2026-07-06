@@ -20,8 +20,7 @@ public final class Exact extends Triangle2D {
 
   public final boolean signedAreaExact () { return true; }
 
-  public final double signedArea (final Vector2D pa,
-                                  final Vector2D pb,
+  public final double signedArea (final Vector2D pa, final Vector2D pb,
                                   final Vector2D pc) {
 
     final Hilo axby = Hilo.product(pa.getX(),pb.getY());
@@ -60,19 +59,17 @@ public final class Exact extends Triangle2D {
 
   public final boolean inCircleExact () { return true; }
 
-  public final double inCircle (final Vector2D a,
-                                final Vector2D b,
-                                final Vector2D c,
-                                final Vector2D d) {
-    final XDouble ab = XDouble.crossProduct(a,b);
-    final XDouble bc = XDouble.crossProduct(b,c);
-    final XDouble cd = XDouble.crossProduct(c,d);
-    final XDouble da = XDouble.crossProduct(d,a);
-    final XDouble ac = XDouble.crossProduct(a,c);
-    final XDouble bd = XDouble.crossProduct(b,d);
-    final XDouble adet = det(a,true,bc,cd,bd, 1);
-    final XDouble bdet = det(b,false,cd,da,ac,-1);
-    final XDouble cdet = det(c,false,da,ab,bd, 1);
+  public final double inCircle (final Vector2D pa, final Vector2D pb,
+                                final Vector2D pc, final Vector2D d) {
+    final XDouble ab = XDouble.crossProduct(pa, pb);
+    final XDouble bc = XDouble.crossProduct(pb, pc);
+    final XDouble cd = XDouble.crossProduct(pc, d);
+    final XDouble da = XDouble.crossProduct(d, pa);
+    final XDouble ac = XDouble.crossProduct(pa, pc);
+    final XDouble bd = XDouble.crossProduct(pb, d);
+    final XDouble adet = det(pa, true, bc, cd, bd, 1);
+    final XDouble bdet = det(pb, false, cd, da, ac, -1);
+    final XDouble cdet = det(pc, false, da, ab, bd, 1);
     final XDouble ddet = det(d,true,ab,bc,ac,-1);
 
     // TODO: resolve this!

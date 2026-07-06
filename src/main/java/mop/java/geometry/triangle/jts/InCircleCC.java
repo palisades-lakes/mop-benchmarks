@@ -118,14 +118,12 @@ public final class InCircleCC extends Triangle2D {
   //--------------------------------------------------------------------
   /** TrianglePredicate.isInCircleNonRobust.
    */
-  public final double inCircle (final Vector2D a,
-                                final Vector2D b,
-                                final Vector2D c,
-                                final Vector2D p) {
-    final Vector2D cc = circumcentre(a, b, c);
+  public final double inCircle (final Vector2D pa, final Vector2D pb,
+                                final Vector2D pc, final Vector2D p) {
+    final Vector2D cc = circumcentre(pa, pb, pc);
     // sign reversed from JTS for consistency with other predicates
     // TODO: could we use squared distance?
-    return distance(a,cc) - distance(p, cc);
+    return distance(pa, cc) - distance(p, cc);
   }
 
   //--------------------------------------------------------------------

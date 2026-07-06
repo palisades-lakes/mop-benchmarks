@@ -79,10 +79,10 @@ public final class SignedAreaTest {
       "\norient2d(" + p0 + "," + p1 + "," + p2 + ")" +
         "\ngold=" + gold + "\n-> " + Double.toHexString(truth) +
         "\npred=" + pred + "\n-> " + Double.toHexString(
-          pred.signedArea(p0, p1, p2)));
+          pred.signedArea(p0,p1,p2)));
     for (final Triangle2D p : predicates) {
       msg.append("\n").append(p).append(" -> ")
-         .append(Double.toHexString(p.signedArea(p0, p1, p2))); }
+         .append(Double.toHexString(p.signedArea(p0,p1,p2))); }
     return msg + "\n"; }
 
   //--------------------------------------------------------------
@@ -92,9 +92,9 @@ public final class SignedAreaTest {
                                         final Vector2D p1,
                                         final Vector2D p2) {
     final Triangle2D gold = truth();
-    final double trueAreaX2 = gold.signedArea(p0, p1, p2);
+    final double trueAreaX2 = gold.signedArea(p0,p1,p2);
     for (final Triangle2D p : predicates) {
-      final double areaX2 = p.signedArea(p0, p1, p2);
+      final double areaX2 = p.signedArea(p0,p1,p2);
       if (p.signedAreaExact()) {
         // with delta=0.0 handles +0 vs -0 'correctly'
         Assertions.assertEquals(

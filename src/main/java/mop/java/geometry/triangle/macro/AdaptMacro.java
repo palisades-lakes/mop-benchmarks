@@ -341,8 +341,8 @@ import static mop.java.geometry.Expansion.*;
     public final double inCircle (final Vector2D pa,
                                   final Vector2D pb,
                                   final Vector2D pc,
-                                  final Vector2D pd) {
-      return new DefaultMacro().inCircle(pa, pb, pc, pd); }
+                                  final Vector2D p) {
+      return new DefaultMacro().inCircle(pa, pb, pc, p); }
 
     final double inCircle (final Vector2D pa,
                            final Vector2D pb,

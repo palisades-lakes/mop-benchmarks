@@ -30,8 +30,10 @@ public final class SlowMacro extends Triangle2D {
 
   // from macro expanded C code:
 
-  public final double inCircle (final Vector2D pa, final Vector2D pb,
-                                final Vector2D pc, final Vector2D pd) {
+  public final double inCircle (final Vector2D pa,
+                                final Vector2D pb,
+                                final Vector2D pc,
+                                final Vector2D pd) {
     double adx, bdx, cdx, ady, bdy, cdy;
     double adxtail, bdxtail, cdxtail; double adytail, bdytail, cdytail;
     double negate, negatetail;
@@ -58,18 +60,18 @@ public final class SlowMacro extends Triangle2D {
     double a0hi, a0lo, a1hi, a1lo, bhi, blo; double err1, err2, err3;
     double _i, _j, _k, _l, _m, _n; double _0, _1, _2;
 
-    adx = (pa.getX() - pd.getX()); bvirt = (pa.getX() - adx); avirt = adx + bvirt;
-    bround = bvirt - pd.getX(); around = pa.getX() - avirt;
+    adx = (pa.getX() - pd.getX());bvirt = (pa.getX() - adx);avirt = adx + bvirt;
+    bround = bvirt - pd.getX();around = pa.getX() - avirt;
     adxtail = around + bround; ady = (pa.getY() - pd.getY());
     bvirt = (pa.getY() - ady); avirt = ady + bvirt; bround = bvirt - pd.getY();
     around = pa.getY() - avirt; adytail = around + bround;
-    bdx = (pb.getX() - pd.getX()); bvirt = (pb.getX() - bdx); avirt = bdx + bvirt;
-    bround = bvirt - pd.getX(); around = pb.getX() - avirt;
+    bdx = (pb.getX() - pd.getX());bvirt = (pb.getX() - bdx);avirt = bdx + bvirt;
+    bround = bvirt - pd.getX();around = pb.getX() - avirt;
     bdxtail = around + bround; bdy = (pb.getY() - pd.getY());
     bvirt = (pb.getY() - bdy); avirt = bdy + bvirt; bround = bvirt - pd.getY();
     around = pb.getY() - avirt; bdytail = around + bround;
-    cdx = (pc.getX() - pd.getX()); bvirt = (pc.getX() - cdx); avirt = cdx + bvirt;
-    bround = bvirt - pd.getX(); around = pc.getX() - avirt;
+    cdx = (pc.getX() - pd.getX());bvirt = (pc.getX() - cdx);avirt = cdx + bvirt;
+    bround = bvirt - pd.getX();around = pc.getX() - avirt;
     cdxtail = around + bround; cdy = (pc.getY() - pd.getY());
     bvirt = (pc.getY() - cdy); avirt = cdy + bvirt; bround = bvirt - pd.getY();
     around = pc.getY() - avirt; cdytail = around + bround;

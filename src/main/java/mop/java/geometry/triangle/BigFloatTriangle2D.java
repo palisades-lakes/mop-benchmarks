@@ -23,8 +23,7 @@ public final class BigFloatTriangle2D extends Triangle2D {
   //  final BigFloat.
   // TODO: BigFloatVector, Vector<BigFloat>...
 
-  public final double signedArea (final Vector2D pa,
-                                  final Vector2D pb,
+  public final double signedArea (final Vector2D pa, final Vector2D pb,
                                   final Vector2D pc) {
     final BigFloat ax = BigFloat.valueOf(pa.getX());
     final BigFloat ay = BigFloat.valueOf(pa.getY());
@@ -43,10 +42,8 @@ public final class BigFloatTriangle2D extends Triangle2D {
 
   public final boolean inCircleExact () { return true; }
 
-  public final double inCircle (final Vector2D pa,
-                                final Vector2D pb,
-                                final Vector2D pc,
-                                final Vector2D pd) {
+  public final double inCircle (final Vector2D pa, final Vector2D pb,
+                                final Vector2D pc, final Vector2D p) {
     // TODO: move BigFloat creation to BigFloat.subtract(double,double)
     final BigFloat ax = BigFloat.valueOf(pa.getX());
     final BigFloat ay = BigFloat.valueOf(pa.getY());
@@ -54,8 +51,8 @@ public final class BigFloatTriangle2D extends Triangle2D {
     final BigFloat by = BigFloat.valueOf(pb.getY());
     final BigFloat cx = BigFloat.valueOf(pc.getX());
     final BigFloat cy = BigFloat.valueOf(pc.getY());
-    final BigFloat dx = BigFloat.valueOf(pd.getX());
-    final BigFloat dy = BigFloat.valueOf(pd.getY());
+    final BigFloat dx = BigFloat.valueOf(p.getX());
+    final BigFloat dy = BigFloat.valueOf(p.getY());
     final BigFloat adx = ax.subtract(dx);
     final BigFloat bdx = bx.subtract(dx);
     final BigFloat cdx = cx.subtract(dx);
@@ -75,10 +72,9 @@ public final class BigFloatTriangle2D extends Triangle2D {
                 .add(clift.multiply(abdet))
                 .doubleValue(); }
 
-    //--------------------------------------------------------------------
+  //--------------------------------------------------------------------
   // construction
   //--------------------------------------------------------------------
-  // TODO: singleton?
 
   public BigFloatTriangle2D () { super(); }
 

@@ -219,14 +219,14 @@ public final class ExactMacro extends Triangle2D {
     bvirt = (bc[3] - _j); avirt = bc[3] - bvirt; bround = _i - bvirt;
     around = _j - avirt; bc[2] = around + bround;
 
-    cxdy1 = (pc.getX() * pd.getY()); c = (SPLITTER * pc.getX());
+    cxdy1 = (pc.getX() * pd.getY());c = (SPLITTER * pc.getX());
     abig = (c - pc.getX()); ahi = c - abig; alo = pc.getX() - ahi;
-    c = (SPLITTER * pd.getY()); abig = (c - pd.getY()); bhi = c - abig;
-    blo = pd.getY() - bhi; err1 = cxdy1 - (ahi * bhi);
+    c = (SPLITTER * pd.getY());abig = (c - pd.getY());bhi = c - abig;
+    blo = pd.getY() - bhi;err1 = cxdy1 - (ahi * bhi);
     err2 = err1 - (alo * bhi); err3 = err2 - (ahi * blo);
     cxdy0 = (alo * blo) - err3;
-    dxcy1 = (pd.getX() * pc.getY()); c = (SPLITTER * pd.getX());
-    abig = (c - pd.getX()); ahi = c - abig; alo = pd.getX() - ahi;
+    dxcy1 = (pd.getX() * pc.getY());c = (SPLITTER * pd.getX());
+    abig = (c - pd.getX());ahi = c - abig;alo = pd.getX() - ahi;
     c = (SPLITTER * pc.getY()); abig = (c - pc.getY()); bhi = c - abig;
     blo = pc.getY() - bhi; err1 = dxcy1 - (ahi * bhi);
     err2 = err1 - (alo * bhi); err3 = err2 - (ahi * blo);
@@ -241,16 +241,16 @@ public final class ExactMacro extends Triangle2D {
     bvirt = (cd[3] - _j); avirt = cd[3] - bvirt; bround = _i - bvirt;
     around = _j - avirt; cd[2] = around + bround;
 
-    dxay1 = (pd.getX() * pa.getY()); c = (SPLITTER * pd.getX());
-    abig = (c - pd.getX()); ahi = c - abig; alo = pd.getX() - ahi;
+    dxay1 = (pd.getX() * pa.getY());c = (SPLITTER * pd.getX());
+    abig = (c - pd.getX());ahi = c - abig;alo = pd.getX() - ahi;
     c = (SPLITTER * pa.getY()); abig = (c - pa.getY()); bhi = c - abig;
     blo = pa.getY() - bhi; err1 = dxay1 - (ahi * bhi);
     err2 = err1 - (alo * bhi); err3 = err2 - (ahi * blo);
     dxay0 = (alo * blo) - err3;
-    axdy1 = (pa.getX() * pd.getY()); c = (SPLITTER * pa.getX());
+    axdy1 = (pa.getX() * pd.getY());c = (SPLITTER * pa.getX());
     abig = (c - pa.getX()); ahi = c - abig; alo = pa.getX() - ahi;
-    c = (SPLITTER * pd.getY()); abig = (c - pd.getY()); bhi = c - abig;
-    blo = pd.getY() - bhi; err1 = axdy1 - (ahi * bhi);
+    c = (SPLITTER * pd.getY());abig = (c - pd.getY());bhi = c - abig;
+    blo = pd.getY() - bhi;err1 = axdy1 - (ahi * bhi);
     err2 = err1 - (alo * bhi); err3 = err2 - (ahi * blo);
     axdy0 = (alo * blo) - err3;
     _i = (dxay0 - axdy0); bvirt = (dxay0 - _i); avirt = _i + bvirt;
@@ -285,14 +285,14 @@ public final class ExactMacro extends Triangle2D {
     bvirt = (ac[3] - _j); avirt = ac[3] - bvirt; bround = _i - bvirt;
     around = _j - avirt; ac[2] = around + bround;
 
-    bxdy1 = (pb.getX() * pd.getY()); c = (SPLITTER * pb.getX());
+    bxdy1 = (pb.getX() * pd.getY());c = (SPLITTER * pb.getX());
     abig = (c - pb.getX()); ahi = c - abig; alo = pb.getX() - ahi;
-    c = (SPLITTER * pd.getY()); abig = (c - pd.getY()); bhi = c - abig;
-    blo = pd.getY() - bhi; err1 = bxdy1 - (ahi * bhi);
+    c = (SPLITTER * pd.getY());abig = (c - pd.getY());bhi = c - abig;
+    blo = pd.getY() - bhi;err1 = bxdy1 - (ahi * bhi);
     err2 = err1 - (alo * bhi); err3 = err2 - (ahi * blo);
     bxdy0 = (alo * blo) - err3;
-    dxby1 = (pd.getX() * pb.getY()); c = (SPLITTER * pd.getX());
-    abig = (c - pd.getX()); ahi = c - abig; alo = pd.getX() - ahi;
+    dxby1 = (pd.getX() * pb.getY());c = (SPLITTER * pd.getX());
+    abig = (c - pd.getX());ahi = c - abig;alo = pd.getX() - ahi;
     c = (SPLITTER * pb.getY()); abig = (c - pb.getY()); bhi = c - abig;
     blo = pb.getY() - bhi; err1 = dxby1 - (ahi * bhi);
     err2 = err1 - (alo * bhi); err3 = err2 - (ahi * blo);

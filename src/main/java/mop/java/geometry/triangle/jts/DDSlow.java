@@ -24,15 +24,14 @@ public final class DDSlow extends Triangle2D {
   //--------------------------------------------------------------------
 
   @Override
-  public final double signedArea (final Vector2D a,
-                                  final Vector2D b,
-                                  final Vector2D c) {
-    final DD ax = DD.valueOf(a.getX());
-    final DD ay = DD.valueOf(a.getY());
-    final DD bx = DD.valueOf(b.getX());
-    final DD by = DD.valueOf(b.getY());
-    final DD cx = DD.valueOf(c.getX());
-    final DD cy = DD.valueOf(c.getY());
+  public final double signedArea (final Vector2D pa, final Vector2D pb,
+                                  final Vector2D pc) {
+    final DD ax = DD.valueOf(pa.getX());
+    final DD ay = DD.valueOf(pa.getY());
+    final DD bx = DD.valueOf(pb.getX());
+    final DD by = DD.valueOf(pb.getY());
+    final DD cx = DD.valueOf(pc.getX());
+    final DD cy = DD.valueOf(pc.getY());
 
     return triAreaDDSlow(ax,ay,bx,by,cx,cy).doubleValue(); }
 
@@ -41,18 +40,16 @@ public final class DDSlow extends Triangle2D {
   //--------------------------------------------------------------------
   /** TrianglePredicate.isInCircleNonRobust.
    */
-  public final double inCircle (final Vector2D a,
-                                final Vector2D b,
-                                final Vector2D c,
-                                final Vector2D p) {
+  public final double inCircle (final Vector2D pa, final Vector2D pb,
+                                final Vector2D pc, final Vector2D p) {
     DD px = DD.valueOf(p.getX());
     DD py = DD.valueOf(p.getY());
-    DD ax = DD.valueOf(a.getX());
-    DD ay = DD.valueOf(a.getY());
-    DD bx = DD.valueOf(b.getX());
-    DD by = DD.valueOf(b.getY());
-    DD cx = DD.valueOf(c.getX());
-    DD cy = DD.valueOf(c.getY());
+    DD ax = DD.valueOf(pa.getX());
+    DD ay = DD.valueOf(pa.getY());
+    DD bx = DD.valueOf(pb.getX());
+    DD by = DD.valueOf(pb.getY());
+    DD cx = DD.valueOf(pc.getX());
+    DD cy = DD.valueOf(pc.getY());
 
     DD aTerm = (ax.multiply(ax).add(ay.multiply(ay)))
       .multiply(triAreaDDSlow(bx, by, cx, cy, px, py));

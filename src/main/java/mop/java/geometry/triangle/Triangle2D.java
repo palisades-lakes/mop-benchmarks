@@ -10,14 +10,19 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
 
 public abstract class Triangle2D {
 
+//  private final Vector2D p0;
+//  private final Vector2D p1;
+//  private final Vector2D p2;
+//  public final Vector2D getP0 () { return p0; }
+//  public final Vector2D getP1 () { return p1; }
+//  public final Vector2D getP3 () { return p2; }
+
   //--------------------------------------------------------------------
-  // TODO: algorithm might be exact for some operations and not others.
   // TODO: an estimate of accuracy for each operation would be better.
   /** Is this algorithm exact (to the resolution expansions)
    * or approximate?
    */
   public boolean signedAreaExact() { return false; }
-  //public abstract boolean signedAreaExact();
 
   //--------------------------------------------------------------------
   /** Return a positive value if the points pa, pb, and pc occur in
@@ -69,8 +74,24 @@ public abstract class Triangle2D {
   public double inCircle (final Vector2D pa,
                           final Vector2D pb,
                           final Vector2D pc,
-                          final Vector2D pd) {
+                          final Vector2D p) {
     throw new UnsupportedOperationException(getClass().getSimpleName()); }
+
+  //--------------------------------------------------------------------
+  // construction
+  //--------------------------------------------------------------------
+
+//  private Triangle2D (final Vector2D a,
+//                      final Vector2D b,
+//                      final Vector2D c) {
+//    super();
+//    this.p0 = a; this.p1 = b; this.p2 = c;
+//  }
+
+//  public Triangle2D () {
+//    this(Vector2D.ZERO,Vector2D.ZERO,Vector2D.ZERO); }
+
+  public Triangle2D () { super(); }
 
   //-------------------------------------------------------------------
 } // end class

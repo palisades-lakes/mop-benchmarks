@@ -17,16 +17,16 @@ public final class DDNormalized extends Triangle2D {
   //--------------------------------------------------------------------
   /** TrianglePredicate.isInCircleNonRobust.
    */
-  public final double inCircle (final Vector2D a,
-                                final Vector2D b,
-                                final Vector2D c,
+  public final double inCircle (final Vector2D pa,
+                                final Vector2D pb,
+                                final Vector2D pc,
                                 final Vector2D p) {
-    DD adx = DD.valueOf(a.getX()).selfSubtract(p.getX());
-    DD ady = DD.valueOf(a.getY()).selfSubtract(p.getY());
-    DD bdx = DD.valueOf(b.getX()).selfSubtract(p.getX());
-    DD bdy = DD.valueOf(b.getY()).selfSubtract(p.getY());
-    DD cdx = DD.valueOf(c.getX()).selfSubtract(p.getX());
-    DD cdy = DD.valueOf(c.getY()).selfSubtract(p.getY());
+    DD adx = DD.valueOf(pa.getX()).selfSubtract(p.getX());
+    DD ady = DD.valueOf(pa.getY()).selfSubtract(p.getY());
+    DD bdx = DD.valueOf(pb.getX()).selfSubtract(p.getX());
+    DD bdy = DD.valueOf(pb.getY()).selfSubtract(p.getY());
+    DD cdx = DD.valueOf(pc.getX()).selfSubtract(p.getX());
+    DD cdy = DD.valueOf(pc.getY()).selfSubtract(p.getY());
 
     DD abdet = adx.multiply(bdy).selfSubtract(bdx.multiply(ady));
     DD bcdet = bdx.multiply(cdy).selfSubtract(cdx.multiply(bdy));

@@ -22,8 +22,7 @@ public final class FastMacro extends Triangle2D {
   // orient2d
   //--------------------------------------------------------------------
 
-  public final double signedArea (final Vector2D pa,
-                                  final Vector2D pb,
+  public final double signedArea (final Vector2D pa, final Vector2D pb,
                                   final Vector2D pc) {
     final double acx = pa.getX() - pc.getX();
     final double bcx = pb.getX() - pc.getX();
@@ -35,20 +34,18 @@ public final class FastMacro extends Triangle2D {
   // inCircle
   //--------------------------------------------------------------------
 
-  public final double inCircle (final Vector2D pa,
-                                final Vector2D pb,
-                                final Vector2D pc,
-                                final Vector2D pd) {
+  public final double inCircle (final Vector2D pa, final Vector2D pb,
+                                final Vector2D pc, final Vector2D p) {
     double adx, ady, bdx, bdy, cdx, cdy;
     double abdet, bcdet, cadet;
     double alift, blift, clift;
 
-    adx = pa.getX() - pd.getX();
-    ady = pa.getY() - pd.getY();
-    bdx = pb.getX() - pd.getX();
-    bdy = pb.getY() - pd.getY();
-    cdx = pc.getX() - pd.getX();
-    cdy = pc.getY() - pd.getY();
+    adx = pa.getX() - p.getX();
+    ady = pa.getY() - p.getY();
+    bdx = pb.getX() - p.getX();
+    bdy = pb.getY() - p.getY();
+    cdx = pc.getX() - p.getX();
+    cdy = pc.getY() - p.getY();
 
     abdet = adx * bdy - bdx * ady;
     bcdet = bdx * cdy - cdx * bdy;

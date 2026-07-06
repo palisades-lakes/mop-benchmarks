@@ -26,8 +26,7 @@ public final class Slow extends Triangle2D {
   // TODO: seems to return 2xsigned area
   // TODO: XDoubleVector, XDoubleTriangle...
 
-  public final double signedArea (final Vector2D pa,
-                                  final Vector2D pb,
+  public final double signedArea (final Vector2D pa, final Vector2D pb,
                                   final Vector2D pc) {
     final Hilo ax = Hilo.subtract(pa.getX(), pc.getX());
     final Hilo ay = Hilo.subtract(pa.getY(), pc.getY());
@@ -70,17 +69,15 @@ public final class Slow extends Triangle2D {
    * <code>pa,pb,pc</code>, negative means outside.
    */
 
-  public final double inCircle (final Vector2D pa,
-                                final Vector2D pb,
-                                final Vector2D pc,
-                                final Vector2D pd) {
+  public final double inCircle (final Vector2D pa, final Vector2D pb,
+                                final Vector2D pc, final Vector2D p) {
 
-    final Hilo ax = Hilo.subtract(pa.getX(), pd.getX());
-    final Hilo ay = Hilo.subtract(pa.getY(), pd.getY());
-    final Hilo bx = Hilo.subtract(pb.getX(), pd.getX());
-    final Hilo by = Hilo.subtract(pb.getY(), pd.getY());
-    final Hilo cx = Hilo.subtract(pc.getX(), pd.getX());
-    final Hilo cy = Hilo.subtract(pc.getY(), pd.getY());
+    final Hilo ax = Hilo.subtract(pa.getX(), p.getX());
+    final Hilo ay = Hilo.subtract(pa.getY(), p.getY());
+    final Hilo bx = Hilo.subtract(pb.getX(), p.getX());
+    final Hilo by = Hilo.subtract(pb.getY(), p.getY());
+    final Hilo cx = Hilo.subtract(pc.getX(), p.getX());
+    final Hilo cy = Hilo.subtract(pc.getY(), p.getY());
     final XDouble ad = det(bx,by,cx,cy,ax,ay);
     final XDouble bd = det(cx,cy,ax,ay,bx,by);
     final XDouble cd = det(ax,ay,bx,by,cx,cy);

@@ -33,10 +33,10 @@ public final class DDFast extends Triangle2D {
   //--------------------------------------------------------------------
 
   @Override
-  public final double signedArea (final Vector2D a,
-                                  final Vector2D b,
-                                  final Vector2D c) {
-    return triAreaDDFast(a,b,c) .doubleValue(); }
+  public final double signedArea (final Vector2D pa,
+                                  final Vector2D pb,
+                                  final Vector2D pc) {
+    return triAreaDDFast(pa, pb, pc).doubleValue(); }
 
   //--------------------------------------------------------------------
   // inCircle
@@ -44,18 +44,18 @@ public final class DDFast extends Triangle2D {
   /** TrianglePredicate.isInCircleNonRobust.
    */
   @Override
-  public final double inCircle (final Vector2D a,
-                                final Vector2D b,
-                                final Vector2D c,
+  public final double inCircle (final Vector2D pa,
+                                final Vector2D pb,
+                                final Vector2D pc,
                                 final Vector2D p) {
-    DD aTerm = (DD.sqr(a.getX()).selfAdd(DD.sqr(a.getY())))
-      .selfMultiply(triAreaDDFast(b, c, p));
-    DD bTerm = (DD.sqr(b.getX()).selfAdd(DD.sqr(b.getY())))
-      .selfMultiply(triAreaDDFast(a, c, p));
-    DD cTerm = (DD.sqr(c.getX()).selfAdd(DD.sqr(c.getY())))
-      .selfMultiply(triAreaDDFast(a, b, p));
+    DD aTerm = (DD.sqr(pa.getX()).selfAdd(DD.sqr(pa.getY())))
+      .selfMultiply(triAreaDDFast(pb, pc, p));
+    DD bTerm = (DD.sqr(pb.getX()).selfAdd(DD.sqr(pb.getY())))
+      .selfMultiply(triAreaDDFast(pa, pc, p));
+    DD cTerm = (DD.sqr(pc.getX()).selfAdd(DD.sqr(pc.getY())))
+      .selfMultiply(triAreaDDFast(pa, pb, p));
     DD pTerm = (DD.sqr(p.getX()).selfAdd(DD.sqr(p.getY())))
-      .selfMultiply(triAreaDDFast(a, b, c));
+      .selfMultiply(triAreaDDFast(pa, pb, pc));
 
     DD sum = aTerm.selfSubtract(bTerm).selfAdd(cTerm).selfSubtract(pTerm);
     return sum.doubleValue();
