@@ -1,22 +1,22 @@
 package mop.java.test.geometry.predicates;
 
-import mop.java.geometry.predicates.triangle.Adapt;
-import mop.java.geometry.predicates.triangle.BigFloatTriangle2D;
-import mop.java.geometry.predicates.triangle.Exact;
-import mop.java.geometry.predicates.triangle.Fast;
-import mop.java.geometry.predicates.triangle.RationalFloatTriangle2D;
-import mop.java.geometry.predicates.triangle.Slow;
-import mop.java.geometry.predicates.triangle.Triangle2D;
-import mop.java.geometry.predicates.triangle.jts.DDFast;
-import mop.java.geometry.predicates.triangle.jts.DDNormalized;
-import mop.java.geometry.predicates.triangle.jts.DDSlow;
-import mop.java.geometry.predicates.triangle.jts.DoubleNonRobust;
-import mop.java.geometry.predicates.triangle.jts.InCircleNormalized;
-import mop.java.geometry.predicates.triangle.macro.AdaptMacro;
-import mop.java.geometry.predicates.triangle.macro.DefaultMacro;
-import mop.java.geometry.predicates.triangle.macro.ExactMacro;
-import mop.java.geometry.predicates.triangle.macro.FastMacro;
-import mop.java.geometry.predicates.triangle.macro.SlowMacro;
+import mop.java.geometry.triangle.Adapt;
+import mop.java.geometry.triangle.BigFloatTriangle2D;
+import mop.java.geometry.triangle.Exact;
+import mop.java.geometry.triangle.Fast;
+import mop.java.geometry.triangle.RationalFloatTriangle2D;
+import mop.java.geometry.triangle.Slow;
+import mop.java.geometry.triangle.Triangle2D;
+import mop.java.geometry.triangle.jts.DDFast;
+import mop.java.geometry.triangle.jts.DDNormalized;
+import mop.java.geometry.triangle.jts.DDSlow;
+import mop.java.geometry.triangle.jts.DoubleNonRobust;
+import mop.java.geometry.triangle.jts.InCircleNormalized;
+import mop.java.geometry.triangle.macro.AdaptMacro;
+import mop.java.geometry.triangle.macro.DefaultMacro;
+import mop.java.geometry.triangle.macro.ExactMacro;
+import mop.java.geometry.triangle.macro.FastMacro;
+import mop.java.geometry.triangle.macro.SlowMacro;
 import mop.java.numbers.Doubles;
 import mop.java.prng.Generator;
 import mop.java.prng.PRNG;
@@ -119,7 +119,6 @@ public final class InCircleTest {
                                        final Vector2D p3) {
     final Triangle2D gold = new AdaptMacro();
     final Triangle2D p = new Adapt();
-
     final double trueInc = gold.inCircle(p0, p1, p2, p3);
     final double inc = p.inCircle(p0, p1, p2, p3);
     // with delta=0.0 handles +0 vs -0 'correctly'
