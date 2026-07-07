@@ -13,6 +13,20 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
 public final class InCircleCC extends Triangle2D {
 
   //--------------------------------------------------------------------
+  // TODO: from Fast, make consistent with inCircle strategy
+
+  public final double signedArea () {
+    final Vector2D pa = getP0();
+    final Vector2D pb = getP1();
+    final Vector2D pc = getP2();
+
+    final double acx = pa.getX() - pc.getX();
+    final double bcx = pb.getX() - pc.getX();
+    final double acy = pa.getY() - pc.getY();
+    final double bcy = pb.getY() - pc.getY();
+    return (acx * bcy) - (acy * bcx); }
+
+  //--------------------------------------------------------------------
   /**
    * Computes the determinant of a 2x2 matrix. Uses standard double-precision
    * arithmetic, so is susceptible to round-off error.
@@ -32,6 +46,7 @@ public final class InCircleCC extends Triangle2D {
                              final double m10,
                              final double m11) {
     return m00 * m11 - m01 * m10; }
+
   //--------------------------------------------------------------------
   /** org.locationtech.jts.geom.Triangle
    * Computes the circumcentre of a triangle. The circumcentre is the centre of
@@ -72,7 +87,7 @@ public final class InCircleCC extends Triangle2D {
       // else triangle is a line segment, center is pt at infinity
       // TODO: immutable singleton?
       return Vector2D.of(Double.POSITIVE_INFINITY,
-                            Double.POSITIVE_INFINITY); }
+                         Double.POSITIVE_INFINITY); }
     final double numx = det(ay,
                             ax * ax + ay * ay, by,
                             bx * bx + by * by);
@@ -118,20 +133,26 @@ public final class InCircleCC extends Triangle2D {
   //--------------------------------------------------------------------
   /** TrianglePredicate.isInCircleNonRobust.
    */
-  public final double inCircle (final Vector2D pa, final Vector2D pb,
-                                final Vector2D pc, final Vector2D p) {
-    final Vector2D cc = circumcentre(pa, pb, pc);
+  public final double inCircle (final Vector2D p) {
+    final Vector2D cc = circumcentre(getP0(),getP1(),getP2());
     // sign reversed from JTS for consistency with other predicates
     // TODO: could we use squared distance?
-    return distance(pa, cc) - distance(p, cc);
+    return distance(getP0(), cc) - distance(p, cc);
   }
 
   //--------------------------------------------------------------------
   // construction
   //--------------------------------------------------------------------
-  // TODO: singleton?
 
-  public InCircleCC () { super(); }
+  private InCircleCC (final Vector2D a,
+                      final Vector2D b,
+                      final Vector2D c)  {
+    super(a,b,c); }
+
+  public static final Triangle2D of (final Vector2D a,
+                                     final Vector2D b,
+                                     final Vector2D c) {
+    return new InCircleCC(a,b,c); }
 
   //-------------------------------------------------------------------
 } // end class

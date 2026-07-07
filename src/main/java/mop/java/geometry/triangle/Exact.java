@@ -13,15 +13,18 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
  *   profiling.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-07-06
+ * @version 2026-07-07
  */
 
 public final class Exact extends Triangle2D {
 
   public final boolean signedAreaExact () { return true; }
 
-  public final double signedArea (final Vector2D pa, final Vector2D pb,
-                                  final Vector2D pc) {
+  public final double signedArea () {
+
+    final Vector2D pa = getP0();
+    final Vector2D pb = getP1();
+    final Vector2D pc = getP2();
 
     final Hilo axby = Hilo.product(pa.getX(),pb.getY());
     final Hilo axcy = Hilo.product(pa.getX(),pc.getY());
@@ -59,8 +62,11 @@ public final class Exact extends Triangle2D {
 
   public final boolean inCircleExact () { return true; }
 
-  public final double inCircle (final Vector2D pa, final Vector2D pb,
-                                final Vector2D pc, final Vector2D d) {
+  public final double inCircle (final Vector2D d) {
+    final Vector2D pa = getP0();
+    final Vector2D pb = getP1();
+    final Vector2D pc = getP2();
+
     final XDouble ab = XDouble.crossProduct(pa, pb);
     final XDouble bc = XDouble.crossProduct(pb, pc);
     final XDouble cd = XDouble.crossProduct(pc, d);
@@ -83,7 +89,15 @@ public final class Exact extends Triangle2D {
   // construction
   //--------------------------------------------------------------------
 
-  public Exact () { super(); }
+  private Exact (final Vector2D a,
+                 final Vector2D b,
+                 final Vector2D c)  {
+    super(a,b,c); }
+
+  public static final Triangle2D of (final Vector2D a,
+                                     final Vector2D b,
+                                     final Vector2D c) {
+    return new Exact(a,b,c); }
 
   //-------------------------------------------------------------------
 } // end class

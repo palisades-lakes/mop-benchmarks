@@ -7,7 +7,7 @@ import org.locationtech.jts.math.DD;
 /** From org.locationtech.jts.triangulate.quadedge.TrianglePredicate
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-07-06
+ * @version 2026-07-07
  */
 
 public final class DDSlow extends Triangle2D {
@@ -24,8 +24,10 @@ public final class DDSlow extends Triangle2D {
   //--------------------------------------------------------------------
 
   @Override
-  public final double signedArea (final Vector2D pa, final Vector2D pb,
-                                  final Vector2D pc) {
+  public final double signedArea () {
+    final Vector2D pa = getP0();
+    final Vector2D pb = getP1();
+    final Vector2D pc = getP2();
     final DD ax = DD.valueOf(pa.getX());
     final DD ay = DD.valueOf(pa.getY());
     final DD bx = DD.valueOf(pb.getX());
@@ -40,8 +42,10 @@ public final class DDSlow extends Triangle2D {
   //--------------------------------------------------------------------
   /** TrianglePredicate.isInCircleNonRobust.
    */
-  public final double inCircle (final Vector2D pa, final Vector2D pb,
-                                final Vector2D pc, final Vector2D p) {
+  public final double inCircle (final Vector2D p) {
+    final Vector2D pa = getP0();
+    final Vector2D pb = getP1();
+    final Vector2D pc = getP2();
     DD px = DD.valueOf(p.getX());
     DD py = DD.valueOf(p.getY());
     DD ax = DD.valueOf(pa.getX());
@@ -67,9 +71,16 @@ public final class DDSlow extends Triangle2D {
   //--------------------------------------------------------------------
   // construction
   //--------------------------------------------------------------------
-  // TODO: singleton?
 
-  public DDSlow () { super(); }
+  private DDSlow (final Vector2D a,
+                  final Vector2D b,
+                  final Vector2D c)  {
+    super(a,b,c); }
+
+  public static final Triangle2D of (final Vector2D a,
+                                     final Vector2D b,
+                                     final Vector2D c) {
+    return new DDSlow(a,b,c); }
 
   //-------------------------------------------------------------------
 } // end class

@@ -6,18 +6,32 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
 /** From org.locationtech.jts.triangulate.quadedge.TrianglePredicate
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-07-06
+ * @version 2026-07-07
  */
 
 public final class InCircleNormalized extends Triangle2D {
 
   //--------------------------------------------------------------------
-  // inCircle
+  // TODO: from Fast, make consistent with inCircle strategy
+
+  public final double signedArea () {
+    final Vector2D pa = getP0();
+    final Vector2D pb = getP1();
+    final Vector2D pc = getP2();
+
+    final double acx = pa.getX() - pc.getX();
+    final double bcx = pb.getX() - pc.getX();
+    final double acy = pa.getY() - pc.getY();
+    final double bcy = pb.getY() - pc.getY();
+    return (acx * bcy) - (acy * bcx); }
+
   //--------------------------------------------------------------------
   /** TrianglePredicate.isInCircleNonRobust.
    */
-  public final double inCircle (final Vector2D pa, final Vector2D pb,
-                                final Vector2D pc, final Vector2D p) {
+  public final double inCircle (final Vector2D p) {
+    final Vector2D pa = getP0();
+    final Vector2D pb = getP1();
+    final Vector2D pc = getP2();
     double adx = pa.getX() - p.getX();
     double ady = pa.getY() - p.getY();
     double bdx = pb.getX() - p.getX();
@@ -32,15 +46,21 @@ public final class InCircleNormalized extends Triangle2D {
     double blift = bdx * bdx + bdy * bdy;
     double clift = cdx * cdx + cdy * cdy;
 
-    return alift * bcdet + blift * cadet + clift * abdet;
-  }
+    return alift * bcdet + blift * cadet + clift * abdet; }
 
   //--------------------------------------------------------------------
   // construction
   //--------------------------------------------------------------------
-  // TODO: singleton?
 
-  public InCircleNormalized () { super(); }
+  private InCircleNormalized (final Vector2D a,
+                  final Vector2D b,
+                  final Vector2D c)  {
+    super(a,b,c); }
+
+  public static final Triangle2D of (final Vector2D a,
+                                     final Vector2D b,
+                                     final Vector2D c) {
+    return new InCircleNormalized(a,b,c); }
 
   //-------------------------------------------------------------------
 } // end class

@@ -16,7 +16,7 @@ import static mop.java.geometry.Expansion.*;
  * Exact tests.  Robust.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-07-06
+ * @version 2026-07-07
  */
 
 // strictfp unnecessary for JDK17 and later
@@ -26,9 +26,11 @@ public final class ExactMacro extends Triangle2D {
 
   public final boolean signedAreaExact () { return true; }
 
-  public final double signedArea (final Vector2D pa,
-                                  final Vector2D pb,
-                                  final Vector2D pc) {
+  public final double signedArea () {
+    final Vector2D pa = getP0();
+    final Vector2D pb = getP1();
+    final Vector2D pc = getP2();
+
     double axby1, axcy1, bxcy1, bxay1, cxay1, cxby1;
     double axby0, axcy0, bxcy0, bxay0, cxay0, cxby0;
     double[] aterms = new double[4];
@@ -133,10 +135,11 @@ public final class ExactMacro extends Triangle2D {
 
   public final boolean inCircleExact () { return true; }
 
-  public final double inCircle (final Vector2D pa,
-                                final Vector2D pb,
-                                final Vector2D pc,
-                                final Vector2D pd) {
+  public final double inCircle (final Vector2D pd) {
+    final Vector2D pa = getP0();
+    final Vector2D pb = getP1();
+    final Vector2D pc = getP2();
+
     double axby1, bxcy1, cxdy1, dxay1, axcy1, bxdy1;
     double bxay1, cxby1, dxcy1, axdy1, cxay1, dxby1;
     double axby0, bxcy0, cxdy0, dxay0, axcy0, bxdy0;
@@ -355,9 +358,16 @@ public final class ExactMacro extends Triangle2D {
   //--------------------------------------------------------------------
   // construction
   //--------------------------------------------------------------------
-  // TODO: singleton?
 
-  public ExactMacro () { super(); }
+  private ExactMacro (final Vector2D a,
+                      final Vector2D b,
+                      final Vector2D c)  {
+    super(a,b,c); }
+
+  public static final Triangle2D of (final Vector2D a,
+                                     final Vector2D b,
+                                     final Vector2D c) {
+    return new ExactMacro(a, b, c); }
 
   //-------------------------------------------------------------------
 } // end class

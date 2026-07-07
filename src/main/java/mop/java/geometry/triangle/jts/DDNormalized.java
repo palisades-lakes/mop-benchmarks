@@ -7,20 +7,27 @@ import org.locationtech.jts.math.DD;
 /** From org.locationtech.jts.triangulate.quadedge.TrianglePredicate
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-07-04
+ * @version 2026-07-07
  */
 
 public final class DDNormalized extends Triangle2D {
 
-  //--------------------------------------------------------------------
-  // inCircle
+  // TODO: cache DD subtract during construction
+
+//--------------------------------------------------------------------
+
+  @Override
+  public final double signedArea () {
+    return DDFast.triAreaDDFast(getP0(),getP1(),getP2()).doubleValue(); }
+
   //--------------------------------------------------------------------
   /** TrianglePredicate.isInCircleNonRobust.
    */
-  public final double inCircle (final Vector2D pa,
-                                final Vector2D pb,
-                                final Vector2D pc,
-                                final Vector2D p) {
+  @Override
+  public final double inCircle (final Vector2D p) {
+    final Vector2D pa = getP0();
+    final Vector2D pb = getP1();
+    final Vector2D pc = getP2();
     DD adx = DD.valueOf(pa.getX()).selfSubtract(p.getX());
     DD ady = DD.valueOf(pa.getY()).selfSubtract(p.getY());
     DD bdx = DD.valueOf(pb.getX()).selfSubtract(p.getX());
@@ -44,10 +51,15 @@ public final class DDNormalized extends Triangle2D {
   //--------------------------------------------------------------------
   // construction
   //--------------------------------------------------------------------
-  // TODO: singleton?
+  private DDNormalized (final Vector2D a,
+                        final Vector2D b,
+                        final Vector2D c)  {
+    super(a,b,c); }
 
-  public DDNormalized () { super(); }
-
+  public static final Triangle2D of (final Vector2D a,
+                                     final Vector2D b,
+                                     final Vector2D c) {
+    return new DDNormalized(a,b,c); }
   //-------------------------------------------------------------------
 } // end class
 //-------------------------------------------------------------------

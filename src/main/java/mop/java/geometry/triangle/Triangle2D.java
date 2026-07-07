@@ -5,17 +5,34 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
 /** Triangles "embedded" in Vector2D.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-07-06
+ * @version 2026-07-07
  */
 
 public abstract class Triangle2D {
 
-//  private final Vector2D p0;
-//  private final Vector2D p1;
-//  private final Vector2D p2;
-//  public final Vector2D getP0 () { return p0; }
-//  public final Vector2D getP1 () { return p1; }
-//  public final Vector2D getP3 () { return p2; }
+  private final Vector2D p0;
+  private final Vector2D p1;
+  private final Vector2D p2;
+  public final Vector2D getP0 () { return p0; }
+  public final Vector2D getP1 () { return p1; }
+  public final Vector2D getP2 () { return p2; }
+  public final Vector2D getP (final int i) {
+    return switch (i) {
+      case 0 -> p0;
+      case 1 -> p1;
+      case 2 -> p2;
+      default -> throw new IndexOutOfBoundsException();
+    };
+  }
+
+  //--------------------------------------------------------------------
+  // Object methods
+  //--------------------------------------------------------------------
+  // TODO: toHexString, hashcode, equals
+
+  public final String toString () {
+    return getClass().getSimpleName() +
+      "[" + p0 + ", " + p1 + ", " + p2 + "]"; }
 
   //--------------------------------------------------------------------
   // TODO: an estimate of accuracy for each operation would be better.
@@ -43,19 +60,16 @@ public abstract class Triangle2D {
    * input points are collinear or nearly so.
    */
 
-  public double signedArea (final Vector2D pa,
-                            final Vector2D pb,
-                            final Vector2D pc) {
+  public double signedArea () {
     throw new UnsupportedOperationException(
       getClass().getSimpleName()); }
 
   //--------------------------------------------------------------------
 
-  //public abstract boolean inCircleExact();
   public boolean inCircleExact () { return false; }
 
   /** Return a positive value if the point pd lies inside the circle
-   * passing through pa, pb, and pc; a negative value if it lies
+   * passing through p0, p1, and p2; a negative value if it lies
    * outside; and zero if the four points are cocircular. The points pa,
    * pb, and pc must be in counterclockwise order, or the sign of the
    * result will be reversed.
@@ -71,27 +85,18 @@ public abstract class Triangle2D {
    * inCircle() is usually quite fast, but will run more slowly when the
    * input points are cocircular or nearly so.
    */
-  public double inCircle (final Vector2D pa,
-                          final Vector2D pb,
-                          final Vector2D pc,
-                          final Vector2D p) {
+  public double inCircle (final Vector2D p) {
     throw new UnsupportedOperationException(getClass().getSimpleName()); }
 
   //--------------------------------------------------------------------
   // construction
   //--------------------------------------------------------------------
 
-//  private Triangle2D (final Vector2D a,
-//                      final Vector2D b,
-//                      final Vector2D c) {
-//    super();
-//    this.p0 = a; this.p1 = b; this.p2 = c;
-//  }
-
-//  public Triangle2D () {
-//    this(Vector2D.ZERO,Vector2D.ZERO,Vector2D.ZERO); }
-
-  public Triangle2D () { super(); }
+  public Triangle2D (final Vector2D a,
+                     final Vector2D b,
+                     final Vector2D c) {
+    super();
+    this.p0 = a; this.p1 = b; this.p2 = c; }
 
   //-------------------------------------------------------------------
 } // end class

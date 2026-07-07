@@ -18,7 +18,7 @@ import static mop.java.geometry.Expansion.fast_expansion_sum_zeroelim;
  * More exact tests.  Robust.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-07-06
+ * @version 2026-07-07
  */
 
 // strictfp unnecessary for JDK17 and later
@@ -30,10 +30,11 @@ public final class SlowMacro extends Triangle2D {
 
   // from macro expanded C code:
 
-  public final double inCircle (final Vector2D pa,
-                                final Vector2D pb,
-                                final Vector2D pc,
-                                final Vector2D pd) {
+  public final double inCircle (final Vector2D pd) {
+    final Vector2D pa = getP0();
+    final Vector2D pb = getP1();
+    final Vector2D pc = getP2();
+
     double adx, bdx, cdx, ady, bdy, cdy;
     double adxtail, bdxtail, cdxtail; double adytail, bdytail, cdytail;
     double negate, negatetail;
@@ -469,9 +470,11 @@ public final class SlowMacro extends Triangle2D {
   public final boolean signedAreaExact () { return true; }
 
   // TODO: seems to return 2xsigned area
-  public final double signedArea (final Vector2D pa,
-                                  final Vector2D pb,
-                                  final Vector2D pc) {
+  public final double signedArea () {
+    final Vector2D pa = getP0();
+    final Vector2D pb = getP1();
+    final Vector2D pc = getP2();
+
     double acx, acy, bcx, bcy; double acxtail, acytail;
     double bcxtail, bcytail; double negate, negatetail;
     double[] axby = new double[8]; double[] bxay = new double[8];
@@ -595,9 +598,16 @@ public final class SlowMacro extends Triangle2D {
   //--------------------------------------------------------------------
   // construction
   //--------------------------------------------------------------------
-  // TODO: singleton?
 
-  public SlowMacro () { super(); }
+  private SlowMacro (final Vector2D a,
+                final Vector2D b,
+                final Vector2D c)  {
+    super(a,b,c); }
+
+  public static final Triangle2D of (final Vector2D a,
+                                     final Vector2D b,
+                                     final Vector2D c) {
+    return new SlowMacro(a, b, c); }
 
   //-------------------------------------------------------------------
 } // end class

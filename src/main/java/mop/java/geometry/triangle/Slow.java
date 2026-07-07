@@ -13,7 +13,7 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
 /** More exact tests.  Robust.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-07-06
+ * @version 2026-07-07
  */
 
 // strictfp unnecessary for JDK17 and later
@@ -26,8 +26,11 @@ public final class Slow extends Triangle2D {
   // TODO: seems to return 2xsigned area
   // TODO: XDoubleVector, XDoubleTriangle...
 
-  public final double signedArea (final Vector2D pa, final Vector2D pb,
-                                  final Vector2D pc) {
+  public final double signedArea () {
+    final Vector2D pa = getP0();
+    final Vector2D pb = getP1();
+    final Vector2D pc = getP2();
+
     final Hilo ax = Hilo.subtract(pa.getX(), pc.getX());
     final Hilo ay = Hilo.subtract(pa.getY(), pc.getY());
     final Hilo bx = Hilo.subtract(pb.getX(), pc.getX());
@@ -69,8 +72,10 @@ public final class Slow extends Triangle2D {
    * <code>pa,pb,pc</code>, negative means outside.
    */
 
-  public final double inCircle (final Vector2D pa, final Vector2D pb,
-                                final Vector2D pc, final Vector2D p) {
+  public final double inCircle (final Vector2D p) {
+    final Vector2D pa = getP0();
+    final Vector2D pb = getP1();
+    final Vector2D pc = getP2();
 
     final Hilo ax = Hilo.subtract(pa.getX(), p.getX());
     final Hilo ay = Hilo.subtract(pa.getY(), p.getY());
@@ -86,9 +91,16 @@ public final class Slow extends Triangle2D {
   //--------------------------------------------------------------------
   // construction
   //--------------------------------------------------------------------
-  // TODO: singleton?
 
-  public Slow () { super(); }
+  private Slow (final Vector2D a,
+                final Vector2D b,
+                final Vector2D c)  {
+    super(a,b,c); }
+
+  public static final Triangle2D of (final Vector2D a,
+                                     final Vector2D b,
+                                     final Vector2D c) {
+    return new Slow(a,b,c); }
 
   //-------------------------------------------------------------------
 } // end class

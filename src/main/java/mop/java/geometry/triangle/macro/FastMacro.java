@@ -12,7 +12,7 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
 /**
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-07-06
+ * @version 2026-07-07
  */
 
 // strictfp unnecessary for JDK17 and later
@@ -22,8 +22,10 @@ public final class FastMacro extends Triangle2D {
   // orient2d
   //--------------------------------------------------------------------
 
-  public final double signedArea (final Vector2D pa, final Vector2D pb,
-                                  final Vector2D pc) {
+  public final double signedArea () {
+    final Vector2D pa = getP0();
+    final Vector2D pb = getP1();
+    final Vector2D pc = getP2();
     final double acx = pa.getX() - pc.getX();
     final double bcx = pb.getX() - pc.getX();
     final double acy = pa.getY() - pc.getY();
@@ -34,8 +36,10 @@ public final class FastMacro extends Triangle2D {
   // inCircle
   //--------------------------------------------------------------------
 
-  public final double inCircle (final Vector2D pa, final Vector2D pb,
-                                final Vector2D pc, final Vector2D p) {
+  public final double inCircle (final Vector2D p) {
+    final Vector2D pa = getP0();
+    final Vector2D pb = getP1();
+    final Vector2D pc = getP2();
     double adx, ady, bdx, bdy, cdx, cdy;
     double abdet, bcdet, cadet;
     double alift, blift, clift;
@@ -59,9 +63,16 @@ public final class FastMacro extends Triangle2D {
   //--------------------------------------------------------------------
   // construction
   //--------------------------------------------------------------------
-  // TODO: singleton?
 
-  public FastMacro () { super(); }
+  private FastMacro (final Vector2D a,
+                     final Vector2D b,
+                     final Vector2D c)  {
+    super(a,b,c); }
+
+  public static final Triangle2D of (final Vector2D a,
+                                     final Vector2D b,
+                                     final Vector2D c) {
+    return new FastMacro(a, b, c); }
 
   //-------------------------------------------------------------------
 } // end class

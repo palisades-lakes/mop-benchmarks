@@ -23,9 +23,10 @@ public final class RationalFloatTriangle2D extends Triangle2D {
   //  final RationalFloat.
   // TODO: RationalFloatVector, RationalFloatTriangle...
 
-  public final double signedArea (final Vector2D pa,
-                                  final Vector2D pb,
-                                  final Vector2D pc) {
+  public final double signedArea () {
+    final Vector2D pa = getP0();
+    final Vector2D pb = getP1();
+    final Vector2D pc = getP2();
     final RationalFloat ax = RationalFloat.valueOf(pa.getX());
     final RationalFloat ay = RationalFloat.valueOf(pa.getY());
     final RationalFloat bx = RationalFloat.valueOf(pb.getX());
@@ -43,8 +44,10 @@ public final class RationalFloatTriangle2D extends Triangle2D {
 
   public final boolean inCircleExact () { return true; }
 
-  public final double inCircle (final Vector2D pa, final Vector2D pb,
-                                final Vector2D pc, final Vector2D p) {
+  public final double inCircle (final Vector2D p) {
+    final Vector2D pa = getP0();
+    final Vector2D pb = getP1();
+    final Vector2D pc = getP2();
     final RationalFloat ax = RationalFloat.valueOf(pa.getX());
     final RationalFloat ay = RationalFloat.valueOf(pa.getY());
     final RationalFloat bx = RationalFloat.valueOf(pb.getX());
@@ -75,9 +78,16 @@ public final class RationalFloatTriangle2D extends Triangle2D {
   //--------------------------------------------------------------------
   // construction
   //--------------------------------------------------------------------
-  // TODO: singleton?
 
-  public RationalFloatTriangle2D () { super(); }
+  private RationalFloatTriangle2D (final Vector2D a,
+                              final Vector2D b,
+                              final Vector2D c)  {
+    super(a,b,c); }
+
+  public static final Triangle2D of (final Vector2D a,
+                                     final Vector2D b,
+                                     final Vector2D c) {
+    return new RationalFloatTriangle2D(a,b,c); }
 
   //-------------------------------------------------------------------
 } // end class

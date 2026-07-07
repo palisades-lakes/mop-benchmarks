@@ -14,7 +14,7 @@ import static mop.java.geometry.Expansion.EPSILON;
 /** Adaptive tests.  Robust.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-07-06
+ * @version 2026-07-07
  */
 
 // strictfp unnecessary for JDK17 and later
@@ -24,8 +24,10 @@ public final class DefaultMacro extends Triangle2D {
   private static final double ccwerrboundA =
     (3.0 + 16.0 * EPSILON) * EPSILON;
 
-  public final double signedArea (final Vector2D pa, final Vector2D pb,
-                                  final Vector2D pc) {
+  public final double signedArea () {
+    final Vector2D pa = getP0();
+    final Vector2D pb = getP1();
+    final Vector2D pc = getP2();
     double detleft, detright, det;
     double detsum, errbound;
 
@@ -49,8 +51,7 @@ public final class DefaultMacro extends Triangle2D {
       return det;
     }
 
-    return new AdaptMacro().signedArea(pa, pb, pc, detsum);
-  }
+    return AdaptMacro.signedArea(getP0(),getP1(),getP2(), detsum); }
 
   //--------------------------------------------------------------------
   // inCircle
@@ -58,8 +59,11 @@ public final class DefaultMacro extends Triangle2D {
   private static final double iccerrboundA =
     (10.0 + 96.0 * EPSILON) * EPSILON;
 
-  public final double inCircle (final Vector2D pa, final Vector2D pb,
-                                final Vector2D pc, final Vector2D p) {
+  public final double inCircle (final Vector2D p) {
+    final Vector2D pa = getP0();
+    final Vector2D pb = getP1();
+    final Vector2D pc = getP2();
+
     double adx, bdx, cdx, ady, bdy, cdy;
     double bdxcdy, cdxbdy, cdxady, adxcdy, adxbdy, bdxady;
     double alift, blift, clift;
@@ -104,14 +108,22 @@ public final class DefaultMacro extends Triangle2D {
       return det;
     }
 
-    return new AdaptMacro().inCircle(pa, pb, pc, p, permanent);
+    return AdaptMacro.inCircle(getP0(),getP1(),getP2(), p, permanent);
   }
 
   //--------------------------------------------------------------------
   // construction
   //--------------------------------------------------------------------
 
-  public DefaultMacro () { super(); }
+  private DefaultMacro (final Vector2D a,
+                final Vector2D b,
+                final Vector2D c)  {
+    super(a,b,c); }
+
+  public static final Triangle2D of (final Vector2D a,
+                                     final Vector2D b,
+                                     final Vector2D c) {
+    return new DefaultMacro(a, b, c); }
 
   //-------------------------------------------------------------------
 } // end class

@@ -1,4 +1,4 @@
-package mop.java.test.geometry.predicates;
+package mop.java.test.geometry.tetrahedra;
 
 import mop.java.geometry.tetrahedron.Adapt;
 import mop.java.geometry.tetrahedron.BigFloatTetrahedron3D;

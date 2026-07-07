@@ -7,7 +7,7 @@ import org.locationtech.jts.math.DD;
 /** From org.locationtech.jts.triangulate.quadedge.TrianglePredicate
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-07-06
+ * @version 2026-07-07
  */
 
 public final class DDFast extends Triangle2D {
@@ -28,26 +28,19 @@ public final class DDFast extends Triangle2D {
 
     return t1.selfSubtract(t2); }
 
-  //--------------------------------------------------------------------
-  // orient2d
-  //--------------------------------------------------------------------
 
   @Override
-  public final double signedArea (final Vector2D pa,
-                                  final Vector2D pb,
-                                  final Vector2D pc) {
-    return triAreaDDFast(pa, pb, pc).doubleValue(); }
+  public final double signedArea () {
+    return triAreaDDFast(getP0(),getP1(),getP2()).doubleValue(); }
 
-  //--------------------------------------------------------------------
-  // inCircle
   //--------------------------------------------------------------------
   /** TrianglePredicate.isInCircleNonRobust.
    */
   @Override
-  public final double inCircle (final Vector2D pa,
-                                final Vector2D pb,
-                                final Vector2D pc,
-                                final Vector2D p) {
+  public final double inCircle (final Vector2D p) {
+    final Vector2D pa = getP0();
+    final Vector2D pb = getP1();
+    final Vector2D pc = getP2();
     DD aTerm = (DD.sqr(pa.getX()).selfAdd(DD.sqr(pa.getY())))
       .selfMultiply(triAreaDDFast(pb, pc, p));
     DD bTerm = (DD.sqr(pb.getX()).selfAdd(DD.sqr(pb.getY())))
@@ -55,18 +48,24 @@ public final class DDFast extends Triangle2D {
     DD cTerm = (DD.sqr(pc.getX()).selfAdd(DD.sqr(pc.getY())))
       .selfMultiply(triAreaDDFast(pa, pb, p));
     DD pTerm = (DD.sqr(p.getX()).selfAdd(DD.sqr(p.getY())))
-      .selfMultiply(triAreaDDFast(pa, pb, pc));
+      .selfMultiply(triAreaDDFast(getP0(),getP1(),getP2()));
 
     DD sum = aTerm.selfSubtract(bTerm).selfAdd(cTerm).selfSubtract(pTerm);
-    return sum.doubleValue();
-  }
+    return sum.doubleValue(); }
 
   //--------------------------------------------------------------------
   // construction
   //--------------------------------------------------------------------
-  // TODO: singleton?
 
-  public DDFast () { super(); }
+  private DDFast (final Vector2D a,
+                  final Vector2D b,
+                  final Vector2D c)  {
+    super(a,b,c); }
+
+  public static final Triangle2D of (final Vector2D a,
+                                     final Vector2D b,
+                                     final Vector2D c) {
+    return new DDFast(a,b,c); }
 
   //-------------------------------------------------------------------
 } // end class

@@ -15,7 +15,7 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
  * returned value is correct, not its specific value.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-07-06
+ * @version 2026-07-07
  */
 
 // strictfp (may be) necessary for JDK16 and earlier
@@ -301,10 +301,10 @@ public final class Adapt extends Triangle2D {
 
   //--------------------------------------------------------------------
 
-  public final double inCircle (final Vector2D pa,
-                                final Vector2D pb,
-                                final Vector2D pc,
-                                final Vector2D pd) {
+  public final double inCircle (final Vector2D pd) {
+    final Vector2D pa = getP0();
+    final Vector2D pb = getP1();
+    final Vector2D pc = getP2();
     final double adx = pa.getX() - pd.getX();
     final double ady = pa.getY() - pd.getY();
     final double alift = (adx * adx) + (ady * ady);
@@ -338,7 +338,7 @@ public final class Adapt extends Triangle2D {
 
     final double errbound = iccerrboundA * permanent;
     if (Math.abs(det) > errbound) { return det; }
-    return inCircle(pa, pb, pc, pd, permanent); }
+    return inCircle(getP0(),getP1(),getP2(), pd, permanent); }
 
   //--------------------------------------------------------------------
   // orient2d
@@ -403,9 +403,10 @@ public final class Adapt extends Triangle2D {
   private static final double ccwerrboundA =
     (3.0 + 16.0 * EPSILON) * EPSILON;
 
-  public final double signedArea (final Vector2D pa,
-                                  final Vector2D pb,
-                                  final Vector2D pc) {
+  public final double signedArea () {
+    final Vector2D pa = getP0();
+    final Vector2D pb = getP1();
+    final Vector2D pc = getP2();
 
     // TODO: difference vectors cached in Triangle object
     final Vector2D ac = pa.subtract(pc);
@@ -426,14 +427,21 @@ public final class Adapt extends Triangle2D {
     final double errbound = ccwerrboundA * detsum;
     if (Math.abs(det) >= errbound) { return det; }
 
-    return signedArea(pa, pb, pc, detsum); }
+    return signedArea(getP0(),getP1(),getP2(), detsum); }
 
   //--------------------------------------------------------------------
   // construction
   //--------------------------------------------------------------------
-  // TODO: singleton?
 
-  public Adapt () { super(); }
+  private Adapt (final Vector2D a,
+                  final Vector2D b,
+                  final Vector2D c)  {
+    super(a,b,c); }
+
+  public static final Triangle2D of (final Vector2D a,
+                                     final Vector2D b,
+                                     final Vector2D c) {
+    return new Adapt(a, b, c); }
 
   //-------------------------------------------------------------------
 } // end class

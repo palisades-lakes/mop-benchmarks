@@ -11,18 +11,18 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
 /** Approximate predicates, nonrobust.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-07-06
+ * @version 2026-07-07
  */
 
 public final class Fast extends Triangle2D {
 
   //--------------------------------------------------------------------
-  // orient2d
-  //--------------------------------------------------------------------
 
-  public final double signedArea (final Vector2D pa,
-                                  final Vector2D pb,
-                                  final Vector2D pc) {
+  public final double signedArea () {
+    final Vector2D pa = getP0();
+    final Vector2D pb = getP1();
+    final Vector2D pc = getP2();
+
     final double acx = pa.getX() - pc.getX();
     final double bcx = pb.getX() - pc.getX();
     final double acy = pa.getY() - pc.getY();
@@ -31,10 +31,11 @@ public final class Fast extends Triangle2D {
 
   //--------------------------------------------------------------------
 
-  public final double inCircle (final Vector2D pa,
-                                final Vector2D pb,
-                                final Vector2D pc,
-                                final Vector2D pd) {
+  public final double inCircle (final Vector2D pd) {
+    final Vector2D pa = getP0();
+    final Vector2D pb = getP1();
+    final Vector2D pc = getP2();
+
     final double adx = pa.getX() - pd.getX();
     final double ady = pa.getY() - pd.getY();
     final double bdx = pb.getX() - pd.getX();
@@ -54,9 +55,16 @@ public final class Fast extends Triangle2D {
   //--------------------------------------------------------------------
   // construction
   //--------------------------------------------------------------------
-  // TODO: singleton?
 
-  public Fast () { super(); }
+  private Fast (final Vector2D a,
+                 final Vector2D b,
+                 final Vector2D c)  {
+    super(a,b,c); }
+
+  public static final Triangle2D of (final Vector2D a,
+                                     final Vector2D b,
+                                     final Vector2D c) {
+    return new Fast(a,b,c); }
 
   //-------------------------------------------------------------------
 } // end class

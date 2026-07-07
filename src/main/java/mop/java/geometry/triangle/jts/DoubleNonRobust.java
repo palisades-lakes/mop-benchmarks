@@ -6,7 +6,7 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
 /** From org.locationtech.jts.triangulate.quadedge.TrianglePredicate
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-07-06
+ * @version 2026-07-07
  */
 
 public final class DoubleNonRobust extends Triangle2D {
@@ -23,40 +23,50 @@ public final class DoubleNonRobust extends Triangle2D {
   private static double triArea (final Vector2D a,
                                  final Vector2D b,
                                  final Vector2D c) {
-    return (b.getX() - a.getX()) * (c.getY() - a.getY())
-      - (b.getY() - a.getY()) * (c.getX() - a.getX());
+    // TODO: cache difference vectors
+    return
+      (b.getX() - a.getX()) * (c.getY() - a.getY())
+      -
+        (b.getY() - a.getY()) * (c.getX() - a.getX());
   }
   //--------------------------------------------------------------------
   // orient2d
   //--------------------------------------------------------------------
 
   @Override
-  public final double signedArea (final Vector2D pa, final Vector2D pb,
-                                  final Vector2D pc) {
-    return triArea(pa, pb, pc); }
+  public final double signedArea () {
+    return triArea(getP0(),getP1(),getP2()); }
 
   //--------------------------------------------------------------------
   // inCircle
   //--------------------------------------------------------------------
   /** TrianglePredicate.isInCircleNonRobust.
    */
-  public final double inCircle (final Vector2D pa, final Vector2D pb,
-                                final Vector2D pc, final Vector2D p) {
-    return (pa.getX() * pa.getX() + pa.getY() * pa.getY()) * triArea(pb,
-                                                                     pc, p)
-        - (pb.getX() * pb.getX() + pb.getY() * pb.getY()) * triArea(pa,
-                                                                    pc, p)
-        + (pc.getX() * pc.getX() + pc.getY() * pc.getY()) * triArea(pa,
-                                                                    pb, p)
-        - (p.getX() * p.getX() + p.getY() * p.getY()) * triArea(pa, pb,
-                                                                pc); }
+  public final double inCircle (final Vector2D p) {
+    final Vector2D pa = getP0();
+    final Vector2D pb = getP1();
+    final Vector2D pc = getP2();
+
+    return (pa.getX()*pa.getX()
+      + pa.getY()*pa.getY())*triArea(pb,pc,p)
+      - (pb.getX()*pb.getX() + pb.getY()*pb.getY())*triArea(pa,pc,p)
+      + (pc.getX()*pc.getX()
+      + pc.getY()*pc.getY())*triArea(pa,pb,p)
+      - (p.getX()*p.getX() + p.getY()*p.getY())*triArea(pa,pb,pc); }
 
   //--------------------------------------------------------------------
   // construction
   //--------------------------------------------------------------------
-  // TODO: singleton?
 
-  public DoubleNonRobust () { super(); }
+  private DoubleNonRobust (final Vector2D a,
+                  final Vector2D b,
+                  final Vector2D c)  {
+    super(a,b,c); }
+
+  public static final Triangle2D of (final Vector2D a,
+                                     final Vector2D b,
+                                     final Vector2D c) {
+    return new DoubleNonRobust(a,b,c); }
 
   //-------------------------------------------------------------------
 } // end class

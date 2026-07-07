@@ -7,7 +7,7 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
  * Should be exact, up to BigFloat resolution.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-07-06
+ * @version 2026-07-07
  */
 
 public final class BigFloatTriangle2D extends Triangle2D {
@@ -23,8 +23,11 @@ public final class BigFloatTriangle2D extends Triangle2D {
   //  final BigFloat.
   // TODO: BigFloatVector, Vector<BigFloat>...
 
-  public final double signedArea (final Vector2D pa, final Vector2D pb,
-                                  final Vector2D pc) {
+  public final double signedArea () {
+    final Vector2D pa = getP0();
+    final Vector2D pb = getP1();
+    final Vector2D pc = getP2();
+
     final BigFloat ax = BigFloat.valueOf(pa.getX());
     final BigFloat ay = BigFloat.valueOf(pa.getY());
     final BigFloat bx = BigFloat.valueOf(pb.getX());
@@ -42,9 +45,12 @@ public final class BigFloatTriangle2D extends Triangle2D {
 
   public final boolean inCircleExact () { return true; }
 
-  public final double inCircle (final Vector2D pa, final Vector2D pb,
-                                final Vector2D pc, final Vector2D p) {
+  public final double inCircle (final Vector2D p) {
     // TODO: move BigFloat creation to BigFloat.subtract(double,double)
+    final Vector2D pa = getP0();
+    final Vector2D pb = getP1();
+    final Vector2D pc = getP2();
+
     final BigFloat ax = BigFloat.valueOf(pa.getX());
     final BigFloat ay = BigFloat.valueOf(pa.getY());
     final BigFloat bx = BigFloat.valueOf(pb.getX());
@@ -76,7 +82,15 @@ public final class BigFloatTriangle2D extends Triangle2D {
   // construction
   //--------------------------------------------------------------------
 
-  public BigFloatTriangle2D () { super(); }
+  private BigFloatTriangle2D (final Vector2D a,
+                              final Vector2D b,
+                              final Vector2D c)  {
+    super(a,b,c); }
+
+  public static final Triangle2D of (final Vector2D a,
+                                     final Vector2D b,
+                                     final Vector2D c) {
+    return new BigFloatTriangle2D(a,b,c); }
 
   //-------------------------------------------------------------------
 } // end class
