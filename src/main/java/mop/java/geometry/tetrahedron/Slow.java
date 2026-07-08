@@ -81,7 +81,7 @@ import org.apache.commons.geometry.euclidean.threed.Vector3D;
  *   even <code>BigInteger</code> to extend range.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-07-06
+ * @version 2026-07-07
  */
 
 // strictfp unnecessary for JDK17 and later
@@ -92,10 +92,12 @@ public final class Slow extends Tetrahedron3D {
 
   public final boolean signedVolumeExact () { return true; }
 
-  public final double signedVolume (final Vector3D pa,
-                                    final Vector3D pb,
-                                    final Vector3D pc,
-                                    final Vector3D pd) {
+  public final double signedVolume () {
+    final Vector3D pa = getP0();
+    final Vector3D pb = getP1();
+    final Vector3D pc = getP2();
+    final Vector3D pd = getP3();
+
     final Hilo adx = Hilo.subtract(pa.getX(), pd.getX());
     final Hilo ady = Hilo.subtract(pa.getY(), pd.getY());
     final Hilo adz = Hilo.subtract(pa.getZ(), pd.getZ());
@@ -160,24 +162,25 @@ public final class Slow extends Tetrahedron3D {
            .add(detzz).add(detzzt).add(detztzt); }
 
   //--------------------------------------------------------------------
-  public final double inSphere (final Vector3D pa,
-                                final Vector3D pb,
-                                final Vector3D pc,
-                                final Vector3D pd,
-                                final Vector3D pe) {
+  public final double inSphere (final Vector3D p) {
 
-    final Hilo aex = Hilo.subtract(pa.getX(), pe.getX());
-    final Hilo aey = Hilo.subtract(pa.getY(), pe.getY());
-    final Hilo aez = Hilo.subtract(pa.getZ(), pe.getZ());
-    final Hilo bex = Hilo.subtract(pb.getX(), pe.getX());
-    final Hilo bey = Hilo.subtract(pb.getY(), pe.getY());
-    final Hilo bez = Hilo.subtract(pb.getZ(), pe.getZ());
-    final Hilo cex = Hilo.subtract(pc.getX(), pe.getX());
-    final Hilo cey = Hilo.subtract(pc.getY(), pe.getY());
-    final Hilo cez = Hilo.subtract(pc.getZ(), pe.getZ());
-    final Hilo dex = Hilo.subtract(pd.getX(), pe.getX());
-    final Hilo dey = Hilo.subtract(pd.getY(), pe.getY());
-    final Hilo dez = Hilo.subtract(pd.getZ(), pe.getZ());
+    final Vector3D pa = getP0();
+    final Vector3D pb = getP1();
+    final Vector3D pc = getP2();
+    final Vector3D pd = getP3();
+
+    final Hilo aex = Hilo.subtract(pa.getX(), p.getX());
+    final Hilo aey = Hilo.subtract(pa.getY(), p.getY());
+    final Hilo aez = Hilo.subtract(pa.getZ(), p.getZ());
+    final Hilo bex = Hilo.subtract(pb.getX(), p.getX());
+    final Hilo bey = Hilo.subtract(pb.getY(), p.getY());
+    final Hilo bez = Hilo.subtract(pb.getZ(), p.getZ());
+    final Hilo cex = Hilo.subtract(pc.getX(), p.getX());
+    final Hilo cey = Hilo.subtract(pc.getY(), p.getY());
+    final Hilo cez = Hilo.subtract(pc.getZ(), p.getZ());
+    final Hilo dex = Hilo.subtract(pd.getX(), p.getX());
+    final Hilo dey = Hilo.subtract(pd.getY(), p.getY());
+    final Hilo dez = Hilo.subtract(pd.getZ(), p.getZ());
 
     final XDouble ab = XDouble.crossProduct(aex,aey,bex,bey);
     final XDouble bc = XDouble.crossProduct(bex,bey,cex,cey);
@@ -203,7 +206,17 @@ public final class Slow extends Tetrahedron3D {
   // construction
   //--------------------------------------------------------------------
 
-  public Slow () { super(); }
+  private Slow (final Vector3D a,
+                final Vector3D b,
+                final Vector3D c,
+                final Vector3D d)  {
+    super(a,b,c,d); }
+
+  public static final Tetrahedron3D of (final Vector3D a,
+                                        final Vector3D b,
+                                        final Vector3D c,
+                                        final Vector3D d) {
+    return new Slow(a, b, c, d); }
 
   //-------------------------------------------------------------------
 } // end class

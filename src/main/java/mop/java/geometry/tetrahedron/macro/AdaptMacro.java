@@ -17,10 +17,10 @@ import static mop.java.geometry.Expansion.fast_expansion_sum_zeroelim;
 import static mop.java.geometry.Expansion.resulterrbound;
 import static mop.java.geometry.Expansion.scale_expansion_zeroelim;
 
-/**
- * Adaptive exact tests. Robust.
+/** Adaptive exact tests. Robust.
+ *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-07-06
+ * @version 2026-07-07
  */
 
 // strictfp unnecessary for JDK17 and later
@@ -37,13 +37,10 @@ public final class AdaptMacro extends Tetrahedron3D {
 
   //--------------------------------------------------------------------
 
-  public final double signedVolume (final Vector3D pa,
-                                    final Vector3D pb,
-                                    final Vector3D pc,
-                                    final Vector3D pd) {
-    return new DefaultMacro().signedVolume(pa, pb, pc, pd); }
+  public final double signedVolume () {
+    return DefaultMacro.of(getP0(),getP1(),getP2(),getP3()).signedVolume(); }
 
-  public final double signedVolume (final Vector3D pa,
+  public static final double signedVolume (final Vector3D pa,
                                     final Vector3D pb,
                                     final Vector3D pc,
                                     final Vector3D pd,
@@ -1565,19 +1562,15 @@ public final class AdaptMacro extends Tetrahedron3D {
 
   public final boolean inSphereExact () { return false; }
 
-  public final double inSphere (final Vector3D pa,
-                                final Vector3D pb,
-                                final Vector3D pc,
-                                final Vector3D pd,
-                                final Vector3D pe) {
-    return new DefaultMacro().inSphere(pa, pb, pc, pd, pe); }
+  public final double inSphere (final Vector3D p) {
+    return DefaultMacro.of(getP0(),getP1(),getP2(),getP3()).inSphere(p); }
 
-  final double inSphere (final Vector3D pa,
-                         final Vector3D pb,
-                         final Vector3D pc,
-                         final Vector3D pd,
-                         final Vector3D pe,
-                         final double permanent) {
+  public static final double inSphere (final Vector3D pa,
+                                       final Vector3D pb,
+                                       final Vector3D pc,
+                                       final Vector3D pd,
+                                       final Vector3D pe,
+                                       final double permanent) {
     double aex, bex, cex, dex, aey, bey, cey, dey, aez, bez, cez, dez;
     double det, errbound;
 
@@ -2139,14 +2132,23 @@ public final class AdaptMacro extends Tetrahedron3D {
       * (dez * ab3 + aez * bd3 + bez * da3)));
     if ((det >= errbound) || (-det >= errbound)) { return det; }
 
-    return new ExactMacro().inSphere(pa, pb, pc, pd, pe); }
+    return ExactMacro.of(pa,pb,pc,pd).inSphere(pe); }
 
   //--------------------------------------------------------------------
   // construction
   //--------------------------------------------------------------------
-  // TODO: singleton?
 
-  public AdaptMacro () { super(); }
+  private AdaptMacro (final Vector3D a,
+                      final Vector3D b,
+                      final Vector3D c,
+                      final Vector3D d)  {
+    super(a,b,c,d); }
+
+  public static final Tetrahedron3D of (final Vector3D a,
+                                        final Vector3D b,
+                                        final Vector3D c,
+                                        final Vector3D d) {
+    return new AdaptMacro(a, b, c,d); }
 
   //-------------------------------------------------------------------
 } // end class

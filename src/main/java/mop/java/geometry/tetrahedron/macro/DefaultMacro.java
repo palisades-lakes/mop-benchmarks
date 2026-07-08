@@ -14,7 +14,7 @@ import static mop.java.geometry.Expansion.EPSILON;
 /** Adaptive tests.  Robust.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-07-06
+ * @version 2026-07-07
  */
 
 // strictfp unnecessary for JDK17 and later
@@ -26,10 +26,12 @@ public final class DefaultMacro extends Tetrahedron3D {
   private static final double o3derrboundA =
     (7.0 + 56.0 * EPSILON) * EPSILON;
 
-  public final double signedVolume (final Vector3D pa,
-                                    final Vector3D pb,
-                                    final Vector3D pc,
-                                    final Vector3D pd) {
+  public final double signedVolume () {
+    final Vector3D pa = getP0();
+    final Vector3D pb = getP1();
+    final Vector3D pc = getP2();
+    final Vector3D pd = getP3();
+
     double adx, bdx, cdx, ady, bdy, cdy, adz, bdz, cdz;
     double bdxcdy, cdxbdy, cdxady, adxcdy, adxbdy, bdxady;
     double det;
@@ -76,7 +78,7 @@ public final class DefaultMacro extends Tetrahedron3D {
       return det;
     }
 
-    return new AdaptMacro().signedVolume(pa, pb, pc, pd, permanent);
+    return AdaptMacro.signedVolume(pa, pb, pc, pd, permanent);
   }
 
   //--------------------------------------------------------------------
@@ -84,11 +86,12 @@ public final class DefaultMacro extends Tetrahedron3D {
   private static final double isperrboundA =
     (16.0 + 224.0 * EPSILON) * EPSILON;
 
-  public final double inSphere (final Vector3D pa,
-                                final Vector3D pb,
-                                final Vector3D pc,
-                                final Vector3D pd,
-                                final Vector3D pe) {
+  public final double inSphere (final Vector3D p) {
+    final Vector3D pa = getP0();
+    final Vector3D pb = getP1();
+    final Vector3D pc = getP2();
+    final Vector3D pd = getP3();
+
     double aex, bex, cex, dex;
     double aey, bey, cey, dey;
     double aez, bez, cez, dez;
@@ -105,18 +108,18 @@ public final class DefaultMacro extends Tetrahedron3D {
     double det;
     double permanent, errbound;
 
-    aex = pa.getX() - pe.getX();
-    bex = pb.getX() - pe.getX();
-    cex = pc.getX() - pe.getX();
-    dex = pd.getX() - pe.getX();
-    aey = pa.getY() - pe.getY();
-    bey = pb.getY() - pe.getY();
-    cey = pc.getY() - pe.getY();
-    dey = pd.getY() - pe.getY();
-    aez = pa.getZ() - pe.getZ();
-    bez = pb.getZ() - pe.getZ();
-    cez = pc.getZ() - pe.getZ();
-    dez = pd.getZ() - pe.getZ();
+    aex = pa.getX() - p.getX();
+    bex = pb.getX() - p.getX();
+    cex = pc.getX() - p.getX();
+    dex = pd.getX() - p.getX();
+    aey = pa.getY() - p.getY();
+    bey = pb.getY() - p.getY();
+    cey = pc.getY() - p.getY();
+    dey = pd.getY() - p.getY();
+    aez = pa.getZ() - p.getZ();
+    bez = pb.getZ() - p.getZ();
+    cez = pc.getZ() - p.getZ();
+    dez = pd.getZ() - p.getZ();
 
     aexbey = aex * bey;
     bexaey = bex * aey;
@@ -185,13 +188,23 @@ public final class DefaultMacro extends Tetrahedron3D {
     errbound = isperrboundA * permanent;
     if ((det > errbound) || (-det > errbound)) { return det; }
 
-    return new AdaptMacro().inSphere(pa, pb, pc, pd, pe, permanent);
+    return AdaptMacro.inSphere(pa, pb, pc, pd, p, permanent);
   }
   //--------------------------------------------------------------------
   // construction
   //--------------------------------------------------------------------
 
-  public DefaultMacro () { super(); }
+  private DefaultMacro (final Vector3D a,
+                        final Vector3D b,
+                        final Vector3D c,
+                        final Vector3D d)  {
+    super(a,b,c,d); }
+
+  public static final Tetrahedron3D of (final Vector3D a,
+                                        final Vector3D b,
+                                        final Vector3D c,
+                                        final Vector3D d) {
+    return new DefaultMacro(a, b, c, d); }
 
   //-------------------------------------------------------------------
 } // end class

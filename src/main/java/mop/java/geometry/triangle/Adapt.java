@@ -356,7 +356,7 @@ public final class Adapt extends Triangle2D {
                                           final Vector2D pb,
                                           final Vector2D pc,
                                           final double detsum) {
-  // TODO: difference vectors cached in Triangle object
+    // TODO: difference vectors cached in Triangle object
     final Vector2D ac = pa.subtract(pc);
     final Vector2D bc = pb.subtract(pc);
     final double acx = ac.getX();
@@ -434,8 +434,8 @@ public final class Adapt extends Triangle2D {
   //--------------------------------------------------------------------
 
   private Adapt (final Vector2D a,
-                  final Vector2D b,
-                  final Vector2D c)  {
+                 final Vector2D b,
+                 final Vector2D c)  {
     super(a,b,c); }
 
   public static final Triangle2D of (final Vector2D a,

@@ -15,7 +15,7 @@ import static mop.java.geometry.Expansion.*;
 /** More exact tests.  Robust.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-07-06
+ * @version 2026-07-07
  */
 
 public final class SlowMacro extends Tetrahedron3D {
@@ -24,8 +24,12 @@ public final class SlowMacro extends Tetrahedron3D {
 
   public final boolean signedVolumeExact () { return true; }
 
-  public final double signedVolume (final Vector3D pa, final Vector3D pb,
-                                    final Vector3D pc, final Vector3D pd) {
+  public final double signedVolume () {
+    final Vector3D pa = getP0();
+    final Vector3D pb = getP1();
+    final Vector3D pc = getP2();
+    final Vector3D pd = getP3();
+
     double adx, ady, adz, bdx, bdy, bdz, cdx, cdy, cdz;
     double adxtail, adytail, adztail; double bdxtail, bdytail, bdztail;
     double cdxtail, cdytail, cdztail; double negate, negatetail;
@@ -394,9 +398,12 @@ public final class SlowMacro extends Tetrahedron3D {
 
   public final boolean inSphereExact () { return true; }
 
-  public final double inSphere (final Vector3D pa, final Vector3D pb,
-                                final Vector3D pc, final Vector3D pd,
-                                final Vector3D pe) {
+  public final double inSphere (final Vector3D p) {
+    final Vector3D pa = getP0();
+    final Vector3D pb = getP1();
+    final Vector3D pc = getP2();
+    final Vector3D pd = getP3();
+
     double aex, bex, cex, dex, aey, bey, cey, dey, aez, bez, cez, dez;
     double aextail, bextail, cextail, dextail;
     double aeytail, beytail, ceytail, deytail;
@@ -444,35 +451,35 @@ public final class SlowMacro extends Tetrahedron3D {
     double a0hi, a0lo, a1hi, a1lo, bhi, blo; double err1, err2, err3;
     double _i, _j, _k, _l, _m, _n; double _0, _1, _2;
 
-    aex = (pa.getX() - pe.getX()); bvirt = (pa.getX() - aex); avirt = aex + bvirt;
-    bround = bvirt - pe.getX(); around = pa.getX() - avirt;
-    aextail = around + bround; aey = (pa.getY() - pe.getY());
-    bvirt = (pa.getY() - aey); avirt = aey + bvirt; bround = bvirt - pe.getY();
+    aex = (pa.getX() - p.getX());bvirt = (pa.getX() - aex);avirt = aex + bvirt;
+    bround = bvirt - p.getX();around = pa.getX() - avirt;
+    aextail = around + bround; aey = (pa.getY() - p.getY());
+    bvirt = (pa.getY() - aey); avirt = aey + bvirt; bround = bvirt - p.getY();
     around = pa.getY() - avirt; aeytail = around + bround;
-    aez = (pa.getZ() - pe.getZ()); bvirt = (pa.getZ() - aez); avirt = aez + bvirt;
-    bround = bvirt - pe.getZ(); around = pa.getZ() - avirt;
-    aeztail = around + bround; bex = (pb.getX() - pe.getX());
-    bvirt = (pb.getX() - bex); avirt = bex + bvirt; bround = bvirt - pe.getX();
+    aez = (pa.getZ() - p.getZ());bvirt = (pa.getZ() - aez);avirt = aez + bvirt;
+    bround = bvirt - p.getZ();around = pa.getZ() - avirt;
+    aeztail = around + bround; bex = (pb.getX() - p.getX());
+    bvirt = (pb.getX() - bex); avirt = bex + bvirt; bround = bvirt - p.getX();
     around = pb.getX() - avirt; bextail = around + bround;
-    bey = (pb.getY() - pe.getY()); bvirt = (pb.getY() - bey); avirt = bey + bvirt;
-    bround = bvirt - pe.getY(); around = pb.getY() - avirt;
-    beytail = around + bround; bez = (pb.getZ() - pe.getZ());
-    bvirt = (pb.getZ() - bez); avirt = bez + bvirt; bround = bvirt - pe.getZ();
+    bey = (pb.getY() - p.getY());bvirt = (pb.getY() - bey);avirt = bey + bvirt;
+    bround = bvirt - p.getY();around = pb.getY() - avirt;
+    beytail = around + bround; bez = (pb.getZ() - p.getZ());
+    bvirt = (pb.getZ() - bez); avirt = bez + bvirt; bround = bvirt - p.getZ();
     around = pb.getZ() - avirt; beztail = around + bround;
-    cex = (pc.getX() - pe.getX()); bvirt = (pc.getX() - cex); avirt = cex + bvirt;
-    bround = bvirt - pe.getX(); around = pc.getX() - avirt;
-    cextail = around + bround; cey = (pc.getY() - pe.getY());
-    bvirt = (pc.getY() - cey); avirt = cey + bvirt; bround = bvirt - pe.getY();
+    cex = (pc.getX() - p.getX());bvirt = (pc.getX() - cex);avirt = cex + bvirt;
+    bround = bvirt - p.getX();around = pc.getX() - avirt;
+    cextail = around + bround; cey = (pc.getY() - p.getY());
+    bvirt = (pc.getY() - cey); avirt = cey + bvirt; bround = bvirt - p.getY();
     around = pc.getY() - avirt; ceytail = around + bround;
-    cez = (pc.getZ() - pe.getZ()); bvirt = (pc.getZ() - cez); avirt = cez + bvirt;
-    bround = bvirt - pe.getZ(); around = pc.getZ() - avirt;
-    ceztail = around + bround; dex = (pd.getX() - pe.getX());
-    bvirt = (pd.getX() - dex); avirt = dex + bvirt; bround = bvirt - pe.getX();
+    cez = (pc.getZ() - p.getZ());bvirt = (pc.getZ() - cez);avirt = cez + bvirt;
+    bround = bvirt - p.getZ();around = pc.getZ() - avirt;
+    ceztail = around + bround; dex = (pd.getX() - p.getX());
+    bvirt = (pd.getX() - dex); avirt = dex + bvirt; bround = bvirt - p.getX();
     around = pd.getX() - avirt; dextail = around + bround;
-    dey = (pd.getY() - pe.getY()); bvirt = (pd.getY() - dey); avirt = dey + bvirt;
-    bround = bvirt - pe.getY(); around = pd.getY() - avirt;
-    deytail = around + bround; dez = (pd.getZ() - pe.getZ());
-    bvirt = (pd.getZ() - dez); avirt = dez + bvirt; bround = bvirt - pe.getZ();
+    dey = (pd.getY() - p.getY());bvirt = (pd.getY() - dey);avirt = dey + bvirt;
+    bround = bvirt - p.getY();around = pd.getY() - avirt;
+    deytail = around + bround; dez = (pd.getZ() - p.getZ());
+    bvirt = (pd.getZ() - dez); avirt = dez + bvirt; bround = bvirt - p.getZ();
     around = pd.getZ() - avirt; deztail = around + bround;
 
     c = (SPLITTER * aextail); abig = (c - aextail); a0hi = c - abig;
@@ -1311,9 +1318,18 @@ public final class SlowMacro extends Tetrahedron3D {
   //--------------------------------------------------------------------
   // construction
   //--------------------------------------------------------------------
-  // TODO: singleton?
 
-  public SlowMacro () { super(); }
+  private SlowMacro (final Vector3D a,
+                                 final Vector3D b,
+                                 final Vector3D c,
+                                 final Vector3D d)  {
+    super(a,b,c,d); }
+
+  public static final Tetrahedron3D of (final Vector3D a,
+                                        final Vector3D b,
+                                        final Vector3D c,
+                                        final Vector3D d) {
+    return new SlowMacro(a, b, c, d); }
 
   //-------------------------------------------------------------------
 } // end class

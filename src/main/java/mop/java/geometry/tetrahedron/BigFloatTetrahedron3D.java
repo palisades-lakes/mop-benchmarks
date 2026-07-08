@@ -7,7 +7,7 @@ import org.apache.commons.geometry.euclidean.threed.Vector3D;
  * Should be exact, up to BigFloat resolution.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-07-06
+ * @version 2026-07-07
  */
 
 public final class BigFloatTetrahedron3D extends Tetrahedron3D {
@@ -19,10 +19,12 @@ public final class BigFloatTetrahedron3D extends Tetrahedron3D {
   //--------------------------------------------------------------------
   // TODO: rewrite as vector operations
 
-  public final double signedVolume (final Vector3D pa,
-                                    final Vector3D pb,
-                                    final Vector3D pc,
-                                    final Vector3D pd) {
+  public final double signedVolume () {
+    final Vector3D pa = getP0();
+    final Vector3D pb = getP1();
+    final Vector3D pc = getP2();
+    final Vector3D pd = getP3();
+
     final BigFloat ax = BigFloat.valueOf(pa.getX());
     final BigFloat ay = BigFloat.valueOf(pa.getY());
     final BigFloat az = BigFloat.valueOf(pa.getZ());
@@ -59,11 +61,12 @@ public final class BigFloatTetrahedron3D extends Tetrahedron3D {
 
   public final boolean inSphereExact () { return true; }
 
-  public final double inSphere (final Vector3D pa,
-                                final Vector3D pb,
-                                final Vector3D pc,
-                                final Vector3D pd,
-                                final Vector3D pe) {
+  public final double inSphere (final Vector3D p) {
+    final Vector3D pa = getP0();
+    final Vector3D pb = getP1();
+    final Vector3D pc = getP2();
+    final Vector3D pd = getP3();
+
     final BigFloat ax = BigFloat.valueOf(pa.getX());
     final BigFloat ay = BigFloat.valueOf(pa.getY());
     final BigFloat az = BigFloat.valueOf(pa.getZ());
@@ -76,9 +79,9 @@ public final class BigFloatTetrahedron3D extends Tetrahedron3D {
     final BigFloat dx = BigFloat.valueOf(pd.getX());
     final BigFloat dy = BigFloat.valueOf(pd.getY());
     final BigFloat dz = BigFloat.valueOf(pd.getZ());
-    final BigFloat ex = BigFloat.valueOf(pe.getX());
-    final BigFloat ey = BigFloat.valueOf(pe.getY());
-    final BigFloat ez = BigFloat.valueOf(pe.getZ());
+    final BigFloat ex = BigFloat.valueOf(p.getX());
+    final BigFloat ey = BigFloat.valueOf(p.getY());
+    final BigFloat ez = BigFloat.valueOf(p.getZ());
     final BigFloat aex = ax.subtract(ex);
     final BigFloat bex = bx.subtract(ex);
     final BigFloat cex = cx.subtract(ex);
@@ -122,9 +125,18 @@ public final class BigFloatTetrahedron3D extends Tetrahedron3D {
   //--------------------------------------------------------------------
   // construction
   //--------------------------------------------------------------------
-  // TODO: singleton?
 
-  public BigFloatTetrahedron3D () { super(); }
+  private BigFloatTetrahedron3D (final Vector3D a,
+                                 final Vector3D b,
+                                 final Vector3D c,
+                                 final Vector3D d)  {
+    super(a,b,c,d); }
+
+  public static final Tetrahedron3D of (final Vector3D a,
+                                        final Vector3D b,
+                                        final Vector3D c,
+                                        final Vector3D d) {
+    return new BigFloatTetrahedron3D(a, b, c, d); }
 
   //-------------------------------------------------------------------
 } // end class

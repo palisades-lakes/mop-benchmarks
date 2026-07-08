@@ -1,9 +1,18 @@
 package mop.java.test.geometry.tetrahedra;
 
-import mop.java.geometry.triangle.*;
-import mop.java.geometry.triangle.jts.*;
-import mop.java.geometry.triangle.macro.*;
-import org.apache.commons.geometry.euclidean.twod.Vector2D;
+import mop.java.geometry.tetrahedron.Adapt;
+import mop.java.geometry.tetrahedron.BigFloatTetrahedron3D;
+import mop.java.geometry.tetrahedron.RationalFloatTetrahedron3D;
+import mop.java.geometry.tetrahedron.Tetrahedron3D;
+import mop.java.geometry.tetrahedron.macro.AdaptMacro;
+import mop.java.geometry.tetrahedron.Exact;
+import mop.java.geometry.tetrahedron.Fast;
+import mop.java.geometry.tetrahedron.Slow;
+import mop.java.geometry.tetrahedron.macro.DefaultMacro;
+import mop.java.geometry.tetrahedron.macro.ExactMacro;
+import mop.java.geometry.tetrahedron.macro.FastMacro;
+import mop.java.geometry.tetrahedron.macro.SlowMacro;
+import org.apache.commons.geometry.euclidean.threed.Vector3D;
 
 import java.util.List;
 
@@ -18,34 +27,28 @@ import java.util.List;
 public class TetrahedraTest {
 
   // ground truth predicate.
-  public static final Triangle2D truth (final Vector2D a,
-                                        final Vector2D b,
-                                        final Vector2D c) {
-    return BigFloatTriangle2D.of(a,b,c); }
+  public static final Tetrahedron3D truth (final Vector3D a,
+                                           final Vector3D b,
+                                           final Vector3D c,
+                                           final Vector3D d) {
+    return BigFloatTetrahedron3D.of(a,b,c,d); }
 
-  public static final List<Triangle2D> makeTriangles (final Vector2D a,
-                                                      final Vector2D b,
-                                                      final Vector2D c) {
-    final Triangle2D ddFast = DDFast.of(a,b,c);
-    final Triangle2D ddNormalized = DDNormalized.of(a,b,c);
-    final Triangle2D ddSlow = DDSlow.of(a,b,c);
-    final Triangle2D inCircleCC = InCircleCC.of(a,b,c);
-    final Triangle2D doubleNonRobust = DoubleNonRobust.of(a,b,c);
-    final Triangle2D inCircleNormalized = InCircleNormalized.of(a,b,c);
-    final Triangle2D bigFloat = BigFloatTriangle2D.of(a,b,c);
-    final Triangle2D rationalFloat = RationalFloatTriangle2D.of(a,b,c);
-    final Triangle2D adapt = Adapt.of(a,b,c);
-    final Triangle2D exact = Exact.of(a,b,c);
-    final Triangle2D fast = Fast.of(a,b,c);
-    final Triangle2D slow = Slow.of(a,b,c);
-    final Triangle2D adaptMacro = AdaptMacro.of(a,b,c);
-    final Triangle2D defaultMacro = DefaultMacro.of(a,b,c);
-    final Triangle2D exactMacro = ExactMacro.of(a,b,c);
-    final Triangle2D fastMacro = FastMacro.of(a,b,c);
-    final Triangle2D slowMacro = SlowMacro.of(a,b,c);
+  public static final List<Tetrahedron3D> makeTetrahedra (final Vector3D a,
+                                                          final Vector3D b,
+                                                          final Vector3D c,
+                                                          final Vector3D d) {
+    final Tetrahedron3D bigFloat = BigFloatTetrahedron3D.of(a,b,c,d);
+    final Tetrahedron3D rationalFloat = RationalFloatTetrahedron3D.of(a,b,c,d);
+    final Tetrahedron3D adapt = Adapt.of(a, b, c, d);
+    final Tetrahedron3D exact = Exact.of(a, b, c, d);
+    final Tetrahedron3D fast = Fast.of(a, b, c, d);
+    final Tetrahedron3D slow = Slow.of(a, b, c, d);
+    final Tetrahedron3D adaptMacro = AdaptMacro.of(a, b, c, d);
+    final Tetrahedron3D defaultMacro = DefaultMacro.of(a, b, c, d);
+    final Tetrahedron3D exactMacro = ExactMacro.of(a, b, c, d);
+    final Tetrahedron3D fastMacro = FastMacro.of(a, b, c, d);
+    final Tetrahedron3D slowMacro = SlowMacro.of(a,b,c,d);
     return List.of(
-      // JTS
-      ddFast,ddNormalized,ddSlow,doubleNonRobust,inCircleNormalized,
       // mine
       rationalFloat,bigFloat,
       // Shewchuk predicates.c
@@ -54,12 +57,12 @@ public class TetrahedraTest {
   //--------------------------------------------------------------
 //  private static final String debugMsg (final double truth,
 //                                        final double check,
-//                                        final Triangle2D gold,
-//                                        final Triangle2D pred,
-//                                        final Vector2D p0,
-//                                        final Vector2D p1,
-//                                        final Vector2D p2,
-//                                        final Vector2D p3) {
+//                                        final Tetrahedron3D gold,
+//                                        final Tetrahedron3D pred,
+//                                        final Vector3D p0,
+//                                        final Vector3D p1,
+//                                        final Vector3D p2,
+//                                        final Vector3D p3) {
 //    final String msg = "\ninCircle(" +
 //      p0 + "," + p1 + "," + p2 + "," + p3 + ")" +
 //      "\ngold=" + gold + " -> " + Double.toHexString(truth) +
@@ -71,23 +74,23 @@ public class TetrahedraTest {
   public static final String failureMsg (final String name,
                                          final double truth,
                                          final double check,
-                                         final Triangle2D gold,
-                                         final Triangle2D pred,
-                                         final List<Triangle2D> triangles,
-                                         final Vector2D p3) {
+                                         final Tetrahedron3D gold,
+                                         final Tetrahedron3D pred,
+                                         final List<Tetrahedron3D> tetrahedra,
+                                         final Vector3D p) {
     final StringBuilder msg = new StringBuilder(
       "\n" + name +
         "\ngold=" + gold + " -> " + Double.toHexString(truth) +
         "\npred=" + pred + " -> " + Double.toHexString(check));
     msg.append("\ndiff=").append(Double.toHexString(truth-check));
     msg.append("\nulp=").append(Double.toHexString(Math.ulp(truth)));
-    if (null != triangles) {
-      for (final Triangle2D t : triangles) {
+    if (null != tetrahedra) {
+      for (final Tetrahedron3D t : tetrahedra) {
         msg.append("\n").append(t).append(" ->\n");
-        if (null!=p3) {
-          msg.append(Double.toHexString(t.inCircle(p3))); }
+        if (null!=p) {
+          msg.append(Double.toHexString(t.inSphere(p))); }
         else {
-          msg.append(Double.toHexString(t.signedArea())); }}}
+          msg.append(Double.toHexString(t.signedVolume())); }}}
     return msg + "\n"; }
 
   //--------------------------------------------------------------

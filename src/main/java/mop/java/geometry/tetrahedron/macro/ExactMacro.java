@@ -17,7 +17,7 @@ import static mop.java.geometry.Expansion.scale_expansion_zeroelim;
 /** Exact tests.  Robust.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-07-06
+ * @version 2026-07-07
  */
 
 // strictfp unnecessary for JDK17 and later
@@ -27,10 +27,12 @@ public final class ExactMacro extends Tetrahedron3D {
 
   public final boolean signedVolumeExact () { return true; }
 
-  public final double signedVolume (final Vector3D pa,
-                                    final Vector3D pb,
-                                    final Vector3D pc,
-                                    final Vector3D pd) {
+  public final double signedVolume () {
+    final Vector3D pa = getP0();
+    final Vector3D pb = getP1();
+    final Vector3D pc = getP2();
+    final Vector3D pd = getP3();
+
     double axby1, bxcy1, cxdy1, dxay1, axcy1, bxdy1;
     double bxay1, cxby1, dxcy1, axdy1, cxay1, dxby1;
     double axby0, bxcy0, cxdy0, dxay0, axcy0, bxdy0;
@@ -227,11 +229,12 @@ public final class ExactMacro extends Tetrahedron3D {
   //--------------------------------------------------------------------
   public final boolean inSphereExact () { return true; }
 
-  public final double inSphere (final Vector3D pa,
-                                final Vector3D pb,
-                                final Vector3D pc,
-                                final Vector3D pd,
-                                final Vector3D pe) {
+  public final double inSphere (final Vector3D p) {
+    final Vector3D pa = getP0();
+    final Vector3D pb = getP1();
+    final Vector3D pc = getP2();
+    final Vector3D pd = getP3();
+
     double axby1, bxcy1, cxdy1, dxey1, exay1;
     double bxay1, cxby1, dxcy1, exdy1, axey1;
     double axcy1, bxdy1, cxey1, dxay1, exby1;
@@ -355,14 +358,14 @@ public final class ExactMacro extends Tetrahedron3D {
     bvirt = (cd[3] - _j); avirt = cd[3] - bvirt;
     bround = _i - bvirt; around = _j - avirt; cd[2] = around + bround;
 
-    dxey1 = (pd.getX() * pe.getY()); c = (SPLITTER * pd.getX());
+    dxey1 = (pd.getX() * p.getY());c = (SPLITTER * pd.getX());
     abig = (c - pd.getX()); ahi = c - abig; alo = pd.getX() - ahi;
-    c = (SPLITTER * pe.getY()); abig = (c - pe.getY());
-    bhi = c - abig; blo = pe.getY() - bhi; err1 = dxey1 - (ahi * bhi);
+    c = (SPLITTER * p.getY());abig = (c - p.getY());
+    bhi = c - abig; blo = p.getY() - bhi;err1 = dxey1 - (ahi * bhi);
     err2 = err1 - (alo * bhi); err3 = err2 - (ahi * blo);
     dxey0 = (alo * blo) - err3;
-    exdy1 = (pe.getX() * pd.getY()); c = (SPLITTER * pe.getX());
-    abig = (c - pe.getX()); ahi = c - abig; alo = pe.getX() - ahi;
+    exdy1 = (p.getX() * pd.getY());c = (SPLITTER * p.getX());
+    abig = (c - p.getX());ahi = c - abig;alo = p.getX() - ahi;
     c = (SPLITTER * pd.getY()); abig = (c - pd.getY());
     bhi = c - abig; blo = pd.getY() - bhi; err1 = exdy1 - (ahi * bhi);
     err2 = err1 - (alo * bhi); err3 = err2 - (ahi * blo);
@@ -378,16 +381,16 @@ public final class ExactMacro extends Tetrahedron3D {
     bvirt = (de[3] - _j); avirt = de[3] - bvirt;
     bround = _i - bvirt; around = _j - avirt; de[2] = around + bround;
 
-    exay1 = (pe.getX() * pa.getY()); c = (SPLITTER * pe.getX());
-    abig = (c - pe.getX()); ahi = c - abig; alo = pe.getX() - ahi;
+    exay1 = (p.getX() * pa.getY());c = (SPLITTER * p.getX());
+    abig = (c - p.getX());ahi = c - abig;alo = p.getX() - ahi;
     c = (SPLITTER * pa.getY()); abig = (c - pa.getY());
     bhi = c - abig; blo = pa.getY() - bhi; err1 = exay1 - (ahi * bhi);
     err2 = err1 - (alo * bhi); err3 = err2 - (ahi * blo);
     exay0 = (alo * blo) - err3;
-    axey1 = (pa.getX() * pe.getY()); c = (SPLITTER * pa.getX());
+    axey1 = (pa.getX() * p.getY());c = (SPLITTER * pa.getX());
     abig = (c - pa.getX()); ahi = c - abig; alo = pa.getX() - ahi;
-    c = (SPLITTER * pe.getY()); abig = (c - pe.getY());
-    bhi = c - abig; blo = pe.getY() - bhi; err1 = axey1 - (ahi * bhi);
+    c = (SPLITTER * p.getY());abig = (c - p.getY());
+    bhi = c - abig; blo = p.getY() - bhi;err1 = axey1 - (ahi * bhi);
     err2 = err1 - (alo * bhi); err3 = err2 - (ahi * blo);
     axey0 = (alo * blo) - err3;
     _i = (exay0 - axey0); bvirt = (exay0 - _i);
@@ -447,14 +450,14 @@ public final class ExactMacro extends Tetrahedron3D {
     bvirt = (bd[3] - _j); avirt = bd[3] - bvirt;
     bround = _i - bvirt; around = _j - avirt; bd[2] = around + bround;
 
-    cxey1 = (pc.getX() * pe.getY()); c = (SPLITTER * pc.getX());
+    cxey1 = (pc.getX() * p.getY());c = (SPLITTER * pc.getX());
     abig = (c - pc.getX()); ahi = c - abig; alo = pc.getX() - ahi;
-    c = (SPLITTER * pe.getY()); abig = (c - pe.getY());
-    bhi = c - abig; blo = pe.getY() - bhi; err1 = cxey1 - (ahi * bhi);
+    c = (SPLITTER * p.getY());abig = (c - p.getY());
+    bhi = c - abig; blo = p.getY() - bhi;err1 = cxey1 - (ahi * bhi);
     err2 = err1 - (alo * bhi); err3 = err2 - (ahi * blo);
     cxey0 = (alo * blo) - err3;
-    excy1 = (pe.getX() * pc.getY()); c = (SPLITTER * pe.getX());
-    abig = (c - pe.getX()); ahi = c - abig; alo = pe.getX() - ahi;
+    excy1 = (p.getX() * pc.getY());c = (SPLITTER * p.getX());
+    abig = (c - p.getX());ahi = c - abig;alo = p.getX() - ahi;
     c = (SPLITTER * pc.getY()); abig = (c - pc.getY());
     bhi = c - abig; blo = pc.getY() - bhi; err1 = excy1 - (ahi * bhi);
     err2 = err1 - (alo * bhi); err3 = err2 - (ahi * blo);
@@ -493,16 +496,16 @@ public final class ExactMacro extends Tetrahedron3D {
     bvirt = (da[3] - _j); avirt = da[3] - bvirt;
     bround = _i - bvirt; around = _j - avirt; da[2] = around + bround;
 
-    exby1 = (pe.getX() * pb.getY()); c = (SPLITTER * pe.getX());
-    abig = (c - pe.getX()); ahi = c - abig; alo = pe.getX() - ahi;
+    exby1 = (p.getX() * pb.getY());c = (SPLITTER * p.getX());
+    abig = (c - p.getX());ahi = c - abig;alo = p.getX() - ahi;
     c = (SPLITTER * pb.getY()); abig = (c - pb.getY());
     bhi = c - abig; blo = pb.getY() - bhi; err1 = exby1 - (ahi * bhi);
     err2 = err1 - (alo * bhi); err3 = err2 - (ahi * blo);
     exby0 = (alo * blo) - err3;
-    bxey1 = (pb.getX() * pe.getY()); c = (SPLITTER * pb.getX());
+    bxey1 = (pb.getX() * p.getY());c = (SPLITTER * pb.getX());
     abig = (c - pb.getX()); ahi = c - abig; alo = pb.getX() - ahi;
-    c = (SPLITTER * pe.getY()); abig = (c - pe.getY());
-    bhi = c - abig; blo = pe.getY() - bhi; err1 = bxey1 - (ahi * bhi);
+    c = (SPLITTER * p.getY());abig = (c - p.getY());
+    bhi = c - abig; blo = p.getY() - bhi;err1 = bxey1 - (ahi * bhi);
     err2 = err1 - (alo * bhi); err3 = err2 - (ahi * blo);
     bxey0 = (alo * blo) - err3;
     _i = (exby0 - bxey0); bvirt = (exby0 - _i);
@@ -541,13 +544,13 @@ public final class ExactMacro extends Tetrahedron3D {
     temp16len =
       fast_expansion_sum_zeroelim(temp8alen, temp8a, temp8blen, temp8b,
                                   temp16);
-    temp8alen = scale_expansion_zeroelim(4, cd, pe.getZ(), temp8a);
+    temp8alen = scale_expansion_zeroelim(4, cd, p.getZ(), temp8a);
     cdelen =
       fast_expansion_sum_zeroelim(temp8alen, temp8a, temp16len, temp16,
                                   cde);
 
     temp8alen = scale_expansion_zeroelim(4, ea, pd.getZ(), temp8a);
-    temp8blen = scale_expansion_zeroelim(4, da, -pe.getZ(), temp8b);
+    temp8blen = scale_expansion_zeroelim(4, da, -p.getZ(), temp8b);
     temp16len =
       fast_expansion_sum_zeroelim(temp8alen, temp8a, temp8blen, temp8b,
                                   temp16);
@@ -556,7 +559,7 @@ public final class ExactMacro extends Tetrahedron3D {
       fast_expansion_sum_zeroelim(temp8alen, temp8a, temp16len, temp16,
                                   dea);
 
-    temp8alen = scale_expansion_zeroelim(4, ab, pe.getZ(), temp8a);
+    temp8alen = scale_expansion_zeroelim(4, ab, p.getZ(), temp8a);
     temp8blen = scale_expansion_zeroelim(4, eb, -pa.getZ(), temp8b);
     temp16len =
       fast_expansion_sum_zeroelim(temp8alen, temp8a, temp8blen, temp8b,
@@ -581,7 +584,7 @@ public final class ExactMacro extends Tetrahedron3D {
     temp16len =
       fast_expansion_sum_zeroelim(temp8alen, temp8a, temp8blen, temp8b,
                                   temp16);
-    temp8alen = scale_expansion_zeroelim(4, bc, pe.getZ(), temp8a);
+    temp8alen = scale_expansion_zeroelim(4, bc, p.getZ(), temp8a);
     bcelen =
       fast_expansion_sum_zeroelim(temp8alen, temp8a, temp16len, temp16,
                                   bce);
@@ -597,7 +600,7 @@ public final class ExactMacro extends Tetrahedron3D {
                                   cda);
 
     temp8alen = scale_expansion_zeroelim(4, eb, pd.getZ(), temp8a);
-    temp8blen = scale_expansion_zeroelim(4, bd, pe.getZ(), temp8b);
+    temp8blen = scale_expansion_zeroelim(4, bd, p.getZ(), temp8b);
     temp16len =
       fast_expansion_sum_zeroelim(temp8alen, temp8a, temp8blen, temp8b,
                                   temp16);
@@ -606,7 +609,7 @@ public final class ExactMacro extends Tetrahedron3D {
       fast_expansion_sum_zeroelim(temp8alen, temp8a, temp16len, temp16,
                                   deb);
 
-    temp8alen = scale_expansion_zeroelim(4, ac, pe.getZ(), temp8a);
+    temp8alen = scale_expansion_zeroelim(4, ac, p.getZ(), temp8a);
     temp8blen = scale_expansion_zeroelim(4, ce, pa.getZ(), temp8b);
     temp16len =
       fast_expansion_sum_zeroelim(temp8alen, temp8a, temp8blen, temp8b,
@@ -705,12 +708,12 @@ public final class ExactMacro extends Tetrahedron3D {
     }
     abcdlen = fast_expansion_sum_zeroelim(temp48alen, temp48a,
                                           temp48blen, temp48b, abcd);
-    xlen = scale_expansion_zeroelim(abcdlen, abcd, pe.getX(), temp192);
-    xlen = scale_expansion_zeroelim(xlen, temp192, pe.getX(), det384x);
-    ylen = scale_expansion_zeroelim(abcdlen, abcd, pe.getY(), temp192);
-    ylen = scale_expansion_zeroelim(ylen, temp192, pe.getY(), det384y);
-    zlen = scale_expansion_zeroelim(abcdlen, abcd, pe.getZ(), temp192);
-    zlen = scale_expansion_zeroelim(zlen, temp192, pe.getZ(), det384z);
+    xlen = scale_expansion_zeroelim(abcdlen, abcd, p.getX(), temp192);
+    xlen = scale_expansion_zeroelim(xlen, temp192, p.getX(), det384x);
+    ylen = scale_expansion_zeroelim(abcdlen, abcd, p.getY(), temp192);
+    ylen = scale_expansion_zeroelim(ylen, temp192, p.getY(), det384y);
+    zlen = scale_expansion_zeroelim(abcdlen, abcd, p.getZ(), temp192);
+    zlen = scale_expansion_zeroelim(zlen, temp192, p.getZ(), det384z);
     xylen = fast_expansion_sum_zeroelim(xlen, det384x, ylen, det384y, detxy);
     elen = fast_expansion_sum_zeroelim(xylen, detxy, zlen, det384z, edet);
     ablen = fast_expansion_sum_zeroelim(alen, adet, blen, bdet, abdet);
@@ -726,9 +729,18 @@ public final class ExactMacro extends Tetrahedron3D {
   //--------------------------------------------------------------------
   // construction
   //--------------------------------------------------------------------
-  // TODO: singleton?
 
-  public ExactMacro () { super(); }
+  private ExactMacro (final Vector3D a,
+                      final Vector3D b,
+                      final Vector3D c,
+                      final Vector3D d)  {
+    super(a,b,c,d); }
+
+  public static final Tetrahedron3D of (final Vector3D a,
+                                        final Vector3D b,
+                                        final Vector3D c,
+                                        final Vector3D d) {
+    return new ExactMacro(a, b, c, d); }
 
   //-------------------------------------------------------------------
 } // end class

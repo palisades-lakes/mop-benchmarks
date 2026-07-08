@@ -41,11 +41,11 @@ public final class Adapt extends Tetrahedron3D {
 
   //--------------------------------------------------------------------
 
-  public final double signedVolume (final Vector3D pa,
-                                    final Vector3D pb,
-                                    final Vector3D pc,
-                                    final Vector3D pd,
-                                    final double permanent) {
+  public static final double signedVolume (final Vector3D pa,
+                                           final Vector3D pb,
+                                           final Vector3D pc,
+                                           final Vector3D pd,
+                                           final double permanent) {
     final double adx = (pa.getX() - pd.getX());
     final double bdx = (pb.getX() - pd.getX());
     final double cdx = (pc.getX() - pd.getX());
@@ -208,11 +208,12 @@ public final class Adapt extends Tetrahedron3D {
 
     return finnow.doubleValue(); }
 
-  public final double signedVolume (final Vector3D pa,
-                                    final Vector3D pb,
-                                    final Vector3D pc,
-                                    final Vector3D pd) {
+  public final double signedVolume () {
 
+    final Vector3D pa = getP0();
+    final Vector3D pb = getP1();
+    final Vector3D pc = getP2();
+    final Vector3D pd = getP3();
 
     final double adx = pa.getX() - pd.getX();
     final double bdx = pb.getX() - pd.getX();
@@ -380,30 +381,31 @@ public final class Adapt extends Tetrahedron3D {
       * (dez * ab3 + aez * bd3 + bez * da3)));
 
     if (Math.abs(det) >= errbound) { return det; }
-    return new Exact().inSphere(pa, pb, pc, pd, pe); }
+    return Exact.of(pa,pb,pc,pd).inSphere(pe); }
 
   //--------------------------------------------------------------------
 
   private static final double isperrboundA =
     (16.0 + 224.0 * EPSILON) * EPSILON;
 
-  public final double inSphere (final Vector3D pa,
-                                final Vector3D pb,
-                                final Vector3D pc,
-                                final Vector3D pd,
-                                final Vector3D pe) {
-    final double aex = pa.getX() - pe.getX();
-    final double bex = pb.getX() - pe.getX();
-    final double cex = pc.getX() - pe.getX();
-    final double dex = pd.getX() - pe.getX();
-    final double aey = pa.getY() - pe.getY();
-    final double bey = pb.getY() - pe.getY();
-    final double cey = pc.getY() - pe.getY();
-    final double dey = pd.getY() - pe.getY();
-    final double aez = pa.getZ() - pe.getZ();
-    final double bez = pb.getZ() - pe.getZ();
-    final double cez = pc.getZ() - pe.getZ();
-    final double dez = pd.getZ() - pe.getZ();
+  public final double inSphere (final Vector3D p) {
+    final Vector3D pa = getP0();
+    final Vector3D pb = getP1();
+    final Vector3D pc = getP2();
+    final Vector3D pd = getP3();
+
+    final double aex = pa.getX() - p.getX();
+    final double bex = pb.getX() - p.getX();
+    final double cex = pc.getX() - p.getX();
+    final double dex = pd.getX() - p.getX();
+    final double aey = pa.getY() - p.getY();
+    final double bey = pb.getY() - p.getY();
+    final double cey = pc.getY() - p.getY();
+    final double dey = pd.getY() - p.getY();
+    final double aez = pa.getZ() - p.getZ();
+    final double bez = pb.getZ() - p.getZ();
+    final double cez = pc.getZ() - p.getZ();
+    final double dez = pd.getZ() - p.getZ();
 
     // TODO: simple double crossProduct(double,double,double,double)
     final double aexbey = aex * bey;
@@ -437,7 +439,7 @@ public final class Adapt extends Tetrahedron3D {
 
     final double det =
       (dlift * abc - clift * dab)
-      + (blift * cda - alift * bcd);
+        + (blift * cda - alift * bcd);
 
     final double aezplus = Math.abs(aez);
     final double bezplus = Math.abs(bez);
@@ -474,14 +476,23 @@ public final class Adapt extends Tetrahedron3D {
     final double errbound = isperrboundA * permanent;
     if (Math.abs(det) > errbound) { return det; }
 
-    return inSphere(pa, pb, pc, pd, pe, permanent); }
+    return inSphere(pa, pb, pc, pd, p, permanent); }
 
   //--------------------------------------------------------------------
   // construction
   //--------------------------------------------------------------------
-  // TODO: singleton?
 
-  public Adapt () { super(); }
+  private Adapt (final Vector3D a,
+                 final Vector3D b,
+                 final Vector3D c,
+                 final Vector3D d)  {
+    super(a,b,c,d); }
+
+  public static final Tetrahedron3D of (final Vector3D a,
+                                        final Vector3D b,
+                                        final Vector3D c,
+                                        final Vector3D d) {
+    return new Adapt(a, b, c, d); }
 
   //-------------------------------------------------------------------
 } // end class

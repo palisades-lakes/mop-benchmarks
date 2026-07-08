@@ -57,8 +57,8 @@ public final class Fast extends Triangle2D {
   //--------------------------------------------------------------------
 
   private Fast (final Vector2D a,
-                 final Vector2D b,
-                 final Vector2D c)  {
+                final Vector2D b,
+                final Vector2D c)  {
     super(a,b,c); }
 
   public static final Triangle2D of (final Vector2D a,

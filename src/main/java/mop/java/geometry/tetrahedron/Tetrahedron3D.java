@@ -5,13 +5,28 @@ import org.apache.commons.geometry.euclidean.threed.Vector3D;
 /** Tetrahedra "embedded" in Vector3D.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-07-06
+ * @version 2026-07-07
  */
 
 public abstract class Tetrahedron3D {
 
+  private final Vector3D p0;
+  private final Vector3D p1;
+  private final Vector3D p2;
+  private final Vector3D p3;
+  public final Vector3D getP0 () { return p0; }
+  public final Vector3D getP1 () { return p1; }
+  public final Vector3D getP2 () { return p2; }
+  public final Vector3D getP3 () { return p3; }
+//  public final Vector3D getP (final int i) {
+//    return switch (i) {
+//      case 0 -> p0;
+//      case 1 -> p1;
+//      case 2 -> p2;
+//      case 3 -> p3;
+//      default -> throw new IndexOutOfBoundsException(); }; }
+
   //--------------------------------------------------------------------
-  // TODO: algorithm might be exact for some operations and not others.
   // TODO: an estimate of accuracy for each operation would be better.
   /** Is this algorithm exact (to the resolution expansions)
    * or approximate?
@@ -37,10 +52,7 @@ public abstract class Tetrahedron3D {
    * signedVolume() is usually quite fast, but will run more slowly when the
    * input points are coplanar or nearly so.
    */
-  public double signedVolume (final Vector3D pa,
-                               final Vector3D pb,
-                               final Vector3D pc,
-                               final Vector3D pd) {
+  public double signedVolume () {
     throw new UnsupportedOperationException(
       getClass().getSimpleName()); }
 
@@ -65,12 +77,21 @@ public abstract class Tetrahedron3D {
    * input points are co-spherical or nearly so.
    */
 
-  public double inSphere (final Vector3D pa,
-                           final Vector3D pb,
-                           final Vector3D pc,
-                           final Vector3D pd,
-                           final Vector3D pe) {
-    throw new UnsupportedOperationException(getClass().getSimpleName()); }
+  public double inSphere (final Vector3D p) {
+    throw new UnsupportedOperationException(
+      getClass().getSimpleName()); }
+
+  //--------------------------------------------------------------------
+  // construction
+  //--------------------------------------------------------------------
+
+  public Tetrahedron3D (final Vector3D a,
+                        final Vector3D b,
+                        final Vector3D c,
+                        final Vector3D d) {
+    super();
+    this.p0 = a; this.p1 = b; this.p2 = c; this.p3 = d;}
+
   //-------------------------------------------------------------------
 } // end class
 //-------------------------------------------------------------------

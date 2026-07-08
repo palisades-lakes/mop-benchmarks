@@ -7,7 +7,7 @@ import org.apache.commons.geometry.euclidean.threed.Vector3D;
  * Should be exact, up to RationalFloat resolution.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-07-06
+ * @version 2026-07-07
  */
 
 public final class RationalFloatTetrahedron3D extends Tetrahedron3D {
@@ -17,10 +17,11 @@ public final class RationalFloatTetrahedron3D extends Tetrahedron3D {
 
   public final boolean signedVolumeExact () { return true; }
 
-  public final double signedVolume (final Vector3D pa,
-                                    final Vector3D pb,
-                                    final Vector3D pc,
-                                    final Vector3D pd) {
+  public final double signedVolume () {
+    final Vector3D pa = getP0();
+    final Vector3D pb = getP1();
+    final Vector3D pc = getP2();
+    final Vector3D pd = getP3();
     final RationalFloat ax = RationalFloat.valueOf(pa.getX());
     final RationalFloat ay = RationalFloat.valueOf(pa.getY());
     final RationalFloat az = RationalFloat.valueOf(pa.getZ());
@@ -57,11 +58,11 @@ public final class RationalFloatTetrahedron3D extends Tetrahedron3D {
 
   public final boolean inSphereExact () { return true; }
 
-  public final double inSphere (final Vector3D pa,
-                                final Vector3D pb,
-                                final Vector3D pc,
-                                final Vector3D pd,
-                                final Vector3D pe) {
+  public final double inSphere (final Vector3D p) {
+    final Vector3D pa = getP0();
+    final Vector3D pb = getP1();
+    final Vector3D pc = getP2();
+    final Vector3D pd = getP3();
     final RationalFloat ax = RationalFloat.valueOf(pa.getX());
     final RationalFloat ay = RationalFloat.valueOf(pa.getY());
     final RationalFloat az = RationalFloat.valueOf(pa.getZ());
@@ -74,9 +75,9 @@ public final class RationalFloatTetrahedron3D extends Tetrahedron3D {
     final RationalFloat dx = RationalFloat.valueOf(pd.getX());
     final RationalFloat dy = RationalFloat.valueOf(pd.getY());
     final RationalFloat dz = RationalFloat.valueOf(pd.getZ());
-    final RationalFloat ex = RationalFloat.valueOf(pe.getX());
-    final RationalFloat ey = RationalFloat.valueOf(pe.getY());
-    final RationalFloat ez = RationalFloat.valueOf(pe.getZ());
+    final RationalFloat ex = RationalFloat.valueOf(p.getX());
+    final RationalFloat ey = RationalFloat.valueOf(p.getY());
+    final RationalFloat ez = RationalFloat.valueOf(p.getZ());
     final RationalFloat aex = ax.subtract(ex);
     final RationalFloat bex = bx.subtract(ex);
     final RationalFloat cex = cx.subtract(ex);
@@ -113,17 +114,26 @@ public final class RationalFloatTetrahedron3D extends Tetrahedron3D {
     final RationalFloat dlift = dex.square().add(dey.square().add(dez.square()));
 
     return dlift.multiply(abc)
-           .subtract(clift.multiply(dab))
-           .add(blift.multiply(cda))
-           .subtract(alift.multiply(bcd))
-           .doubleValue(); }
+                .subtract(clift.multiply(dab))
+                .add(blift.multiply(cda))
+                .subtract(alift.multiply(bcd))
+                .doubleValue(); }
 
   //--------------------------------------------------------------------
   // construction
   //--------------------------------------------------------------------
-  // TODO: singleton?
 
-  public RationalFloatTetrahedron3D () { super(); }
+  private RationalFloatTetrahedron3D (final Vector3D a,
+                                      final Vector3D b,
+                                      final Vector3D c,
+                                      final Vector3D d)  {
+    super(a,b,c,d); }
+
+  public static final Tetrahedron3D of (final Vector3D a,
+                                        final Vector3D b,
+                                        final Vector3D c,
+                                        final Vector3D d) {
+    return new RationalFloatTetrahedron3D(a, b, c, d); }
 
   //-------------------------------------------------------------------
 } // end class

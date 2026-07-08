@@ -16,14 +16,13 @@ public abstract class Triangle2D {
   public final Vector2D getP0 () { return p0; }
   public final Vector2D getP1 () { return p1; }
   public final Vector2D getP2 () { return p2; }
-  public final Vector2D getP (final int i) {
-    return switch (i) {
-      case 0 -> p0;
-      case 1 -> p1;
-      case 2 -> p2;
-      default -> throw new IndexOutOfBoundsException();
-    };
-  }
+
+//  public final Vector2D getP (final int i) {
+//    return switch (i) {
+//      case 0 -> p0;
+//      case 1 -> p1;
+//      case 2 -> p2;
+//      default -> throw new IndexOutOfBoundsException(); }; }
 
   //--------------------------------------------------------------------
   // Object methods

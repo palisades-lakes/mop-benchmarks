@@ -13,17 +13,19 @@ import org.apache.commons.geometry.euclidean.threed.Vector3D;
  *   profiling.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-07-06
+ * @version 2026-07-07
  */
 
 public final class Exact extends Tetrahedron3D {
 
   public final boolean signedVolumeExact () { return true; }
 
-  public final double signedVolume (final Vector3D pa,
-                                    final Vector3D pb,
-                                    final Vector3D pc,
-                                    final Vector3D pd) {
+  public final double signedVolume () {
+    final Vector3D pa = getP0();
+    final Vector3D pb = getP1();
+    final Vector3D pc = getP2();
+    final Vector3D pd = getP3();
+
     final Hilo axby = Hilo.product(pa.getX(),pb.getY());
     final Hilo bxay = Hilo.product(pb.getX(),pa.getY());
     final XDouble ab = XDouble.subtract(axby, bxay);
@@ -60,11 +62,12 @@ public final class Exact extends Tetrahedron3D {
   // inSphere
   //--------------------------------------------------------------------
 
-  public final double inSphere (final Vector3D pa,
-                                final Vector3D pb,
-                                final Vector3D pc,
-                                final Vector3D pd,
-                                final Vector3D pe) {
+  public final double inSphere (final Vector3D p) {
+
+    final Vector3D pa = getP0();
+    final Vector3D pb = getP1();
+    final Vector3D pc = getP2();
+    final Vector3D pd = getP3();
 
     // TODO: XDouble.cross2D?
     final XDouble ab = XDouble.subtract(Hilo.product(pa.getX(), pb.getY()),
@@ -73,39 +76,41 @@ public final class Exact extends Tetrahedron3D {
                                         Hilo.product(pc.getX(),pb.getY()));
     final XDouble cd = XDouble.subtract(Hilo.product(pc.getX(), pd.getY()),
                                         Hilo.product(pd.getX(),pc.getY()));
-    final XDouble de = XDouble.subtract(Hilo.product(pd.getX(), pe.getY()),
-                                        Hilo.product(pe.getX(),pd.getY()));
-    final XDouble ea = XDouble.subtract(Hilo.product(pe.getX(), pa.getY()),
-                                        Hilo.product(pa.getX(),pe.getY()));
+    final XDouble de = XDouble.subtract(Hilo.product(pd.getX(), p.getY()),
+                                        Hilo.product(p.getX(), pd.getY()));
+    final XDouble ea = XDouble.subtract(Hilo.product(p.getX(), pa.getY()),
+                                        Hilo.product(pa.getX(),
+                                                     p.getY()));
     final XDouble ac = XDouble.subtract(Hilo.product(pa.getX(), pc.getY()),
                                         Hilo.product(pc.getX(),pa.getY()));
     final XDouble bd = XDouble.subtract(Hilo.product(pb.getX(), pd.getY()),
                                         Hilo.product(pd.getX(),pb.getY()));
-    final XDouble ce = XDouble.subtract(Hilo.product(pc.getX(), pe.getY()),
-                                        Hilo.product(pe.getX(),pc.getY()));
+    final XDouble ce = XDouble.subtract(Hilo.product(pc.getX(), p.getY()),
+                                        Hilo.product(p.getX(), pc.getY()));
     final  XDouble da = XDouble.subtract(Hilo.product(pd.getX(), pa.getY()),
                                          Hilo.product(pa.getX(),pd.getY()));
-    final XDouble eb = XDouble.subtract(Hilo.product(pe.getX(), pb.getY()),
-                                        Hilo.product(pb.getX(),pe.getY()));
+    final XDouble eb = XDouble.subtract(Hilo.product(p.getX(), pb.getY()),
+                                        Hilo.product(pb.getX(),
+                                                     p.getY()));
     final XDouble abc = ab.multiply(pc.getZ())
                           .add(bc.multiply(pa.getZ()))
                           .add(ac.multiply(-pb.getZ()));
     final XDouble bcd = bc.multiply(pd.getZ())
                           .add(cd.multiply(pb.getZ()))
                           .add(bd.multiply(-pc.getZ()));
-    final XDouble cde = cd.multiply(pe.getZ())
+    final XDouble cde = cd.multiply(p.getZ())
                           .add(de.multiply(pc.getZ()))
                           .add(ce.multiply(-pd.getZ()));
     final XDouble dea = de.multiply(pa.getZ())
                           .add(ea.multiply(pd.getZ()))
-                          .add(da.multiply(-pe.getZ()));
+                          .add(da.multiply(-p.getZ()));
     final XDouble eab = ea.multiply(pb.getZ())
-                          .add(ab.multiply(pe.getZ()))
+                          .add(ab.multiply(p.getZ()))
                           .add(eb.multiply(-pa.getZ()));
     final XDouble abd = ab.multiply(pd.getZ())
                           .add(bd.multiply(pa.getZ()))
                           .add(da.multiply(pb.getZ()));
-    final XDouble bce = bc.multiply(pe.getZ())
+    final XDouble bce = bc.multiply(p.getZ())
                           .add(ce.multiply(pb.getZ()))
                           .add(eb.multiply(pc.getZ()));
     final XDouble cda = cd.multiply(pa.getZ())
@@ -113,9 +118,9 @@ public final class Exact extends Tetrahedron3D {
                           .add(ac.multiply(pd.getZ()));
     final XDouble deb = de.multiply(pb.getZ())
                           .add(eb.multiply(pd.getZ()))
-                          .add(bd.multiply(pe.getZ()));
+                          .add(bd.multiply(p.getZ()));
     final XDouble eac = ea.multiply(pc.getZ())
-                          .add(ac.multiply(pe.getZ()))
+                          .add(ac.multiply(p.getZ()))
                           .add(ce.multiply(pa.getZ()));
     final XDouble bcde = cde.add(bce).subtract(deb.add(bcd));
     final XDouble adet = bcde.multiply(pa.getX()).multiply(pa.getX())
@@ -138,18 +143,29 @@ public final class Exact extends Tetrahedron3D {
                              .add(eabc.multiply(pd.getZ()).multiply(pd.getZ()));
 
     final XDouble abcd = bcd.add(abd).subtract(cda.add(abc));
-    final XDouble edet = abcd.multiply(pe.getX()).multiply(pe.getX())
-                             .add(abcd.multiply(pe.getY()).multiply(pe.getY()))
-                             .add(abcd.multiply(pe.getZ()).multiply(pe.getZ()));
+    final XDouble edet = abcd.multiply(p.getX()).multiply(p.getX())
+                             .add(abcd.multiply(p.getY()).multiply(
+                               p.getY()))
+                             .add(abcd.multiply(p.getZ()).multiply(
+                               p.getZ()));
 
     return adet.add(bdet).add(cdet).add(ddet).add(edet).doubleValue(); }
 
   //--------------------------------------------------------------------
   // construction
   //--------------------------------------------------------------------
-  // TODO: singleton?
 
-  public Exact () { super(); }
+  private Exact (final Vector3D a,
+                 final Vector3D b,
+                 final Vector3D c,
+                 final Vector3D d)  {
+    super(a,b,c,d); }
+
+  public static final Tetrahedron3D of (final Vector3D a,
+                                        final Vector3D b,
+                                        final Vector3D c,
+                                        final Vector3D d) {
+    return new Exact(a, b, c, d); }
 
   //-------------------------------------------------------------------
 } // end class
