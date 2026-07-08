@@ -58,15 +58,12 @@ public final class SignedAreaTest extends TriangleTest {
     signedArea(p0, p0, p0);
     // 2 pt line segment
     signedArea(p0, p2, p0);
-    // TODO: Slow returns -1, not 0
     signedArea(p0, p0, p2);
-    //orient2D(List.of(new Adapt(),new Fast()),p0, p0, p2);
     // Co-linear triangle
     signedArea(p0, p1, p3);
   }
 
   //--------------------------------------------------------------
-  // Exact failing in last bit.
 
   @Test
   public final void laplaceTest () {

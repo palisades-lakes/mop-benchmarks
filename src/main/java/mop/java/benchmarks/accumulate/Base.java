@@ -6,7 +6,6 @@ import mop.java.accumulators.Accumulator;
 import mop.java.accumulators.BigFloatAccumulator;
 import mop.java.prng.Generator;
 import mop.java.prng.Generators;
-import mop.java.benchmarks.accumulate.Common;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
 
@@ -98,9 +97,7 @@ public abstract class Base {
   double[] p;
 
   //--------------------------------------------------------------
-
-  /**
-   * This is what is timed.
+  /** This is what is timed.
    */
 
   public abstract double[] operation (final Accumulator ac,
@@ -108,9 +105,7 @@ public abstract class Base {
                                       final double[] z1);
 
   //--------------------------------------------------------------
-
-  /**
-   * Re-initialize the prngs with the same seeds for each
+  /** Re-initialize the prngs with the same seeds for each
    * <code>(accumulator,dim)</code> pair.
    */
   @Setup(Level.Trial)

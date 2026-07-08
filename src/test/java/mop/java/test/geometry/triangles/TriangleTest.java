@@ -11,10 +11,10 @@ import java.util.List;
 /** Common code for 2D geometry predicate tests.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-07-07
+ * @version 2026-07-08
  */
 
-public class TriangleTest {
+public abstract class TriangleTest {
 
   // ground truth predicate.
   public static final Triangle2D truth (final Vector2D a,
