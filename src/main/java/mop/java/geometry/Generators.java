@@ -1,5 +1,7 @@
 package mop.java.geometry;
 
+import mop.java.geometry.triangle.Triangle2D;
+import mop.java.geometry.triangle.TriangleVector2D;
 import mop.java.prng.Generator;
 import mop.java.prng.GeneratorBase;
 import org.apache.commons.geometry.euclidean.threed.Vector3D;
@@ -74,27 +76,28 @@ public final class Generators {
 
   //--------------------------------------------------------------
 
-//  public static final Generator
-//  triangleGenerator (final Generator doubleGenerator) {
-//    // TODO: named local class rather than anonymous with name?
-//    return new GeneratorBase("triangledGenerator") {
-//      @Override
-//      public final Object next () {
-//        final double x = doubleGenerator.nextDouble();
-//        final double y = doubleGenerator.nextDouble();
-//        return Vector2D.of(x, y); } }; }
-//
-//  public static final Generator
-//  TriangleGenerator (final int n,
-//                     final Generator doubleGenerator) {
-//    return new GeneratorBase("triangleGenerator[" + n + "]") {
-//      final Generator vGenerator = vector2dGenerator(doubleGenerator);
-//      @Override
-//      public final Object next () {
-//        final Vector2D[] p =  new Vector2D[n];
-//        for (int i = 0; i < n; i++) {
-//          p[i] = (Vector2D) vGenerator.next(); }
-//        return p; } }; }
+  public static final Generator
+  triangleGenerator (final Generator vectorGenerator) {
+    // TODO: named local class rather than anonymous with name?
+    return new GeneratorBase("triangledGenerator") {
+      @Override
+      public final Object next () {
+        final Vector2D p0 = (Vector2D) vectorGenerator.next();
+        final Vector2D p1 = (Vector2D) vectorGenerator.next();
+        final Vector2D p2 = (Vector2D) vectorGenerator.next();
+        return TriangleVector2D.of(p0,p1,p2); } }; }
+
+  public static final Generator
+  triangleGenerator (final int n,
+                     final Generator vectorGenerator) {
+    return new GeneratorBase("triangleGenerator[" + n + "]") {
+      final Generator tGenerator = triangleGenerator(vectorGenerator);
+      @Override
+      public final Object next () {
+        final Triangle2D[] p =  new Triangle2D[n];
+        for (int i = 0; i < n; i++) {
+          p[i] = (Triangle2D) tGenerator.next(); }
+        return p; } }; }
 
   //--------------------------------------------------------------
 //  public static final Function<double[], Vector3D>

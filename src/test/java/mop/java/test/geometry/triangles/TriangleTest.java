@@ -15,38 +15,34 @@ import java.util.List;
 /** Common code for 2D geometry predicate tests.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-07-08
+ * @version 2026-07-27
  */
 
 public abstract class TriangleTest {
 
   // ground truth predicate.
-  public static final Triangle2D truth (final Vector2D a,
-                                        final Vector2D b,
-                                        final Vector2D c) {
-    return BigFloatTriangle2D.of(a,b,c); }
+  public static final Triangle2D truth (final Triangle2D t) {
+    return BigFloatTriangle2D.from(t); }
 
-  public static final List<Triangle2D> makeTriangles (final Vector2D a,
-                                                      final Vector2D b,
-                                                      final Vector2D c) {
-    final Triangle2D triangleV2D = TriangleVector2D.of(a, b, c);
-    final Triangle2D bigFloat = BigFloatTriangle2D.of(a,b,c);
-    final Triangle2D rationalFloat = RationalFloatTriangle2D.of(a,b,c);
-    final Triangle2D ddFast = DDFast.of(a,b,c);
-    final Triangle2D ddNormalized = DDNormalized.of(a,b,c);
-    final Triangle2D ddSlow = DDSlow.of(a,b,c);
-//    final Triangle2D inCircleCC = InCircleCC.of(a,b,c);
-    final Triangle2D doubleNonRobust = DoubleNonRobust.of(a, b, c);
-    final Triangle2D inCircleNormalized = InCircleNormalized.of(a,b,c);
-    final Triangle2D adapt = Adapt.of(a, b, c);
-    final Triangle2D exact = Exact.of(a, b, c);
-    final Triangle2D fast = Fast.of(a, b, c);
-    final Triangle2D slow = Slow.of(a, b, c);
-    final Triangle2D adaptMacro = AdaptMacro.of(a,b,c);
-    final Triangle2D defaultMacro = DefaultMacro.of(a,b,c);
-    final Triangle2D exactMacro = ExactMacro.of(a,b,c);
-    final Triangle2D fastMacro = FastMacro.of(a,b,c);
-    final Triangle2D slowMacro = SlowMacro.of(a,b,c);
+  public static final List<Triangle2D> makeTriangles (final Triangle2D t) {
+    final Triangle2D triangleV2D = TriangleVector2D.from(t);
+    final Triangle2D bigFloat = BigFloatTriangle2D.from(t);
+    final Triangle2D rationalFloat = RationalFloatTriangle2D.from(t);
+    final Triangle2D ddFast = DDFast.from(t);
+    final Triangle2D ddNormalized = DDNormalized.from(t);
+    final Triangle2D ddSlow = DDSlow.from(t);
+//    final Triangle2D inCircleCC = InCircleCC.from(t);
+    final Triangle2D doubleNonRobust = DoubleNonRobust.from(t);
+    final Triangle2D inCircleNormalized = InCircleNormalized.from(t);
+    final Triangle2D adapt = Adapt.from(t);
+    final Triangle2D exact = Exact.from(t);
+    final Triangle2D fast = Fast.from(t);
+    final Triangle2D slow = Slow.from(t);
+    final Triangle2D adaptMacro = AdaptMacro.from(t);
+    final Triangle2D defaultMacro = DefaultMacro.from(t);
+    final Triangle2D exactMacro = ExactMacro.from(t);
+    final Triangle2D fastMacro = FastMacro.from(t);
+    final Triangle2D slowMacro = SlowMacro.from(t);
     return List.of(
       // mine
       triangleV2D, rationalFloat, bigFloat,

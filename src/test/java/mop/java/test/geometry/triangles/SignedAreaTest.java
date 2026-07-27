@@ -2,6 +2,7 @@ package mop.java.test.geometry.triangles;
 
 import mop.java.geometry.Generators;
 import mop.java.geometry.triangle.Triangle2D;
+import mop.java.geometry.triangle.TriangleVector2D;
 import mop.java.numbers.Doubles;
 import mop.java.prng.Generator;
 import mop.java.prng.PRNG;
@@ -25,11 +26,9 @@ public final class SignedAreaTest extends TriangleTest {
 
   //--------------------------------------------------------------
 
-  private static final void signedArea (final Vector2D p0,
-                                        final Vector2D p1,
-                                        final Vector2D p2) {
-    final List<Triangle2D> triangles = makeTriangles(p0,p1,p2);
-    final Triangle2D gold = truth(p0,p1,p2);
+  private static final void signedArea (final Triangle2D t0) {
+    final List<Triangle2D> triangles = makeTriangles(t0);
+    final Triangle2D gold = truth(t0);
     final double trueAreaX2 = gold.signedArea();
     for (final Triangle2D t : triangles) {
       final double areaX2 = t.signedArea();
@@ -52,16 +51,16 @@ public final class SignedAreaTest extends TriangleTest {
     final Vector2D p2 = Vector2D.of( -1.0, 1.0);
     final Vector2D p3 = Vector2D.of( -1.0, -1.0);
 
-    signedArea(p0, p1, p2);
+    signedArea(TriangleVector2D.of(p0, p1, p2));
     // reverse
-    signedArea(p1, p0, p2);
+    signedArea(TriangleVector2D.of(p1, p0, p2));
     // 1 pt singular
-    signedArea(p0, p0, p0);
+    signedArea(TriangleVector2D.of(p0, p0, p0));
     // 2 pt line segment
-    signedArea(p0, p2, p0);
-    signedArea(p0, p0, p2);
+    signedArea(TriangleVector2D.of(p0, p2, p0));
+    signedArea(TriangleVector2D.of(p0, p0, p2));
     // Co-linear triangle
-    signedArea(p0, p1, p3);
+    signedArea(TriangleVector2D.of(p0, p1, p3));
   }
 
   //--------------------------------------------------------------
@@ -74,10 +73,10 @@ public final class SignedAreaTest extends TriangleTest {
     final Generator laplaceGenerator =
       Doubles.laplaceGenerator(urp, 0.0, 1.0);
     final Generator vGenerator =
-      Generators.vector2dGenerator(n,laplaceGenerator);
-    final Vector2D[] p = (Vector2D[]) vGenerator.next();
-    for (int i = 0; i < n-2; i++) {
-      signedArea(p[i],p[i+1],p[i+2]);} }
+      Generators.vector2dGenerator(laplaceGenerator);
+    final Generator tGenerator = Generators.triangleGenerator(n,vGenerator);
+    final Triangle2D[] t = (Triangle2D[]) tGenerator.next();
+    for (int i = 0; i < n; i++) { signedArea(t[i]); } }
 
   //--------------------------------------------------------------
 }
