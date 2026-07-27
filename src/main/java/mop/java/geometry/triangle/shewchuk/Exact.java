@@ -1,5 +1,6 @@
-package mop.java.geometry.triangle;
+package mop.java.geometry.triangle.shewchuk;
 
+import mop.java.geometry.triangle.Triangle2D;
 import mop.java.numbers.Hilo;
 import mop.java.numbers.XDouble;
 import org.apache.commons.geometry.euclidean.twod.Vector2D;
@@ -13,7 +14,7 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
  *   profiling.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-07-07
+ * @version 2026-07-27
  */
 
 public final class Exact extends Triangle2D {
@@ -98,6 +99,11 @@ public final class Exact extends Triangle2D {
                                      final Vector2D b,
                                      final Vector2D c) {
     return new Exact(a,b,c); }
+
+  /** Convert other triangle classes. */
+
+  public static final Triangle2D from (final Triangle2D t) {
+    return of(t.getP0(), t.getP1(), t.getP2()); }
 
   //-------------------------------------------------------------------
 } // end class

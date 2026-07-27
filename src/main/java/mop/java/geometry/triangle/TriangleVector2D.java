@@ -1,37 +1,29 @@
-package mop.java.geometry.triangle.jts;
+package mop.java.geometry.triangle;
 
-import mop.java.geometry.triangle.Triangle2D;
 import org.apache.commons.geometry.euclidean.twod.Vector2D;
 
-/** From org.locationtech.jts.triangulate.quadedge.TrianglePredicate
+/** Minimal triangle with double Vector2D vertices.
+ * <b>
+ * From org.locationtech.jts.triangulate.quadedge.TrianglePredicate
  *
  * @author palisades dot lakes at gmail dot com,
  * @version 2026-07-27
  */
 
-public final class DoubleNonRobust extends Triangle2D {
+public final class TriangleVector2D extends Triangle2D {
 
   //--------------------------------------------------------------------
-  /** TrianglePredicate.triArea
-   * Computes twice the area of the oriented triangle (a, b, c), i.e., the area is positive if the
-   * triangle is oriented counterclockwise.
-   *
-   * @param a a vertex of the triangle
-   * @param b a vertex of the triangle
-   * @param c a vertex of the triangle
-   */
+
   private static double triArea (final Vector2D a,
                                  final Vector2D b,
                                  final Vector2D c) {
     // TODO: cache difference vectors
-    return
-      (b.getX() - a.getX()) * (c.getY() - a.getY())
-      -
-        (b.getY() - a.getY()) * (c.getX() - a.getX());
-  }
+    return b.subtract(a).signedArea(c.subtract(a)); }
+
   //--------------------------------------------------------------------
   // orient2d
   //--------------------------------------------------------------------
+  // cache?
 
   @Override
   public final double signedArea () {
@@ -40,33 +32,32 @@ public final class DoubleNonRobust extends Triangle2D {
   //--------------------------------------------------------------------
   // inCircle
   //--------------------------------------------------------------------
-  /** TrianglePredicate.isInCircleNonRobust.
-   */
-  public final double inCircle (final Vector2D p) {
-    final Vector2D pa = getP0();
-    final Vector2D pb = getP1();
-    final Vector2D pc = getP2();
+  // TODO: permute area calls to use cached differences?
 
-    return (pa.getX()*pa.getX()
-      + pa.getY()*pa.getY())*triArea(pb,pc,p)
-      - (pb.getX()*pb.getX() + pb.getY()*pb.getY())*triArea(pa,pc,p)
-      + (pc.getX()*pc.getX()
-      + pc.getY()*pc.getY())*triArea(pa,pb,p)
-      - (p.getX()*p.getX() + p.getY()*p.getY())*triArea(pa,pb,pc); }
+  @Override
+  public final double inCircle (final Vector2D p) {
+    // TODO: cache normSq?
+    final Vector2D a = getP0();
+    final Vector2D b = getP1();
+    final Vector2D c = getP2();
+
+    return
+      a.normSq()*triArea(b,c,p) - b.normSq()*triArea(a,c,p)
+        + c.normSq()*triArea(a,b,p) - p.normSq()*triArea(a,b,c); }
 
   //--------------------------------------------------------------------
   // construction
   //--------------------------------------------------------------------
 
-  private DoubleNonRobust (final Vector2D a,
-                  final Vector2D b,
-                  final Vector2D c)  {
+  private TriangleVector2D (final Vector2D a,
+                            final Vector2D b,
+                            final Vector2D c)  {
     super(a,b,c); }
 
   public static final Triangle2D of (final Vector2D a,
                                      final Vector2D b,
                                      final Vector2D c) {
-    return new DoubleNonRobust(a,b,c); }
+    return new TriangleVector2D(a, b, c); }
 
   /** Convert other triangle classes. */
 

@@ -1,7 +1,7 @@
 package mop.java.test.geometry.triangles;
 
 import mop.java.geometry.Generators;
-import mop.java.geometry.triangle.Adapt;
+import mop.java.geometry.triangle.shewchuk.Adapt;
 import mop.java.geometry.triangle.Triangle2D;
 import mop.java.geometry.triangle.macro.AdaptMacro;
 import mop.java.numbers.Doubles;

@@ -369,6 +369,11 @@ public final class ExactMacro extends Triangle2D {
                                      final Vector2D c) {
     return new ExactMacro(a, b, c); }
 
+  /** Convert other triangle classes. */
+
+  public static final Triangle2D from (final Triangle2D t) {
+    return of(t.getP0(), t.getP1(), t.getP2()); }
+
   //-------------------------------------------------------------------
 } // end class
 //-------------------------------------------------------------------

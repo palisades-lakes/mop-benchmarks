@@ -3,6 +3,10 @@ package mop.java.test.geometry.triangles;
 import mop.java.geometry.triangle.*;
 import mop.java.geometry.triangle.jts.*;
 import mop.java.geometry.triangle.macro.*;
+import mop.java.geometry.triangle.shewchuk.Adapt;
+import mop.java.geometry.triangle.shewchuk.Exact;
+import mop.java.geometry.triangle.shewchuk.Fast;
+import mop.java.geometry.triangle.shewchuk.Slow;
 import org.apache.commons.geometry.euclidean.twod.Vector2D;
 
 import java.util.List;
@@ -25,28 +29,29 @@ public abstract class TriangleTest {
   public static final List<Triangle2D> makeTriangles (final Vector2D a,
                                                       final Vector2D b,
                                                       final Vector2D c) {
+    final Triangle2D triangleV2D = TriangleVector2D.of(a, b, c);
+    final Triangle2D bigFloat = BigFloatTriangle2D.of(a,b,c);
+    final Triangle2D rationalFloat = RationalFloatTriangle2D.of(a,b,c);
     final Triangle2D ddFast = DDFast.of(a,b,c);
     final Triangle2D ddNormalized = DDNormalized.of(a,b,c);
     final Triangle2D ddSlow = DDSlow.of(a,b,c);
 //    final Triangle2D inCircleCC = InCircleCC.of(a,b,c);
-    final Triangle2D doubleNonRobust = DoubleNonRobust.of(a,b,c);
+    final Triangle2D doubleNonRobust = DoubleNonRobust.of(a, b, c);
     final Triangle2D inCircleNormalized = InCircleNormalized.of(a,b,c);
-    final Triangle2D bigFloat = BigFloatTriangle2D.of(a,b,c);
-    final Triangle2D rationalFloat = RationalFloatTriangle2D.of(a,b,c);
-    final Triangle2D adapt = Adapt.of(a,b,c);
-    final Triangle2D exact = Exact.of(a,b,c);
-    final Triangle2D fast = Fast.of(a,b,c);
-    final Triangle2D slow = Slow.of(a,b,c);
+    final Triangle2D adapt = Adapt.of(a, b, c);
+    final Triangle2D exact = Exact.of(a, b, c);
+    final Triangle2D fast = Fast.of(a, b, c);
+    final Triangle2D slow = Slow.of(a, b, c);
     final Triangle2D adaptMacro = AdaptMacro.of(a,b,c);
     final Triangle2D defaultMacro = DefaultMacro.of(a,b,c);
     final Triangle2D exactMacro = ExactMacro.of(a,b,c);
     final Triangle2D fastMacro = FastMacro.of(a,b,c);
     final Triangle2D slowMacro = SlowMacro.of(a,b,c);
     return List.of(
+      // mine
+      triangleV2D, rationalFloat, bigFloat,
       // JTS
       ddFast,ddNormalized,ddSlow,doubleNonRobust,inCircleNormalized,
-      // mine
-      rationalFloat,bigFloat,
       // Shewchuk predicates.c
       exact, adapt,fast ,slow,
       exactMacro, adaptMacro, defaultMacro, fastMacro, slowMacro); }

@@ -7,7 +7,7 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
  * Should be exact, up to RationalFloat resolution.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-07-06
+ * @version 2026-07-27
  */
 
 public final class RationalFloatTriangle2D extends Triangle2D {
@@ -88,6 +88,11 @@ public final class RationalFloatTriangle2D extends Triangle2D {
                                      final Vector2D b,
                                      final Vector2D c) {
     return new RationalFloatTriangle2D(a,b,c); }
+
+  /** Convert other triangle classes. */
+
+  public static final Triangle2D from (final Triangle2D t) {
+    return of(t.getP0(), t.getP1(), t.getP2()); }
 
   //-------------------------------------------------------------------
 } // end class

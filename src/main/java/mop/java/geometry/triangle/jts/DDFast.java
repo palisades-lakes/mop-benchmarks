@@ -7,7 +7,7 @@ import org.locationtech.jts.math.DD;
 /** From org.locationtech.jts.triangulate.quadedge.TrianglePredicate
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-07-07
+ * @version 2026-07-27
  */
 
 public final class DDFast extends Triangle2D {
@@ -66,6 +66,11 @@ public final class DDFast extends Triangle2D {
                                      final Vector2D b,
                                      final Vector2D c) {
     return new DDFast(a,b,c); }
+
+  /** Convert other triangle classes. */
+
+  public static final Triangle2D from (final Triangle2D t) {
+    return of(t.getP0(), t.getP1(), t.getP2()); }
 
   //-------------------------------------------------------------------
 } // end class

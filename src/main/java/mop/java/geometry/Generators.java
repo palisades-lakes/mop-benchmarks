@@ -16,8 +16,7 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
 public final class Generators {
 
   //--------------------------------------------------------------
-  // For now just generate double[2] and double[3]
-  // Later:
+  // TODO:
   // Constructors for:
   // <ol>
   // <li> org.apache.commons.geometry.euclidean.twod.Vector2D
@@ -43,7 +42,7 @@ public final class Generators {
 //                    final UniformRandomProvider urp,
 //                    final double zmin,
 //                    final double zmax)
-//    gaussianGenerator (final int n,
+//  gaussianGenerator (final int n,
 //                     final UniformRandomProvider urp,
 //                     final double mu,
 //                     final double sigma)

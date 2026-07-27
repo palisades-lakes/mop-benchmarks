@@ -12,7 +12,7 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
 /**
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-07-07
+ * @version 2026-07-27
  */
 
 // strictfp unnecessary for JDK17 and later
@@ -73,6 +73,11 @@ public final class FastMacro extends Triangle2D {
                                      final Vector2D b,
                                      final Vector2D c) {
     return new FastMacro(a, b, c); }
+
+  /** Convert other triangle classes. */
+
+  public static final Triangle2D from (final Triangle2D t) {
+    return of(t.getP0(), t.getP1(), t.getP2()); }
 
   //-------------------------------------------------------------------
 } // end class

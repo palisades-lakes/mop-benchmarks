@@ -1,4 +1,4 @@
-package mop.java.geometry.triangle;
+package mop.java.geometry.triangle.shewchuk;
 // 2026-05-14
 // macro expand predicates.c via https://godbolt.org/
 // minimal changes to compile as java
@@ -6,6 +6,7 @@ package mop.java.geometry.triangle;
 // split into Expansion manipulation and fast, slow, exact, adaptive
 // algorithm classes
 
+import mop.java.geometry.triangle.Triangle2D;
 import mop.java.numbers.Hilo;
 import mop.java.numbers.XDouble;
 import org.apache.commons.geometry.euclidean.twod.Vector2D;
@@ -13,7 +14,7 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
 /** More exact tests.  Robust.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-07-07
+ * @version 2026-07-27
  */
 
 // strictfp unnecessary for JDK17 and later
@@ -101,6 +102,11 @@ public final class Slow extends Triangle2D {
                                      final Vector2D b,
                                      final Vector2D c) {
     return new Slow(a,b,c); }
+
+  /** Convert other triangle classes. */
+
+  public static final Triangle2D from (final Triangle2D t) {
+    return of(t.getP0(), t.getP1(), t.getP2()); }
 
   //-------------------------------------------------------------------
 } // end class

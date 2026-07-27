@@ -19,7 +19,7 @@ import java.util.List;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-07-07
+ * @version 2026-07-27
  */
 
 public final class SignedVolumeTest extends TetrahedraTest {

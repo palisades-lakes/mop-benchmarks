@@ -5,7 +5,7 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
 /** Triangles "embedded" in Vector2D.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-07-07
+ * @version 2026-07-27
  */
 
 public abstract class Triangle2D {
@@ -72,6 +72,8 @@ public abstract class Triangle2D {
    * outside; and zero if the four points are cocircular. The points pa,
    * pb, and pc must be in counterclockwise order, or the sign of the
    * result will be reversed.
+   * <br>
+   * (Shewchuk predicate.c)
    * <br>
    * Only Fast and Default should be used; the other two are for
    * timings.
