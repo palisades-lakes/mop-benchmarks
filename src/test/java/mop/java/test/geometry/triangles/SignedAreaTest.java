@@ -1,5 +1,6 @@
 package mop.java.test.geometry.triangles;
 
+import mop.java.geometry.Generators;
 import mop.java.geometry.triangle.Triangle2D;
 import mop.java.numbers.Doubles;
 import mop.java.prng.Generator;
@@ -17,7 +18,7 @@ import java.util.List;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-07-07
+ * @version 2026-07-27
  */
 
 public final class SignedAreaTest extends TriangleTest {
@@ -67,16 +68,16 @@ public final class SignedAreaTest extends TriangleTest {
 
   @Test
   public final void laplaceTest () {
-    final int n = 12;
+    final int n = 32;
     final UniformRandomProvider urp =
       PRNG.well44497b("seeds/Well44497b-2019-01-05.txt");
     final Generator laplaceGenerator =
-      Doubles.laplaceGenerator(n, 2, urp, 0.0, 1.0);
-    final double[][] p = (double[][]) laplaceGenerator.next();
+      Doubles.laplaceGenerator(urp, 0.0, 1.0);
+    final Generator vGenerator =
+      Generators.vector2dGenerator(n,laplaceGenerator);
+    final Vector2D[] p = (Vector2D[]) vGenerator.next();
     for (int i = 0; i < n-2; i++) {
-      signedArea(Vector2D.of(p[i]),
-                 Vector2D.of(p[i+1]),
-                 Vector2D.of(p[i+2]));} }
+      signedArea(p[i],p[i+1],p[i+2]);} }
 
   //--------------------------------------------------------------
 }

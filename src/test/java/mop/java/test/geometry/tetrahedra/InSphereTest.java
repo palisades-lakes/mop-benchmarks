@@ -1,5 +1,6 @@
 package mop.java.test.geometry.tetrahedra;
 
+import mop.java.geometry.Generators;
 import mop.java.geometry.tetrahedron.Tetrahedron3D;
 import mop.java.numbers.Doubles;
 import mop.java.prng.Generator;
@@ -18,7 +19,7 @@ import java.util.List;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-07-07
+ * @version 2026-07-27
  */
 
 public final class InSphereTest extends TetrahedraTest {
@@ -60,16 +61,14 @@ public final class InSphereTest extends TetrahedraTest {
   public final void laplaceTest () {
     final int n = 55;
     final UniformRandomProvider urp =
-      PRNG.well44497b("seeds/Well44497b-2019-01-05.txt");
+      PRNG.well44497b("seeds/Well44497b-2019-01-11.txt");
     final Generator laplaceGenerator =
-      Doubles.laplaceGenerator(n, 3, urp, 0.0, 1.0);
-    final double[][] p = (double[][]) laplaceGenerator.next();
+      Doubles.laplaceGenerator(urp, 0.0, 1.0);
+    final Generator vGenerator =
+      Generators.vector3dGenerator(n, laplaceGenerator);
+    final Vector3D[] p = (Vector3D[]) vGenerator.next();
     for (int i = 0; i < n-4; i++) {
-      inSphere(Vector3D.of(p[i]),
-               Vector3D.of(p[i+1]),
-               Vector3D.of(p[i+2]),
-               Vector3D.of(p[i+3]),
-               Vector3D.of(p[i+4]));} }
+      inSphere(p[i],p[i+1],p[i+2],p[i+3],p[i+4]);} }
 
 //--------------------------------------------------------------
 } // end class

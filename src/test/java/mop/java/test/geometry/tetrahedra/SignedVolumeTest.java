@@ -1,5 +1,6 @@
 package mop.java.test.geometry.tetrahedra;
 
+import mop.java.geometry.Generators;
 import mop.java.geometry.tetrahedron.Tetrahedron3D;
 import mop.java.numbers.Doubles;
 import mop.java.prng.Generator;
@@ -57,17 +58,16 @@ public final class SignedVolumeTest extends TetrahedraTest {
 
   @Test
   public final void laplaceTest () {
-    final int n = 21;
+    final int n = 32;
     final UniformRandomProvider urp =
-      PRNG.well44497b("seeds/Well44497b-2019-01-05.txt");
+      PRNG.well44497b("seeds/Well44497b-2019-01-09.txt");
     final Generator laplaceGenerator =
-      Doubles.laplaceGenerator(n, 3, urp, 0.0, 1.0);
-    final double[][] p = (double[][]) laplaceGenerator.next();
+      Doubles.laplaceGenerator(urp, 0.0, 1.0);
+    final Generator vGenerator =
+      Generators.vector3dGenerator(n, laplaceGenerator);
+    final Vector3D[] p = (Vector3D[]) vGenerator.next();
     for (int i = 0; i < n-3; i++) {
-      signedVolume(Vector3D.of(p[i]),
-                   Vector3D.of(p[i+1]),
-                   Vector3D.of(p[i+2]),
-                   Vector3D.of(p[i+3])); } }
+      signedVolume(p[i],p[i+1],p[i+2],p[i+3]); } }
 
 //--------------------------------------------------------------
 } // end class

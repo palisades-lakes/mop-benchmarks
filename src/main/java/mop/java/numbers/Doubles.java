@@ -36,7 +36,7 @@ import mop.java.prng.PRNG;
 /** Utilities for <code>double</code>, <code>double[]</code>.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2024-05-24
+ * @version 2026-07-27
  */
 @SuppressWarnings("unused")
 public final class Doubles implements Set {
@@ -913,9 +913,9 @@ public final class Doubles implements Set {
              final int eMin,
              // exclusive
              final int eMax) {
-    //assert eMin >= SUBNORMAL_EXPONENT;
-    //assert eMax <= (INFINITE_OR_NAN_EXPONENT + 1);
-    //assert eMin < eMax;
+    assert eMin >= SUBNORMAL_EXPONENT;
+    assert eMax <= (INFINITE_OR_NAN_EXPONENT + 1);
+    assert eMin < eMax;
     return new GeneratorBase (
       "double-" + eMin + "-" + eMax) {
       final int eRan = eMax-eMin;
