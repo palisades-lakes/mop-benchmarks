@@ -1,4 +1,4 @@
-package mop.java.geometry.tetrahedron;
+package mop.java.geometry.tetrahedron.shewchuk;
 // 2026-05-14
 // macro expand predicates.c via https://godbolt.org/
 // minimal changes to compile as java
@@ -6,12 +6,13 @@ package mop.java.geometry.tetrahedron;
 // split into Expansion manipulation and fast, slow, exact, adaptive
 // algorithm classes
 
+import mop.java.geometry.tetrahedron.Tetrahedron3D;
 import org.apache.commons.geometry.euclidean.threed.Vector3D;
 
 /** Approximate predicates, nonrobust.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-07-06
+ * @version 2026-07-27
  */
 
 public final class Fast extends Tetrahedron3D {
@@ -96,6 +97,10 @@ public final class Fast extends Tetrahedron3D {
                                         final Vector3D c,
                                         final Vector3D d) {
     return new Fast(a, b, c, d); }
+
+  /** Convert between tetrahedra classes. */
+  public static final Tetrahedron3D from (final Tetrahedron3D t) {
+    return of(t.getP0(),t.getP1(),t.getP2(),t.getP3()); }
 
   //-------------------------------------------------------------------
 } // end class

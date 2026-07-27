@@ -1,5 +1,6 @@
 package mop.java.geometry;
 
+import mop.java.geometry.tetrahedron.TetrahedronVector3D;
 import mop.java.geometry.triangle.Triangle2D;
 import mop.java.geometry.triangle.TriangleVector2D;
 import mop.java.prng.Generator;
@@ -79,7 +80,7 @@ public final class Generators {
   public static final Generator
   triangleGenerator (final Generator vectorGenerator) {
     // TODO: named local class rather than anonymous with name?
-    return new GeneratorBase("triangledGenerator") {
+    return new GeneratorBase("triangleGenerator") {
       @Override
       public final Object next () {
         final Vector2D p0 = (Vector2D) vectorGenerator.next();
@@ -126,27 +127,31 @@ public final class Generators {
         return p; } }; }
 
   //--------------------------------------------------------------
-  // TODO: transform generated coordinates to get correlated values, etc
 
-//  public static final Generator
-//  generator (final Generator coordinateGenerator,
-//             final Function<double[], Object> constructor) {
-//    return new GeneratorBase("geometryGenerator") {
-//      @Override
-//      public final Object next () {
-//        final double[] coords = (double[]) coordinateGenerator.next();
-//        return constructor.apply(coords); } }; }
+  public static final Generator
+  tetrahedraGenerator (final Generator vectorGenerator) {
+    // TODO: named local class rather than anonymous with name?
+    return new GeneratorBase("tetrahedraGenerator") {
+      @Override
+      public final Object next () {
+        final Vector3D p0 = (Vector3D) vectorGenerator.next();
+        final Vector3D p1 = (Vector3D) vectorGenerator.next();
+        final Vector3D p2 = (Vector3D) vectorGenerator.next();
+        final Vector3D p3 = (Vector3D) vectorGenerator.next();
+        return TetrahedronVector3D.of(p0, p1, p2, p3); } }; }
 
-  //--------------------------------------------------------------
-//  private static final String SEED0 =
-//    "seeds/Well44497b-2019-01-05.txt";
-//  private static final UniformRandomProvider URP0 =
-//    PRNG.well44497b(SEED0);
-//
-//  public static final Generator
-//    exponentialVector2dGenerator = generator(
-//    Doubles.exponentialGenerator(2, URP0, 1.0, 10.0),
-//    Vector2D::of);
+  public static final Generator
+  tetrahedraGenerator (final int n,
+                     final Generator vectorGenerator) {
+    return new GeneratorBase("tetrahedraGenerator[" + n + "]") {
+      final Generator tGenerator = tetrahedraGenerator(vectorGenerator);
+      @Override
+      public final Object next () {
+        final TetrahedronVector3D[] p =  new TetrahedronVector3D[n];
+        for (int i = 0; i < n; i++) {
+          p[i] = (TetrahedronVector3D) tGenerator.next(); }
+        return p; } }; }
+
   //--------------------------------------------------------------
 } // end class
 //--------------------------------------------------------------

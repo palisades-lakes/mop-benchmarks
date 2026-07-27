@@ -15,7 +15,7 @@ import static mop.java.geometry.Expansion.*;
 /** More exact tests.  Robust.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-07-07
+ * @version 2026-07-27
  */
 
 public final class SlowMacro extends Tetrahedron3D {
@@ -1330,6 +1330,10 @@ public final class SlowMacro extends Tetrahedron3D {
                                         final Vector3D c,
                                         final Vector3D d) {
     return new SlowMacro(a, b, c, d); }
+
+  /** Convert between tetrahedra classes. */
+  public static final Tetrahedron3D from (final Tetrahedron3D t) {
+    return of(t.getP0(),t.getP1(),t.getP2(),t.getP3()); }
 
   //-------------------------------------------------------------------
 } // end class

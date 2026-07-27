@@ -1,13 +1,13 @@
 package mop.java.test.geometry.tetrahedra;
 
-import mop.java.geometry.tetrahedron.Adapt;
+import mop.java.geometry.tetrahedron.shewchuk.Adapt;
 import mop.java.geometry.tetrahedron.BigFloatTetrahedron3D;
 import mop.java.geometry.tetrahedron.RationalFloatTetrahedron3D;
 import mop.java.geometry.tetrahedron.Tetrahedron3D;
 import mop.java.geometry.tetrahedron.macro.AdaptMacro;
-import mop.java.geometry.tetrahedron.Exact;
-import mop.java.geometry.tetrahedron.Fast;
-import mop.java.geometry.tetrahedron.Slow;
+import mop.java.geometry.tetrahedron.shewchuk.Exact;
+import mop.java.geometry.tetrahedron.shewchuk.Fast;
+import mop.java.geometry.tetrahedron.shewchuk.Slow;
 import mop.java.geometry.tetrahedron.macro.DefaultMacro;
 import mop.java.geometry.tetrahedron.macro.ExactMacro;
 import mop.java.geometry.tetrahedron.macro.FastMacro;
@@ -18,36 +18,30 @@ import java.util.List;
 
 //----------------------------------------------------------------
 
-/** Common code for 2D geometry predicate tests.
+/** Common code for 3D geometry predicate tests.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-07-07
+ * @version 2026-07-27
  */
 
 public class TetrahedraTest {
 
   // ground truth predicate.
-  public static final Tetrahedron3D truth (final Vector3D a,
-                                           final Vector3D b,
-                                           final Vector3D c,
-                                           final Vector3D d) {
-    return BigFloatTetrahedron3D.of(a,b,c,d); }
+  public static final Tetrahedron3D truth (final Tetrahedron3D t) {
+    return BigFloatTetrahedron3D.from(t); }
 
-  public static final List<Tetrahedron3D> makeTetrahedra (final Vector3D a,
-                                                          final Vector3D b,
-                                                          final Vector3D c,
-                                                          final Vector3D d) {
-    final Tetrahedron3D bigFloat = BigFloatTetrahedron3D.of(a,b,c,d);
-    final Tetrahedron3D rationalFloat = RationalFloatTetrahedron3D.of(a,b,c,d);
-    final Tetrahedron3D adapt = Adapt.of(a, b, c, d);
-    final Tetrahedron3D exact = Exact.of(a, b, c, d);
-    final Tetrahedron3D fast = Fast.of(a, b, c, d);
-    final Tetrahedron3D slow = Slow.of(a, b, c, d);
-    final Tetrahedron3D adaptMacro = AdaptMacro.of(a, b, c, d);
-    final Tetrahedron3D defaultMacro = DefaultMacro.of(a, b, c, d);
-    final Tetrahedron3D exactMacro = ExactMacro.of(a, b, c, d);
-    final Tetrahedron3D fastMacro = FastMacro.of(a, b, c, d);
-    final Tetrahedron3D slowMacro = SlowMacro.of(a,b,c,d);
+  public static final List<Tetrahedron3D> makeTetrahedra (final Tetrahedron3D t) {
+    final Tetrahedron3D bigFloat = BigFloatTetrahedron3D.from(t);
+    final Tetrahedron3D rationalFloat = RationalFloatTetrahedron3D.from(t);
+    final Tetrahedron3D adapt = Adapt.from(t);
+    final Tetrahedron3D exact = Exact.from(t);
+    final Tetrahedron3D fast = Fast.from(t);
+    final Tetrahedron3D slow = Slow.from(t);
+    final Tetrahedron3D adaptMacro = AdaptMacro.from(t);
+    final Tetrahedron3D defaultMacro = DefaultMacro.from(t);
+    final Tetrahedron3D exactMacro = ExactMacro.from(t);
+    final Tetrahedron3D fastMacro = FastMacro.from(t);
+    final Tetrahedron3D slowMacro = SlowMacro.from(t);
     return List.of(
       // mine
       rationalFloat,bigFloat,
