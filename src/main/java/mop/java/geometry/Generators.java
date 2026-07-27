@@ -1,5 +1,6 @@
 package mop.java.geometry;
 
+import mop.java.geometry.tetrahedron.Tetrahedron3D;
 import mop.java.geometry.tetrahedron.TetrahedronVector3D;
 import mop.java.geometry.triangle.Triangle2D;
 import mop.java.geometry.triangle.TriangleVector2D;
@@ -7,6 +8,8 @@ import mop.java.prng.Generator;
 import mop.java.prng.GeneratorBase;
 import org.apache.commons.geometry.euclidean.threed.Vector3D;
 import org.apache.commons.geometry.euclidean.twod.Vector2D;
+
+import java.util.function.Function;
 
 /** Generators of pseudo-random geometric objects as zero-arity
  * 'functions' that return different values on each call.
@@ -100,6 +103,30 @@ public final class Generators {
           p[i] = (Triangle2D) tGenerator.next(); }
         return p; } }; }
 
+  public static final Generator
+  triangleGenerator (final Function<Triangle2D,Triangle2D> converter,
+                     Generator vectorGenerator) {
+    final Generator tGenerator = triangleGenerator(vectorGenerator);
+    return new GeneratorBase(converter + " * triangleGenerator") {
+      @Override
+      public final Object next () {
+        return converter.apply((Triangle2D) tGenerator.next()); } }; }
+
+  public static final Generator
+  triangleGenerator (final int n,
+                     final Function<Triangle2D,Triangle2D> converter,
+                     final Generator vectorGenerator) {
+    return new GeneratorBase(
+      converter + " * triangleGenerator[" + n + "]") {
+      final Generator tGenerator =
+        triangleGenerator(converter, vectorGenerator);
+      @Override
+      public final Object next () {
+        final Triangle2D[] p =  new Triangle2D[n];
+        for (int i = 0; i < n; i++) {
+          p[i] = (Triangle2D) tGenerator.next(); }
+        return p; } }; }
+
   //--------------------------------------------------------------
 //  public static final Function<double[], Vector3D>
 //    vector3D = Vector3D::of;
@@ -142,7 +169,7 @@ public final class Generators {
 
   public static final Generator
   tetrahedraGenerator (final int n,
-                     final Generator vectorGenerator) {
+                       final Generator vectorGenerator) {
     return new GeneratorBase("tetrahedraGenerator[" + n + "]") {
       final Generator tGenerator = tetrahedraGenerator(vectorGenerator);
       @Override
@@ -150,6 +177,32 @@ public final class Generators {
         final TetrahedronVector3D[] p =  new TetrahedronVector3D[n];
         for (int i = 0; i < n; i++) {
           p[i] = (TetrahedronVector3D) tGenerator.next(); }
+        return p; } }; }
+
+
+  public static final Generator
+  tetrahedraGenerator (final Function<Tetrahedron3D,Tetrahedron3D> converter,
+                     Generator vectorGenerator) {
+    final Generator tGenerator = tetrahedraGenerator(vectorGenerator);
+    return new GeneratorBase(
+      converter + " * tetrahedraGenerator") {
+      @Override
+      public final Object next () {
+        return converter.apply((Tetrahedron3D) tGenerator.next()); } }; }
+
+  public static final Generator
+  tetrahedraGenerator (final int n,
+                     final Function<Tetrahedron3D,Tetrahedron3D> converter,
+                     final Generator vectorGenerator) {
+    return new GeneratorBase(
+      converter + " * tetrahedraGenerator[" + n + "]") {
+      final Generator tGenerator =
+        tetrahedraGenerator(converter, vectorGenerator);
+      @Override
+      public final Object next () {
+        final Triangle2D[] p =  new Triangle2D[n];
+        for (int i = 0; i < n; i++) {
+          p[i] = (Triangle2D) tGenerator.next(); }
         return p; } }; }
 
   //--------------------------------------------------------------
