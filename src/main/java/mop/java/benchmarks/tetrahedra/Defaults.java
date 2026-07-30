@@ -1,4 +1,4 @@
-package mop.java.benchmarks.triangles;
+package mop.java.benchmarks.tetrahedra;
 
 import mop.java.SystemInfo;
 import org.openjdk.jmh.annotations.Mode;
@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.TimeUnit;
 
-/** Base for tetrahedra operation benchmarks.
+/** Base for triangle operation benchmarks.
  *
  * <pre>
  * java -cp target\benchmarks.jar mop.java.benchmarks.arithmetic.Base
@@ -56,7 +56,7 @@ public final class Defaults {
       //.result(json.getPath())
       .resultFormat(ResultFormatType.CSV)
       .result(csv.getPath())
-      .threads(1)
+      .threads(4)
       .shouldFailOnError(true)
       .shouldDoGC(true)
       .jvmArgs(
