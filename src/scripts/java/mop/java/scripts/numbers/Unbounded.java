@@ -17,7 +17,7 @@ import mop.java.prng.PRNG;
  * @version 2022-07-31
  */
 
-@SuppressWarnings("unchecked")
+@SuppressWarnings("unused")
 public final class Unbounded {
 
   /** passes in a 12g JVM:
@@ -56,18 +56,18 @@ public final class Unbounded {
     }
     finally {
       System.out.printf("Total seconds: %4.3f\n",
-        Double.valueOf((System.nanoTime()-t0)*1.0e-9)); } }
+                        (System.nanoTime() - t0) * 1.0e-9); } }
 
-  /** passes in a 56g JVM:
-   * <table>
-   *  <tr> <th>nwords</th>     <th>sec</th> </tr>
-   *  <tr> <td>1L+     MAX_WORDS</td>  <td>  9</td> </tr>
-   *  <tr> <td>1L+( 2L*MAX_WORDS)</td> <td> 28</td> </tr>
-   *  <tr> <td>1L+( 4L*MAX_WORDS)</td> <td> 70</td> </tr>
-   *  <tr> <td>1L+( 8L*MAX_WORDS)</td> <td>150</td> </tr>
-   *  <tr> <td>1L+(16L*MAX_WORDS)</td> <td>1207 (OOM)</td> </tr>
-   * </table>
-   */
+//  /** passes in a 56g JVM:
+//   * <table>
+//   *  <tr> <th>nwords</th>     <th>sec</th> </tr>
+//   *  <tr> <td>1L+     MAX_WORDS</td>  <td>  9</td> </tr>
+//   *  <tr> <td>1L+( 2L*MAX_WORDS)</td> <td> 28</td> </tr>
+//   *  <tr> <td>1L+( 4L*MAX_WORDS)</td> <td> 70</td> </tr>
+//   *  <tr> <td>1L+( 8L*MAX_WORDS)</td> <td>150</td> </tr>
+//   *  <tr> <td>1L+(16L*MAX_WORDS)</td> <td>1207 (OOM)</td> </tr>
+//   * </table>
+//   */
 
 //  private static final void noOverflow () {
 //    final long t0 = System.nanoTime();
