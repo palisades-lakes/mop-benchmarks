@@ -94,7 +94,7 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
  *   even <code>BigInteger</code> to extend range.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-07-04
+ * @version 2026-07-31
  */
 
 public final class XDouble
@@ -167,7 +167,8 @@ public final class XDouble
   // finite, non-finite rational values
   //--------------------------------------------------------------------
 
-  public static final XDouble NaN = valueOf(Double.NaN);
+  public static final XDouble NaN =
+    new XDouble(DoubleArrayList.from(Double.NaN));
 
   public final boolean isNaN () {
     return (1 == nterms()) && Double.isNaN(term(0)); }
@@ -180,19 +181,19 @@ public final class XDouble
     return (1 <= nterms()) && (0.0 > term(nterms()-1)); }
 
   public static final XDouble POSITIVE_INFINITY =
-    valueOf(Double.POSITIVE_INFINITY);
+    new XDouble(DoubleArrayList.from(Double.POSITIVE_INFINITY));
 
   public final boolean isPositiveInfinity () {
     return (1 == nterms()) && (Double.POSITIVE_INFINITY==term(0)); }
 
   public static final XDouble NEGATIVE_INFINITY =
-    valueOf(Double.NEGATIVE_INFINITY);
+    new XDouble(DoubleArrayList.from(Double.NEGATIVE_INFINITY));
 
   public final boolean isNegativeInfinity () {
     return (1 == nterms()) && (Double.NEGATIVE_INFINITY==term(0)); }
 
   public static final boolean isFinite (final DoubleArrayList terms) {
-    for (int i = 0; i < terms.size()-1; ++i) {
+    for (int i = 0; i < terms.size()-1; i++) {
       if (! Double.isFinite(terms.get(i))) { return false; } }
     return true; }
 
@@ -219,8 +220,10 @@ public final class XDouble
                                    final Hilo b) {
     final double[] ab0 = twoOneSum(a.hi(),a.lo(),b.lo());
     final double[] ab1 = twoOneSum(ab0[0],ab0[1],b.hi());
-    return unsafe(DoubleArrayList.from(
-      ab0[2],ab1[0],ab1[1],ab1[2])); }
+    final DoubleArrayList terms = DoubleArrayList.from(
+      ab0[2],ab1[0],ab1[1],ab1[2]);
+    unsafeCompress(terms);
+    return unsafe(terms); }
 
   public final XDouble add (final double b) {
     if (0.0==b) { return this; }
@@ -233,9 +236,10 @@ public final class XDouble
       if (Double.isFinite(b) || (Double.NEGATIVE_INFINITY==b)) {
         return NEGATIVE_INFINITY; }
       return NaN; }
-    assert isFinite();
     if (Double.POSITIVE_INFINITY==b) { return POSITIVE_INFINITY; }
     if (Double.NEGATIVE_INFINITY==b) { return NEGATIVE_INFINITY; }
+    if (isZero()) { return valueOf(b); }
+    //assert isFinite();
     final DoubleArrayList sum =
       new DoubleArrayList(nterms()+1);
     double Q = b;
@@ -245,17 +249,90 @@ public final class XDouble
       final double hh = fts.lo();
       if (hh != 0.0) { sum.add(hh); } }
     if (Q != 0.0)  { sum.add(Q); }
-    assert isFinite(sum);
-    if (sum.isEmpty()) { return ZERO; }
+    unsafeCompress(sum);
     return unsafe(sum); }
 
   //--------------------------------------------------------------------
-  /** To start, just call add(double) iteratively.
-   * <br>
-   * TODO: optimize based on long version of Shewchuk's paper and
-   *   fast_expansion_sum_zeroelim in predicates.c
+  /** See fast_expansion_sum_zeroelim in Shewchuk's predicates.c.
+   * Assumes inputs are finite.
+   * Public (safe) interface is XDouble.add(XDouble).
    */
 
+  private final DoubleArrayList fastAdd  (final DoubleArrayList e,
+                                          final DoubleArrayList f) {
+
+    final int elen = e.size();
+    final int flen = f.size();
+    final DoubleArrayList h =
+      new DoubleArrayList(elen + flen);
+    double enow = e.get(0);
+    double fnow = f.get(0);
+    int eindex = 0;
+    int findex = 0;
+    double Q;
+    if ((fnow > enow) == (fnow > -enow)) {
+      Q = enow;
+      eindex++;
+      if (eindex<e.size()) { enow = e.get(eindex); } }
+    else {
+      Q = fnow;
+      findex++;
+      if (findex<f.size()) { fnow = f.get(findex); } }
+
+    if ((eindex < elen) && (findex < flen)) {
+      Hilo Qnew_hh;
+      if ((fnow > enow) == (fnow > -enow)) {
+        //Fast_Two_Sum(enow, Q, Qnew, hh);
+        Qnew_hh = Hilo.sum(enow,Q);
+        eindex++;
+        if (eindex<e.size()) { enow = e.get(eindex); } }
+      else {
+        //Fast_Two_Sum(fnow, Q, Qnew, hh);
+        Qnew_hh = Hilo.sum(fnow,Q);
+        findex++;
+        if (findex<f.size()) { fnow = f.get(findex); } }
+      Q = Qnew_hh.hi();
+      double hh = Qnew_hh.lo();
+      if (hh != 0.0) { h.add(hh); }
+
+      while ((eindex < elen) && (findex < flen)) {
+        if ((fnow > enow) == (fnow > -enow)) {
+          //Two_Sum(Q, enow, Qnew, hh);
+          Qnew_hh = Hilo.sum(Q,enow);
+          eindex++;
+          if (eindex<e.size()) { enow = e.get(eindex); } }
+        else {
+          //Two_Sum(Q, fnow, Qnew, hh);
+          Qnew_hh = Hilo.sum(Q,fnow);
+          findex++;
+          if (findex<f.size()) { fnow = f.get(findex); } }
+        Q = Qnew_hh.hi();
+        hh = Qnew_hh.lo();
+        if (hh != 0.0) { h.add(hh); } } }
+    while (eindex < elen) {
+      //Two_Sum(Q, enow, Qnew, hh);
+      final Hilo Qnew_hh = Hilo.sum(Q,enow);
+      eindex++;
+      if (eindex<e.size()) { enow = e.get(eindex); }
+      Q = Qnew_hh.hi();
+      final double hh = Qnew_hh.lo();
+      if (hh != 0.0) { h.add(hh); } }
+    while (findex < flen) {
+      //Two_Sum(Q, fnow, Qnew, hh);
+      final Hilo Qnew_hh = Hilo.sum(Q,fnow);
+      findex++;
+      if (findex<f.size()) { fnow = f.get(findex); }
+      Q = Qnew_hh.hi();
+      final double hh = Qnew_hh.lo();
+      if (hh != 0.0) { h.add(hh); } }
+    if ((Q != 0.0) || h.isEmpty()) { h.add(Q); }
+    return h; }
+
+  /** See fast_expansion_sum_zeroelim in Shewchuk's predicates.c
+   * <br>
+   * Difference is checking for and handling overflows.
+   * TODO: underflows?
+   */
   public final XDouble add (final XDouble b) {
     if (isZero()) { return b; }
     if (b.isZero()) { return this; }
@@ -270,10 +347,35 @@ public final class XDouble
     if (b.isPositiveInfinity()) { return POSITIVE_INFINITY; }
     if (b.isNegativeInfinity()) { return NEGATIVE_INFINITY; }
     // both are finite
-    XDouble sum = this;
-    for (int i = 0; i < b.nterms(); i++) { sum = sum.add(b.term(i)); }
-    assert sum.isFinite();
-    return sum; }
+    final DoubleArrayList sum = fastAdd(terms(),b.terms());
+    unsafeCompress(sum);
+    return unsafe(sum); }
+
+//  /** To start, just call add(double) iteratively.
+//   * <br>
+//   * TODO: optimize based on long version of Shewchuk's paper and
+//   *   fast_expansion_sum_zeroelim in predicates.c
+//   */
+//
+//  public final XDouble add (final XDouble b) {
+//    if (isZero()) { return b; }
+//    if (b.isZero()) { return this; }
+//    if (isNaN() || b.isNaN()) { return NaN; }
+//    if (isPositiveInfinity()) {
+//      if (b.isNegativeInfinity()) { return NaN; }
+//      return POSITIVE_INFINITY; }
+//    if (isNegativeInfinity()) {
+//      if (b.isPositiveInfinity()) { return NaN; }
+//      return NEGATIVE_INFINITY; }
+//    // this is finite
+//    if (b.isPositiveInfinity()) { return POSITIVE_INFINITY; }
+//    if (b.isNegativeInfinity()) { return NEGATIVE_INFINITY; }
+//    // both are finite
+//    XDouble sum = this;
+//    for (int i = 0; i < b.nterms(); i++) { sum = sum.add(b.term(i)); }
+//    // might not be true if there's an overflow
+//    assert sum.isFinite();
+//    return sum; }
 
   //--------------------------------------------------------------------
   // #define Two_One_Diff(a1, a0, b, x2, x1, x0) \
@@ -293,8 +395,10 @@ public final class XDouble
     final double[] _j_0x0 = twoOneDiff(a.hi(),a.lo(),b.lo());
     // Two_One_Diff(_j, _0, b1, x3, x2, x1)
     final double[] x123 = twoOneDiff(_j_0x0[2],_j_0x0[1],b.hi());
-    final double[] terms =
-      new double[] { _j_0x0[0],x123[0],x123[1],x123[2] };
+    // TODO: special case 4 terms
+    final DoubleArrayList terms =
+      DoubleArrayList.from(_j_0x0[0],x123[0],x123[1],x123[2]);
+    unsafeCompress(terms);
     return unsafe(terms); }
 
   //--------------------------------------------------------------------
@@ -356,10 +460,14 @@ public final class XDouble
   public static final XDouble product (final double a,
                                        final double b) {
     final Hilo hilo = Hilo.product(a, b);
-    return unsafe(DoubleArrayList.from(hilo.lo(), hilo.hi())); }
+    final DoubleArrayList terms =
+      DoubleArrayList.from(hilo.lo(), hilo.hi());
+    // TODO: this should be unnecessary, or have a simple alternative
+    unsafeCompress(terms);
+    return unsafe(terms); }
 
 //#define Two_Product_Presplit(a, b, bhi, blo, x, y) \
-//  x = (REAL) (a * b); \
+//  x = (double) (a * b); \
 //  Split(a, ahi, alo); \
 //  err1 = x - (ahi * bhi); \
 //  err2 = err1 - (alo * bhi); \
@@ -380,7 +488,7 @@ public final class XDouble
     return new Hilo(x,y);}
 
   //  #define Two_Product_2Presplit(a, ahi, alo, b, bhi, blo, x, y) \
-  //  x = (REAL) (a * b); \
+  //  x = (double) (a * b); \
   //  err1 = x - (ahi * bhi); \
   //  err2 = err1 - (alo * bhi); \
   //  err3 = err2 - (ahi * blo); \
@@ -415,8 +523,11 @@ public final class XDouble
     final Hilo _kx1 = Hilo.sum(_ix0.hi(), _j_0.lo());
 //    Fast_Two_Sum(_j, _k, x3, x2)
     final Hilo x3x2 = Hilo.fastSum(_j_0.hi(), _kx1.hi());
-    return unsafe(DoubleArrayList.from(
-      _ix0.lo(), _kx1.lo(), x3x2.lo(), x3x2.hi())); }
+    final DoubleArrayList terms = DoubleArrayList.from(
+      _ix0.lo(), _kx1.lo(), x3x2.lo(), x3x2.hi());
+    // TODO: special case 4 terms
+    unsafeCompress(terms);
+    return unsafe(terms); }
 
   //--------------------------------------------------------------------
 
@@ -459,13 +570,43 @@ public final class XDouble
     final Hilo s15 = Hilo.sum(s12.hi(), s14.hi());
     ab[7] = s15.hi();
     ab[6] = s15.lo();
+    final DoubleArrayList terms = DoubleArrayList.from(ab);
+    unsafeCompress(terms);
+    return unsafe(terms); }
 
-    return unsafe(ab); }
+  /** See <code>scale_expansion_zeroelim</code>
+   * from Shewchuk's predicates.c.
+   * Assuming zeros and non-finite cases are already handled.
+   * */
+  private static final DoubleArrayList
+  fastMultiply (final DoubleArrayList e,
+                final double b) {
+    final DoubleArrayList h =
+      new DoubleArrayList(2*e.size());
 
-  //--------------------------------------------------------------------
-  // TODO: translate Shewchuk code to more efficient version
-  // TODO: cleanup non-finite cases
-  // naive implementation:
+//    Split(b, bhi, blo);
+//    Two_Product_Presplit(e[0], b, bhi, blo, Q, hh);
+    final Hilo bhilo = Hilo.split(b);
+    Hilo Q_hh = twoProductPresplit(e.get(0),b,bhilo);
+    double Q = Q_hh.hi();
+    double hh = Q_hh.lo();
+    if (hh != 0) { h.add(hh); }
+
+    for (int eindex = 1; eindex < e.size(); eindex++) {
+      final double enow = e.get(eindex);
+//      Two_Product_Presplit(enow, b, bhi, blo, product1, product0);
+//      Two_Sum(Q, product0, sum, hh);
+      final Hilo product10 = twoProductPresplit(enow,b,bhilo);
+      final Hilo sum_hh = Hilo.sum(Q,product10.lo());
+      hh = sum_hh.lo();
+      if (hh != 0) { h.add(hh); }
+      //Fast_Two_Sum(product1, sum, Q, hh);
+      Q_hh = Hilo.fastSum(product10.hi(),sum_hh.hi());
+      Q = Q_hh.hi();
+      hh = Q_hh.lo();
+      if (hh != 0) {  h.add(hh); } }
+    if ((Q != 0.0) || h.isEmpty()) { h.add(Q); }
+    return h; }
 
   public final XDouble multiply (final double b) {
     if (0.0==b) { return ZERO; }
@@ -490,14 +631,51 @@ public final class XDouble
       if (0.0<b) { return NEGATIVE_INFINITY; }
       if (0.0>b) { return POSITIVE_INFINITY; }
       return NaN; }
-    assert isFinite() : "\n" + this;
-    XDouble result = ZERO;
-    for  (int i=0;i<nterms();i++) {
-      final Hilo ab = Hilo.product(term(i), b);
-      if (ab.isNaN()) { return NaN; }
-      result = result.add(ab.hi());
-      result = result.add(ab.lo()); }
-    return result; }
+    //assert isFinite() : "\n" + this;
+    final DoubleArrayList terms = fastMultiply(terms(),b);
+    unsafeCompress(terms);
+    return unsafe(terms); }
+
+//--------------------------------------------------------------------
+  // TODO: translate Shewchuk code to more efficient version
+  // TODO: cleanup non-finite cases
+  // naive implementation:
+
+//  public final XDouble multiply (final double b) {
+//    if (0.0==b) { return ZERO; }
+//    if (1.0==b) { return this; }
+//    if (Double.isNaN(b)) { return NaN; }
+//    if (isZero()) { return ZERO; }
+//    if (isNaN()) { return NaN; }
+//    if (Double.POSITIVE_INFINITY == b) {
+//      if (isPositive()) { return POSITIVE_INFINITY; }
+//      if (isNegative()) { return NEGATIVE_INFINITY; }
+//      return NaN; }
+//    if (Double.NEGATIVE_INFINITY == b) {
+//      if (isPositive()) { return NEGATIVE_INFINITY; }
+//      if (isNegative()) { return POSITIVE_INFINITY; }
+//      return NaN; }
+//    assert Double.isFinite(b);
+//    if (isPositiveInfinity()) {
+//      if (0.0<b) { return POSITIVE_INFINITY; }
+//      if (0.0>b) { return NEGATIVE_INFINITY; }
+//      return NaN; }
+//    if (isNegativeInfinity()) {
+//      if (0.0<b) { return NEGATIVE_INFINITY; }
+//      if (0.0>b) { return POSITIVE_INFINITY; }
+//      return NaN; }
+//    //assert isFinite() : "\n" + this;
+//    XDouble result = ZERO;
+//    for  (int i=0;i<nterms();i++) {
+//      final Hilo ab = Hilo.product(term(i), b);
+//      if (ab.isNaN()) { return NaN; }
+//      //assert null!=result;
+//      final XDouble temp = result.add(ab.hi());
+////      assert null!=temp :
+////        "\n" + term(i) + "\n" + b
+////          + "\n" + result + "\n" + ab + "\n" + temp;
+//      result = temp.add(ab.lo()); }
+//    return result; }
 
   public final XDouble multiply (final Hilo b) {
     return multiply(b.hi()).add(multiply(b.lo())); }
@@ -689,27 +867,39 @@ public final class XDouble
 
   // TODO: make this private, public version should clone terms.
   public static final XDouble unsafe (final DoubleArrayList terms) {
-    terms.removeAll(0.0);
-    if (terms.isEmpty()) { assert null != ZERO; return ZERO; }
+    if (terms.isEmpty()) { return ZERO; }
+    //assert isFinite(terms);
     // TODO: is compress() a good idea?
-    return new XDouble(compress(terms)); }
-//    return new XDouble(terms); }
+    //unsafeCompress(terms);
+    return new XDouble(terms); }
 
   // TODO: make this private, public version should clone terms.
-  public static final XDouble unsafe (final double[] terms) {
-    return unsafe(DoubleArrayList.from(terms)); }
+//  public static final XDouble unsafe (final double[] terms) {
+//    return unsafe(DoubleArrayList.from(terms)); }
 
   // Not really safe unless non-overlapping is enforced
 //  private static final XDouble safe (final DoubleArrayList terms) {
 //    return unsafe(terms.clone()); }
 
   public static final XDouble valueOf (final double x) {
-    return unsafe(DoubleArrayList.from(x)); }
+    // unsafe calls compress, not needed.
+    if (0.0==x) { return ZERO; }
+    if (Double.isNaN(x)) { return NaN; }
+    if (Double.POSITIVE_INFINITY == x) { return POSITIVE_INFINITY; }
+    if (Double.NEGATIVE_INFINITY == x) { return NEGATIVE_INFINITY; }
+    return new XDouble(DoubleArrayList.from(x)); }
+
+  public static final XDouble unsafe (final Hilo hilo) {
+    if (hilo.isZero()) { return ZERO; }
+    if (hilo.isNaN()) { return NaN; }
+    // TODO: infinities?
+    final double lo = hilo.lo();
+    if (0.0 == lo) { return valueOf(hilo.hi()); }
+    return new XDouble(DoubleArrayList.from(lo,hilo.hi())); }
 
   public static final XDouble valueOf (final double x0,
                                        final double x1) {
-    final Hilo xx = Hilo.sum(x0, x1);
-    return unsafe(DoubleArrayList.from(xx.lo(),xx.hi())); }
+    return valueOf(Hilo.sum(x0, x1)); }
 
   public static final XDouble valueOf (final Hilo x) {
     return unsafe(DoubleArrayList.from(x.lo(),x.hi())); }
@@ -726,6 +916,33 @@ public final class XDouble
 
 
   //-------------------------------------------------------------------
+  /** Modifies the DoubleArrayList <code>h</code> in place! */
+
+  public static final void
+  unsafeCompress (final DoubleArrayList h) {
+    // predicates.c: "e and h may be the same."
+    // and 2nd loop modifies h in place anyway.
+    h.removeAll(0.0);
+    // predicates.c assumes silently that e has at least 2 terms!!!
+    if (1>=h.size()) { return; }
+    int bottom = h.size() - 1;
+    double Q = h.get(bottom);
+    for (int eindex = h.size() - 2; eindex >= 0; eindex--) {
+      final double enow = h.get(eindex);
+      final Hilo Qnewq = Hilo.fastSum(Q, enow);
+      if (Qnewq.lo() != 0) {
+        h.set(bottom--,Qnewq.hi()); Q = Qnewq.lo(); }
+      else { Q = Qnewq.hi(); } }
+    int top = 0;
+    for (int hindex = bottom + 1; hindex < h.size(); hindex++) {
+      final double hnow = h.get(hindex);
+      final Hilo Qnewq = Hilo.fastSum(hnow, Q);
+      if (Qnewq.lo() != 0) { h.set(top++,Qnewq.lo()); }
+      Q = Qnewq.hi(); }
+    h.set(top,Q);
+    assert top < h.size();
+    h.resize(top+1); }
+
   //  compress()   Compress an expansion.
   //
   //  See the long version of Shewchuk's 1997 paper for details.
@@ -741,33 +958,11 @@ public final class XDouble
 
   private static final DoubleArrayList
   compress (final DoubleArrayList e) {
-    assert ! e.isEmpty();
-    // predicates.c: "e and h may be the same."
-    // and 2nd loop modifies h in place anyway.
     final DoubleArrayList h = e.clone();
-    // predicates.c assumes silently that e has at least 2 terms!!!
-    if (1==h.size()) { return h; }
-    int bottom = h.size() - 1;
-    double Q = h.get(bottom);
-    for (int eindex = e.size() - 2; eindex >= 0; eindex--) {
-      final double enow = h.get(eindex);
-      final Hilo Qnewq = Hilo.fastSum(Q, enow);
-      if (Qnewq.lo() != 0) {
-        h.set(bottom--,Qnewq.hi()); Q = Qnewq.lo(); }
-      else { Q = Qnewq.hi(); } }
-    int top = 0;
-    for (int hindex = bottom + 1; hindex < e.size(); hindex++) {
-      final double hnow = h.get(hindex);
-      final Hilo Qnewq = Hilo.fastSum(hnow, Q);
-      if (Qnewq.lo() != 0) { h.set(top++,Qnewq.lo()); }
-      Q = Qnewq.hi(); }
-    h.set(top,Q);
-    assert top < h.size();
-    h.resize(top+1);
+    unsafeCompress(h);
     return h; }
 
-  /** May return <code>this</code> instance in some cases.
-   */
+  /** May return <code>this</code> instance in some cases. */
   public final XDouble compress () {
     if (1>=nterms()) { return this; }
     final DoubleArrayList terms = compress(terms());

@@ -49,7 +49,8 @@ public final class Exact extends Triangle2D {
                                     final XDouble cd,
                                     final XDouble bd,
                                     final int flip) {
-    final double ax = a.getX(), ay = a.getY();
+    final double ax = a.getX();
+    final double ay = a.getY();
     // TODO: XDouble.add(XDouble,XDouble) to skip one object creation?
     //  ...and XDouble.addSubtract(XDouble,XDouble)
     // TODO: XDouble.multiplyBySquare(double)?

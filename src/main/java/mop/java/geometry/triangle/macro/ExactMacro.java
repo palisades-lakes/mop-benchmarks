@@ -6,6 +6,7 @@ package mop.java.geometry.triangle.macro;
 // split into Expansion manipulation and fast, slow, exact, adaptive
 // algorithm classes
 
+import com.carrotsearch.hppc.DoubleArrayList;
 import mop.java.geometry.triangle.Triangle2D;
 import mop.java.numbers.XDouble;
 import org.apache.commons.geometry.euclidean.twod.Vector2D;
@@ -129,7 +130,10 @@ public final class ExactMacro extends Triangle2D {
     vlength = fast_expansion_sum_zeroelim(4, aterms, 4, bterms, v);
     fast_expansion_sum_zeroelim(vlength, v, 4, cterms, w);
 
-    return XDouble.unsafe(w).doubleValue(); }
+    // TODO: doubleValue direct from double[]
+    final DoubleArrayList terms = DoubleArrayList.from(w);
+    XDouble.unsafeCompress(terms);
+    return XDouble.unsafe(terms).doubleValue(); }
 
   //--------------------------------------------------------------------
 
@@ -352,8 +356,10 @@ public final class ExactMacro extends Triangle2D {
     // int deterlen = fast_expansion_sum_zeroelim(ablen, abdet, cdlen, cddet, deter);
     // return deter[deterlen - 1];
     fast_expansion_sum_zeroelim(ablen, abdet, cdlen, cddet, deter);
-    return XDouble.unsafe(deter).doubleValue();
-  }
+    // TODO: doubleValue direct from double[]
+    final DoubleArrayList terms = DoubleArrayList.from(deter);
+    XDouble.unsafeCompress(terms);
+    return XDouble.unsafe(terms).doubleValue(); }
 
   //--------------------------------------------------------------------
   // construction

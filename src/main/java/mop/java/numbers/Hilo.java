@@ -9,7 +9,7 @@ import java.io.Serializable;
  * <a href="https://github.com/locationtech/jts/blob/master/modules/core/src/main/java/org/locationtech/jts/math/DD.java">
  *  org.locationtech.jts.math.DD</a>
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-07-04
+ * @version 2026-07-31
  */
 
 public record Hilo (double hi, double lo)
@@ -44,11 +44,15 @@ public record Hilo (double hi, double lo)
 
   public static final Hilo fastSum (final double a,
                                     final double b) {
-    assert Math.abs(a) >= Math.abs(b) :
-      "fastTwoSum(" +
+    // handle NaN, infinity
+    assert (! (Math.abs(a) < Math.abs(b))) :
+      "fastSum(" +
         Double.toHexString(a) + ", " +
         Double.toHexString(b) + ")";
     final double x = (a + b);
+    if (Double.isNaN(x)) { return NaN; }
+    if (Double.POSITIVE_INFINITY == x) { return POSITIVE_INFINITY; }
+    if (Double.NEGATIVE_INFINITY == x) { return NEGATIVE_INFINITY; }
     //Fast_Two_Sum_Tail(a, b, x, y)
     final double bvirt = x - a;
     final double y = b - bvirt;
@@ -146,9 +150,12 @@ public record Hilo (double hi, double lo)
   @Override
   public final Hilo zero () { return ZERO; }
 
-  // TODO: shouldn't need to check lo
   @Override
-  public final boolean isZero () { return hi == 0.0 && lo == 0.0; }
+  public final boolean isZero () {
+    // assuming abs(hi) >= abs(lo)
+    return hi == 0.0; }
+  // robust test:
+  // return hi == 0.0 && lo == 0.0; }
 
   @Override
   public final Hilo abs () {
@@ -200,6 +207,9 @@ public record Hilo (double hi, double lo)
   public static final Hilo product (final double a,
                                     final double b) {
     final double x = (a * b);
+    if (Double.isNaN(x)) { return NaN; }
+    if (Double.POSITIVE_INFINITY == x) { return POSITIVE_INFINITY; }
+    if (Double.NEGATIVE_INFINITY == x) { return NEGATIVE_INFINITY; }
     //Two_Product_Tail(a, b, x, y)
     // TODO: inline to avoid instance creation?
     //   call twoProductPresplit?
@@ -317,13 +327,10 @@ public record Hilo (double hi, double lo)
     u = (((hc * hy - U) + hc * ty) + tc * hy) + tc * ty;
     c = ((((hi - U) - u) + lo) - C * ylo) / yhi;
     u = C + c;
-    return sum(u, (C - u) + c);
-  }
+    return sum(u, (C - u) + c); }
 
   @Override
-  public final Hilo divide (final Hilo y) {
-    return divide(y.hi, y.lo);
-  }
+  public final Hilo divide (final Hilo y) { return divide(y.hi, y.lo); }
 
   @Override
   public final Hilo invert () {

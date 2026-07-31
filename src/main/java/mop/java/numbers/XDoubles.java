@@ -24,7 +24,7 @@ import java.util.function.*;
  * point, so not associative or distributive over addition.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-05-21
+ * @version 2026-07-31
  */
 @SuppressWarnings({"unchecked","static-method","unused"})
 public final class XDoubles implements Set {
@@ -234,7 +234,9 @@ public final class XDoubles implements Set {
 
   public static final TwoSetsOneOperation FLOATING_POINT_SPACE =
     TwoSetsOneOperation.floatingPointSpace(
-      get().scaler(),get(),Doubles.get());
+      get().scaler(),
+      get(),
+      Doubles.get());
 
   //--------------------------------------------------------------
 }

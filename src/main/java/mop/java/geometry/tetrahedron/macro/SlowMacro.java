@@ -6,6 +6,7 @@ package mop.java.geometry.tetrahedron.macro;
 // split into Expansion manipulation and fast, slow, exact, adaptive
 // algorithm classes
 
+import com.carrotsearch.hppc.DoubleArrayList;
 import mop.java.geometry.tetrahedron.Tetrahedron3D;
 import mop.java.numbers.XDouble;
 import org.apache.commons.geometry.euclidean.threed.Vector3D;
@@ -392,7 +393,10 @@ public final class SlowMacro extends Tetrahedron3D {
     ablen = fast_expansion_sum_zeroelim(alen, adet, blen, bdet, abdet);
     fast_expansion_sum_zeroelim(ablen, abdet, clen, cdet, deter);
 
-    return XDouble.unsafe(deter).doubleValue(); }
+    // TODO: doubleValue direct from double[]
+    final DoubleArrayList terms = DoubleArrayList.from(deter);
+    XDouble.unsafeCompress(terms);
+    return XDouble.unsafe(terms).doubleValue(); }
 
   //--------------------------------------------------------------------
 
@@ -1313,7 +1317,10 @@ public final class SlowMacro extends Tetrahedron3D {
     cdlen = fast_expansion_sum_zeroelim(clen, cdet, dlen, ddet, cddet);
     fast_expansion_sum_zeroelim(ablen, abdet, cdlen, cddet, deter);
 
-    return XDouble.unsafe(deter).doubleValue(); }
+    // TODO: doubleValue direct from double[]
+    final DoubleArrayList terms = DoubleArrayList.from(deter);
+    XDouble.unsafeCompress(terms);
+    return XDouble.unsafe(terms).doubleValue(); }
 
   //--------------------------------------------------------------------
   // construction
