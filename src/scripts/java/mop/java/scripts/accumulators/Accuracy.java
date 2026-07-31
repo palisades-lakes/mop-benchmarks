@@ -1,4 +1,4 @@
-package mop.java.scripts;
+package mop.java.scripts.accumulators;
 
 import mop.java.accumulators.Accumulator;
 import mop.java.accumulators.BigFloatAccumulator;
@@ -14,7 +14,7 @@ import mop.java.benchmarks.accumulate.Common;
  * @author palisades dot lakes at gmail dot com
  * @version 2019-07-29
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings("unused")
 public final class Accuracy {
 
   public static final void main (final String[] args) {

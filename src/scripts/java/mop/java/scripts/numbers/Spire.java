@@ -1,4 +1,4 @@
-package mop.java.scripts;
+package mop.java.scripts.numbers;
 
 import spire.math.Algebraic;
 import spire.math.Algebraic$;

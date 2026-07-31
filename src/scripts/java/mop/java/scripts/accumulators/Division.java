@@ -1,4 +1,4 @@
-package mop.java.scripts;
+package mop.java.scripts.accumulators;
 
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -18,7 +18,7 @@ import mop.java.prng.PRNG;
  * @author palisades dot lakes at gmail dot com
  * @version 2023-08-15
  */
-//@SuppressWarnings("unchecked")
+@SuppressWarnings("unused")
 public final class Division {
 
   private static final void

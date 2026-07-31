@@ -1,4 +1,4 @@
-package mop.java.scripts;
+package mop.java.scripts.accumulators;
 
 import static java.lang.Double.toHexString;
 
@@ -15,7 +15,7 @@ import mop.java.numbers.Doubles;
  * @author palisades dot lakes at gmail dot com
  * @version 2022-07-31
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings("unused")
 public final class RationalBFDot {
 
   //--------------------------------------------------------------

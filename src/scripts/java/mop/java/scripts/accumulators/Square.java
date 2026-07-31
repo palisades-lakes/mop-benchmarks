@@ -1,4 +1,4 @@
-package mop.java.scripts;
+package mop.java.scripts.accumulators;
 
 /** Benchmark squares.
  *
@@ -8,7 +8,8 @@ package mop.java.scripts;
  * @author palisades dot lakes at gmail dot com
  * @version 2019-09-03
  */
-@SuppressWarnings("unchecked")
+
+@SuppressWarnings("unused")
 public final class Square {
 
   //  public static final void main (final String[] args) {

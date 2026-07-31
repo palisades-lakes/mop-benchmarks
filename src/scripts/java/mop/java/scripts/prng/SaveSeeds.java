@@ -1,4 +1,4 @@
-package mop.java.scripts;
+package mop.java.scripts.prng;
 
 import java.io.File;
 import java.time.LocalDate;
@@ -14,7 +14,7 @@ import mop.java.prng.Seeds;
  * @version 2019-01-05
  */
 
-@SuppressWarnings("unchecked")
+@SuppressWarnings("unused")
 public final class SaveSeeds {
 
   //--------------------------------------------------------------

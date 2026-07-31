@@ -1,4 +1,4 @@
-package mop.java.scripts;
+package mop.java.scripts.accumulators;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -21,7 +21,7 @@ import mop.java.prng.PRNG;
  * @author palisades dot lakes at gmail dot com
  * @version 2019-10-17
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings("unused")
 public final class Distill {
 
   //--------------------------------------------------------------
@@ -38,50 +38,35 @@ public final class Distill {
   factories =
   Map.of(
     "uniform",
-    new IntFunction<Generator>() {
-      @Override
-      public final Generator apply (final int dim) {
-        final UniformRandomProvider urp0 = PRNG.well44497b(SEED0);
-        final int emax = Doubles.deMax(dim)/2;
-        final double dmax = (1<<emax);
-        return Doubles.uniformGenerator(dim,urp0,-dmax,dmax); }
-    },
+    dim -> {
+      final UniformRandomProvider urp0 = PRNG.well44497b(SEED0);
+      final int emax = Doubles.deMax(dim)/2;
+      final double dmax = (1<<emax);
+      return Doubles.uniformGenerator(dim,urp0,-dmax,dmax); },
     "finite",
-    new IntFunction<Generator>() {
-      @Override
-      public final Generator apply (final int dim) {
-        final UniformRandomProvider urp0 = PRNG.well44497b(SEED0);
-        final int emax = Doubles.deMax(dim)/2;
-        //Debug.println("emax=" + emax);
-        return Doubles.finiteGenerator(dim,urp0,emax); }
-    },
+    dim -> {
+      final UniformRandomProvider urp0 = PRNG.well44497b(SEED0);
+      final int emax = Doubles.deMax(dim)/2;
+      //Debug.println("emax=" + emax);
+      return Doubles.finiteGenerator(dim,urp0,emax); },
     "exponential",
-    new IntFunction<Generator>() {
-      @Override
-      public final Generator apply (final int dim) {
-        final UniformRandomProvider urp0 = PRNG.well44497b(SEED0);
-        final int emax = Doubles.deMax(dim)/2;
-        final double dmax = (1<<emax);
-        return Doubles.exponentialGenerator(dim,urp0,0.0,dmax); }
-    },
+    dim -> {
+      final UniformRandomProvider urp0 = PRNG.well44497b(SEED0);
+      final int emax = Doubles.deMax(dim)/2;
+      final double dmax = (1<<emax);
+      return Doubles.exponentialGenerator(dim,urp0,0.0,dmax); },
     "gaussian",
-    new IntFunction<Generator>() {
-      @Override
-      public final Generator apply (final int dim) {
-        final UniformRandomProvider urp0 = PRNG.well44497b(SEED0);
-        final int emax = Doubles.deMax(dim)/2;
-        final double dmax = (1<<emax);
-        return Doubles.gaussianGenerator(dim,urp0,0.0,dmax); }
-    },
+    dim -> {
+      final UniformRandomProvider urp0 = PRNG.well44497b(SEED0);
+      final int emax = Doubles.deMax(dim)/2;
+      final double dmax = (1<<emax);
+      return Doubles.gaussianGenerator(dim,urp0,0.0,dmax); },
     "laplace",
-    new IntFunction<Generator>() {
-      @Override
-      public final Generator apply (final int dim) {
-        final UniformRandomProvider urp0 = PRNG.well44497b(SEED0);
-        final int emax = Doubles.deMax(dim)/2;
-        final double dmax = (1<<emax);
-        return Doubles.laplaceGenerator(dim,urp0,0.0,dmax); }
-    });
+    dim -> {
+      final UniformRandomProvider urp0 = PRNG.well44497b(SEED0);
+      final int emax = Doubles.deMax(dim)/2;
+      final double dmax = (1<<emax);
+      return Doubles.laplaceGenerator(dim,urp0,0.0,dmax); });
 
   private static final String[] generators =
     factories.keySet().toArray(new String[0]);

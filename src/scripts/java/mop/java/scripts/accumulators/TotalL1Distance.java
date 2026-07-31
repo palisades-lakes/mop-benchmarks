@@ -1,20 +1,19 @@
-package mop.java.scripts;
+package mop.java.scripts.accumulators;
 
 import mop.java.accumulators.Accumulator;
 import mop.java.prng.Generator;
 import mop.java.prng.Generators;
 
-/** Benchmark l1 norm.
+/** Benchmark L1 distance.
  *
  * <pre>
- * jy --source 12 src/scripts/java/xfp/java/scripts/TotalL1Norm.java
+ * jy --source 12 src/scripts/java/xfp/java/scripts/TotalL1Distance.java
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2019-10-09
- * 7
+ * @version 2019-08-22
  */
-@SuppressWarnings("unchecked")
-public final class TotalL1Norm {
+@SuppressWarnings("unused")
+public final class TotalL1Distance {
 
   public static final void main (final String[] args) {
     final int dim = (2*1024*1024);
@@ -22,12 +21,12 @@ public final class TotalL1Norm {
     //final Generator g = Generators.make("finite",dim);
     final Generator g = Generators.make("uniform",dim);
     final Accumulator a =
-      mop.java.accumulators.RationalFloatAccumulator.make();
-    //    mop.java.accumulators.BigFloatAccumulator.make();
+      mop.java.accumulators.BigFloatAccumulator.make();
     assert a.isExact();
     for (int i=0;i<trys;i++) {
-      final double[] x = (double[]) g.next();
-      final double z = a.clear().addAbsAll(x).doubleValue();
+      final double[] x0 = (double[]) g.next();
+      final double[] x1 = (double[]) g.next();
+      final double z = a.clear().addL1Distance(x0,x1).doubleValue();
       assert Double.isFinite(z); } }
 
   //--------------------------------------------------------------

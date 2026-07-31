@@ -1,4 +1,4 @@
-package mop.java.scripts;
+package mop.java.scripts.accumulators;
 
 import mop.java.accumulators.Accumulator;
 import mop.java.accumulators.BigFloatAccumulator;
@@ -13,11 +13,11 @@ import mop.java.prng.Generators;
  * @author palisades dot lakes at gmail dot com
  * @version 2019-09-09
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings("unused")
 public final class PartialL1s {
 
   public static final void main (final String[] args) {
-    final int dim = (1*1024*1024) - 1;
+    final int dim = (1024*1024) - 1;
     final int trys = 8 * 1024;
     //final Generator g = Generators.make("exponential",dim);
     //final Generator g = Generators.make("finite",dim);

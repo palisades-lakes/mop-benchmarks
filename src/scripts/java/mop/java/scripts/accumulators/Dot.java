@@ -1,4 +1,4 @@
-package mop.java.scripts;
+package mop.java.scripts.accumulators;
 
 import static java.lang.Double.NEGATIVE_INFINITY;
 import static java.lang.Double.toHexString;
@@ -32,7 +32,7 @@ import mop.java.accumulators.RatioAccumulator;
  * @author palisades dot lakes at gmail dot com
  * @version 2021-07-08
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings("unused")
 public final class Dot {
 
   //--------------------------------------------------------------

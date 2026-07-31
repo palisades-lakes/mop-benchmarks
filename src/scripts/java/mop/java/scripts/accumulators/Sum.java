@@ -1,4 +1,4 @@
-package mop.java.scripts;
+package mop.java.scripts.accumulators;
 
 import mop.java.accumulators.Accumulator;
 import mop.java.accumulators.RationalFloatAccumulator;
@@ -14,7 +14,7 @@ import mop.java.numbers.Doubles;
  * @author palisades dot lakes at gmail dot com
  * @version 2022-07-31
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings("unused")
 public final class Sum {
 
   //--------------------------------------------------------------
@@ -36,7 +36,7 @@ public final class Sum {
       if ((2.0*Math.ulp(1.0)) > a.doubleValue()) {
         System.out.println("false"); } }
     System.out.printf("total secs: %8.2f\n",
-      Double.valueOf((System.nanoTime()-t)*1.0e-9));
+                      (System.nanoTime() - t) * 1.0e-9);
     Thread.sleep(16*1024); }
 
   //--------------------------------------------------------------

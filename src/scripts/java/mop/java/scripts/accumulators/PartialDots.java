@@ -1,4 +1,4 @@
-package mop.java.scripts;
+package mop.java.scripts.accumulators;
 
 import org.apache.commons.rng.UniformRandomProvider;
 
@@ -16,13 +16,13 @@ import mop.java.prng.PRNG;
  * @author palisades dot lakes at gmail dot com
  * @version 2019-07-25
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings("unused")
 public final class PartialDots {
 
   public static final void main (final String[] args) {
     //Debug.DEBUG=false;
     final int n = (8*1024*1024) - 1;
-    final int trys = 1 * 1024;
+    final int trys = 1024;
     final UniformRandomProvider urp =
       PRNG.well44497b("seeds/Well44497b-2019-01-09.txt");
     final int emax = Doubles.deMax(n)/2;

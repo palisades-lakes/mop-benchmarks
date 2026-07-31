@@ -2,7 +2,7 @@
 :: palisades.lakes (at) gmail (dot) com
 :: 2024-01-15
 
-::set GC=-XX:+AggressiveHeap -XX:+UseStringDeduplication 
+::set GC=-XX:+AggressiveHeap -XX:+UseStringDeduplication
 set GC=
 
 set TRACE=
@@ -10,14 +10,14 @@ set TRACE=
 
 ::set THRUPUT=
 set THRUPUT=-server -Xbatch -XX:+UseFMA
-::set THRUPUT=-server -Xbatch 
+::set THRUPUT=-server -Xbatch
 
-::set XMX=-Xms48g -Xmx48g -Xmn16g 
-::set XMX=-Xms31g -Xmx31g -Xmn12g 
+::set XMX=-Xms48g -Xmx48g -Xmn16g
+::set XMX=-Xms31g -Xmx31g -Xmn12g
 set XMX=-Xms8g -Xmx8g -Xmn3g
 
 ::set PROF=
-set PROF=-agentpath:"C:\Program Files\YourKit Java Profiler 2023.9-b104\bin\windows-x86-64\yjpagent.dll=_no_java_version_check"
+set PROF=-agentpath:"C:\Program Files\YourKit Java Profiler 2026.3.171\bin\windows-x86-64\yjpagent.dll=_no_java_version_check"
 
 set OPENS=--add-opens java.base/java.lang=ALL-UNNAMED
 set CP=-cp lib/*

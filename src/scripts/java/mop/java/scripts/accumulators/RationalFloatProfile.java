@@ -1,4 +1,4 @@
-package mop.java.scripts;
+package mop.java.scripts.accumulators;
 
 import mop.java.numbers.RationalFloat;
 import mop.java.prng.Generator;
@@ -12,7 +12,7 @@ import mop.java.benchmarks.accumulate.Common;
  * @author palisades dot lakes at gmail dot com
  * @version 2019-05-26
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings("unused")
 public final class RationalFloatProfile {
 
   public static final void main (final String[] args) {
@@ -34,7 +34,7 @@ public final class RationalFloatProfile {
             ); }
       }
       System.out.printf("total secs: %8.2f\n",
-        Double.valueOf((System.nanoTime()-t)*1.0e-9)); } }
+                        (System.nanoTime() - t) * 1.0e-9); } }
 
   //--------------------------------------------------------------
 

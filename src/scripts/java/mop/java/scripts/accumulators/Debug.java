@@ -1,4 +1,4 @@
-package mop.java.scripts;
+package mop.java.scripts.accumulators;
 
 import java.io.PrintStream;
 import java.math.BigInteger;
@@ -12,13 +12,14 @@ import com.upokecenter.numbers.EInteger;
  * configuration needed by java logging libraries.
  * Intended only for use during development;
  * no //Debug.* references should persist in 'production' code.
- *
+ * <br>
  * Static methods only; no state.
  *
  * @author palisades dot lakes at gmail dot com
  * @version 2019-05-11
  */
 
+@SuppressWarnings("unused")
 public final class Debug {
 
   public static boolean DEBUG = false;
@@ -56,19 +57,19 @@ public final class Debug {
 
   public static final void printf (final String format,
                                    final boolean arg) {
-    if (DEBUG) { OUT.printf(format,Boolean.valueOf(arg)); } }
+    if (DEBUG) { OUT.printf(format, arg); } }
 
   //--------------------------------------------------------------
 
   public static final void printf (final String format,
                                    final int arg) {
-    if (DEBUG) { OUT.printf(format,Integer.valueOf(arg)); } }
+    if (DEBUG) { OUT.printf(format, arg); } }
 
   //--------------------------------------------------------------
 
   public static final void printf (final String format,
                                    final double arg) {
-    if (DEBUG) { OUT.printf(format,Double.valueOf(arg)); } }
+    if (DEBUG) { OUT.printf(format, arg); } }
 
   //--------------------------------------------------------------
 
@@ -77,7 +78,7 @@ public final class Debug {
                                    final double arg1) {
     if (DEBUG) {
       OUT.printf(format,
-        Double.valueOf(arg0), Double.valueOf(arg1)); } }
+                 arg0, arg1); } }
 
   //--------------------------------------------------------------
   // for comparing to numbers-java results
@@ -120,13 +121,7 @@ public final class Debug {
     final EFloat nf = EFloat.FromEInteger(ni);
     final EFloat df = EFloat.FromEInteger(di);
     final EFloat f = nf.Divide(df, EContext.Binary64);
-    final double ze = f.ToDouble();
-    //    //Debug.println();
-    //    //Debug.println("ToDouble(BigInteger,BigInteger,int,int)");
-    //    //Debug.println(description("n",n));
-    //    //Debug.println(description("d",d));
-    //    //Debug.println("-> " + Double.toHexString(ze));
-    return ze;}
+    return f.ToDouble();}
 
   public static final float ToFloat (final long n,
                                      final long d) {
@@ -165,13 +160,7 @@ public final class Debug {
     final EFloat nf = EFloat.FromEInteger(ni);
     final EFloat df = EFloat.FromEInteger(di);
     final EFloat f = nf.Divide(df, EContext.Binary32);
-    final float ze = f.ToSingle();
-    //    //Debug.println();
-    //    //Debug.println("ToFloat(BigInteger,BigInteger,int,int)");
-    //    //Debug.println(description("n",n));
-    //    //Debug.println(description("d",d));
-    //    //Debug.println("-> " + Float.toHexString(ze));
-    return ze;}
+    return f.ToSingle();}
 
   //--------------------------------------------------------------
   // disable constructor

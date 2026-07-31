@@ -1,4 +1,4 @@
-package mop.java.scripts;
+package mop.java.scripts.accumulators;
 
 import mop.java.accumulators.Accumulator;
 import mop.java.prng.Generator;
@@ -12,7 +12,7 @@ import mop.java.prng.Generators;
  * @author palisades dot lakes at gmail dot com
  * @version 2019-08-26
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings("unused")
 public final class TotalDot {
 
   public static final void main (final String[] args) {

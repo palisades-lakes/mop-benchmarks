@@ -1,4 +1,4 @@
-package mop.java.scripts;
+package mop.java.scripts.numbers;
 
 /**<pre>
  * jy --source 12 src/scripts/java/xfp/java/scripts/Shift.java
@@ -6,7 +6,7 @@ package mop.java.scripts;
  * @author palisades dot lakes at gmail dot com
  * @version 2019-05-07
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings("unused")
 public final class Shift {
 
   public static final void main (final String[] args) {

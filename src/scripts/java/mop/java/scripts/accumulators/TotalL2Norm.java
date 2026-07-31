@@ -1,4 +1,4 @@
-package mop.java.scripts;
+package mop.java.scripts.accumulators;
 
 import mop.java.accumulators.Accumulator;
 import mop.java.accumulators.BigFloatAccumulator;
@@ -13,12 +13,12 @@ import mop.java.prng.Generators;
  * @author palisades dot lakes at gmail dot com
  * @version 2019-08-16
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings("unused")
 public final class TotalL2Norm {
 
   public static final void main (final String[] args) {
     final int dim = 524289;//(8*1024*1024) - 1;
-    final int trys = 1 * 1024;
+    final int trys = 1024;
     final Generator g = Generators.make("finite",dim);
     final Accumulator a = BigFloatAccumulator.make();
     assert a.isExact();

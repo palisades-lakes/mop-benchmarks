@@ -1,4 +1,4 @@
-package mop.java.scripts;
+package mop.java.scripts.numbers;
 
 import mop.java.benchmarks.accumulate.Common;
 import mop.java.numbers.BigFloat;
@@ -10,7 +10,7 @@ import mop.java.prng.Generator;
  * @author palisades dot lakes at gmail dot com
  * @version 2019-06-19
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings("unused")
 public final class BFProfile {
 
   public static final void main (final String[] args) {
@@ -41,7 +41,7 @@ public final class BFProfile {
             ); }
       }
       System.out.printf("total secs: %8.2f\n",
-        Double.valueOf((System.nanoTime()-t)*1.0e-9)); } }
+                        ( System.nanoTime()-t)*1.0e-9); } }
 
   //--------------------------------------------------------------
 }

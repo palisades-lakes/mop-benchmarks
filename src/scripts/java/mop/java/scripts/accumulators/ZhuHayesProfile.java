@@ -1,4 +1,4 @@
-package mop.java.scripts;
+package mop.java.scripts.accumulators;
 
 import mop.java.accumulators.Accumulator;
 import mop.java.accumulators.ZhuHayesAccumulator;
@@ -13,7 +13,7 @@ import mop.java.benchmarks.accumulate.Common;
  * @author palisades dot lakes at gmail dot com
  * @version 2019-04-16
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings("unused")
 public final class ZhuHayesProfile {
 
   //--------------------------------------------------------------
@@ -36,7 +36,7 @@ public final class ZhuHayesProfile {
           System.out.println(Double.toHexString(0.0)
             + " != " + Double.toHexString(z)); } }
       System.out.printf("total secs: %8.2f\n",
-        Double.valueOf((System.nanoTime()-t)*1.0e-9)); } }
+                        (System.nanoTime() - t) * 1.0e-9); } }
 
   //--------------------------------------------------------------
 }
