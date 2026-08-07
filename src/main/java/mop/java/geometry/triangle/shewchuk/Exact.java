@@ -14,7 +14,7 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
  *   profiling.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-07-27
+ * @version 2026-08-07
  */
 
 public final class Exact extends Triangle2D {
@@ -43,6 +43,25 @@ public final class Exact extends Triangle2D {
 
   //--------------------------------------------------------------------
 
+//  private static final XDouble det (final Vector2D a,
+//                                    final boolean subtractFlag,
+//                                    final XDouble bc,
+//                                    final XDouble cd,
+//                                    final XDouble bd,
+//                                    final int flip) {
+//    final double ax = a.getX();
+//    final double ay = a.getY();
+//    // TODO: XDouble.add(XDouble,XDouble) to skip one object creation?
+//    //  ...and XDouble.addSubtract(XDouble,XDouble)
+//    // TODO: XDouble.multiplyBySquare(double)?
+//    final XDouble bcd = subtractFlag
+//                        ? bc.add(cd).subtract(bd)
+//                        : bc.add(cd).add(bd);
+//    return
+//      (bcd.multiply(ax).multiply(flip*ax))
+//        .add(
+//          bcd.multiply(ay).multiply(flip*ay)); }
+
   private static final XDouble det (final Vector2D a,
                                     final boolean subtractFlag,
                                     final XDouble bc,
@@ -53,32 +72,31 @@ public final class Exact extends Triangle2D {
     final double ay = a.getY();
     // TODO: XDouble.add(XDouble,XDouble) to skip one object creation?
     //  ...and XDouble.addSubtract(XDouble,XDouble)
-    // TODO: XDouble.multiplyBySquare(double)?
     final XDouble bcd = subtractFlag
                         ? bc.add(cd).subtract(bd)
                         : bc.add(cd).add(bd);
+    // TODO: multiplyByL2Sq(flip,a)?
     return
-      (bcd.multiply(ax).multiply(flip*ax))
-        .add(
-          bcd.multiply(ay).multiply(flip*ay)); }
+      (bcd.multiplyBySq(flip,ax))
+        .add(bcd.multiplyBySq(flip,ay)); }
 
   public final boolean inCircleExact () { return true; }
 
-  public final double inCircle (final Vector2D d) {
+  public final double inCircle (final Vector2D p) {
     final Vector2D pa = getP0();
     final Vector2D pb = getP1();
     final Vector2D pc = getP2();
 
     final XDouble ab = XDouble.crossProduct(pa, pb);
     final XDouble bc = XDouble.crossProduct(pb, pc);
-    final XDouble cd = XDouble.crossProduct(pc, d);
-    final XDouble da = XDouble.crossProduct(d, pa);
+    final XDouble cd = XDouble.crossProduct(pc, p);
+    final XDouble da = XDouble.crossProduct(p, pa);
     final XDouble ac = XDouble.crossProduct(pa, pc);
-    final XDouble bd = XDouble.crossProduct(pb, d);
+    final XDouble bd = XDouble.crossProduct(pb, p);
     final XDouble adet = det(pa, true, bc, cd, bd, 1);
     final XDouble bdet = det(pb, false, cd, da, ac, -1);
     final XDouble cdet = det(pc, false, da, ab, bd, 1);
-    final XDouble ddet = det(d,true,ab,bc,ac,-1);
+    final XDouble ddet = det(p,true,ab,bc,ac,-1);
 
     // TODO: resolve this!
     // this change fixes current test cases.

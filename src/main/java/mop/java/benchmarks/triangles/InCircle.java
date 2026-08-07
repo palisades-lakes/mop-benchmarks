@@ -5,10 +5,10 @@ import mop.java.geometry.triangle.Triangle2D;
 import org.apache.commons.geometry.euclidean.twod.Vector2D;
 
 /** <pre>
- * mvn clean install && java -cp target\benchmarks.jar mop.java.benchmarks.triangles.InCircle
+ * mvn clean install && jmh mop.java.benchmarks.triangles.InCircle
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-07-29
+ * @version 2026-08-07
  */
 
 public class InCircle extends Base {

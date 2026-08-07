@@ -59,30 +59,31 @@ public abstract class Base {
       case "SlowMacro" ->  SlowMacro.from(t);
       default -> throw new UnsupportedOperationException(); }; }
 
-  public static final Triangle2D[] convertTriangles (final Triangle2D[] t,
-                                                     final String dest) {
+  public static final Triangle2D[]
+  convertTriangles (final Triangle2D[] t,
+                    final String dest) {
     for (int i=0; i<t.length; i++) {
       t[i] = convertTriangle(t[i],dest); }
     return t;}
 
   @Param({
-    "TriangleVector2D",
-    "BigFloatTriangle2D",
-    "RationalFloatTriangle2D",
-    "DDFast",
-    "DDNormalized",
-    "DDSlow",
-    "InCircleNormalized",
-    "DoubleNonRobust",
-    "Adapt",
+//    "TriangleVector2D",
+//    "BigFloatTriangle2D",
+//    "RationalFloatTriangle2D",
+//    "DDFast",
+//    "DDNormalized",
+//    "DDSlow",
+//    "InCircleNormalized",
+//    "DoubleNonRobust",
+//    "Adapt",
     "Exact",
-    "Fast",
+//    "Fast",
     "Slow",
-    "AdaptMacro",
-    "DefaultMacro",
+//    "AdaptMacro",
+//    "DefaultMacro",
     "ExactMacro",
-    "FastMacro",
-    "SlowMacro",
+//    "FastMacro",
+//    "SlowMacro",
   })
   String className;
 

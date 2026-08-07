@@ -107,7 +107,7 @@ public final class XDouble
 
   public final int nterms () { return _terms.size(); }
   public final double term (final int i) { return _terms.get(i); }
-//  public final double mostSignificantTerm () {
+  //  public final double mostSignificantTerm () {
 //    return _terms.get(_terms.size()-1); }
   public final double term3 () {
     return (4 > nterms()) ? 0.0 : term(3); }
@@ -402,8 +402,78 @@ public final class XDouble
     return unsafe(terms); }
 
   //--------------------------------------------------------------------
+  // saving negate and instance creation
 
-  // TODO: modify add to avoid instance creation
+  private final DoubleArrayList fastSubtract  (final DoubleArrayList e,
+                                               final DoubleArrayList f) {
+
+    final int elen = e.size();
+    final int flen = f.size();
+    final DoubleArrayList h =
+      new DoubleArrayList(elen + flen);
+    double enow = e.get(0);
+    double fnow = -f.get(0);
+    int eindex = 0;
+    int findex = 0;
+    double Q;
+    if ((fnow > enow) == (fnow > -enow)) {
+      Q = enow;
+      eindex++;
+      if (eindex<e.size()) { enow = e.get(eindex); } }
+    else {
+      Q = fnow;
+      findex++;
+      if (findex<f.size()) { fnow = -f.get(findex); } }
+
+    if ((eindex < elen) && (findex < flen)) {
+      Hilo Qnew_hh;
+      if ((fnow > enow) == (fnow > -enow)) {
+        //Fast_Two_Sum(enow, Q, Qnew, hh);
+        Qnew_hh = Hilo.sum(enow,Q);
+        eindex++;
+        if (eindex<e.size()) { enow = e.get(eindex); } }
+      else {
+        //Fast_Two_Sum(fnow, Q, Qnew, hh);
+        Qnew_hh = Hilo.sum(fnow,Q);
+        findex++;
+        if (findex<f.size()) { fnow = -f.get(findex); } }
+      Q = Qnew_hh.hi();
+      double hh = Qnew_hh.lo();
+      if (hh != 0.0) { h.add(hh); }
+
+      while ((eindex < elen) && (findex < flen)) {
+        if ((fnow > enow) == (fnow > -enow)) {
+          //Two_Sum(Q, enow, Qnew, hh);
+          Qnew_hh = Hilo.sum(Q,enow);
+          eindex++;
+          if (eindex<e.size()) { enow = e.get(eindex); } }
+        else {
+          //Two_Sum(Q, fnow, Qnew, hh);
+          Qnew_hh = Hilo.sum(Q,fnow);
+          findex++;
+          if (findex<f.size()) { fnow = -f.get(findex); } }
+        Q = Qnew_hh.hi();
+        hh = Qnew_hh.lo();
+        if (hh != 0.0) { h.add(hh); } } }
+    while (eindex < elen) {
+      //Two_Sum(Q, enow, Qnew, hh);
+      final Hilo Qnew_hh = Hilo.sum(Q,enow);
+      eindex++;
+      if (eindex<e.size()) { enow = e.get(eindex); }
+      Q = Qnew_hh.hi();
+      final double hh = Qnew_hh.lo();
+      if (hh != 0.0) { h.add(hh); } }
+    while (findex < flen) {
+      //Two_Sum(Q, fnow, Qnew, hh);
+      final Hilo Qnew_hh = Hilo.sum(Q,fnow);
+      findex++;
+      if (findex<f.size()) { fnow = -f.get(findex); }
+      Q = Qnew_hh.hi();
+      final double hh = Qnew_hh.lo();
+      if (hh != 0.0) { h.add(hh); } }
+    if ((Q != 0.0) || h.isEmpty()) { h.add(Q); }
+    return h; }
+
   public final XDouble subtract (final XDouble b) {
     if (isZero()) { return b.negate(); }
     if (b.isZero()) { return this; }
@@ -418,10 +488,9 @@ public final class XDouble
     if (b.isPositiveInfinity()) { return NEGATIVE_INFINITY; }
     if (b.isNegativeInfinity()) { return POSITIVE_INFINITY; }
     // both are finite
-    XDouble sum = this;
-    for (int i = 0; i < b.nterms(); i++) { sum = sum.add(-b.term(i)); }
-    assert sum.isFinite();
-    return sum; }
+    final DoubleArrayList dif = fastSubtract(terms(),b.terms());
+    unsafeCompress(dif);
+    return unsafe(dif); }
 
   //--------------------------------------------------------------------
   // additive identity
@@ -574,6 +643,7 @@ public final class XDouble
     unsafeCompress(terms);
     return unsafe(terms); }
 
+  //--------------------------------------------------------------------
   /** See <code>scale_expansion_zeroelim</code>
    * from Shewchuk's predicates.c.
    * Assuming zeros and non-finite cases are already handled.
@@ -611,6 +681,7 @@ public final class XDouble
   public final XDouble multiply (final double b) {
     if (0.0==b) { return ZERO; }
     if (1.0==b) { return this; }
+    if (-1.0==b) { return this.negate(); }
     if (Double.isNaN(b)) { return NaN; }
     if (isZero()) { return ZERO; }
     if (isNaN()) { return NaN; }
@@ -633,6 +704,43 @@ public final class XDouble
       return NaN; }
     //assert isFinite() : "\n" + this;
     final DoubleArrayList terms = fastMultiply(terms(),b);
+    unsafeCompress(terms);
+    return unsafe(terms); }
+
+  //--------------------------------------------------------------------
+
+  public final XDouble multiplyBySq (final int flip,
+                                     final double b) {
+    assert flip==1 || flip==-1;
+    final double bbflip = b*b*flip;
+    if (0.0==bbflip) { return ZERO; }
+    if (1.0==bbflip) { return this; }
+    if (-1.0==bbflip) { return this.negate(); }
+    if (Double.isNaN(bbflip)) { return NaN; }
+    if (isZero()) { return ZERO; }
+    if (isNaN()) { return NaN; }
+    if (Double.POSITIVE_INFINITY == bbflip) {
+        if (isPositive()) { return POSITIVE_INFINITY; }
+        if (isNegative()) { return NEGATIVE_INFINITY; }
+        return NaN; }
+     if (Double.NEGATIVE_INFINITY == bbflip) {
+      if (isPositive()) { return NEGATIVE_INFINITY; }
+      if (isNegative()) { return POSITIVE_INFINITY; }
+      return NaN; }
+    assert Double.isFinite(bbflip);
+    if (isPositiveInfinity()) {
+      if (0.0<bbflip) { return POSITIVE_INFINITY; }
+      if (0.0>bbflip) { return NEGATIVE_INFINITY; }
+      return NaN; }
+    if (isNegativeInfinity()) {
+      if (0.0<bbflip) { return NEGATIVE_INFINITY; }
+      if (0.0>bbflip) { return POSITIVE_INFINITY; }
+      return NaN; }
+    assert isFinite() : "\n" + this;
+    assert !isZero() : "\n" + this;
+    final DoubleArrayList tmp = fastMultiply(terms(),b);
+    unsafeCompress(tmp);
+    final DoubleArrayList terms = fastMultiply(tmp,b*flip);
     unsafeCompress(terms);
     return unsafe(terms); }
 
@@ -671,9 +779,9 @@ public final class XDouble
 //      if (ab.isNaN()) { return NaN; }
 //      //assert null!=result;
 //      final XDouble temp = result.add(ab.hi());
-////      assert null!=temp :
-////        "\n" + term(i) + "\n" + b
-////          + "\n" + result + "\n" + ab + "\n" + temp;
+  ////      assert null!=temp :
+  ////        "\n" + term(i) + "\n" + b
+  ////          + "\n" + result + "\n" + ab + "\n" + temp;
 //      result = temp.add(ab.lo()); }
 //    return result; }
 
@@ -942,6 +1050,36 @@ public final class XDouble
     h.set(top,Q);
     assert top < h.size();
     h.resize(top+1); }
+
+  // skip removeAll(0.0) not worth the extra complexity?
+  // better to reduce the number of calls to unsafeCompress?
+
+//  public static final void
+//  unsafeCompress (final DoubleArrayList h) {
+//    // predicates.c: "e and h may be the same."
+//    // and 2nd loop modifies h in place anyway.
+//    //h.removeAll(0.0);
+//    // predicates.c assumes silently that e has at least 2 terms!!!
+//    if (1>=h.size()) { return; }
+//    int bottom = h.size() - 1;
+//    double Q = h.get(bottom);
+//    while ((0.0==Q) && (0<bottom)) { bottom--; Q = h.get(bottom); }
+//    for (int eindex = bottom-1; eindex >= 0; eindex--) {
+//      final double enow = h.get(eindex);
+//      final Hilo Qnewq = Hilo.fastSum(Q, enow);
+//      if (Qnewq.lo() != 0.0) {
+//        h.set(bottom--,Qnewq.hi()); Q = Qnewq.lo(); }
+//      else { Q = Qnewq.hi(); } }
+//    int top = 0;
+//    for (int hindex = bottom + 1; hindex < h.size(); hindex++) {
+//      final double hnow = h.get(hindex);
+//      if (0.0!=hnow) {
+//        final Hilo Qnewq = Hilo.fastSum(hnow, Q);
+//        if (Qnewq.lo() != 0.0) { h.set(top++,Qnewq.lo()); }
+//        Q = Qnewq.hi(); } }
+//    h.set(top,Q);
+//    assert top < h.size();
+//    h.resize(top+1); }
 
   //  compress()   Compress an expansion.
   //

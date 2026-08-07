@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
  * java -cp target\benchmarks.jar mop.java.benchmarks.arithmetic.Base
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-07-29
+ * @version 2026-08-07
  */
 
 public final class Defaults {
@@ -38,8 +38,8 @@ public final class Defaults {
   public static final Options options (final String fileName,
                                        final String includes) {
     final File parent = new File("output");
-    final boolean created = parent.mkdirs();
-    assert created;
+    parent.mkdirs();
+    assert parent.exists();
     final File csv =
       new File(parent,
         fileName
