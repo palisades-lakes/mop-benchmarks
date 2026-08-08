@@ -3,10 +3,7 @@ package mop.java.test.geometry.triangles;
 import mop.java.geometry.triangle.*;
 import mop.java.geometry.triangle.jts.*;
 import mop.java.geometry.triangle.macro.*;
-import mop.java.geometry.triangle.shewchuk.Adapt;
-import mop.java.geometry.triangle.shewchuk.Exact;
-import mop.java.geometry.triangle.shewchuk.Fast;
-import mop.java.geometry.triangle.shewchuk.Slow;
+import mop.java.geometry.triangle.shewchuk.*;
 import org.apache.commons.geometry.euclidean.twod.Vector2D;
 
 import java.util.List;
@@ -36,6 +33,7 @@ public abstract class TriangleTest {
     final Triangle2D inCircleNormalized = InCircleNormalized.from(t);
     final Triangle2D adapt = Adapt.from(t);
     final Triangle2D exact = Exact.from(t);
+    final Triangle2D exactCache = ExactCache.from(t);
     final Triangle2D fast = Fast.from(t);
     final Triangle2D slow = Slow.from(t);
     final Triangle2D adaptMacro = AdaptMacro.from(t);
@@ -49,7 +47,10 @@ public abstract class TriangleTest {
       // JTS
       ddFast,ddNormalized,ddSlow,doubleNonRobust,inCircleNormalized,
       // Shewchuk predicates.c
-      exact, adapt,fast ,slow,
+      adapt,
+      exact, exactCache
+      ,
+      fast ,slow,
       exactMacro, adaptMacro, defaultMacro, fastMacro, slowMacro
       ); }
 

@@ -5,23 +5,37 @@ import mop.java.geometry.triangle.BigFloatTriangle2D;
 import mop.java.geometry.triangle.RationalFloatTriangle2D;
 import mop.java.geometry.triangle.Triangle2D;
 import mop.java.geometry.triangle.TriangleVector2D;
-import mop.java.geometry.triangle.jts.*;
-import mop.java.geometry.triangle.macro.*;
+import mop.java.geometry.triangle.jts.DDFast;
+import mop.java.geometry.triangle.jts.DDNormalized;
+import mop.java.geometry.triangle.jts.DDSlow;
+import mop.java.geometry.triangle.jts.DoubleNonRobust;
+import mop.java.geometry.triangle.jts.InCircleNormalized;
+import mop.java.geometry.triangle.macro.AdaptMacro;
+import mop.java.geometry.triangle.macro.DefaultMacro;
+import mop.java.geometry.triangle.macro.ExactMacro;
+import mop.java.geometry.triangle.macro.FastMacro;
+import mop.java.geometry.triangle.macro.SlowMacro;
 import mop.java.geometry.triangle.shewchuk.Adapt;
 import mop.java.geometry.triangle.shewchuk.Exact;
+import mop.java.geometry.triangle.shewchuk.ExactCache;
 import mop.java.geometry.triangle.shewchuk.Fast;
 import mop.java.geometry.triangle.shewchuk.Slow;
 import mop.java.numbers.Doubles;
 import mop.java.prng.Generator;
 import mop.java.prng.PRNG;
 import org.apache.commons.geometry.euclidean.twod.Vector2D;
-import org.openjdk.jmh.annotations.*;
+import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.Level;
+import org.openjdk.jmh.annotations.Param;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.Setup;
+import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.infra.Blackhole;
 
 /** Benchmark triangle operations.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-07-29
+ * @version 2026-08-08
  */
 
 @State(Scope.Thread)
@@ -50,6 +64,7 @@ public abstract class Base {
       case "InCircleNormalized" ->  InCircleNormalized.from(t);
       case "Adapt" ->  Adapt.from(t);
       case "Exact" ->  Exact.from(t);
+      case "ExactCache" ->  ExactCache.from(t);
       case "Fast" ->  Fast.from(t);
       case "Slow" ->  Slow.from(t);
       case "AdaptMacro" ->  AdaptMacro.from(t);
@@ -76,12 +91,13 @@ public abstract class Base {
 //    "InCircleNormalized",
 //    "DoubleNonRobust",
 //    "Adapt",
+    "ExactCache",
     "Exact",
 //    "Fast",
     "Slow",
 //    "AdaptMacro",
 //    "DefaultMacro",
-    "ExactMacro",
+//    "ExactMacro",
 //    "FastMacro",
 //    "SlowMacro",
   })

@@ -6,6 +6,7 @@ import mop.java.numbers.XDouble;
 import org.apache.commons.geometry.euclidean.twod.Vector2D;
 
 /** Exact tests.  Robust.
+ * Precompute triangle properties used by inCircle.
  * <br>
  * Some unclarity about the meaning of 'exact' here.
  * <br>
@@ -17,7 +18,14 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
  * @version 2026-08-08
  */
 
-public final class Exact extends Triangle2D {
+public final class ExactCache extends Triangle2D {
+
+  private final XDouble _axb;
+  private final XDouble getAxB() { return _axb; }
+  private final XDouble _bxc;
+  private final XDouble getBxC() { return _bxc; }
+  private final XDouble _axc;
+  private final XDouble getAxC() { return _axc; }
 
   //--------------------------------------------------------------------
 
@@ -58,7 +66,6 @@ public final class Exact extends Triangle2D {
     final XDouble bcd = subtractFlag
                         ? bc.add(cd).subtract(bd)
                         : bc.add(cd).add(bd);
-    // TODO: multiplyByL2Sq(flip,a)?
     return
       (bcd.multiplyBySq(flip,ax))
         .add(bcd.multiplyBySq(flip,ay)); }
@@ -66,41 +73,43 @@ public final class Exact extends Triangle2D {
   public final boolean inCircleExact () { return true; }
 
   public final double inCircle (final Vector2D p) {
-    final Vector2D pa = getP0();
-    final Vector2D pb = getP1();
-    final Vector2D pc = getP2();
+    final Vector2D a = getP0();
+    final Vector2D b = getP1();
+    final Vector2D c = getP2();
 
-    final XDouble ab = XDouble.crossProduct(pa, pb);
-    final XDouble bc = XDouble.crossProduct(pb, pc);
-    final XDouble cd = XDouble.crossProduct(pc, p);
-    final XDouble da = XDouble.crossProduct(p, pa);
-    final XDouble ac = XDouble.crossProduct(pa, pc);
-    final XDouble bd = XDouble.crossProduct(pb, p);
-    final XDouble adet = det(pa, true, bc, cd, bd, 1);
-    final XDouble bdet = det(pb, false, cd, da, ac, -1);
-    final XDouble cdet = det(pc, false, da, ab, bd, 1);
-    final XDouble ddet = det(p,true,ab,bc,ac,-1);
+    final XDouble axb = getAxB();
+    final XDouble bxc = getBxC();
+    final XDouble axc = getAxC();
 
-    // TODO: resolve this!
-    // this change fixes current test cases.
-    // shouldn't matter, XDouble add should be associative
-    //final XDouble det = adet.add(bdet).add(cdet.add(ddet));
-    final XDouble det = adet.add(bdet).add(cdet).add(ddet);
+    final XDouble cxp = XDouble.crossProduct(c, p);
+    final XDouble pxa = XDouble.crossProduct(p, a);
+    final XDouble bxp = XDouble.crossProduct(b, p);
+
+    final XDouble adet = det(a, true, bxc, cxp, bxp, 1);
+    final XDouble bdet = det(b, false, cxp, pxa, axc, -1);
+    final XDouble cdet = det(c, false, pxa, axb, bxp, 1);
+    final XDouble ddet = det(p,true,axb,bxc,axc,-1);
+
+    //final XDouble det = adet.add(bdet).add(cdet).add(ddet);
+    final XDouble det = XDouble.sum(adet,bdet,cdet,ddet);
     return det.doubleValue(); }
 
   //--------------------------------------------------------------------
   // construction
   //--------------------------------------------------------------------
 
-  private Exact (final Vector2D a,
-                 final Vector2D b,
-                 final Vector2D c)  {
-    super(a,b,c); }
+  private ExactCache (final Vector2D a,
+                      final Vector2D b,
+                      final Vector2D c)  {
+    super(a,b,c);
+    _axb = XDouble.crossProduct(a, b);
+    _bxc = XDouble.crossProduct(b, c);
+    _axc = XDouble.crossProduct(a, c); }
 
   public static final Triangle2D of (final Vector2D a,
                                      final Vector2D b,
                                      final Vector2D c) {
-    return new Exact(a,b,c); }
+    return new ExactCache(a, b, c); }
 
   /** Convert other triangle classes. */
 

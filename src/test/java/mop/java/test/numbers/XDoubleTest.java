@@ -28,12 +28,12 @@ public final class XDoubleTest {
 
   @Test
   public final void testAssociativity () {
-    final XDouble a = XDouble.valueOf(0x1.64c2c2746c402p654,
-                                      -0x1.e9796e57a6d0bp715);
-    final XDouble b = XDouble.valueOf(0x1.d5ea1540c55e6p-563,
-                                      -0x1.e5846a4182e7fp-500);
-    final XDouble c = XDouble.valueOf(-0x1.aee3b1f8ecc46p-470,
-                                      -0x1.779975bb25c8bp-279);
+    final XDouble a = XDouble.sum(0x1.64c2c2746c402p654,
+                                  -0x1.e9796e57a6d0bp715);
+    final XDouble b = XDouble.sum(0x1.d5ea1540c55e6p-563,
+                                  -0x1.e5846a4182e7fp-500);
+    final XDouble c = XDouble.sum(-0x1.aee3b1f8ecc46p-470,
+                                  -0x1.779975bb25c8bp-279);
     final XDouble abC = a.add(b).add(c);
     final XDouble bc = b.add(c);
     final XDouble aBC = a.add(bc);
@@ -97,7 +97,7 @@ public final class XDoubleTest {
       Object::toString, Common::compareTo, Common::compareTo);
 
     Common.floatRoundingTests(
-      null, XDouble::valueOf,Numbers::floatValue, dist,
+      null, XDouble::valueOf, Numbers::floatValue, dist,
       Object::toString, Common::compareTo, Common::compareTo);
 
     //Debug.DEBUG=false;

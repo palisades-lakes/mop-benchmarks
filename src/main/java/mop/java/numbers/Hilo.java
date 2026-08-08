@@ -301,6 +301,7 @@ public record Hilo (double hi, double lo)
     final double y = squareTail(a, x);
     return new Hilo(x, y); }
 
+  // TODO: optimize as in predicates.c
   @Override
   public final Hilo square () { return multiply(this); }
 
