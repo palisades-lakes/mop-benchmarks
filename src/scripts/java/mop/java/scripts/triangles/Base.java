@@ -1,10 +1,7 @@
 package mop.java.scripts.triangles;
 
 import mop.java.geometry.Generators;
-import mop.java.geometry.triangle.BigFloatTriangle2D;
-import mop.java.geometry.triangle.RationalFloatTriangle2D;
-import mop.java.geometry.triangle.Triangle2D;
-import mop.java.geometry.triangle.TriangleVector2D;
+import mop.java.geometry.triangle.*;
 import mop.java.geometry.triangle.jts.*;
 import mop.java.geometry.triangle.macro.*;
 import mop.java.geometry.triangle.shewchuk.Adapt;
@@ -21,7 +18,7 @@ import org.openjdk.jmh.infra.Blackhole;
 /** Benchmark triangle operations.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-07-29
+ * @version 2026-08-10
  */
 
 @State(Scope.Thread)
@@ -40,6 +37,7 @@ public abstract class Base {
                                                   final String dest) {
     return switch (dest) {
       case "TriangleVector2D" -> TriangleVector2D.from(t);
+      case "BigFloatTriangle2D0" ->  BigFloatTriangle2D0.from(t);
       case "BigFloatTriangle2D" ->  BigFloatTriangle2D.from(t);
       case "RationalFloatTriangle2D" ->  RationalFloatTriangle2D.from(t);
       case "DDFast" ->  DDFast.from(t);
@@ -66,24 +64,26 @@ public abstract class Base {
     return t;}
 
   @Param({
-    "TriangleVector2D",
+//    "TriangleVector2D",
+    "BigFloatTriangle2D0",
     "BigFloatTriangle2D",
-    "RationalFloatTriangle2D",
-    "DDFast",
-    "DDNormalized",
-    "DDSlow",
- //     "InCircleCC",
-    "InCircleNormalized",
-    "DoubleNonRobust",
-    "Adapt",
-    "Exact",
-    "Fast",
-    "Slow",
-    "AdaptMacro",
-    "DefaultMacro",
-    "ExactMacro",
-    "FastMacro",
-    "SlowMacro",
+//    "RationalFloatTriangle2D",
+//    "DDFast",
+//    "DDNormalized",
+//    "DDSlow",
+// //     "InCircleCC",
+//    "InCircleNormalized",
+//    "DoubleNonRobust",
+//    "Adapt",
+//    "Exact",
+//    "ExactCache",
+//    "Fast",
+//    "Slow",
+//    "AdaptMacro",
+//    "DefaultMacro",
+//    "ExactMacro",
+//    "FastMacro",
+//    "SlowMacro",
   })
   String className;
 

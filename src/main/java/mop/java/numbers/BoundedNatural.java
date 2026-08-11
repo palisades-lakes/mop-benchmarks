@@ -60,7 +60,7 @@ import static mop.java.numbers.Numbers.*;
  * when the operation result exceeds the bound.
  *  <br>
  * @author palisades dot lakes at gmail dot com
- * @version 2024-01-19
+ * @version 2026-08-10
  */
 
 //@SuppressWarnings("unchecked")

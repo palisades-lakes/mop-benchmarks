@@ -2,8 +2,8 @@ package mop.java.scripts.triangles;
 
 import mop.java.accumulators.ZhuHayesAccumulator;
 import mop.java.geometry.Generators;
+import mop.java.geometry.triangle.BigFloatTriangle2D;
 import mop.java.geometry.triangle.Triangle2D;
-import mop.java.geometry.triangle.shewchuk.ExactCache;
 import mop.java.numbers.Doubles;
 import mop.java.prng.Generator;
 import mop.java.prng.PRNG;
@@ -13,7 +13,7 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
  * mvn clean install && jy src/scripts/java/mop/java/scripts/triangles/InCircle.java
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-08-08
+ * @version 2026-08-10
  */
 
 public final class InCircle {
@@ -32,7 +32,8 @@ public final class InCircle {
     final Generator triangleGenerator =
       Generators.triangleGenerator(
         8192,
-        ExactCache::from,
+        //ExactCache::from,
+        BigFloatTriangle2D::from,
         Generators.vector2dGenerator(
           Doubles.laplaceGenerator(
             PRNG.well44497b("seeds/Well44497b-2019-01-07.txt"),
@@ -46,15 +47,17 @@ public final class InCircle {
     System.out.println(Math.multiplyExact(points.length,triangles.length));
     System.out.println(d.length);
 
-    int k=0;
-    for (final Triangle2D t : triangles) {
-      for (final Vector2D p : points) {
-        d[k++] = t.inCircle(p); } }
+    final int nreps = 8;
+    for (int i=0; i<nreps; i++) {
+      int k=0;
+      for (final Triangle2D t : triangles) {
+        for (final Vector2D p : points) {
+          d[k++] = t.inCircle(p); } }
 
-    final ZhuHayesAccumulator zh = ZhuHayesAccumulator.make();
-    zh.addAll(d);
-    System.out.println(
-      "Mean distance:" + (zh.doubleValue() / d.length)); }
+      final ZhuHayesAccumulator zh = ZhuHayesAccumulator.make();
+      zh.addAll(d);
+      System.out.println(
+        i + ": mean distance:" + (zh.doubleValue() / d.length)); } }
 
 
   //--------------------------------------------------------------------

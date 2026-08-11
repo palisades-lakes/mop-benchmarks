@@ -1,10 +1,7 @@
 package mop.java.benchmarks.triangles;
 
 import mop.java.geometry.Generators;
-import mop.java.geometry.triangle.BigFloatTriangle2D;
-import mop.java.geometry.triangle.RationalFloatTriangle2D;
-import mop.java.geometry.triangle.Triangle2D;
-import mop.java.geometry.triangle.TriangleVector2D;
+import mop.java.geometry.triangle.*;
 import mop.java.geometry.triangle.jts.DDFast;
 import mop.java.geometry.triangle.jts.DDNormalized;
 import mop.java.geometry.triangle.jts.DDSlow;
@@ -35,7 +32,7 @@ import org.openjdk.jmh.infra.Blackhole;
 /** Benchmark triangle operations.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-08-08
+ * @version 2026-08-09
  */
 
 @State(Scope.Thread)
@@ -54,6 +51,7 @@ public abstract class Base {
                                                   final String dest) {
     return switch (dest) {
       case "TriangleVector2D" -> TriangleVector2D.from(t);
+      case "BigFloatTriangle2D0" ->  BigFloatTriangle2D0.from(t);
       case "BigFloatTriangle2D" ->  BigFloatTriangle2D.from(t);
       case "RationalFloatTriangle2D" ->  RationalFloatTriangle2D.from(t);
       case "DDFast" ->  DDFast.from(t);
@@ -83,7 +81,8 @@ public abstract class Base {
 
   @Param({
 //    "TriangleVector2D",
-//    "BigFloatTriangle2D",
+    "BigFloatTriangle2D0",
+    "BigFloatTriangle2D",
 //    "RationalFloatTriangle2D",
 //    "DDFast",
 //    "DDNormalized",
@@ -91,10 +90,10 @@ public abstract class Base {
 //    "InCircleNormalized",
 //    "DoubleNonRobust",
 //    "Adapt",
-    "ExactCache",
-    "Exact",
+//    "ExactCache",
+//    "Exact",
 //    "Fast",
-    "Slow",
+//    "Slow",
 //    "AdaptMacro",
 //    "DefaultMacro",
 //    "ExactMacro",

@@ -3,14 +3,13 @@ package mop.java.geometry.triangle;
 import mop.java.numbers.BigFloat;
 import org.apache.commons.geometry.euclidean.twod.Vector2D;
 
-/** Standard calculations implemented in BigFloat.
- * Should be exact, up to BigFloat resolution.
+/** Previous version of BigFloatTriangle2D00 for performance comparison.
  *
  * @author palisades dot lakes at gmail dot com,
  * @version 2026-08-10
  */
 
-public final class BigFloatTriangle2D extends Triangle2D {
+public final class BigFloatTriangle2D0 extends Triangle2D {
 
   //--------------------------------------------------------------------
 
@@ -77,10 +76,10 @@ public final class BigFloatTriangle2D extends Triangle2D {
     final BigFloat axb = apx.multiply(bpy).subtract(bpx.multiply(apy));
     final BigFloat bxc = bpx.multiply(cpy).subtract(cpx.multiply(bpy));
     final BigFloat cxa = cpx.multiply(apy).subtract(apx.multiply(cpy));
-
-    final BigFloat a2 = BigFloat.l2norm2(apx,apy);
-    final BigFloat b2 = BigFloat.l2norm2(bpx,bpy);
-    final BigFloat c2 = BigFloat.l2norm2(cpx,cpy);
+    // TODO: l2norm2
+    final BigFloat a2 = apx.square().add(apy.square());
+    final BigFloat b2 = bpx.square().add(bpy.square());
+    final BigFloat c2 = cpx.square().add(cpy.square());
 
     return a2.multiply(bxc)
              .add(b2.multiply(cxa))
@@ -91,15 +90,15 @@ public final class BigFloatTriangle2D extends Triangle2D {
   // construction
   //--------------------------------------------------------------------
 
-  private BigFloatTriangle2D (final Vector2D a,
-                              final Vector2D b,
-                              final Vector2D c)  {
+  private BigFloatTriangle2D0 (final Vector2D a,
+                               final Vector2D b,
+                               final Vector2D c)  {
     super(a,b,c); }
 
   public static final Triangle2D of (final Vector2D a,
                                      final Vector2D b,
                                      final Vector2D c) {
-    return new BigFloatTriangle2D(a,b,c); }
+    return new BigFloatTriangle2D0(a, b, c); }
 
   /** Convert other triangle classes. */
 

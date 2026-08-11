@@ -12,13 +12,11 @@ import static mop.java.numbers.Numbers.loBit;
  * <code>int</code> exponent.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-05-25
+ * @version 2026-08-10
  */
 
 @SuppressWarnings("unused")
 public final class BigFloat implements Ringlike<BigFloat> {
-
-  // TODO: infinite and NaN  representations and singletons.
 
   //--------------------------------------------------------------
   // instance fields and methods
@@ -38,6 +36,7 @@ public final class BigFloat implements Ringlike<BigFloat> {
   //--------------------------------------------------------------
   // Ringlike
   //--------------------------------------------------------------
+  // TODO: NaN, infinities
 
   @Override
   public final boolean isZero () {
@@ -203,6 +202,41 @@ public final class BigFloat implements Ringlike<BigFloat> {
       q.exponent()); }
 
   //--------------------------------------------------------------
+
+  /** Return the "exact" value of <code>z0+z1</code>,
+   * without intermediate <code>BigFloat</code> instances.
+   */
+
+  public static final BigFloat sum (final double z0,
+                                    final double z1) {
+    final int e0 = Doubles.exponent(z0);
+    final int e1 = Doubles.exponent(z1);
+    if (e0<e1) { return sum(z1,z0); }
+    // TODO: handle infinities and NaN!
+    final boolean p0 = Doubles.nonNegative(z0);
+    final long t0 = Doubles.significand(z0);
+
+    final boolean p1 = Doubles.nonNegative(z1);
+    final long t1 = Doubles.significand(z1);
+
+    // IEEE 754:
+    // https://en.wikipedia.org/wiki/Double-precision_floating-point_format
+    // -1022<=e0,e1<=1023; 0<=abs(e0-e1)<=2045
+    // 0<=t0,t1<=2^53
+
+    // need to convert one signifcand to BoundedNatural to handle
+    // overflow in significand shift and addition/subtraction
+    final BoundedNatural s = BoundedNatural.valueOf(t0, e0-e1);
+    if (p0 == p1) { return BigFloat.valueOf(p0, s.add(t1), e1); }
+    if (p0) {
+      if (0 <= s.compareTo(t1)) {
+        return BigFloat.valueOf(true, s.subtract(t1), e1); }
+      return BigFloat.valueOf(false, s.subtractFrom(t1), e1); }
+    if (0 <= s.compareTo(t1)) {
+      return BigFloat.valueOf(false, s.subtract(t1), e1); }
+    return BigFloat.valueOf(true, s.subtractFrom(t1), e1); }
+
+  //--------------------------------------------------------------
   // used in Rational.addWithDenom()?
 
   public static final BigFloat
@@ -266,6 +300,13 @@ public final class BigFloat implements Ringlike<BigFloat> {
     //if (isZero() ) { return EMPTY; }
     //if (isOne()) { return ONE; }
     return valueOf(true,significand().square(),2*exponent()); }
+
+  /** Compute squared l2norm without intermediate instances. */
+
+  public static final BigFloat l2norm2 (final BigFloat x,
+                                        final BigFloat y) {
+    return add6(true,x.significand().square(),2*x.exponent(),
+                true,y.significand().square(),2*y.exponent()); }
 
   //--------------------------------------------------------------
 
@@ -360,16 +401,15 @@ public final class BigFloat implements Ringlike<BigFloat> {
         Doubles.nonNegative(a)==Doubles.nonNegative(x),
         BoundedNatural.product(t0,t1),
         e0+e1)
-      .add(y); }
+        .add(y); }
 
   //    return valueOf(y).addProduct(a,x); }
 
   /** 'Exact' <code>(a*x) + y</code> (aka fma). */
 
-  public static final BigFloat[]
-    axpy (final double[] a,
-          final double[] x,
-          final double[] y) {
+  public static final BigFloat[] axpy (final double[] a,
+                                       final double[] x,
+                                       final double[] y) {
     final int n = a.length;
     //assert n==x.length;
     //assert n==y.length;
@@ -488,7 +528,7 @@ public final class BigFloat implements Ringlike<BigFloat> {
   /** get the least significant int word of (u >>> shift) */
 
   private static final int getShiftedInt (final BoundedNatural u,
-                                         final int downShift) {
+                                          final int downShift) {
     assert 0<=downShift;
     final int iShift = (downShift>>>5);
     if (u.hiInt()<=iShift) { return 0; }
@@ -623,7 +663,7 @@ public final class BigFloat implements Ringlike<BigFloat> {
     if ((eh-es)>Doubles.SIGNIFICAND_BITS) {
       return
         (p0 ?
-          Double.POSITIVE_INFINITY : Double.NEGATIVE_INFINITY); }
+         Double.POSITIVE_INFINITY : Double.NEGATIVE_INFINITY); }
     if (0==es) {
       return doubleMergeBits(p0,s0.longValue(),e0); }
     if (0 > es) {
@@ -703,12 +743,15 @@ public final class BigFloat implements Ringlike<BigFloat> {
     h = (31*h) + Objects.hash(a.significand());
     return h; }
 
-  @Override
-  public final String toString () {
+  public final String toHexString () {
     return
       (nonNegative() ? "" : "-")
-      + "0x" + significand().toString()
-      + "p" + exponent(); }
+        + "0x" + significand().toHexString()
+        // TODO: hex exponent?
+        + "p" + exponent(); }
+
+  @Override
+  public final String toString () { return toHexString(); }
 
   //--------------------------------------------------------------
   // construction
@@ -723,14 +766,15 @@ public final class BigFloat implements Ringlike<BigFloat> {
     _exponent = e; }
 
   //--------------------------------------------------------------
+  // TODO: infinities, NaN
 
   public static final BigFloat ZERO =
     new BigFloat(true,BoundedNatural.ZERO,0);
 
-    private static final BigFloat ONE =
-      new BigFloat(true,BoundedNatural.valueOf(1),0);
+  private static final BigFloat ONE =
+    new BigFloat(true,BoundedNatural.valueOf(1),0);
 
-//    private static final BigFloat TWO =
+  //    private static final BigFloat TWO =
   //    new BigFloat(true,BoundedNatural.valueOf(1),1);
   //
   //  private static final BigFloat TEN =

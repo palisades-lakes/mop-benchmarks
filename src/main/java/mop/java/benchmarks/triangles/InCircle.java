@@ -8,7 +8,7 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
  * mvn clean install && jmh mop.java.benchmarks.triangles.InCircle
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-08-07
+ * @version 2026-08-10
  */
 
 public class InCircle extends Base {
