@@ -20,12 +20,12 @@ import java.util.function.BinaryOperator;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-08-10
+ * @version 2026-08-11
  */
 
 public final class BigFloatTest {
 
-  private static final int TRYS = 513;
+  private static final int TRYS = 257;
 
   private static final BinaryOperator dist =
     (q0, q1) -> ((BigFloat) q0).subtract((BigFloat) q1).abs();

@@ -60,7 +60,7 @@ import static mop.java.numbers.Numbers.*;
  * when the operation result exceeds the bound.
  *  <br>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-08-10
+ * @version 2026-08-11
  */
 
 //@SuppressWarnings("unchecked")
@@ -1101,7 +1101,7 @@ implements Ringlike<BoundedNatural> {
    */
 
   private BoundedNatural (final int[] words) {
-    NaturalInts.checkOverflow(words.length);
+    //NaturalInts.checkOverflow(words.length);
     _words = words; }
 
   /** Doesn't copy <code>words</code> or check <code>loInt</code>
@@ -1114,6 +1114,7 @@ implements Ringlike<BoundedNatural> {
   /** Copy <code>words</code>, stripping leading zeros.
    */
   public static final BoundedNatural make (final int[] words) {
+    NaturalInts.checkOverflow(words.length);
     final int end = NaturalInts.hiInt(words);
     return new BoundedNatural(Arrays.copyOf(words,end)); }
 
@@ -1178,31 +1179,31 @@ implements Ringlike<BoundedNatural> {
     assert 0<=upShift;
     final int iShift = (upShift>>>5);
     final int bShift = (upShift&0x1f);
+    final int[] vv;
     if (0==bShift) {
-      final int[] vv = new int[iShift+2];
+      vv = new int[iShift+2];
       vv[iShift] = (int) u;
-      vv[iShift+1] = (int) hiWord(u);
-      return unsafe(vv); }
-    final long us = (u<<bShift);
-    final int vv0 = (int) us;
-    final int vv1 = (int) hiWord(us);
-    final int vv2 = (int) (u>>>(64-bShift));
-    if (0!=vv2) {
-      final int[] vv = new int[iShift+3];
-      vv[iShift] = vv0;
-      vv[iShift+1] = vv1;
-      vv[iShift+2] = vv2;
-      return new BoundedNatural(vv); }
-    if (0!=vv1) {
-      final int[] vv = new int[iShift+2];
-      vv[iShift] = vv0;
-      vv[iShift+1] = vv1;
-      return new BoundedNatural(vv); }
-    if (0!=vv0) {
-      final int[] vv = new int[iShift+1];
-      vv[iShift] = vv0;
-      return new BoundedNatural(vv); }
-    return ZERO; }
+      vv[iShift+1] = (int) hiWord(u); }
+    else {
+      final long us = (u<<bShift);
+      final int vv0 = (int) us;
+      final int vv1 = (int) hiWord(us);
+      final int vv2 = (int) (u>>>(64-bShift));
+      if (0!=vv2) {
+        vv = new int[iShift+3];
+        vv[iShift] = vv0;
+        vv[iShift+1] = vv1;
+        vv[iShift+2] = vv2; }
+      else if (0!=vv1) {
+        vv = new int[iShift+2];
+        vv[iShift] = vv0;
+        vv[iShift+1] = vv1; }
+      else if (0!=vv0) {
+        vv = new int[iShift+1];
+        vv[iShift] = vv0; }
+      else { return ZERO; } }
+    NaturalInts.checkOverflow(vv.length);
+    return unsafe(vv); }
 
   //--------------------------------------------------------------
 }

@@ -8,7 +8,7 @@ import static mop.java.numbers.Numbers.hiWord;
  * Non-instantiable.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2024-01-17
+ * @version 2026-08-11
  */
 
 final class NaturalMultiply {
@@ -253,8 +253,10 @@ final class NaturalMultiply {
                                                final BoundedNatural v) {
     if ((v.isZero()) || (u.isZero())) { return v.zero(); }
     final int n0 = v.hiInt();
-    if (u.equals(v) && (n0>MULTIPLY_SQUARE_THRESHOLD)) {
-      return v.square(); }
+    // equals is expensive and unlikely unless u==v
+//    if (u.equals(v) && (n0>MULTIPLY_SQUARE_THRESHOLD)) {
+      if ((u==v) && (n0>MULTIPLY_SQUARE_THRESHOLD)) {
+        return v.square(); }
     if (n0==1) { return NaturalMultiply.multiply(u,v.uword(0)); }
     final int n1 = u.hiInt();
     if (n1==1) { return NaturalMultiply.multiply(v,u.uword(0)); }

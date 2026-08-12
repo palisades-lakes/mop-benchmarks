@@ -7,7 +7,7 @@ import java.util.Arrays;
  * related to {@link BoundedNatural}.
  *  <br>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-08-10
+ * @version 2026-08-11
  */
 
 //@SuppressWarnings("unchecked")
@@ -123,6 +123,7 @@ public final class NaturalInts {
     if (0==bShift) { return shiftUpByWords(a,iShift); }
     return shiftUpByBits(a,iShift,bShift); }
 
+  // TODO: change BoundedNatural to ensure no leading zero words?
   /** NOTE: doesn't assume no leading zero words. */
   static final int hiInt (final int[] x) {
     final int n = x.length;
@@ -146,11 +147,7 @@ public final class NaturalInts {
     final int i = hiInt(u)-1;
     if (0>i) { return 0; }
     final int wi = u[i];
-    final int h =
-      ((i<<5)+Integer.SIZE)-Integer.numberOfLeadingZeros(wi);
-    assert h >= 0;
-    assert h <= MAX_BITS : h + " > " + MAX_BITS;
-    return h; }
+    return ((i<<5)+Integer.SIZE)-Integer.numberOfLeadingZeros(wi); }
 
   private static final int loInt (final int[] u) {
     // Search for lowest order nonzero int

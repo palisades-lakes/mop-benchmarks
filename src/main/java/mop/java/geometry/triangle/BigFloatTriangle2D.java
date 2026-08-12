@@ -7,7 +7,7 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
  * Should be exact, up to BigFloat resolution.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-08-10
+ * @version 2026-08-11
  */
 
 public final class BigFloatTriangle2D extends Triangle2D {
@@ -51,41 +51,27 @@ public final class BigFloatTriangle2D extends Triangle2D {
     final Vector2D b = getP1();
     final Vector2D c = getP2();
 
-    final double px = -p.getX();
-    final double py = -p.getY();
-//    final BigFloat ax = BigFloat.valueOf(a.getX());
-//    final BigFloat ay = BigFloat.valueOf(a.getY());
-//    final BigFloat bx = BigFloat.valueOf(b.getX());
-//    final BigFloat by = BigFloat.valueOf(b.getY());
-//    final BigFloat cx = BigFloat.valueOf(c.getX());
-//    final BigFloat cy = BigFloat.valueOf(c.getY());
-//    final BigFloat apx = ax.add(px);
-//    final BigFloat bpx = bx.add(px);
-//    final BigFloat cpx = cx.add(px);
-//    final BigFloat apy = ay.add(py);
-//    final BigFloat bpy = by.add(py);
-//    final BigFloat cpy = cy.add(py);
+    final double px = p.getX();
+    final double py = p.getY();
 
-    final BigFloat apx = BigFloat.sum(a.getX(),px);
-    final BigFloat bpx = BigFloat.sum(b.getX(),px);
-    final BigFloat cpx = BigFloat.sum(c.getX(),px);
-    final BigFloat apy = BigFloat.sum(a.getY(),py);
-    final BigFloat bpy = BigFloat.sum(b.getY(),py);
-    final BigFloat cpy = BigFloat.sum(c.getY(),py);
+    // TODO: BigFloatVector operations
+    final BigFloat apx = BigFloat.dif(a.getX(),px);
+    final BigFloat bpx = BigFloat.dif(b.getX(),px);
+    final BigFloat cpx = BigFloat.dif(c.getX(),px);
+    final BigFloat apy = BigFloat.dif(a.getY(),py);
+    final BigFloat bpy = BigFloat.dif(b.getY(),py);
+    final BigFloat cpy = BigFloat.dif(c.getY(),py);
 
-    // TODO: crossProduct
-    final BigFloat axb = apx.multiply(bpy).subtract(bpx.multiply(apy));
-    final BigFloat bxc = bpx.multiply(cpy).subtract(cpx.multiply(bpy));
-    final BigFloat cxa = cpx.multiply(apy).subtract(apx.multiply(cpy));
+    final BigFloat axb = BigFloat.crossProduct(apx,apy,bpx,bpy);
+    final BigFloat bxc = BigFloat.crossProduct(bpx,bpy,cpx,cpy);
+    final BigFloat cxa = BigFloat.crossProduct(cpx,cpy,apx,apy);
 
     final BigFloat a2 = BigFloat.l2norm2(apx,apy);
     final BigFloat b2 = BigFloat.l2norm2(bpx,bpy);
     final BigFloat c2 = BigFloat.l2norm2(cpx,cpy);
 
-    return a2.multiply(bxc)
-             .add(b2.multiply(cxa))
-             .add(c2.multiply(axb))
-             .doubleValue(); }
+  // TODO: 3d dot product
+    return BigFloat.dot(a2,b2,c2,bxc,cxa,axb).doubleValue(); }
 
   //--------------------------------------------------------------------
   // construction

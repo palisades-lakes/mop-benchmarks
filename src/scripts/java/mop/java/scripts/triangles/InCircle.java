@@ -13,7 +13,7 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
  * mvn clean install && jy src/scripts/java/mop/java/scripts/triangles/InCircle.java
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-08-10
+ * @version 2026-08-11
  */
 
 public final class InCircle {
@@ -47,7 +47,7 @@ public final class InCircle {
     System.out.println(Math.multiplyExact(points.length,triangles.length));
     System.out.println(d.length);
 
-    final int nreps = 8;
+    final int nreps = 4;
     for (int i=0; i<nreps; i++) {
       int k=0;
       for (final Triangle2D t : triangles) {

@@ -1,18 +1,14 @@
 package mop.java.numbers;
 
 import mop.java.Exceptions;
-
 import java.util.Objects;
 
-import static mop.java.numbers.Doubles.doubleMergeBits;
-import static mop.java.numbers.Floats.floatMergeBits;
-import static mop.java.numbers.Numbers.loBit;
-
+//----------------------------------------------------------------------
 /** A sign times a {@link BoundedNatural} significand times 2 to a
  * <code>int</code> exponent.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-08-10
+ * @version 2026-08-11
  */
 
 @SuppressWarnings("unused")
@@ -202,7 +198,6 @@ public final class BigFloat implements Ringlike<BigFloat> {
       q.exponent()); }
 
   //--------------------------------------------------------------
-
   /** Return the "exact" value of <code>z0+z1</code>,
    * without intermediate <code>BigFloat</code> instances.
    */
@@ -236,6 +231,15 @@ public final class BigFloat implements Ringlike<BigFloat> {
       return BigFloat.valueOf(false, s.subtract(t1), e1); }
     return BigFloat.valueOf(true, s.subtractFrom(t1), e1); }
 
+  /** Return the "exact" value of <code>z0-z1</code>,
+   * without intermediate <code>BigFloat</code> instances.
+   */
+
+  public static final BigFloat dif (final double z0,
+                                    final double z1) {
+    // TODO: expand this? probably not worth while
+    return sum(z0,-z1); }
+
   //--------------------------------------------------------------
   // used in Rational.addWithDenom()?
 
@@ -245,7 +249,7 @@ public final class BigFloat implements Ringlike<BigFloat> {
            final long x1) {
     //assert 0L<=x1;
     final int e0 = x0.loBit();
-    final int e1 = loBit(x1);
+    final int e1 = Numbers.loBit(x1);
     final BoundedNatural y0 =  ((0==e0) ? x0 : x0.shiftDown(e0));
     final long y1 = (((0==e1)||(64==e1)) ? x1 : (x1 >>> e1));
     return valueOf(p1,NaturalMultiply.multiply(y0,y1),e0+e1); }
@@ -301,6 +305,9 @@ public final class BigFloat implements Ringlike<BigFloat> {
     //if (isOne()) { return ONE; }
     return valueOf(true,significand().square(),2*exponent()); }
 
+  //--------------------------------------------------------------
+  // geometry
+  //--------------------------------------------------------------
   /** Compute squared l2norm without intermediate instances. */
 
   public static final BigFloat l2norm2 (final BigFloat x,
@@ -308,6 +315,51 @@ public final class BigFloat implements Ringlike<BigFloat> {
     return add6(true,x.significand().square(),2*x.exponent(),
                 true,y.significand().square(),2*y.exponent()); }
 
+  //--------------------------------------------------------------
+
+  public static final BigFloat
+  crossProduct (final BigFloat x0,
+                final BigFloat y0,
+                final BigFloat x1,
+                final BigFloat y1) {
+
+    return
+      add6(
+        (x0.nonNegative()==y1.nonNegative()),
+        x0.significand().multiply(y1.significand()),
+        Math.addExact(x0.exponent(),y1.exponent()),
+        ! (y0.nonNegative()==x1.nonNegative()),
+        y0.significand().multiply(x1.significand()),
+        Math.addExact(y0.exponent(),x1.exponent())); }
+
+  //--------------------------------------------------------------
+
+  public static final BigFloat
+  dot (final BigFloat x0,
+       final BigFloat y0,
+       final BigFloat z0,
+       final BigFloat x1,
+       final BigFloat y1,
+       final BigFloat z1) {
+
+    final BigFloat dxy =
+      add6(
+        (x0.nonNegative()==x1.nonNegative()),
+        x0.significand().multiply(x1.significand()),
+        Math.addExact(x0.exponent(),x1.exponent()),
+        (y0.nonNegative()==y1.nonNegative()),
+        y0.significand().multiply(y1.significand()),
+        Math.addExact(y0.exponent(),y1.exponent()));
+
+    final BigFloat dz = valueOf(
+      (z0.nonNegative()==z1.nonNegative()),
+      z0.significand().multiply(z1.significand()),
+      Math.addExact(z0.exponent(),z1.exponent()));
+
+    return dxy.add(dz); }
+
+  //--------------------------------------------------------------
+  // accumulator methods
   //--------------------------------------------------------------
 
   public final BigFloat
@@ -582,11 +634,11 @@ public final class BigFloat implements Ringlike<BigFloat> {
         Floats.MINIMUM_EXPONENT_INTEGRAL_SIGNIFICAND - e0,
         Floats.MAXIMUM_EXPONENT_INTEGRAL_SIGNIFICAND - e0 - 1);
     if (0==es) {
-      return floatMergeBits(p0,s0.intValue(),e0); }
+      return Floats.floatMergeBits(p0,s0.intValue(),e0); }
     if (0 > es) {
       final int e1 = e0 + es;
       final int s1 = (s0.intValue() << -es);
-      return floatMergeBits(p0,s1,e1); }
+      return Floats.floatMergeBits(p0,s1,e1); }
     if (eh <= es) { return (p0 ? 0.0F : -0.0F); }
     // eh > es > 0
     final boolean up = roundUp(s0,es);
@@ -600,11 +652,11 @@ public final class BigFloat implements Ringlike<BigFloat> {
         // lost bit has to be zero, since there was just a carry
         final int s3 = (s2 >> 1);
         final int e3 = e1 + 1;
-        return floatMergeBits(p0,s3,e3); }
+        return Floats.floatMergeBits(p0,s3,e3); }
       // no carry
-      return floatMergeBits(p0,s2,e1); }
+      return Floats.floatMergeBits(p0,s2,e1); }
     // round down
-    return floatMergeBits(p0,s1,e1); }
+    return Floats.floatMergeBits(p0,s1,e1); }
 
   /** @return closest half-even rounded <code>float</code>
    */
@@ -665,11 +717,11 @@ public final class BigFloat implements Ringlike<BigFloat> {
         (p0 ?
          Double.POSITIVE_INFINITY : Double.NEGATIVE_INFINITY); }
     if (0==es) {
-      return doubleMergeBits(p0,s0.longValue(),e0); }
+      return Doubles.doubleMergeBits(p0,s0.longValue(),e0); }
     if (0 > es) {
       final int e1 = e0 + es;
       final long s1 = (s0.longValue() << -es);
-      return doubleMergeBits(p0,s1,e1); }
+      return Doubles.doubleMergeBits(p0,s1,e1); }
     if (eh <= es) { return (p0 ? 0.0 : -0.0); }
     // eh > es > 0
     final boolean up = roundUp(s0,es);
@@ -681,11 +733,11 @@ public final class BigFloat implements Ringlike<BigFloat> {
         // lost bit has to be zero, since there was just a carry
         final long s3 = (s2>>1);
         final int e3 = e1 + 1;
-        return doubleMergeBits(p0,s3,e3); }
+        return Doubles.doubleMergeBits(p0,s3,e3); }
       // no carry
-      return doubleMergeBits(p0,s2,e1); }
+      return Doubles.doubleMergeBits(p0,s2,e1); }
     // round down
-    return doubleMergeBits(p0,s1,e1); }
+    return Doubles.doubleMergeBits(p0,s1,e1); }
 
   @Override
   public final double doubleValue () {
