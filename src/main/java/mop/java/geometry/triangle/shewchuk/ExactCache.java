@@ -15,7 +15,7 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
  *   profiling.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-08-08
+ * @version 2026-08-13
  */
 
 public final class ExactCache extends Triangle2D {
@@ -31,12 +31,13 @@ public final class ExactCache extends Triangle2D {
 
   public final boolean signedAreaExact () { return true; }
 
-  public final double signedArea () {
+  public final double twiceSignedArea () {
 
     final Vector2D a = getP0();
     final Vector2D b = getP1();
     final Vector2D c = getP2();
 
+    // TODO: XDouble.crossProduct
     final Hilo axby = Hilo.product(a.getX(),b.getY());
     final Hilo axcy = Hilo.product(a.getX(),c.getY());
     final XDouble aterms = XDouble.subtract(axby, axcy);

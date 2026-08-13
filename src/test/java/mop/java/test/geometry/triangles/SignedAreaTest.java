@@ -19,7 +19,7 @@ import java.util.List;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-07-27
+ * @version 2026-08=13
  */
 
 public final class SignedAreaTest extends TriangleTest {
@@ -29,9 +29,9 @@ public final class SignedAreaTest extends TriangleTest {
   private static final void signedArea (final Triangle2D t0) {
     final List<Triangle2D> triangles = makeTriangles(t0);
     final Triangle2D gold = truth(t0);
-    final double trueAreaX2 = gold.signedArea();
+    final double trueAreaX2 = gold.twiceSignedArea();
     for (final Triangle2D t : triangles) {
-      final double areaX2 = t.signedArea();
+      final double areaX2 = t.twiceSignedArea();
       if (t.signedAreaExact()) {
         // with delta=0.0 handles +0 vs -0 'correctly'
         Assertions.assertEquals(

@@ -27,7 +27,7 @@ public final class ExactMacro extends Triangle2D {
 
   public final boolean signedAreaExact () { return true; }
 
-  public final double signedArea () {
+  public final double twiceSignedArea () {
     final Vector2D pa = getP0();
     final Vector2D pb = getP1();
     final Vector2D pc = getP2();

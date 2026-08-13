@@ -23,7 +23,7 @@ public final class RationalFloatTriangle2D extends Triangle2D {
   //  final RationalFloat.
   // TODO: RationalFloatVector, RationalFloatTriangle...
 
-  public final double signedArea () {
+  public final double twiceSignedArea () {
     final Vector2D pa = getP0();
     final Vector2D pb = getP1();
     final Vector2D pc = getP2();

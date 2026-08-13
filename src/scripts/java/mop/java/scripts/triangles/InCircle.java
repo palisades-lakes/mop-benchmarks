@@ -13,7 +13,7 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
  * mvn clean install && jy src/scripts/java/mop/java/scripts/triangles/InCircle.java
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-08-11
+ * @version 2026-08-13
  */
 
 public final class InCircle {

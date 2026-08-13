@@ -24,7 +24,7 @@ public final class DefaultMacro extends Triangle2D {
   private static final double ccwerrboundA =
     (3.0 + 16.0 * EPSILON) * EPSILON;
 
-  public final double signedArea () {
+  public final double twiceSignedArea () {
     final Vector2D pa = getP0();
     final Vector2D pb = getP1();
     final Vector2D pc = getP2();

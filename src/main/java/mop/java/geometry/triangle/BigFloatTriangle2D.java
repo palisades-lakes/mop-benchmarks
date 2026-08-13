@@ -7,71 +7,58 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
  * Should be exact, up to BigFloat resolution.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-08-11
+ * @version 2026-08-13
  */
 
 public final class BigFloatTriangle2D extends Triangle2D {
+
+  // TODO: BigFloat vectors
+  // cache vector result of translating p0 to origin,
+  // and related quantities
+  private final BigFloat _x10;
+  private final BigFloat _y10;
+  private final BigFloat _v10Norm2;
+  private final BigFloat getX10 () { return _x10; }
+  private final BigFloat getY10 () { return _y10; }
+  private final BigFloat getV10Norm2 () { return _v10Norm2; }
+
+  private final BigFloat _x20;
+  private final BigFloat _y20;
+  private final BigFloat _v20Norm2;
+  private final BigFloat getX20 () {  return _x20; }
+  private final BigFloat getY20 () {  return _y20; }
+  private final BigFloat getV20Norm2 () { return _v20Norm2; }
+
+  private final BigFloat _V20xV10;
+  private final BigFloat getV20xV10 () {  return _V20xV10; }
 
   //--------------------------------------------------------------------
 
   public final boolean signedAreaExact () { return true; }
 
-  // TODO: reduce the number of BigFloat instances.
-  //  For example, implement BigFloat.sum(double,double);
-  //  Also, triangle translation could be done just once.
-  //  Consider boolean predicate, so can return the sign of the
-  //  final BigFloat.
-  // TODO: BigFloatVector, Vector<BigFloat>...
-
-  public final double signedArea () {
-    final Vector2D pa = getP0();
-    final Vector2D pb = getP1();
-    final Vector2D pc = getP2();
-
-    final BigFloat ax = BigFloat.valueOf(pa.getX());
-    final BigFloat ay = BigFloat.valueOf(pa.getY());
-    final BigFloat bx = BigFloat.valueOf(pb.getX());
-    final BigFloat by = BigFloat.valueOf(pb.getY());
-    final BigFloat cx = BigFloat.valueOf(pc.getX());
-    final BigFloat cy = BigFloat.valueOf(pc.getY());
-    final BigFloat acx = ax.subtract(cx);
-    final BigFloat acy = ay.subtract(cy);
-    final BigFloat bcx = bx.subtract(cx);
-    final BigFloat bcy = by.subtract(cy);
-    return
-      ((acx.multiply(bcy)).subtract(acy.multiply(bcx))).doubleValue(); }
+  public final double twiceSignedArea () {
+    return -(getV20xV10().doubleValue()); }
 
   //--------------------------------------------------------------------
 
   public final boolean inCircleExact () { return true; }
 
   public final double inCircle (final Vector2D p) {
-    // TODO: move BigFloat creation to BigFloat.subtract(double,double)
-    final Vector2D a = getP0();
-    final Vector2D b = getP1();
-    final Vector2D c = getP2();
-
-    final double px = p.getX();
-    final double py = p.getY();
 
     // TODO: BigFloatVector operations
-    final BigFloat apx = BigFloat.dif(a.getX(),px);
-    final BigFloat bpx = BigFloat.dif(b.getX(),px);
-    final BigFloat cpx = BigFloat.dif(c.getX(),px);
-    final BigFloat apy = BigFloat.dif(a.getY(),py);
-    final BigFloat bpy = BigFloat.dif(b.getY(),py);
-    final BigFloat cpy = BigFloat.dif(c.getY(),py);
+    final BigFloat xp0 = BigFloat.dif(p.getX(),getP0().getX());
+    final BigFloat yp0 = BigFloat.dif(p.getY(),getP0().getY());
 
-    final BigFloat axb = BigFloat.crossProduct(apx,apy,bpx,bpy);
-    final BigFloat bxc = BigFloat.crossProduct(bpx,bpy,cpx,cpy);
-    final BigFloat cxa = BigFloat.crossProduct(cpx,cpy,apx,apy);
+    final BigFloat bxp = BigFloat.crossProduct(getX10(),getY10(),xp0,yp0);
+    final BigFloat bxc = getV20xV10();
+    final BigFloat pxc = BigFloat.crossProduct(xp0,yp0,getX20(),getY20());
 
-    final BigFloat a2 = BigFloat.l2norm2(apx,apy);
-    final BigFloat b2 = BigFloat.l2norm2(bpx,bpy);
-    final BigFloat c2 = BigFloat.l2norm2(cpx,cpy);
+    final BigFloat p2 = BigFloat.l2norm2(xp0,yp0);
+    final BigFloat b2 = getV10Norm2();
+    final BigFloat c2 = getV20Norm2();
 
-  // TODO: 3d dot product
-    return BigFloat.dot(a2,b2,c2,bxc,cxa,axb).doubleValue(); }
+    // TODO: reverse crossProducts
+    return BigFloat.dot(p2,b2,c2,bxc,pxc,bxp).doubleValue(); }
 
   //--------------------------------------------------------------------
   // construction
@@ -80,12 +67,24 @@ public final class BigFloatTriangle2D extends Triangle2D {
   private BigFloatTriangle2D (final Vector2D a,
                               final Vector2D b,
                               final Vector2D c)  {
-    super(a,b,c); }
+    super(a,b,c);
+    final double ax = a.getX();
+    final double ay = a.getY();
+
+    _x10 = BigFloat.dif(b.getX(),ax);
+    _y10 = BigFloat.dif(b.getY(),ay);
+    _v10Norm2 = BigFloat.l2norm2(_x10,_y10);
+
+    _x20 = BigFloat.dif(c.getX(),ax);
+    _y20 = BigFloat.dif(c.getY(),ay);
+
+    _v20Norm2 = BigFloat.l2norm2(_x20,_y20);
+    _V20xV10 = BigFloat.crossProduct(_x20, _y20,_x10, _y10); }
 
   public static final Triangle2D of (final Vector2D a,
                                      final Vector2D b,
                                      final Vector2D c) {
-    return new BigFloatTriangle2D(a,b,c); }
+    return new BigFloatTriangle2D(a, b, c); }
 
   /** Convert other triangle classes. */
 

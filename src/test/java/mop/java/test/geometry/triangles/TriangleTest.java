@@ -19,12 +19,13 @@ public abstract class TriangleTest {
 
   // ground truth predicate.
   public static final Triangle2D truth (final Triangle2D t) {
-    return BigFloatTriangle2D.from(t); }
+    return BigFloatTriangle2DNoCache.from(t); }
 
   public static final List<Triangle2D> makeTriangles (final Triangle2D t) {
     final Triangle2D triangleV2D = TriangleVector2D.from(t);
     final Triangle2D bigFloat0 = BigFloatTriangle2D0.from(t);
-    final Triangle2D bigFloat = BigFloatTriangle2D.from(t);
+    final Triangle2D bigFloat1 = BigFloatTriangle2D.from(t);
+    final Triangle2D bigFloat = BigFloatTriangle2DNoCache.from(t);
     final Triangle2D rationalFloat = RationalFloatTriangle2D.from(t);
     final Triangle2D ddFast = DDFast.from(t);
     final Triangle2D ddNormalized = DDNormalized.from(t);
@@ -45,7 +46,7 @@ public abstract class TriangleTest {
     return List.of(
       // mine
       triangleV2D, rationalFloat,
-      bigFloat0, bigFloat,
+      bigFloat0,bigFloat1, bigFloat,
       // JTS
       ddFast,ddNormalized,ddSlow,doubleNonRobust,inCircleNormalized,
       // Shewchuk predicates.c
@@ -93,7 +94,7 @@ public abstract class TriangleTest {
           msg.append(p3).append(" \n");
           msg.append(Double.toHexString(t.inCircle(p3))); }
         else {
-          msg.append(Double.toHexString(t.signedArea())); }}}
+          msg.append(Double.toHexString(t.twiceSignedArea())); }}}
     return msg + "\n"; }
 
   //--------------------------------------------------------------

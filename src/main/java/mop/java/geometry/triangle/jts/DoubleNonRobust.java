@@ -34,7 +34,7 @@ public final class DoubleNonRobust extends Triangle2D {
   //--------------------------------------------------------------------
 
   @Override
-  public final double signedArea () {
+  public final double twiceSignedArea () {
     return triArea(getP0(),getP1(),getP2()); }
 
   //--------------------------------------------------------------------

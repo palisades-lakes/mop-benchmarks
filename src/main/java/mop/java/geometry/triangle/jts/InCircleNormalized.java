@@ -14,7 +14,7 @@ public final class InCircleNormalized extends Triangle2D {
   //--------------------------------------------------------------------
   // TODO: from Fast, make consistent with inCircle strategy
 
-  public final double signedArea () {
+  public final double twiceSignedArea () {
     final Vector2D pa = getP0();
     final Vector2D pb = getP1();
     final Vector2D pc = getP2();

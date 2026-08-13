@@ -16,7 +16,7 @@ public class SignedArea extends Base {
   @Override
   public final double operation (final Triangle2D t,
                                  final Vector2D p) {
-    return t.signedArea(); }
+    return t.twiceSignedArea(); }
 
   @SuppressWarnings("unused")
   public static final void main (final String[] args)  {

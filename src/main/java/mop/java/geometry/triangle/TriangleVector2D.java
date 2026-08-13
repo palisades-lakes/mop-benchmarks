@@ -26,7 +26,7 @@ public final class TriangleVector2D extends Triangle2D {
   // cache?
 
   @Override
-  public final double signedArea () {
+  public final double twiceSignedArea () {
     return triArea(getP0(),getP1(),getP2()); }
 
   //--------------------------------------------------------------------

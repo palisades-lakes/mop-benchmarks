@@ -3,13 +3,14 @@ package mop.java.geometry.triangle;
 import mop.java.numbers.BigFloat;
 import org.apache.commons.geometry.euclidean.twod.Vector2D;
 
-/** Previous version of BigFloatTriangle2D00 for performance comparison.
+/** Standard calculations implemented in BigFloat.
+ * Should be exact, up to BigFloat resolution.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-08-10
+ * @version 2026-08-13
  */
 
-public final class BigFloatTriangle2D0 extends Triangle2D {
+public final class BigFloatTriangle2DNoCache extends Triangle2D {
 
   //--------------------------------------------------------------------
 
@@ -44,61 +45,47 @@ public final class BigFloatTriangle2D0 extends Triangle2D {
 
   public final boolean inCircleExact () { return true; }
 
+  // TODO: is this assuming signedArea >=0?
   public final double inCircle (final Vector2D p) {
-    // TODO: move BigFloat creation to BigFloat.subtract(double,double)
     final Vector2D a = getP0();
     final Vector2D b = getP1();
     final Vector2D c = getP2();
 
-    final double px = -p.getX();
-    final double py = -p.getY();
-//    final BigFloat ax = BigFloat.valueOf(a.getX());
-//    final BigFloat ay = BigFloat.valueOf(a.getY());
-//    final BigFloat bx = BigFloat.valueOf(b.getX());
-//    final BigFloat by = BigFloat.valueOf(b.getY());
-//    final BigFloat cx = BigFloat.valueOf(c.getX());
-//    final BigFloat cy = BigFloat.valueOf(c.getY());
-//    final BigFloat apx = ax.add(px);
-//    final BigFloat bpx = bx.add(px);
-//    final BigFloat cpx = cx.add(px);
-//    final BigFloat apy = ay.add(py);
-//    final BigFloat bpy = by.add(py);
-//    final BigFloat cpy = cy.add(py);
+    final double px = p.getX();
+    final double py = p.getY();
 
-    final BigFloat apx = BigFloat.sum(a.getX(),px);
-    final BigFloat bpx = BigFloat.sum(b.getX(),px);
-    final BigFloat cpx = BigFloat.sum(c.getX(),px);
-    final BigFloat apy = BigFloat.sum(a.getY(),py);
-    final BigFloat bpy = BigFloat.sum(b.getY(),py);
-    final BigFloat cpy = BigFloat.sum(c.getY(),py);
+    // TODO: BigFloatVector operations
+    final BigFloat apx = BigFloat.dif(a.getX(),px);
+    final BigFloat bpx = BigFloat.dif(b.getX(),px);
+    final BigFloat cpx = BigFloat.dif(c.getX(),px);
+    final BigFloat apy = BigFloat.dif(a.getY(),py);
+    final BigFloat bpy = BigFloat.dif(b.getY(),py);
+    final BigFloat cpy = BigFloat.dif(c.getY(),py);
 
-    // TODO: crossProduct
-    final BigFloat axb = apx.multiply(bpy).subtract(bpx.multiply(apy));
-    final BigFloat bxc = bpx.multiply(cpy).subtract(cpx.multiply(bpy));
-    final BigFloat cxa = cpx.multiply(apy).subtract(apx.multiply(cpy));
-    // TODO: l2norm2
-    final BigFloat a2 = apx.square().add(apy.square());
-    final BigFloat b2 = bpx.square().add(bpy.square());
-    final BigFloat c2 = cpx.square().add(cpy.square());
+    final BigFloat axb = BigFloat.crossProduct(apx,apy,bpx,bpy);
+    final BigFloat bxc = BigFloat.crossProduct(bpx,bpy,cpx,cpy);
+    final BigFloat cxa = BigFloat.crossProduct(cpx,cpy,apx,apy);
 
-    return a2.multiply(bxc)
-             .add(b2.multiply(cxa))
-             .add(c2.multiply(axb))
-             .doubleValue(); }
+    final BigFloat a2 = BigFloat.l2norm2(apx,apy);
+    final BigFloat b2 = BigFloat.l2norm2(bpx,bpy);
+    final BigFloat c2 = BigFloat.l2norm2(cpx,cpy);
+
+  // TODO: 3d dot product
+    return BigFloat.dot(a2,b2,c2,bxc,cxa,axb).doubleValue(); }
 
   //--------------------------------------------------------------------
   // construction
   //--------------------------------------------------------------------
 
-  private BigFloatTriangle2D0 (final Vector2D a,
-                               final Vector2D b,
-                               final Vector2D c)  {
+  private BigFloatTriangle2DNoCache (final Vector2D a,
+                                     final Vector2D b,
+                                     final Vector2D c)  {
     super(a,b,c); }
 
   public static final Triangle2D of (final Vector2D a,
                                      final Vector2D b,
                                      final Vector2D c) {
-    return new BigFloatTriangle2D0(a, b, c); }
+    return new BigFloatTriangle2DNoCache(a, b, c); }
 
   /** Convert other triangle classes. */
 

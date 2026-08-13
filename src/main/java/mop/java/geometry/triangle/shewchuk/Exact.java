@@ -23,7 +23,7 @@ public final class Exact extends Triangle2D {
 
   public final boolean signedAreaExact () { return true; }
 
-  public final double signedArea () {
+  public final double twiceSignedArea () {
 
     final Vector2D a = getP0();
     final Vector2D b = getP1();

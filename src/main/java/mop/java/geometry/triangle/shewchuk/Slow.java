@@ -1,10 +1,4 @@
 package mop.java.geometry.triangle.shewchuk;
-// 2026-05-14
-// macro expand predicates.c via https://godbolt.org/
-// minimal changes to compile as java
-// 2026-05-15
-// split into Expansion manipulation and fast, slow, exact, adaptive
-// algorithm classes
 
 import mop.java.geometry.triangle.Triangle2D;
 import mop.java.numbers.Hilo;
@@ -14,7 +8,7 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
 /** More exact tests.  Robust.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-07-27
+ * @version 2026-08-13
  */
 
 // strictfp unnecessary for JDK17 and later
@@ -27,7 +21,7 @@ public final class Slow extends Triangle2D {
   // TODO: seems to return 2xsigned area
   // TODO: XDoubleVector, XDoubleTriangle...
 
-  public final double signedArea () {
+  public final double twiceSignedArea () {
     final Vector2D pa = getP0();
     final Vector2D pb = getP1();
     final Vector2D pc = getP2();
@@ -49,6 +43,7 @@ public final class Slow extends Triangle2D {
                                     final Hilo cx,
                                     final Hilo cy) {
 
+    // TODO: XDouble.crossProduct
     final XDouble axby = XDouble.product(ax, by);
     final XDouble bxay = XDouble.product(bx, ay);
     final XDouble sum = axby.subtract(bxay);

@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
  * java -cp target\benchmarks.jar mop.java.benchmarks.arithmetic.Base
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-08-07
+ * @version 2026-08-13
  */
 
 public final class Defaults {
@@ -60,20 +60,18 @@ public final class Defaults {
       .shouldFailOnError(true)
       .shouldDoGC(true)
       .jvmArgs(
-        "--enable-preview",
-        "-Xmx16g",
-        "-Xms16g",
-        //"-Xmn2500m",
+        "-ea", "-dsa",
+        "-Xmn10g",  "-Xms26g", "-Xmx26g",
         "-XX:+UseFMA",
         "-XX:+UseParallelGC",
         "-Xbatch",
         "-server"
               )
-      .forks(3)
-      .warmupIterations(3)
-      .warmupTime(TimeValue.seconds(30))
-      .measurementIterations(3)
-      .measurementTime(TimeValue.seconds(30))
+      .forks(4)
+      .warmupIterations(4)
+      .warmupTime(TimeValue.seconds(40))
+      .measurementIterations(4)
+      .measurementTime(TimeValue.seconds(40))
       .build(); }
 
   //--------------------------------------------------------------

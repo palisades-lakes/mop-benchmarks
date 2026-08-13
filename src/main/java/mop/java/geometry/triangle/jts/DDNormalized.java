@@ -17,7 +17,7 @@ public final class DDNormalized extends Triangle2D {
 //--------------------------------------------------------------------
 
   @Override
-  public final double signedArea () {
+  public final double twiceSignedArea () {
     return DDFast.triAreaDDFast(getP0(),getP1(),getP2()).doubleValue(); }
 
   //--------------------------------------------------------------------

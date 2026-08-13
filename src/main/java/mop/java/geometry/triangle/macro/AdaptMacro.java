@@ -324,8 +324,8 @@ public final class AdaptMacro extends Triangle2D {
 
   //--------------------------------------------------------------------
 
-  public final double signedArea () {
-    return DefaultMacro.of(getP0(),getP1(),getP2()).signedArea(); }
+  public final double twiceSignedArea () {
+    return DefaultMacro.of(getP0(),getP1(),getP2()).twiceSignedArea(); }
 
   //--------------------------------------------------------------------
   // inCircle

@@ -64,8 +64,7 @@ public final class BigFloat implements Ringlike<BigFloat> {
                                       final int e1) {
     if (e0<e1) { return add6(p1,t1,e1,p0,t0,e0); }
     final int de = e0-e1;
-    if (p0!=p1) {
-      // different signs
+    if (p0!=p1) { // different signs
       final BoundedNatural t0s = (de>0) ? t0.shiftUp(de) : t0;
       final int c01 = t0s.compareTo(t1);
       // t1 > t0s
@@ -204,6 +203,9 @@ public final class BigFloat implements Ringlike<BigFloat> {
 
   public static final BigFloat sum (final double z0,
                                     final double z1) {
+    // TODO: NaN and infinities
+    if (0.0==z0) { return BigFloat.valueOf(z1); }
+    if (0.0==z1) { return BigFloat.valueOf(z0); }
     final int e0 = Doubles.exponent(z0);
     final int e1 = Doubles.exponent(z1);
     if (e0<e1) { return sum(z1,z0); }
@@ -856,7 +858,7 @@ public final class BigFloat implements Ringlike<BigFloat> {
   public static final BigFloat valueOf (final boolean p,
                                         final BoundedNatural t,
                                         final int e) {
-    //return reduce(p0,t0,e0); }
+    //return reduce(p,t,e); }
     return new BigFloat(p,t,e); }
 
   //--------------------------------------------------------------

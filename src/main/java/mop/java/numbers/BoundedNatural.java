@@ -60,7 +60,7 @@ import static mop.java.numbers.Numbers.*;
  * when the operation result exceeds the bound.
  *  <br>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-08-11
+ * @version 2026-08-13
  */
 
 //@SuppressWarnings("unchecked")
@@ -145,8 +145,7 @@ implements Ringlike<BoundedNatural> {
     final int b1 = u.hiBit();
     if (b0<b1) { return -1; }
     if (b0>b1) { return 1; }
-    int i = hiInt()-1;
-    for (;i>=0;i--) {
+    for (int i = hiInt()-1;i>=0;i--) {
       final long u0i = uword(i);
       final long u1i = u.uword(i);
       if (u0i<u1i) { return -1; }
@@ -996,8 +995,7 @@ implements Ringlike<BoundedNatural> {
     assert 0<=upShift;
     if (0==upShift) { return this; }
     if (isZero()) { return this; }
-    return new BoundedNatural(
-      NaturalInts.shiftUp(words(), upShift)); }
+    return new BoundedNatural(NaturalInts.shiftUp(words(), upShift)); }
 
 //  public final BoundedNatural setBit (final int i) {
 //    assert 0<=i;

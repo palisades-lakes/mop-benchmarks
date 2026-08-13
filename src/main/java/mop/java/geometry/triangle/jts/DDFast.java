@@ -30,7 +30,7 @@ public final class DDFast extends Triangle2D {
 
 
   @Override
-  public final double signedArea () {
+  public final double twiceSignedArea () {
     return triAreaDDFast(getP0(),getP1(),getP2()).doubleValue(); }
 
   //--------------------------------------------------------------------

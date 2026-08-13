@@ -59,7 +59,7 @@ public abstract class Triangle2D {
    * input points are collinear or nearly so.
    */
 
-  public double signedArea () {
+  public double twiceSignedArea () {
     throw new UnsupportedOperationException(
       getClass().getSimpleName()); }
 
