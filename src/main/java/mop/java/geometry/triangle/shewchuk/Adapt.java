@@ -54,7 +54,7 @@ public final class Adapt extends Triangle2D {
                                         final Vector2D pc,
                                         final Vector2D pd,
                                         final double permanent) {
-    // TODO: should this be Hilo.twoDiff? see calls to towDiffTail below
+    // TODO: should this be Hilo.twoDiff? see calls to twoDiffTail below
     // TODO: convert to vector ops.
     // TODO: subtract d from other vecs before calling
     final double adx = (pa.getX() - pd.getX());

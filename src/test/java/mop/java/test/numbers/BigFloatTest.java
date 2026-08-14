@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import java.util.function.BinaryOperator;
 
 //----------------------------------------------------------------
-
 /**
  * Test desired properties of BigFloat.
  * <p>
@@ -20,7 +19,7 @@ import java.util.function.BinaryOperator;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-08-11
+ * @version 2026-08-14
  */
 
 public final class BigFloatTest {

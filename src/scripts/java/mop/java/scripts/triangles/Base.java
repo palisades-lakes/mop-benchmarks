@@ -37,7 +37,7 @@ public abstract class Base {
                                                   final String dest) {
     return switch (dest) {
       case "TriangleVector2D" -> TriangleVector2D.from(t);
-      case "BigFloatTriangle2D0" ->  BigFloatTriangle2D0.from(t);
+      case "DoubleTriangle2D" ->  DoubleTriangle2D.from(t);
       case "BigFloatTriangle2D" ->  BigFloatTriangle2D.from(t);
       case "BigFloatTriangle2DNoCache" ->  BigFloatTriangle2DNoCache.from(t);
       case "RationalFloatTriangle2D" ->  RationalFloatTriangle2D.from(t);
@@ -65,8 +65,7 @@ public abstract class Base {
     return t;}
 
   @Param({
-//    "TriangleVector2D",
-    "BigFloatTriangle2D0",
+    "TriangleVector2D",
     "BigFloatTriangle2DNoCache",
 //    "RationalFloatTriangle2D",
 //    "DDFast",

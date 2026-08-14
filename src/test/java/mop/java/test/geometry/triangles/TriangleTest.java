@@ -23,9 +23,9 @@ public abstract class TriangleTest {
 
   public static final List<Triangle2D> makeTriangles (final Triangle2D t) {
     final Triangle2D triangleV2D = TriangleVector2D.from(t);
-    final Triangle2D bigFloat0 = BigFloatTriangle2D0.from(t);
-    final Triangle2D bigFloat1 = BigFloatTriangle2D.from(t);
-    final Triangle2D bigFloat = BigFloatTriangle2DNoCache.from(t);
+    final Triangle2D doubleTriangle = DoubleTriangle2D.from(t);
+    final Triangle2D bigFloat = BigFloatTriangle2D.from(t);
+    final Triangle2D bigFloatNoCache = BigFloatTriangle2DNoCache.from(t);
     final Triangle2D rationalFloat = RationalFloatTriangle2D.from(t);
     final Triangle2D ddFast = DDFast.from(t);
     final Triangle2D ddNormalized = DDNormalized.from(t);
@@ -46,7 +46,8 @@ public abstract class TriangleTest {
     return List.of(
       // mine
       triangleV2D, rationalFloat,
-      bigFloat0,bigFloat1, bigFloat,
+      doubleTriangle,
+      bigFloat, bigFloatNoCache,
       // JTS
       ddFast,ddNormalized,ddSlow,doubleNonRobust,inCircleNormalized,
       // Shewchuk predicates.c
