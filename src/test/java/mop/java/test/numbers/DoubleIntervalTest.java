@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-08-14
+ * @version 2026-08-15
  */
 
 public final class DoubleIntervalTest {
@@ -26,16 +26,22 @@ public final class DoubleIntervalTest {
 //  private static final BinaryOperator dist =
 //    (q0, q1) -> ((DoubleInterval) q0).subtract((DoubleInterval) q1).abs();
 
-  @Test
-  public final void squareTest () {
-    final Generator g =
-      DoubleIntervals.fromDoubleGenerator(
-        PRNG.well44497b("seeds/Well44497b-2019-01-05.txt"));
-    for (int i = 0; i < TRYS; i++) {
-      final DoubleInterval x = (DoubleInterval) g.next();
-      final DoubleInterval x2 = x.square();
-      final DoubleInterval xx = x.multiply(x);
-      Assertions.assertEquals(x2, xx); } }
+  // NOTE: intervals will fail the squareTest:
+  // The set of values that result from
+  // { z*z : z in [min,max]} is different from
+  // { z0*z1 : z0,z1 in [min,max]}.
+
+
+//  @Test
+//  public final void squareTest () {
+//    final Generator g =
+//      DoubleIntervals.fromDoubleGenerator(
+//        PRNG.well44497b("seeds/Well44497b-2019-01-05.txt"));
+//    for (int i = 0; i < TRYS; i++) {
+//      final DoubleInterval x = (DoubleInterval) g.next();
+//      final DoubleInterval x2 = x.square();
+//      final DoubleInterval xx = x.multiply(x);
+//      Assertions.assertEquals(x2, xx); } }
 
   @Test
   public final void l2norm2Test () {

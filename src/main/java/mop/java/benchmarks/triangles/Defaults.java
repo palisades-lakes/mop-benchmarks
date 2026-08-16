@@ -67,11 +67,11 @@ public final class Defaults {
         "-Xbatch",
         "-server"
               )
-      .forks(4)
-      .warmupIterations(4)
-      .warmupTime(TimeValue.seconds(40))
-      .measurementIterations(4)
-      .measurementTime(TimeValue.seconds(40))
+      .forks(3)
+      .warmupIterations(3)
+      .warmupTime(TimeValue.seconds(30))
+      .measurementIterations(3)
+      .measurementTime(TimeValue.seconds(30))
       .build(); }
 
   //--------------------------------------------------------------

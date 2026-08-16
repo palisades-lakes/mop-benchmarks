@@ -38,6 +38,7 @@ public abstract class Base {
     return switch (dest) {
       case "TriangleVector2D" -> TriangleVector2D.from(t);
       case "DoubleTriangle2D" ->  DoubleTriangle2D.from(t);
+      case "DoubleIntervalTriangle2D" ->  DoubleIntervalTriangle2D.from(t);
       case "BigFloatTriangle2D" ->  BigFloatTriangle2D.from(t);
       case "BigFloatTriangle2DNoCache" ->  BigFloatTriangle2DNoCache.from(t);
       case "RationalFloatTriangle2D" ->  RationalFloatTriangle2D.from(t);

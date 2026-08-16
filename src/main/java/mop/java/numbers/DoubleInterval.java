@@ -6,9 +6,22 @@ import mop.java.Exceptions;
 // TODO: implement as Record?
 
 /** A <code>double</code> interval.
+ * <br>
+ * See <a href="https://en.wikipedia.org/wiki/Interval_arithmetic">
+ *   Interval Arithmetic</a>
+ * <br>
+ * Note the need to be careful when the same interval is both arguments
+ * to an operation (eg <code>square</code> and <code>multiply</code>).
+ * The set of values that result from
+ * { z*z : z in [min,max]} is different from
+ * { z0*z1 : z0,z1 in [min,max]}.
+ * More generally,
+ * { f(z,z) : z in [min,max] } == { f(z0,z1) : z0,z1 in [min,max] }
+ * only if f is monotone in both arguments over [min,max].
+ *
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-08-14
+ * @version 2026-08-15
  */
 
 public final class DoubleInterval implements Ringlike<DoubleInterval> {
@@ -22,6 +35,14 @@ public final class DoubleInterval implements Ringlike<DoubleInterval> {
 
   private final double _max;
   public final double max () { return _max; }
+
+  //--------------------------------------------------------------
+
+  private final boolean containsZero () {
+    return (0.0>=min()) && (0.0<=max()); }
+
+//  private final boolean isNonNegative () {
+//    return 0.0<=min(); }
 
   //--------------------------------------------------------------
   // Ringlike
@@ -52,34 +73,42 @@ public final class DoubleInterval implements Ringlike<DoubleInterval> {
 
   @Override
   public final DoubleInterval negate () {
-    if (isZero()) { return this; }
-    return safe(-max(),-min()); }
+    return new DoubleInterval(-max(),-min()); }
 
   @Override
   public final DoubleInterval abs () {
-    return safe(Math.abs(min()),Math.abs(max())); }
+    final double z0 = Math.abs(min());
+    final double z1 = Math.abs(max());
+    if (z0<=z1) { return new DoubleInterval(z0,z1); }
+    return new DoubleInterval(z1,z0); }
 
   //--------------------------------------------------------------
 
   @Override
   public final DoubleInterval add (final DoubleInterval q) {
     if (isNaN()) { return NaN; }
-    if (isZero()) { return q; }
     if (q.isNaN()) { return NaN; }
-    if (q.isZero()) { return this; }
-    return safe(min()+q.min(),max()+q.max()); }
+    // TODO: worth more special cases?
+    //if (isZero()) { return q; }
+    //if (q.isZero()) { return this; }
+    return new DoubleInterval(min()+q.min(),max()+q.max()); }
 
   //--------------------------------------------------------------
 
   public final DoubleInterval add (final double z) {
     if (0.0==z) { return this; }
-    return add(valueOf(z)); }
-
+    return new DoubleInterval(min()+Math.nextDown(z),
+                  max()+Math.nextUp(z)); }
   //--------------------------------------------------------------
 
   @Override
   public final DoubleInterval subtract (final DoubleInterval q) {
-    return add(q.negate()); }
+    if (isNaN()) { return NaN; }
+    if (q.isNaN()) { return NaN; }
+    // TODO: worth more special cases?
+    //if (isZero()) { return q; }
+    //if (q.isZero()) { return this; }
+    return new DoubleInterval(min()-q.max(),max()-q.min()); }
 
   //--------------------------------------------------------------
   /** Return the double error interval value of <code>z0+z1</code>,
@@ -88,49 +117,91 @@ public final class DoubleInterval implements Ringlike<DoubleInterval> {
 
   public static final DoubleInterval sum (final double z0,
                                           final double z1) {
-    return valueOf(z0).add(valueOf(z1)); }
+    return new DoubleInterval(Math.nextDown(z0)+Math.nextDown(z1),
+                  Math.nextUp(z0)+Math.nextUp(z1)); }
 
-//  /** Return the double error interval value of <code>z0-z1</code>,
-//   * without intermediate <code>BigFloat</code> instances.
-//   */
-//
-//  public static final DoubleInterval dif (final double z0,
-//                                          final double z1) {
-//    // TODO: expand this? probably not worth while
-//    return sum(z0,-z1); }
+  /** Return the double error interval value of <code>z0-z1</code>,
+   * without intermediate <code>BigFloat</code> instances.
+   */
+
+  public static final DoubleInterval dif (final double z0,
+                                          final double z1) {
+    final double mz1 = -z1;
+    return new DoubleInterval(Math.nextDown(z0)+Math.nextDown(mz1),
+                  Math.nextUp(z0)+Math.nextUp(mz1)); }
 
   //--------------------------------------------------------------
 
   @Override
   public final DoubleInterval multiply (final DoubleInterval q) {
     if (isNaN()) { return NaN; }
-    if (isZero()) { return ZERO; }
-    if (isOne()) { return q; }
     if (q.isNaN()) { return NaN; }
-    if (q.isZero()) { return ZERO; }
-    if (q.isOne()) { return this; }
-    return safe(min()*q.min(),
-                min()*q.max(),
-                max()*q.min(),
-                max()*q.max());  }
+    final double z00 = min()*q.min();
+    final double z01 = min()*q.max();
+    final double z10 = max()*q.min();
+    final double z11 = max()*q.max();
+    double z0, z1;
+    if (z00<=z01) { z0 = z00; z1 = z01; }
+    else { z0 = z01; z1 = z00; }
+    if (z10<z0) { z0 = z10; }
+    else if (z1<z10) { z1 = z10; }
+    if (z11<z0) { z0 = z11; }
+    else if (z1<z11) { z1 = z11; }
+    return new DoubleInterval(z0,z1);  }
 
   public final DoubleInterval
-  multiply (final double z) { return safe(z*min(),z*max()); }
+  multiply (final double z) {
+    return multiply(valueOf(z)); }
 
   //--------------------------------------------------------------
 
   @Override
   public final DoubleInterval
-  square () { return multiply(this); }
+  square () {
+    if (isNaN()) { return NaN; }
+    final double z0 = min()*min();
+    final double z1 = max()*max();
+    if (containsZero()) {
+      if (z0<=z1) { return new DoubleInterval(0.0,z1); }
+      return new DoubleInterval(0.0,z0); }
+    if (z0<=z1) { return new DoubleInterval(z0,z1); }
+    return new DoubleInterval(z1,z0); }
 
   //--------------------------------------------------------------
   // geometry
   //--------------------------------------------------------------
-  /** Compute squared l2norm without intermediate instances. */
 
   public static final DoubleInterval l2norm2 (final DoubleInterval x,
                                               final DoubleInterval y) {
-    return x.square().add(y.square()); }
+    if (x.isNaN() || y.isNaN()) { return NaN; }
+
+    final double xxmin = x.min()*x.min();
+    final double xxmax = x.max()*x.max();
+    final double xx0, xx1;
+    if (x.containsZero()) {
+      xx0 = 0.0;
+      xx1 = Math.max(xxmin,xxmax); }
+    else if (xxmin<=xxmax) {
+      xx0 = xxmin;
+      xx1 = xxmax; }
+    else {
+      xx0 = xxmax;
+      xx1 = xxmin; }
+
+    final double yymin = y.min()*y.min();
+    final double yymax = y.max()*y.max();
+    final double yy0, yy1;
+    if (y.containsZero()) {
+      yy0 = 0.0;
+      yy1 = Math.max(yymin,yymax); }
+    else if (yymin<=yymax) {
+      yy0 = yymin;
+      yy1 = yymax; }
+    else {
+      yy0 = yymax;
+      yy1 = yymin; }
+
+    return new DoubleInterval(xx0+yy0,xx1+yy1); }
 
   //--------------------------------------------------------------
 
@@ -139,7 +210,11 @@ public final class DoubleInterval implements Ringlike<DoubleInterval> {
                 final DoubleInterval y0,
                 final DoubleInterval x1,
                 final DoubleInterval y1) {
-    return x0.multiply(y1).subtract(x1.multiply(y0)); }
+
+    final DoubleInterval x0y1 = x0.multiply(y1);
+    final DoubleInterval x1y0 = x1.multiply(y0);
+    return new DoubleInterval(x0y1.min()-x1y0.max(),
+                  x0y1.max()-x1y0.min()); }
 
   //--------------------------------------------------------------
 
@@ -151,10 +226,11 @@ public final class DoubleInterval implements Ringlike<DoubleInterval> {
        final DoubleInterval y1,
        final DoubleInterval z1) {
 
-    return
-      x0.multiply(x1)
-        .add(y0.multiply(y1))
-        .add(z0.multiply(z1)); }
+    final DoubleInterval x01 = x0.multiply(x1);
+    final DoubleInterval y01 = y0.multiply(y1);
+    final DoubleInterval z01 = z0.multiply(z1);
+    return new DoubleInterval(x01.min()+y01.min()+z01.min(),
+                  x01.max()+y01.max()+z01.max()); }
 
   //--------------------------------------------------------------
   // Number methods
@@ -240,9 +316,9 @@ public final class DoubleInterval implements Ringlike<DoubleInterval> {
   private DoubleInterval (final double min,
                           final double max) {
     // reverse test for NaN
-    assert ! (min>max) :
-      "[" + Double.toHexString(min)+","+Double.toHexString(max)+"]";
-    assert !Double.isNaN(min) || Double.isNaN(max);
+//    assert ! (min>max) :
+//      "[" + Double.toHexString(min)+","+Double.toHexString(max)+"]";
+//    assert !Double.isNaN(min) || Double.isNaN(max);
     _min = min; _max = max; }
 
   public static final DoubleInterval unsafe (final double d0,

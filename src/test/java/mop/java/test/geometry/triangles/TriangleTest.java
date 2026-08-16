@@ -24,6 +24,7 @@ public abstract class TriangleTest {
   public static final List<Triangle2D> makeTriangles (final Triangle2D t) {
     final Triangle2D triangleV2D = TriangleVector2D.from(t);
     final Triangle2D doubleTriangle = DoubleTriangle2D.from(t);
+    final Triangle2D doubleIntervalTriangle = DoubleIntervalTriangle2D.from(t);
     final Triangle2D bigFloat = BigFloatTriangle2D.from(t);
     final Triangle2D bigFloatNoCache = BigFloatTriangle2DNoCache.from(t);
     final Triangle2D rationalFloat = RationalFloatTriangle2D.from(t);
@@ -46,7 +47,7 @@ public abstract class TriangleTest {
     return List.of(
       // mine
       triangleV2D, rationalFloat,
-      doubleTriangle,
+      doubleTriangle, doubleIntervalTriangle,
       bigFloat, bigFloatNoCache,
       // JTS
       ddFast,ddNormalized,ddSlow,doubleNonRobust,inCircleNormalized,
