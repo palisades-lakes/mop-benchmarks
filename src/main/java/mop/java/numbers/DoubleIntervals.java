@@ -144,7 +144,8 @@ public final class DoubleIntervals implements Set {
         final double z1 = g.nextDouble();
         if (Double.isNaN(z0) || Double.isNaN(z1)) {
           return DoubleInterval.NaN; }
-        return DoubleInterval.safe(z0,z1); } }; }
+        return new DoubleInterval(Math.min(z0,z1),
+                                  Math.max(z0,z1)); } }; }
 
   // Is this characteristic of most inputs?
   public static final Generator

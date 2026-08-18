@@ -84,13 +84,13 @@ public abstract class Base {
     return t;}
 
   @Param({
+//    "BigFloatTriangle2DNoCache",
 //    "TriangleVector2D",
-//    "DoubleTriangle2D",
+    "DoubleTriangle2D",
     "DoubleIntervalTriangle2D",
     "DoubleIntervalTriangle2D0",
-//    "BigFloatTriangle2D",
-//    "DIBFTriangle2D",
-//    "BigFloatTriangle2DNoCache",
+    "DIBFTriangle2D",
+    "BigFloatTriangle2D",
 //    "RationalFloatTriangle2D",
 //    "DDFast",
 //    "DDNormalized",

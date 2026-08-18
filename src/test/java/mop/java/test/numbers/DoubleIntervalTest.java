@@ -3,7 +3,6 @@ package mop.java.test.numbers;
 import mop.java.numbers.*;
 import mop.java.prng.Generator;
 import mop.java.prng.PRNG;
-import org.apache.commons.rng.UniformRandomProvider;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -60,53 +59,53 @@ public final class DoubleIntervalTest {
           "\nl20=" + l20.toHexString() +
           "\nl21=" + l21.toHexString()); } }
 
-  private static final String sumFailureMsg (final String name,
-                                             final double z0,
-                                             final double z1,
-                                             final DoubleInterval b0,
-                                             final DoubleInterval b1,
-                                             final DoubleInterval s0,
-                                             final DoubleInterval s1) {
-    return
-      "\n" + name +
-        "\nz0=" + Double.toHexString(z0) +
-        "\nb0=" + b0.toHexString() +
-        "\nz1=" + Double.toHexString(z1) +
-        "\nb1=" + b1.toHexString() +
-        "\ns0=" + s0.toHexString() +
-        "\ns1=" + s1.toHexString();
-  }
+//  private static final String sumFailureMsg (final String name,
+//                                             final double z0,
+//                                             final double z1,
+//                                             final DoubleInterval b0,
+//                                             final DoubleInterval b1,
+//                                             final DoubleInterval s0,
+//                                             final DoubleInterval s1) {
+//    return
+//      "\n" + name +
+//        "\nz0=" + Double.toHexString(z0) +
+//        "\nb0=" + b0.toHexString() +
+//        "\nz1=" + Double.toHexString(z1) +
+//        "\nb1=" + b1.toHexString() +
+//        "\ns0=" + s0.toHexString() +
+//        "\ns1=" + s1.toHexString();
+//  }
 
-  @Test
-  public final void sumTest () {
-    final UniformRandomProvider urp =
-      PRNG.well44497b("seeds/Well44497b-2019-01-09.txt");
-    final Generator g =
-      Doubles.laplaceGenerator(urp, 0.0, 1000.0);
-    for (int i = 0; i < TRYS; i++) {
-      final double z0 = g.nextDouble();
-      final double z1 = g.nextDouble();
-      final DoubleInterval b0 = DoubleInterval.valueOf(z0);
-      final DoubleInterval b1 = DoubleInterval.valueOf(z1);
-      final DoubleInterval expected = b0.add(b1);
-      final DoubleInterval add01 = b0.add(z1);
-      Assertions.assertEquals(
-        expected, add01, sumFailureMsg("b0.add(b1) vs b0.add(z1)",
-                                       z0, z1, b0, b1, expected, add01));
-      final DoubleInterval add10 = b1.add(z0);
-      Assertions.assertEquals(
-        expected, add10, sumFailureMsg("b0.add(b1) vs b1.add(z0)",
-                                       z0, z1, b0, b1, expected, add10));
-      final DoubleInterval sum10 = DoubleInterval.sum(z0, z1);
-      Assertions.assertEquals(
-        expected, sum10, sumFailureMsg("b0.add(b1) vs sum(z1,z0)",
-                                       z0, z1, b0, b1, expected, sum10));
-      final DoubleInterval sum01 = DoubleInterval.sum(z0, z1);
-      Assertions.assertEquals(
-        expected, sum01, sumFailureMsg("b0.add(b1) vs sum(z0,z1)",
-                                       z0, z1, b0, b1, expected, sum01));
-    }
-  }
+//  @Test
+//  public final void sumTest () {
+//    final UniformRandomProvider urp =
+//      PRNG.well44497b("seeds/Well44497b-2019-01-09.txt");
+//    final Generator g =
+//      Doubles.laplaceGenerator(urp, 0.0, 1000.0);
+//    for (int i = 0; i < TRYS; i++) {
+//      final double z0 = g.nextDouble();
+//      final double z1 = g.nextDouble();
+//      final DoubleInterval b0 = DoubleInterval.valueOf(z0);
+//      final DoubleInterval b1 = DoubleInterval.valueOf(z1);
+//      final DoubleInterval expected = b0.add(b1);
+//      final DoubleInterval add01 = b0.add(z1);
+//      Assertions.assertEquals(
+//        expected, add01, sumFailureMsg("b0.add(b1) vs b0.add(z1)",
+//                                       z0, z1, b0, b1, expected, add01));
+//      final DoubleInterval add10 = b1.add(z0);
+//      Assertions.assertEquals(
+//        expected, add10, sumFailureMsg("b0.add(b1) vs b1.add(z0)",
+//                                       z0, z1, b0, b1, expected, add10));
+//      final DoubleInterval sum10 = DoubleInterval.sum(z0, z1);
+//      Assertions.assertEquals(
+//        expected, sum10, sumFailureMsg("b0.add(b1) vs sum(z1,z0)",
+//                                       z0, z1, b0, b1, expected, sum10));
+//      final DoubleInterval sum01 = DoubleInterval.sum(z0, z1);
+//      Assertions.assertEquals(
+//        expected, sum01, sumFailureMsg("b0.add(b1) vs sum(z0,z1)",
+//                                       z0, z1, b0, b1, expected, sum01));
+//    }
+//  }
 
   //--------------------------------------------------------------
 }
