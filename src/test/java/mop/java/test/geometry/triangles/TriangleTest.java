@@ -19,7 +19,7 @@ public abstract class TriangleTest {
 
   // ground truth predicate.
   public static final Triangle2D truth (final Triangle2D t) {
-    return BigFloatTriangle2DNoCache.from(t); }
+    return BigFloatTriangle2D.from(t); }
 
   public static final List<Triangle2D> makeTriangles (final Triangle2D t) {
     final Triangle2D triangleV2D = TriangleVector2D.from(t);
@@ -28,7 +28,6 @@ public abstract class TriangleTest {
     final Triangle2D doubleIntervalTriangle0 = DoubleIntervalTriangle2D0.from(t);
     final Triangle2D bigFloat = BigFloatTriangle2D.from(t);
     final Triangle2D dibf = DIBFTriangle2D.from(t);
-    final Triangle2D bigFloatNoCache = BigFloatTriangle2DNoCache.from(t);
     final Triangle2D rationalFloat = RationalFloatTriangle2D.from(t);
     final Triangle2D ddFast = DDFast.from(t);
     final Triangle2D ddNormalized = DDNormalized.from(t);
@@ -51,7 +50,7 @@ public abstract class TriangleTest {
       triangleV2D, rationalFloat,
       doubleTriangle, doubleIntervalTriangle,
       doubleIntervalTriangle0,
-      bigFloat, bigFloatNoCache,
+      bigFloat,
       dibf,
       // JTS
       ddFast,ddNormalized,ddSlow,doubleNonRobust,inCircleNormalized,

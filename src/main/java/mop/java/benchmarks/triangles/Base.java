@@ -56,7 +56,6 @@ public abstract class Base {
       case "DoubleIntervalTriangle2D0" ->  DoubleIntervalTriangle2D0.from(t);
       case "BigFloatTriangle2D" ->  BigFloatTriangle2D.from(t);
       case "DIBFTriangle2D" ->  DIBFTriangle2D.from(t);
-      case "BigFloatTriangle2DNoCache" ->  BigFloatTriangle2DNoCache.from(t);
       case "RationalFloatTriangle2D" ->  RationalFloatTriangle2D.from(t);
       case "DDFast" ->  DDFast.from(t);
       case "DDNormalized" ->  DDNormalized.from(t);
@@ -84,7 +83,6 @@ public abstract class Base {
     return t;}
 
   @Param({
-//    "BigFloatTriangle2DNoCache",
 //    "TriangleVector2D",
     "DoubleTriangle2D",
     "DoubleIntervalTriangle2D",

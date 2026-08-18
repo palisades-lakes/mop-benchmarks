@@ -29,9 +29,18 @@ public abstract class Triangle2D {
   //--------------------------------------------------------------------
   // TODO: toHexString, hashcode, equals
 
-  public final String toString () {
-    return getClass().getSimpleName() +
-      "[" + p0 + ", " + p1 + ", " + p2 + "]"; }
+  public static final String toHexString (final Vector2D p) {
+    return "(" +
+      Double.toHexString(p.getX()) + "," +
+      Double.toHexString(p.getY()) + ")"; }
+
+  public final String toHexString () {
+    return getClass().getSimpleName() + "[" +
+      toHexString(p0) + ", " +
+      toHexString(p1) + ", " +
+      toHexString(p2) + "]"; }
+
+  public String toString () { return toHexString(); }
 
   //--------------------------------------------------------------------
   // TODO: an estimate of accuracy for each operation would be better.

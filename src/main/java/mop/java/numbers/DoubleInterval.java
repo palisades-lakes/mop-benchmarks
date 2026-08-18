@@ -16,7 +16,7 @@ package mop.java.numbers;
  * only if f is monotone in both arguments over [min,max].
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-08-17
+ * @version 2026-08-18
  */
 
 public record DoubleInterval (double min, double max)
@@ -82,15 +82,6 @@ public record DoubleInterval (double min, double max)
     return new DoubleInterval(min()-q.max(),max()-q.min()); }
 
   //--------------------------------------------------------------
-//  /** Return the double error interval value of <code>z0+z1</code>,
-//   * without intermediate <code>BigFloat</code> instances.
-//   */
-//
-//  public static final DoubleInterval sum (final double z0,
-//                                          final double z1) {
-//    return new DoubleInterval(Math.nextDown(z0)+Math.nextDown(z1),
-//                              Math.nextUp(z0)+Math.nextUp(z1)); }
-
   /** Return the double error interval value of <code>z0-z1</code>,
    * without intermediate <code>BigFloat</code> instances.
    */

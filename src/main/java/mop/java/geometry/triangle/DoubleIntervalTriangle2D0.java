@@ -67,6 +67,11 @@ public final class DoubleIntervalTriangle2D0 extends Triangle2D {
     return inCircleInterval(p).doubleValue(); }
 
   //--------------------------------------------------------------------
+
+  public final String toString () {
+    return toHexString() + ":" + twiceSignedAreaInterval(); }
+
+  //--------------------------------------------------------------------
   // construction
   //--------------------------------------------------------------------
 

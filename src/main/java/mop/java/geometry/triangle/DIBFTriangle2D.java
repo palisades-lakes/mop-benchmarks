@@ -35,9 +35,9 @@ public final class DIBFTriangle2D extends Triangle2D {
     final DoubleInterval interval =
       getDiTriangle().twiceSignedAreaInterval();
     if (interval.containsZero()) {
-      System.out.println("twiceSignedArea: " + interval);
-      System.out.println(this);
-      System.out.println("twiceSignedArea: " + interval);
+//      System.out.println("twiceSignedArea: " + interval);
+//      System.out.println(this);
+//      System.out.println("twiceSignedArea: " + interval);
       return getBfTriangle().twiceSignedArea(); }
     return interval.doubleValue(); }
 
@@ -49,9 +49,9 @@ public final class DIBFTriangle2D extends Triangle2D {
     final DoubleInterval interval =
       getDiTriangle().inCircleInterval(p);
     if (interval.containsZero()) {
-      System.out.println("inCircle: " + interval);
-      System.out.println(this);
-      System.out.println(p);
+//      System.out.println("inCircle: " + interval);
+//      System.out.println(this);
+//      System.out.println(p);
       return getBfTriangle().inCircle(p); }
     return interval.doubleValue(); }
 
