@@ -24,8 +24,17 @@ import mop.java.Exceptions;
  * @version 2026-08-17
  */
 
-public record DoubleInterval(double min, double max)
-  implements Ringlike<DoubleInterval> {
+public final class DoubleInterval0 implements Ringlike<DoubleInterval0> {
+
+  //--------------------------------------------------------------
+  // instance fields and methods
+  //--------------------------------------------------------------
+
+  private final double _min;
+  public final double min () { return _min; }
+
+  private final double _max;
+  public final double max () { return _max; }
 
   //--------------------------------------------------------------
 
@@ -40,14 +49,14 @@ public record DoubleInterval(double min, double max)
   //--------------------------------------------------------------
   // TODO: NaN, infinities
 
-  public static final DoubleInterval ZERO =
-    new DoubleInterval(0.0,0.0);
+  public static final DoubleInterval0 ZERO =
+    new DoubleInterval0(0.0, 0.0);
 
-  public static final DoubleInterval ONE =
-    new DoubleInterval(1.0,1.0);
+  public static final DoubleInterval0 ONE =
+    new DoubleInterval0(1.0, 1.0);
 
-  public static final DoubleInterval NaN =
-    new DoubleInterval(Double.NaN,Double.NaN);
+  public static final DoubleInterval0 NaN =
+    new DoubleInterval0(Double.NaN, Double.NaN);
 
   @Override
   public final boolean isZero () {
@@ -63,69 +72,68 @@ public record DoubleInterval(double min, double max)
   //--------------------------------------------------------------
 
   @Override
-  public final DoubleInterval negate () {
-    return new DoubleInterval(-max(),-min()); }
+  public final DoubleInterval0 negate () {
+    return new DoubleInterval0(-max(), -min()); }
 
   @Override
-  public final DoubleInterval abs () {
+  public final DoubleInterval0 abs () {
     final double z0 = Math.abs(min());
     final double z1 = Math.abs(max());
-    if (z0<=z1) { return new DoubleInterval(z0,z1); }
-    return new DoubleInterval(z1,z0); }
+    if (z0<=z1) { return new DoubleInterval0(z0, z1); }
+    return new DoubleInterval0(z1, z0); }
 
   //--------------------------------------------------------------
 
   @Override
-  public final DoubleInterval add (final DoubleInterval q) {
+  public final DoubleInterval0 add (final DoubleInterval0 q) {
     if (isNaN()) { return NaN; }
     if (q.isNaN()) { return NaN; }
     // TODO: worth more special cases?
     //if (isZero()) { return q; }
     //if (q.isZero()) { return this; }
-    return new DoubleInterval(min()+q.min(),max()+q.max()); }
+    return new DoubleInterval0(min()+q.min(), max()+q.max()); }
 
   //--------------------------------------------------------------
 
-  public final DoubleInterval add (final double z) {
+  public final DoubleInterval0 add (final double z) {
     if (0.0==z) { return this; }
-    return new DoubleInterval(min()+Math.nextDown(z),
-                              max()+Math.nextUp(z)); }
-
+    return new DoubleInterval0(min()+Math.nextDown(z),
+                               max()+Math.nextUp(z)); }
   //--------------------------------------------------------------
 
   @Override
-  public final DoubleInterval subtract (final DoubleInterval q) {
+  public final DoubleInterval0 subtract (final DoubleInterval0 q) {
     if (isNaN()) { return NaN; }
     if (q.isNaN()) { return NaN; }
     // TODO: worth more special cases?
     //if (isZero()) { return q; }
     //if (q.isZero()) { return this; }
-    return new DoubleInterval(min()-q.max(),max()-q.min()); }
+    return new DoubleInterval0(min()-q.max(), max()-q.min()); }
 
   //--------------------------------------------------------------
   /** Return the double error interval value of <code>z0+z1</code>,
    * without intermediate <code>BigFloat</code> instances.
    */
 
-  public static final DoubleInterval sum (final double z0,
-                                          final double z1) {
-    return new DoubleInterval(Math.nextDown(z0)+Math.nextDown(z1),
-                              Math.nextUp(z0)+Math.nextUp(z1)); }
+  public static final DoubleInterval0 sum (final double z0,
+                                           final double z1) {
+    return new DoubleInterval0(Math.nextDown(z0)+Math.nextDown(z1),
+                               Math.nextUp(z0)+Math.nextUp(z1)); }
 
   /** Return the double error interval value of <code>z0-z1</code>,
    * without intermediate <code>BigFloat</code> instances.
    */
 
-  public static final DoubleInterval dif (final double z0,
-                                          final double z1) {
+  public static final DoubleInterval0 dif (final double z0,
+                                           final double z1) {
     final double mz1 = -z1;
-    return new DoubleInterval(Math.nextDown(z0)+Math.nextDown(mz1),
-                              Math.nextUp(z0)+Math.nextUp(mz1)); }
+    return new DoubleInterval0(Math.nextDown(z0)+Math.nextDown(mz1),
+                               Math.nextUp(z0)+Math.nextUp(mz1)); }
 
   //--------------------------------------------------------------
 
   @Override
-  public final DoubleInterval multiply (final DoubleInterval q) {
+  public final DoubleInterval0 multiply (final DoubleInterval0 q) {
     if (isNaN()) { return NaN; }
     if (q.isNaN()) { return NaN; }
     final double z00 = min()*q.min();
@@ -139,34 +147,32 @@ public record DoubleInterval(double min, double max)
     else if (zmax<z10) { zmax = z10; }
     if (z11<zmin) { zmin = z11; }
     else if (zmax<z11) { zmax = z11; }
-    return new DoubleInterval(zmin,zmax);  }
+    return new DoubleInterval0(zmin, zmax);  }
 
-  public final DoubleInterval
+  public final DoubleInterval0
   multiply (final double z) {
     return multiply(valueOf(z)); }
 
   //--------------------------------------------------------------
 
   @Override
-  public final DoubleInterval
+  public final DoubleInterval0
   square () {
     if (isNaN()) { return NaN; }
     final double z0 = min()*min();
     final double z1 = max()*max();
     if (containsZero()) {
-      if (z0<=z1) { return new DoubleInterval(0.0,z1); }
-      return new DoubleInterval(0.0,z0); }
-    if (z0<=z1) { return new DoubleInterval(z0,z1); }
-    return new DoubleInterval(z1,z0); }
+      if (z0<=z1) { return new DoubleInterval0(0.0, z1); }
+      return new DoubleInterval0(0.0, z0); }
+    if (z0<=z1) { return new DoubleInterval0(z0, z1); }
+    return new DoubleInterval0(z1, z0); }
 
   //--------------------------------------------------------------
   // geometry
   //--------------------------------------------------------------
-// calling new instances from square() vs inlining
-// makes no difference in benchmark
 
-//  public static final DoubleInterval l2norm2 (final DoubleInterval x,
-//                                              final DoubleInterval y) {
+//  public static final DoubleInterval0 l2norm2 (final DoubleInterval0 x,
+//                                               final DoubleInterval0 y) {
 //    if (x.isNaN() || y.isNaN()) { return NaN; }
 //
 //    final double xxmin = x.min()*x.min();
@@ -195,98 +201,55 @@ public record DoubleInterval(double min, double max)
 //      yy0 = yymax;
 //      yy1 = yymin; }
 //
-//    return new DoubleInterval(xx0+yy0,xx1+yy1); }
+//    return new DoubleInterval0(xx0+yy0, xx1+yy1); }
+//
+public static final DoubleInterval0 l2norm2 (final DoubleInterval0 x,
+                                            final DoubleInterval0 y) {
+  if (x.isNaN() || y.isNaN()) { return NaN; }
 
-  public static final DoubleInterval l2norm2 (final DoubleInterval x,
-                                              final DoubleInterval y) {
-    if (x.isNaN() || y.isNaN()) { return NaN; }
+  final DoubleInterval0 xx = x.square();
+  final DoubleInterval0 yy = y.square();
 
-    final DoubleInterval xx = x.square();
-    final DoubleInterval yy = y.square();
+  return new DoubleInterval0(xx.min()+yy.min(),xx.max()+yy.max()); }
 
-    return new DoubleInterval(xx.min()+yy.min(),xx.max()+yy.max()); }
 
   //--------------------------------------------------------------
 
-  public static final DoubleInterval
-  crossProduct (final DoubleInterval x0,
-                final DoubleInterval y0,
-                final DoubleInterval x1,
-                final DoubleInterval y1) {
+  public static final DoubleInterval0
+  crossProduct (final DoubleInterval0 x0,
+                final DoubleInterval0 y0,
+                final DoubleInterval0 x1,
+                final DoubleInterval0 y1) {
 
-    final DoubleInterval x0y1 = x0.multiply(y1);
-    final DoubleInterval x1y0 = x1.multiply(y0);
-    return new DoubleInterval(
+    final DoubleInterval0 x0y1 = x0.multiply(y1);
+    final DoubleInterval0 x1y0 = x1.multiply(y0);
+    return new DoubleInterval0(
       x0y1.min()-x1y0.max(),
       x0y1.max()-x1y0.min()); }
 
   //--------------------------------------------------------------
 
-  // 157/147 relative to version with multiply
-//  public static final DoubleInterval
-//  dot (final DoubleInterval x0,
-//       final DoubleInterval y0,
-//       final DoubleInterval z0,
-//       final DoubleInterval x1,
-//       final DoubleInterval y1,
-//       final DoubleInterval z1) {
-//
-//    final double xx00 = x0.min() * x1.min();
-//    final double xx01 = x0.min() * x1.max();
-//    final double xx10 = x0.max() * x1.min();
-//    final double xx11 = x0.max() * x1.max();
-//    double xxmin, xxmax;
-//    if (xx00<=xx01) { xxmin = xx00; xxmax = xx01; }
-//    else { xxmin = xx01; xxmax = xx00; }
-//    if (xx10<xxmin) { xxmin = xx10; }
-//    else if (xxmax<xx10) { xxmax = xx10; }
-//    if (xx11<xxmin) { xxmin = xx11; }
-//    else if (xxmax<xx11) { xxmax = xx11; }
-//
-//    final double yy00 = y0.min() * y1.min();
-//    final double yy01 = y0.min() * y1.max();
-//    final double yy10 = y0.max() * y1.min();
-//    final double yy11 = y0.max() * y1.max();
-//    double yymin, yymax;
-//    if (yy00<=yy01) { yymin = yy00; yymax = yy01; }
-//    else { yymin = yy01; yymax = yy00; }
-//    if (yy10<yymin) { yymin = yy10; }
-//    else if (yymax<yy10) { yymax = yy10; }
-//    if (yy11<yymin) { yymin = yy11; }
-//    else if (yymax<yy11) { yymax = yy11; }
-//
-//    final double zz00 = z0.min() * z1.min();
-//    final double zz01 = z0.min() * z1.max();
-//    final double zz10 = z0.max() * z1.min();
-//    final double zz11 = z0.max() * z1.max();
-//    double zzmin, zzmax;
-//    if (zz00<=zz01) { zzmin = zz00; zzmax = zz01; }
-//    else { zzmin = zz01; zzmax = zz00; }
-//    if (zz10<zzmin) { zzmin = zz10; }
-//    else if (zzmax<zz10) { zzmax = zz10; }
-//    if (zz11<zzmin) { zzmin = zz11; }
-//    else if (zzmax<zz11) { zzmax = zz11; }
-//
-//    return new DoubleInterval(xxmin+yymin+zzmin, xxmax+yymax+zzmax); }
-
-  public static final DoubleInterval
-  dot (final DoubleInterval x0,
-       final DoubleInterval y0,
-       final DoubleInterval z0,
-       final DoubleInterval x1,
-       final DoubleInterval y1,
-       final DoubleInterval z1) {
-    final DoubleInterval x01 = x0.multiply(x1);
-    final DoubleInterval y01 = y0.multiply(y1);
-    final DoubleInterval z01 = z0.multiply(z1);
-    return new DoubleInterval(
+  public static final DoubleInterval0
+  dot (final DoubleInterval0 x0,
+       final DoubleInterval0 y0,
+       final DoubleInterval0 z0,
+       final DoubleInterval0 x1,
+       final DoubleInterval0 y1,
+       final DoubleInterval0 z1) {
+    final DoubleInterval0 x01 = x0.multiply(x1);
+    final DoubleInterval0 y01 = y0.multiply(y1);
+    final DoubleInterval0 z01 = z0.multiply(z1);
+    return new DoubleInterval0(
       x01.min()+y01.min()+z01.min(),
       x01.max()+y01.max()+z01.max()); }
 
-  //--------------------------------------------------------------
+//--------------------------------------------------------------
   // Number methods
   //--------------------------------------------------------------
   /** Unsupported.
+   * <br>
+   * TODO: should it really truncate or round instead? Or
+   *  should there be more explicit round, floor, ceil, etc.?
    */
   @Override
   public final int intValue () {
@@ -294,6 +257,9 @@ public record DoubleInterval(double min, double max)
       this,"intValue"); }
 
   /** Unsupported.
+   * <br>
+   * TODO: should it really truncate or round instead? Or
+   *  should there be more explicit round, floor, ceil, etc.?
    */
   @Override
   public final long longValue () {
@@ -319,7 +285,7 @@ public record DoubleInterval(double min, double max)
 
   /** Unsupported, no simple answer for overlapping intervals. */
   @Override
-  public final int compareTo (final DoubleInterval q) {
+  public final int compareTo (final DoubleInterval0 q) {
     throw Exceptions.unsupportedOperation(
       this,"compareTo", q); }
 
@@ -327,7 +293,7 @@ public record DoubleInterval(double min, double max)
   // Object methods
   //--------------------------------------------------------------
 
-  public final boolean equals (final DoubleInterval q) {
+  public final boolean equals (final DoubleInterval0 q) {
     if (this==q) { return true; }
     if (Double.isNaN(min())) {
       assert Double.isNaN(max());
@@ -336,8 +302,8 @@ public record DoubleInterval(double min, double max)
 
   @Override
   public final boolean equals (final Object o) {
-    if (!(o instanceof DoubleInterval)) { return false; }
-    return equals((DoubleInterval) o); }
+    if (!(o instanceof DoubleInterval0)) { return false; }
+    return equals((DoubleInterval0) o); }
 
   @Override
   public final int hashCode () {
@@ -358,16 +324,24 @@ public record DoubleInterval(double min, double max)
   // construction
   //--------------------------------------------------------------
 
-  public static final DoubleInterval unsafe (final double d0,
-                                             final double d1) {
-    return new DoubleInterval(d0,d1);  }
+  private DoubleInterval0 (final double min,
+                           final double max) {
+    // reverse test for NaN
+//    assert ! (min>max) :
+//      "[" + Double.toHexString(min)+","+Double.toHexString(max)+"]";
+//    assert !Double.isNaN(min) || Double.isNaN(max);
+    _min = min; _max = max; }
 
-  public static final DoubleInterval safe (final double d0,
-                                           final double d1) {
-    if (Double.isNaN(d0) || Double.isNaN(d1)) { return NaN; }
+  public static final DoubleInterval0 unsafe (final double d0,
+                                              final double d1) {
+    return new DoubleInterval0(d0, d1);  }
+
+  public static final DoubleInterval0 safe (final double d0,
+                                            final double d1) {
+    if (Double.isNaN(d0) ||  Double.isNaN(d1)) { return NaN; }
     return unsafe(Double.min(d0,d1),Double.max(d0,d1));  }
 
-  public static final DoubleInterval valueOf (final double z)  {
+  public static final DoubleInterval0 valueOf (final double z)  {
     return unsafe(Math.nextDown(z),Math.nextUp(z)); }
 
 //  // TODO: optimize
@@ -383,12 +357,12 @@ public record DoubleInterval(double min, double max)
 //                                   final double d3) {
 //    return Double.max(d0,Double.max(d1,Double.max(d2,d3))); }
 //
-//  public static final DoubleInterval safe (final double d0,
-//                                           final double d1,
-//                                           final double d2,
-//                                           final double d3) {
+//  public static final DoubleInterval0 safe (final double d0,
+//                                            final double d1,
+//                                            final double d2,
+//                                            final double d3) {
 //    return unsafe(min(d0,d1,d2,d3),max(d0,d1,d2,d3));  }
-
+//
   //--------------------------------------------------------------
 }
 //--------------------------------------------------------------

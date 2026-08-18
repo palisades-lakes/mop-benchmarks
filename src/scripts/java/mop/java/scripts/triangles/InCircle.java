@@ -13,7 +13,7 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
  * mvn clean install && jy src/scripts/java/mop/java/scripts/triangles/InCircle.java
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-08-15
+ * @version 2026-08-17
  */
 
 public final class InCircle {
@@ -35,6 +35,7 @@ public final class InCircle {
         //ExactCache::from,
         //BigFloatTriangle2D::from,
         DoubleIntervalTriangle2D::from,
+        //DIBFTriangle2D::from,
         Generators.vector2dGenerator(
           Doubles.laplaceGenerator(
             PRNG.well44497b("seeds/Well44497b-2019-01-07.txt"),

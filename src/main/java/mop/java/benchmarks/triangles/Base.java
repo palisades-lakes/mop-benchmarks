@@ -32,7 +32,7 @@ import org.openjdk.jmh.infra.Blackhole;
 /** Benchmark triangle operations.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-08-15
+ * @version 2026-08-17
  */
 
 @State(Scope.Thread)
@@ -50,10 +50,12 @@ public abstract class Base {
   public static final Triangle2D convertTriangle (final Triangle2D t,
                                                   final String dest) {
     return switch (dest) {
-      case "TriangleVector2D" -> TriangleVector2D.from(t);
+//      case "TriangleVector2D" -> TriangleVector2D.from(t);
       case "DoubleTriangle2D" ->  DoubleTriangle2D.from(t);
       case "DoubleIntervalTriangle2D" ->  DoubleIntervalTriangle2D.from(t);
+      case "DoubleIntervalTriangle2D0" ->  DoubleIntervalTriangle2D0.from(t);
       case "BigFloatTriangle2D" ->  BigFloatTriangle2D.from(t);
+      case "DIBFTriangle2D" ->  DIBFTriangle2D.from(t);
       case "BigFloatTriangle2DNoCache" ->  BigFloatTriangle2DNoCache.from(t);
       case "RationalFloatTriangle2D" ->  RationalFloatTriangle2D.from(t);
       case "DDFast" ->  DDFast.from(t);
@@ -82,27 +84,29 @@ public abstract class Base {
     return t;}
 
   @Param({
-    "TriangleVector2D",
-    "DoubleTriangle2D",
+//    "TriangleVector2D",
+//    "DoubleTriangle2D",
     "DoubleIntervalTriangle2D",
-    "BigFloatTriangle2D",
-    "BigFloatTriangle2DNoCache",
-    "RationalFloatTriangle2D",
-    "DDFast",
-    "DDNormalized",
-    "DDSlow",
-    "InCircleNormalized",
-    "DoubleNonRobust",
-    "Adapt",
-    "ExactCache",
-    "Exact",
-    "Fast",
-    "Slow",
-    "AdaptMacro",
-    "DefaultMacro",
-    "ExactMacro",
-    "FastMacro",
-    "SlowMacro",
+    "DoubleIntervalTriangle2D0",
+//    "BigFloatTriangle2D",
+//    "DIBFTriangle2D",
+//    "BigFloatTriangle2DNoCache",
+//    "RationalFloatTriangle2D",
+//    "DDFast",
+//    "DDNormalized",
+//    "DDSlow",
+//    "InCircleNormalized",
+//    "DoubleNonRobust",
+//    "Adapt",
+//    "ExactCache",
+//    "Exact",
+//    "Fast",
+//    "Slow",
+//    "AdaptMacro",
+//    "DefaultMacro",
+//    "ExactMacro",
+//    "FastMacro",
+//    "SlowMacro",
   })
   String className;
 

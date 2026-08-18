@@ -6,7 +6,7 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
  *  implemented in <code>double</code>>.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-08-14
+ * @version 2026-08-17
  */
 
 public final class DoubleTriangle2D extends Triangle2D {

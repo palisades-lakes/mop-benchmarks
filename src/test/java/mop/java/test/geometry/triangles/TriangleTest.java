@@ -12,7 +12,7 @@ import java.util.List;
 /** Common code for 2D geometry predicate tests.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-08-07
+ * @version 2026-08-17
  */
 
 public abstract class TriangleTest {
@@ -25,7 +25,9 @@ public abstract class TriangleTest {
     final Triangle2D triangleV2D = TriangleVector2D.from(t);
     final Triangle2D doubleTriangle = DoubleTriangle2D.from(t);
     final Triangle2D doubleIntervalTriangle = DoubleIntervalTriangle2D.from(t);
+    final Triangle2D doubleIntervalTriangle0 = DoubleIntervalTriangle2D0.from(t);
     final Triangle2D bigFloat = BigFloatTriangle2D.from(t);
+    final Triangle2D dibf = DIBFTriangle2D.from(t);
     final Triangle2D bigFloatNoCache = BigFloatTriangle2DNoCache.from(t);
     final Triangle2D rationalFloat = RationalFloatTriangle2D.from(t);
     final Triangle2D ddFast = DDFast.from(t);
@@ -48,7 +50,9 @@ public abstract class TriangleTest {
       // mine
       triangleV2D, rationalFloat,
       doubleTriangle, doubleIntervalTriangle,
+      doubleIntervalTriangle0,
       bigFloat, bigFloatNoCache,
+      dibf,
       // JTS
       ddFast,ddNormalized,ddSlow,doubleNonRobust,inCircleNormalized,
       // Shewchuk predicates.c
