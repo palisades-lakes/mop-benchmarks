@@ -40,6 +40,14 @@ public final class BigFloatTriangle2D extends Triangle2D {
     return -(getV20xV10().doubleValue()); }
 
   //--------------------------------------------------------------------
+  /** More exact than rounding to <code>double</code>. */
+
+  public final int orientation () {
+    if (getV20xV10().isZero()) { return 0; }
+    if (getV20xV10().nonNegative()) { return -1; }
+    return 1; }
+
+  //--------------------------------------------------------------------
 
   public final boolean inCircleExact () { return true; }
 

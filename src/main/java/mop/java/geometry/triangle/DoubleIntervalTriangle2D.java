@@ -43,6 +43,15 @@ public final class DoubleIntervalTriangle2D extends Triangle2D {
     return twiceSignedAreaInterval().doubleValue(); }
 
   //--------------------------------------------------------------------
+//  /** More exact than rounding to <code>double</code>. */
+//
+//  public final int orientation () {
+//    final DoubleInterval i = getV20xV10();
+//    if (getV20xV10().containsZero()) { return 0; }
+//    if (0.0 < getV20xV10().min()) { return -1; }
+//    return 1; }
+
+  //--------------------------------------------------------------------
 
   public final boolean inCircleExact () { return false; }
 

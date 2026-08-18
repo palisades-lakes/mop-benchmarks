@@ -27,7 +27,7 @@ public abstract class Triangle2D {
   //--------------------------------------------------------------------
   // Object methods
   //--------------------------------------------------------------------
-  // TODO: toHexString, hashcode, equals
+  // TODO: hashcode, equals
 
   public static final String toHexString (final Vector2D p) {
     return "(" +
@@ -55,22 +55,25 @@ public abstract class Triangle2D {
    * order; and zero if they are collinear.  The result is also a rough
    * approximation of twice the signed area of the triangle defined by
    * the three points.
-   * <br>
-   * Only Fast and Default should be used; the other two are for
-   * timings.
-   * <br>
-   * Exact, Slow, and Default use exact arithmetic to ensure a correct
-   * answer. The result returned is the determinant of a matrix.  In
-   * signedArea() only, this determinant is computed adaptively, in the
-   * sense that exact arithmetic is used only to the degree it is needed
-   * to ensure that the returned value has the correct sign.  Hence,
-   * signedArea() is usually quite fast, but will run more slowly when the
-   * input points are collinear or nearly so.
    */
 
   public double twiceSignedArea () {
     throw new UnsupportedOperationException(
       getClass().getSimpleName()); }
+
+  //--------------------------------------------------------------------
+  /** Return +1  if the points pa, pb, and pc occur in
+   * counterclockwise order; -1 if they occur in clockwise
+   * order; and zero if they are collinear.
+   * <br>
+   * Separating this from <code>twiceSignedArea</code>
+   * permits classes that do more precise calculation to get the sign
+   * from that, rather than forcing a round to <code>double</code>.
+   */
+
+  public int orientation () {
+    // TODO: what to do with NaN? Return 0 meaning 'not oriented'?
+    return Double.compare(twiceSignedArea(), 0.0); }
 
   //--------------------------------------------------------------------
 
