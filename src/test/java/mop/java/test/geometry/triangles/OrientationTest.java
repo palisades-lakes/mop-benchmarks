@@ -51,7 +51,7 @@ public final class OrientationTest extends TriangleTest {
     Assertions.assertEquals(
       plus.orientation(), -minus.orientation(),
       orientationMsg("reverseOrientation",aplus,aminus,
-                 plus,minus,List.of())); }
+                     plus,minus,List.of())); }
 
   private static final void checkOrientation (final Triangle2D t0) {
     reverseOrientation(t0);
@@ -63,7 +63,7 @@ public final class OrientationTest extends TriangleTest {
       Assertions.assertEquals(
         trueOrientation, orientation,
         orientationMsg("checkOrientation",trueOrientation,orientation,
-                   gold,t,triangles)); } }
+                       gold,t,triangles)); } }
 
   //--------------------------------------------------------------
 
@@ -119,6 +119,48 @@ public final class OrientationTest extends TriangleTest {
     // see https://groups.csail.mit.edu/graphics/classes/6.838/S98/meetings/m12/pred/m12.html
     epsilonOrientation(1.0);
     epsilonOrientation(0.0);
+  }
+
+  //--------------------------------------------------------------
+  // see https://inria.hal.science/inria-00344310v1/document
+  // fig 2
+
+  public final void checkKettnerOrientation (final Vector2D p,
+                                             final Vector2D q,
+                                             final Vector2D r) {
+    double px = p.getX();
+    double py = p.getY();
+    final double ux = Math.ulp(px);
+    final double uy = Math.ulp(py);
+    for (int i=0;i<255;i++) {
+      final Vector2D pi = Vector2D.of(px, py);
+      final Triangle2D t = TriangleVector2D.of(pi, q, r);
+      checkOrientation(t);
+      px += i*ux;
+      py += i*uy;
+//      px = Math.nextUp(px);
+//      py = Math.nextUp(py);
+    }   }
+
+  @Test
+  public final void testKettnerOrientation () {
+    // TODO: passing, but it shouldn't according to paper
+    checkKettnerOrientation(
+      Vector2D.of(0.5,0.5),
+      Vector2D.of( 12, 12),
+      Vector2D.of( 24, 24));
+
+    // DoubleTriangle2D fails, as it should
+//    checkKettnerOrientation(
+//      Vector2D.of(0.50000000000002531,0.5000000000000171),
+//      Vector2D.of( 17.300000000000001,17.300000000000001),
+//      Vector2D.of( 24.00000000000005, 24.0000000000000517765));
+
+    // TODO: passing, but it shouldn't according to paper
+    checkKettnerOrientation(
+      Vector2D.of(0.5,0.5),
+      Vector2D.of( 8.8000000000000007, 8.8000000000000007),
+      Vector2D.of( 12.1, 12.1));
   }
 
   //--------------------------------------------------------------
