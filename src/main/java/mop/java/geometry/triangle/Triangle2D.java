@@ -73,6 +73,7 @@ public abstract class Triangle2D {
 
   public int orientation () {
     // TODO: what to do with NaN? Return 0 meaning 'not oriented'?
+    // NOTE: Double.compare() doesn't handle +-0.0 correctly.
     final double a = twiceSignedArea();
     if (0.0 < a) { return 1; }
     if (0.0 > a) { return -1; }

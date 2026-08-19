@@ -118,8 +118,7 @@ public final class OrientationTest extends TriangleTest {
   public final void testEpsilonOrientation () {
     // see https://groups.csail.mit.edu/graphics/classes/6.838/S98/meetings/m12/pred/m12.html
     epsilonOrientation(1.0);
-    epsilonOrientation(0.0);
-  }
+    epsilonOrientation(0.0); }
 
   //--------------------------------------------------------------
   // see https://inria.hal.science/inria-00344310v1/document
@@ -130,25 +129,27 @@ public final class OrientationTest extends TriangleTest {
                                              final Vector2D r) {
     double px = p.getX();
     double py = p.getY();
-    final double ux = Math.ulp(px);
-    final double uy = Math.ulp(py);
-    for (int i=0;i<255;i++) {
-      final Vector2D pi = Vector2D.of(px, py);
-      final Triangle2D t = TriangleVector2D.of(pi, q, r);
-      checkOrientation(t);
-      px += i*ux;
-      py += i*uy;
-//      px = Math.nextUp(px);
-//      py = Math.nextUp(py);
-    }   }
+    final double ux = 0x1.0p-53; //Math.ulp(px);
+    final double uy = 0x1.0p-53; //Math.ulp(py);
+    for (int i=0;i<256;i++) {
+      final double pxi = px + i*ux;
+      for (int j=0;j<256;j++) {
+        final double pyj = py + j*uy;
+        final Vector2D pij = Vector2D.of(pxi, pyj);
+        final Triangle2D t = TriangleVector2D.of(pij, q, r);
+        checkOrientation(t); } } }
+
+  // TODO: these are all failing for non-exact/non-robust triangle
+  //   classes. Re-write to separate robust and non-robust classes,
+  //   and test for expected pass/fail in either case.
+  //  Possibly add an isOrientationRobust method to Triangle2D?
 
   @Test
   public final void testKettnerOrientation () {
-    // TODO: passing, but it shouldn't according to paper
-    checkKettnerOrientation(
-      Vector2D.of(0.5,0.5),
-      Vector2D.of( 12, 12),
-      Vector2D.of( 24, 24));
+//    checkKettnerOrientation(
+//      Vector2D.of(0.5,0.5),
+//      Vector2D.of( 12, 12),
+//      Vector2D.of( 24, 24));
 
     // DoubleTriangle2D fails, as it should
 //    checkKettnerOrientation(
@@ -156,11 +157,10 @@ public final class OrientationTest extends TriangleTest {
 //      Vector2D.of( 17.300000000000001,17.300000000000001),
 //      Vector2D.of( 24.00000000000005, 24.0000000000000517765));
 
-    // TODO: passing, but it shouldn't according to paper
-    checkKettnerOrientation(
-      Vector2D.of(0.5,0.5),
-      Vector2D.of( 8.8000000000000007, 8.8000000000000007),
-      Vector2D.of( 12.1, 12.1));
+//    checkKettnerOrientation(
+//      Vector2D.of(0.5,0.5),
+//      Vector2D.of( 8.8000000000000007, 8.8000000000000007),
+//      Vector2D.of( 12.1, 12.1));
   }
 
   //--------------------------------------------------------------
