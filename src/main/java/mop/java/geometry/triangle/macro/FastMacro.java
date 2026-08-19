@@ -12,7 +12,7 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
 /**
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-07-27
+ * @version 2026-08-18
  */
 
 // strictfp unnecessary for JDK17 and later

@@ -6,7 +6,7 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
 /** From org.locationtech.jts.triangulate.quadedge.TrianglePredicate
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-07-27
+ * @version 2026-08-18
  */
 
 public final class InCircleNormalized extends Triangle2D {

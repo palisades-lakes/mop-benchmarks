@@ -62,6 +62,12 @@ public abstract class Triangle2D {
       getClass().getSimpleName()); }
 
   //--------------------------------------------------------------------
+  /** Not clear exactly what I want here. For now, indicate whether
+   * all Kettner orientation tests should pass.
+   */
+  public boolean isOrientationRobust () { return signedAreaExact(); }
+
+  //--------------------------------------------------------------------
   /** Return +1  if the points pa, pb, and pc occur in
    * counterclockwise order; -1 if they occur in clockwise
    * order; and zero if they are collinear.

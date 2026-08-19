@@ -7,7 +7,7 @@ import org.locationtech.jts.math.DD;
 /** From org.locationtech.jts.triangulate.quadedge.TrianglePredicate
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-07-27
+ * @version 2026-08-18
  */
 
 public final class DDNormalized extends Triangle2D {
@@ -19,6 +19,8 @@ public final class DDNormalized extends Triangle2D {
   @Override
   public final double twiceSignedArea () {
     return DDFast.triAreaDDFast(getP0(),getP1(),getP2()).doubleValue(); }
+
+  public final boolean isOrientationRobust () { return true; }
 
   //--------------------------------------------------------------------
   /** TrianglePredicate.isInCircleNonRobust.

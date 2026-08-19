@@ -602,6 +602,8 @@ public final class SlowMacro extends Triangle2D {
     XDouble.unsafeCompress(terms);
     return XDouble.unsafe(terms).doubleValue(); }
 
+  public final boolean isOrientationRobust () { return true; }
+
   //--------------------------------------------------------------------
   // construction
   //--------------------------------------------------------------------

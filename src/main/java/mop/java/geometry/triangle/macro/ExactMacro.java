@@ -135,6 +135,8 @@ public final class ExactMacro extends Triangle2D {
     XDouble.unsafeCompress(terms);
     return XDouble.unsafe(terms).doubleValue(); }
 
+  public final boolean isOrientationRobust () { return true; }
+
   //--------------------------------------------------------------------
 
   public final boolean inCircleExact () { return true; }

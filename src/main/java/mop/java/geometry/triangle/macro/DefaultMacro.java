@@ -14,7 +14,7 @@ import static mop.java.geometry.Expansion.EPSILON;
 /** Adaptive tests.  Robust.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-07-27
+ * @version 2026-08-18
  */
 
 // strictfp unnecessary for JDK17 and later
@@ -51,7 +51,9 @@ public final class DefaultMacro extends Triangle2D {
       return det;
     }
 
-    return AdaptMacro.signedArea(getP0(),getP1(),getP2(), detsum); }
+    return AdaptMacro.twiceSignedArea(getP0(), getP1(), getP2(), detsum); }
+
+  public final boolean isOrientationRobust () { return true; }
 
   //--------------------------------------------------------------------
   // inCircle

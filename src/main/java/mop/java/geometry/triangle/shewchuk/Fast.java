@@ -12,7 +12,7 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
 /** Approximate predicates, nonrobust.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-07-27
+ * @version 2026-08-18
  */
 
 public final class Fast extends Triangle2D {

@@ -7,7 +7,7 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
  * Should be exact, up to BigFloat resolution.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-08-13
+ * @version 2026-08-18
  */
 
 public final class BigFloatTriangle2D extends Triangle2D {
@@ -40,6 +40,9 @@ public final class BigFloatTriangle2D extends Triangle2D {
     return -(getV20xV10().doubleValue()); }
 
   //--------------------------------------------------------------------
+
+  public final boolean isOrientationRobust () { return true; }
+
   /** More exact than rounding to <code>double</code>. */
 
   public final int orientation () {

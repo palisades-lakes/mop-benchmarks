@@ -16,7 +16,7 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
  * returned value is correct, not its specific value.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-07-27
+ * @version 2026-08-18
  */
 
 // strictfp (may be) necessary for JDK16 and earlier
@@ -353,10 +353,10 @@ public final class Adapt extends Triangle2D {
   private static final double ccwerrboundC =
     (9.0 + 64.0 * EPSILON) * EPSILON * EPSILON;
 
-  private static final double signedArea (final Vector2D pa,
-                                          final Vector2D pb,
-                                          final Vector2D pc,
-                                          final double detsum) {
+  private static final double twiceSignedArea (final Vector2D pa,
+                                               final Vector2D pb,
+                                               final Vector2D pc,
+                                               final double detsum) {
     // TODO: difference vectors cached in Triangle object
     final Vector2D ac = pa.subtract(pc);
     final Vector2D bc = pb.subtract(pc);
@@ -428,7 +428,9 @@ public final class Adapt extends Triangle2D {
     final double errbound = ccwerrboundA * detsum;
     if (Math.abs(det) >= errbound) { return det; }
 
-    return signedArea(getP0(),getP1(),getP2(), detsum); }
+    return twiceSignedArea(getP0(), getP1(), getP2(), detsum); }
+
+  public final boolean isOrientationRobust () { return true; }
 
   //--------------------------------------------------------------------
   // construction

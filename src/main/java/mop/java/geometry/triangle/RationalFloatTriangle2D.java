@@ -7,7 +7,7 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
  * Should be exact, up to RationalFloat resolution.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-07-27
+ * @version 2026-08-18
  */
 
 public final class RationalFloatTriangle2D extends Triangle2D {
@@ -39,6 +39,8 @@ public final class RationalFloatTriangle2D extends Triangle2D {
     final RationalFloat bcy = by.subtract(cy);
     return
       ((acx.multiply(bcy)).subtract(acy.multiply(bcx))).doubleValue(); }
+
+  public final boolean isOrientationRobust () { return true; }
 
   //--------------------------------------------------------------------
 

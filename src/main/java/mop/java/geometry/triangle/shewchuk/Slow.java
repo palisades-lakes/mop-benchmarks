@@ -8,7 +8,7 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
 /** More exact tests.  Robust.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-08-13
+ * @version 2026-08-18
  */
 
 // strictfp unnecessary for JDK17 and later
@@ -33,6 +33,8 @@ public final class Slow extends Triangle2D {
     final XDouble axby = XDouble.product(ax, by);
     final XDouble bxay = XDouble.product(bx, ay);
     return axby.subtract(bxay).doubleValue(); }
+
+  public final boolean isOrientationRobust () { return true; }
 
   //--------------------------------------------------------------------
 

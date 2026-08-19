@@ -31,10 +31,10 @@ public final class AdaptMacro extends Triangle2D {
   private static final double ccwerrboundC =
     (9.0 + 64.0 * EPSILON) * EPSILON * EPSILON;
 
-  public static final double signedArea (final Vector2D pa,
-                                         final Vector2D pb,
-                                         final Vector2D pc,
-                                         final double detsum) {
+  public static final double twiceSignedArea (final Vector2D pa,
+                                              final Vector2D pb,
+                                              final Vector2D pc,
+                                              final double detsum) {
     double acx, acy, bcx, bcy;
     double acxtail, acytail, bcxtail, bcytail;
     double detleft, detright;
@@ -326,6 +326,8 @@ public final class AdaptMacro extends Triangle2D {
 
   public final double twiceSignedArea () {
     return DefaultMacro.of(getP0(),getP1(),getP2()).twiceSignedArea(); }
+
+  public final boolean isOrientationRobust () { return true; }
 
   //--------------------------------------------------------------------
   // inCircle

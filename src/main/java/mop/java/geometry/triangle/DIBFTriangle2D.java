@@ -8,7 +8,7 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
  * <code>BigFloatTriangle</code>
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-08-17
+ * @version 2026-08-18
  */
 
 public final class DIBFTriangle2D extends Triangle2D {
@@ -40,6 +40,8 @@ public final class DIBFTriangle2D extends Triangle2D {
 //      System.out.println("twiceSignedArea: " + interval);
       return getBfTriangle().twiceSignedArea(); }
     return interval.doubleValue(); }
+
+  public final boolean isOrientationRobust () { return true; }
 
   //--------------------------------------------------------------------
 

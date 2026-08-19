@@ -15,7 +15,7 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
  *   profiling.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-08-13
+ * @version 2026-08-18
  */
 
 public final class ExactCache extends Triangle2D {
@@ -51,6 +51,8 @@ public final class ExactCache extends Triangle2D {
     final XDouble cterms = XDouble.subtract(cxay, cxby);
 
     return aterms.add(bterms).add(cterms).doubleValue(); }
+
+  public final boolean isOrientationRobust () { return true; }
 
   //--------------------------------------------------------------------
 

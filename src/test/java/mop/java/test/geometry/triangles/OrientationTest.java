@@ -60,10 +60,11 @@ public final class OrientationTest extends TriangleTest {
     final int trueOrientation = gold.orientation();
     for (final Triangle2D t : triangles) {
       final int orientation = t.orientation();
+      if (t.isOrientationRobust()) {
       Assertions.assertEquals(
         trueOrientation, orientation,
         orientationMsg("checkOrientation",trueOrientation,orientation,
-                       gold,t,triangles)); } }
+                       gold,t,triangles)); } } }
 
   //--------------------------------------------------------------
 
@@ -131,36 +132,36 @@ public final class OrientationTest extends TriangleTest {
     double py = p.getY();
     final double ux = 0x1.0p-53; //Math.ulp(px);
     final double uy = 0x1.0p-53; //Math.ulp(py);
-    for (int i=0;i<256;i++) {
+    final int n = 33;
+    for (int i=0;i<n;i++) {
       final double pxi = px + i*ux;
-      for (int j=0;j<256;j++) {
+      for (int j=0;j<n;j++) {
         final double pyj = py + j*uy;
         final Vector2D pij = Vector2D.of(pxi, pyj);
         final Triangle2D t = TriangleVector2D.of(pij, q, r);
         checkOrientation(t); } } }
 
-  // TODO: these are all failing for non-exact/non-robust triangle
-  //   classes. Re-write to separate robust and non-robust classes,
-  //   and test for expected pass/fail in either case.
-  //  Possibly add an isOrientationRobust method to Triangle2D?
+  // TODO: count the number of pass/fail as a metric for triangle
+  //  implementation quality?
+  // TODO: convert into benchmark/profiling script for orientation
+  //   predicate implementation.
 
   @Test
   public final void testKettnerOrientation () {
-//    checkKettnerOrientation(
-//      Vector2D.of(0.5,0.5),
-//      Vector2D.of( 12, 12),
-//      Vector2D.of( 24, 24));
+    checkKettnerOrientation(
+      Vector2D.of(0.5,0.5),
+      Vector2D.of( 12, 12),
+      Vector2D.of( 24, 24));
 
-    // DoubleTriangle2D fails, as it should
-//    checkKettnerOrientation(
-//      Vector2D.of(0.50000000000002531,0.5000000000000171),
-//      Vector2D.of( 17.300000000000001,17.300000000000001),
-//      Vector2D.of( 24.00000000000005, 24.0000000000000517765));
+    checkKettnerOrientation(
+      Vector2D.of(0.50000000000002531,0.5000000000000171),
+      Vector2D.of( 17.300000000000001,17.300000000000001),
+      Vector2D.of( 24.00000000000005, 24.0000000000000517765));
 
-//    checkKettnerOrientation(
-//      Vector2D.of(0.5,0.5),
-//      Vector2D.of( 8.8000000000000007, 8.8000000000000007),
-//      Vector2D.of( 12.1, 12.1));
+    checkKettnerOrientation(
+      Vector2D.of(0.5,0.5),
+      Vector2D.of( 8.8000000000000007, 8.8000000000000007),
+      Vector2D.of( 12.1, 12.1));
   }
 
   //--------------------------------------------------------------
