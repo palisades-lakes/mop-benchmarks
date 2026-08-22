@@ -9,7 +9,7 @@ package mop.java.numbers;
  * @version 2024-01-02
  */
 
-//@SuppressWarnings("unchecked")
+//
 final class BurnikelZieglerDivision {
 
   //--------------------------------------------------------------

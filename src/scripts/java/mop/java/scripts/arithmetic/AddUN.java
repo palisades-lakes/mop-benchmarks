@@ -12,11 +12,11 @@ import java.math.BigInteger;
 /** Profile natural number division.
  * <p>
  * <pre>
- * jy --enable-preview --source 21 src/scripts/java/nzqr/java/scripts/profile/arithmetic/AddUN.java
+ * jy --enable-preview --source 25 src/scripts/java/mop/java/scripts/profile/arithmetic/AddUN.java
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2024-01-2
+ * @version 2026-08-21
  */
 
 public final class AddUN {
@@ -60,6 +60,7 @@ public final class AddUN {
 
   //--------------------------------------------------------------
 
+  @SuppressWarnings("unused")
   public static final void main (final String[] args) {
     warmup(); profile();   }
 

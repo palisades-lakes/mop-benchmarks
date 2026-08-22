@@ -6,10 +6,10 @@ import mop.java.accumulators.Accumulator;
  * java -cp target\benchmarks.jar mop.java.PartialL2s
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2019-07-27
+ * @version 2026-08-21
  */
 
-@SuppressWarnings("unchecked")
+
 public class PartialL1s extends Base {
 
   @Override
@@ -18,5 +18,6 @@ public class PartialL1s extends Base {
                                    final double[] z1) {
     return ac.clear().partialL1s(z0); }
 
+  @SuppressWarnings("unused")
   public static final void main (final String[] args)  {
     Defaults.run("PartialL1s"); } }

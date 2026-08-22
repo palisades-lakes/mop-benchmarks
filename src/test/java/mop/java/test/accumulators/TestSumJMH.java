@@ -11,14 +11,14 @@ import mop.java.benchmarks.accumulate.Common;
 /** Test summation algorithms.
  * <p>
  * <pre>
- * mvn -q test -Dtest=nzqr/jmh/test/accumulators/SumTest test > SumTest.txt
+ * mvn -q test -Dtest=mop/jmh/test/accumulators/SumTest test > SumTest.txt
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2019-10-15
+ * @version 2026-08-21
  */
 
-public final class SumTestJMH {
+public final class TestSumJMH {
 
   @SuppressWarnings("static-method")
   @Test

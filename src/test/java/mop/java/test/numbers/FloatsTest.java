@@ -10,9 +10,9 @@ import static java.lang.Float.MAX_EXPONENT;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2019-04-01
+ * @version 2026-08-21
  */
-
+@SuppressWarnings("unused")
 public final class FloatsTest {
 
   //--------------------------------------------------------------

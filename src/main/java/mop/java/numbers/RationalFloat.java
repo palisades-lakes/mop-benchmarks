@@ -16,10 +16,10 @@ import static mop.java.numbers.Numbers.hiBit;
  * arithmetic on them faster.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2021-06-07
+ * @version 2026-08-21
  */
 
-@SuppressWarnings("unchecked")
+
 public final class RationalFloat
 implements Ringlike<RationalFloat> {
 
@@ -390,7 +390,7 @@ implements Ringlike<RationalFloat> {
                                         final BoundedNatural d,
                                         final int e) {
     return valueOf(
-      !(nonNegative() ^ p),
+      nonNegative() == p,
       numerator().multiply(n),
       denominator().multiply(d),
       exponent() + e); }
@@ -497,7 +497,7 @@ implements Ringlike<RationalFloat> {
     //assert Double.isFinite(z0);
     //assert Double.isFinite(z1);
     final boolean p =
-      ! (Doubles.nonNegative(z0) ^ Doubles.nonNegative(z1));
+      Doubles.nonNegative(z0) == Doubles.nonNegative(z1);
     final BoundedNatural n = BoundedNatural.valueOf(
       Doubles.significand(z0))
       .multiply(BoundedNatural.valueOf(Doubles.significand(z1)));
@@ -551,6 +551,7 @@ implements Ringlike<RationalFloat> {
 
   /** Exact <code>a*x+y</code> (aka fma). */
 
+  @SuppressWarnings("unused")
   public static final RationalFloat[]
     axpy (final double[] a,
           final double[] x,
@@ -572,6 +573,7 @@ implements Ringlike<RationalFloat> {
 
   /** Exact <code>a*this+y</code> (aka fma). */
 
+  @SuppressWarnings("unused")
   public static final RationalFloat[] axpy (final double[] a,
                                             final RationalFloat[] x,
                                             final double[] y) {
@@ -654,31 +656,31 @@ implements Ringlike<RationalFloat> {
   //--------------------------------------------------------------
   // Number methods
   //--------------------------------------------------------------
-  /** Returns the low order bits of the truncated quotient.
-   *
-   * TODO: should it really truncate or round instead? Or
-   * should there be more explicit round, floor, ceil, etc.?
-   */
+//  /** Returns the low order bits of the truncated quotient.
+//   * <br>>
+//   * TODO: should it really truncate or round instead? Or
+//   * should there be more explicit round, floor, ceil, etc.?
+//   */
 
   //  @Override
   //  public final int intValue () {
   //    return bigIntegerValue().intValue(); }
 
-  /** Returns the low order bits of the truncated quotient.
-   *
-   * TODO: should it really truncate or round instead? Or
-   * should there be more explicit round, floor, ceil, etc.?
-   */
+//  /** Returns the low order bits of the truncated quotient.
+//   * <br>
+//   * TODO: should it really truncate or round instead? Or
+//   * should there be more explicit round, floor, ceil, etc.?
+//   */
 
   //  @Override
   //  public final long longValue () {
   //    return bigIntegerValue().longValue(); }
 
-  /** Returns the truncated quotient.
-   *
-   * TODO: should it round instead? Or
-   * should there be more explicit round, floor, ceil, etc.?
-   */
+//  /** Returns the truncated quotient.
+//   * <br>
+//   * TODO: should it round instead? Or
+//   * should there be more explicit round, floor, ceil, etc.?
+//   */
 
   //  public final BigInteger bigIntegerValue () {
   //    final BoundedNatural nd = numerator().divide(denominator());

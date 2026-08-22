@@ -10,14 +10,15 @@ import mop.java.prng.PRNG;
 
 //----------------------------------------------------------------
 /** <pre>
- * jy --enable-preview --source 21 src/scripts/java/nzqr/java/scripts/profile/arithmetic/MultiplyBN.java
+ * jy --enable-preview --source 25 src/scripts/java/mop/java/scripts/profile/arithmetic/MultiplyBN.java
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2024-01-15
+ * @version 2026-08-21
  *
  */
 
+@SuppressWarnings("unused")
 public final class MultiplyBN {
 
   private static final Naturals NATURALS = Naturals.get();
@@ -43,7 +44,7 @@ public final class MultiplyBN {
 
   private static final BoundedNatural[] p = new BoundedNatural[NINTS];
 
-  private static final void multiply (final String stage,
+  private static final BoundedNatural[] multiply (final String stage,
                                       final int iterations) {
     final int n = y0.length;
     for (int j=0;j<iterations;j++) {
@@ -51,18 +52,20 @@ public final class MultiplyBN {
       for (int i=0;i<n;i++) {
         p[i] =  y0[i].multiply(y1[i]); }
       System.out.printf(stage + " Total seconds: %4.3f\n",
-        Double.valueOf((System.nanoTime()-t0)*1.0e-9)); } }
+                        (System.nanoTime() - t0) * 1.0e-9); }
+    return p; }
 
   // distinguish warmup run from profile run in call tree
-  private static final void warmup () { multiply("warmup",4); }
-  private static final void profile () { multiply("profile",16); }
+  private static final BoundedNatural[] warmup () {
+    return multiply("warmup",4); }
+  private static final BoundedNatural[] profile () {
+    return multiply("profile",16); }
 
   //--------------------------------------------------------------
 
   public static final void main (final String[] args) {
-    warmup();
-    profile();
-  }
+    System.out.println(warmup().length);
+    System.out.println(profile().length); }
 
   //--------------------------------------------------------------
 }

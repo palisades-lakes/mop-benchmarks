@@ -31,8 +31,10 @@ import mop.java.prng.GeneratorBase;
 /** Utilities for <code>float</code>, <code>float[]</code>.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2021-06-07
+ * @version 2026-08-21
  */
+
+@SuppressWarnings("unused")
 public final class Floats implements Set {
 
   //--------------------------------------------------------------
@@ -250,8 +252,7 @@ public final class Floats implements Set {
     final int e = (be) << STORED_SIGNIFICAND_BITS;
     final int t = significand & STORED_SIGNIFICAND_MASK;
     //assert (0 == (s & e & t));
-    final float x = Float.intBitsToFloat(s | e | t);
-    return x; }
+    return Float.intBitsToFloat(s | e | t); }
 
   //--------------------------------------------------------------
 
@@ -279,8 +280,7 @@ public final class Floats implements Set {
     final int be = exponent + EXPONENT_BIAS;
     final int e = be << STORED_SIGNIFICAND_BITS;
     final int t = significand & STORED_SIGNIFICAND_MASK;
-    final float x = Float.intBitsToFloat(s | e | t);
-    return x; }
+    return Float.intBitsToFloat(s | e | t); }
 
   //--------------------------------------------------------------
   /** Adjust exponent from viewing signifcand as an integer
@@ -344,7 +344,7 @@ public final class Floats implements Set {
                            final Float q1) {
     //assert null != q0;
     //assert null != q1;
-    return Float.valueOf(q0.floatValue() + q1.floatValue()); }
+    return q0 + q1; }
 
   public final BinaryOperator<Float> adder () {
     return new BinaryOperator<> () {
@@ -357,7 +357,7 @@ public final class Floats implements Set {
 
   //--------------------------------------------------------------
 
-  private static final Float ZERO = Float.valueOf(0.0F);
+  private static final Float ZERO = 0.0F;
 
   @SuppressWarnings("static-method")
   public final Float additiveIdentity () { return ZERO; }
@@ -370,7 +370,7 @@ public final class Floats implements Set {
   @SuppressWarnings("static-method")
   private final Float negate (final Float q) {
     //assert null != q;
-    return  Float.valueOf(- q.floatValue()); }
+    return -q; }
 
   public final UnaryOperator<Float> additiveInverse () {
     return new UnaryOperator<> () {
@@ -387,7 +387,7 @@ public final class Floats implements Set {
                                 final Float q1) {
     //assert null != q0;
     //assert null != q1;
-    return Float.valueOf(q0.floatValue() * q1.floatValue()); }
+    return q0 * q1; }
 
   public final BinaryOperator<Float> multiplier () {
     return new BinaryOperator<>() {
@@ -400,7 +400,7 @@ public final class Floats implements Set {
 
   //--------------------------------------------------------------
 
-  private static final Float ONE = Float.valueOf(1.0F);
+  private static final Float ONE = 1.0F;
 
   @SuppressWarnings("static-method")
   public final Float multiplicativeIdentity () { return ONE; }
@@ -410,10 +410,10 @@ public final class Floats implements Set {
   @SuppressWarnings("static-method")
   private final Float reciprocal (final Float q) {
     //assert null != q;
-    final float z = q.floatValue();
+    final float z = q;
     // only a partial inverse
     if (0.0 == z) { return null; }
-    return Float.valueOf(1.0F/z);  }
+    return 1.0F / z;  }
 
   public final UnaryOperator<Float> multiplicativeInverse () {
     return new UnaryOperator<> () {
@@ -452,11 +452,7 @@ public final class Floats implements Set {
 
   @Override
   public final BiPredicate equivalence () {
-    return new BiPredicate<Float,Float>() {
-      @Override
-      public final boolean test (final Float q0,
-                                 final Float q1) {
-        return Floats.this.equals(q0,q1); } }; }
+    return (BiPredicate<Float, Float>) Floats.this::equals; }
 
   //--------------------------------------------------------------
 
@@ -464,10 +460,7 @@ public final class Floats implements Set {
   public final Supplier generator (final Map options) {
     final UniformRandomProvider urp = Set.urp(options);
     final Generator g = finiteGenerator(urp);
-    return
-      new Supplier () {
-      @Override
-      public final Object get () { return g.next(); } }; }
+    return g::next; }
 
   //--------------------------------------------------------------
   // Object methods
@@ -490,8 +483,7 @@ public final class Floats implements Set {
    * (with high enough probability).
    */
   public static final int feMax (final int dim) {
-    final int d = Float.MAX_EXPONENT - Ints.ceilLog2(dim);
-    return d; }
+    return Float.MAX_EXPONENT - Ints.ceilLog2(dim); }
 
   //--------------------------------------------------------------
   /** From apache commons math4 BigFraction.
@@ -722,8 +714,7 @@ public final class Floats implements Set {
           if ((Float.isFinite(x)) && (! isNormal(x))) {
             return x; } } }
       @Override
-      public final Object next () {
-        return Float.valueOf(nextFloat()); } }; }
+      public final Object next () { return nextFloat(); } }; }
 
   public static final Generator
   subnormalGenerator (final UniformRandomProvider urp) {
@@ -744,9 +735,6 @@ public final class Floats implements Set {
   /** Discretely uniform over 'normal' floats,
    *  as opposed to 'subnormal' floats.
    *  em>Not gaussian!</em>
-   * @param urp
-   * @param eMax
-   * @return
    */
 
   public static final Generator
@@ -759,11 +747,9 @@ public final class Floats implements Set {
         // TODO: fix infinite loop
         for (;;) {
           final float x = d.nextFloat();
-          if (Float.isFinite(x) && isNormal(x)) {
-            return x; } } }
+          if (Float.isFinite(x) && isNormal(x)) { return x; } } }
       @Override
-      public final Object next () {
-        return Float.valueOf(nextFloat()); } }; }
+      public final Object next () { return nextFloat(); } }; }
 
   public static final Generator
   normalGenerator (final UniformRandomProvider urp) {
@@ -794,8 +780,7 @@ public final class Floats implements Set {
           final float x = d.nextFloat();
           if (Float.isFinite(x)) { return x; } } }
       @Override
-      public final Object next () {
-        return Float.valueOf(nextFloat()); } }; }
+      public final Object next () { return nextFloat(); } }; }
 
   public static final Generator
   finiteGenerator (final UniformRandomProvider urp) {
@@ -852,11 +837,9 @@ public final class Floats implements Set {
           t = u; }
         else {
           t = u + MIN_NORMAL_SIGNIFICAND; }
-        final float x = mergeBits(s,e,t);
-        return x;}
+        return mergeBits(s, e, t);}
       @Override
-      public final Object next () {
-        return Float.valueOf(nextFloat()); } }; }
+      public final Object next () { return nextFloat(); } }; }
 
   public static final Generator
   generator (final UniformRandomProvider urp,

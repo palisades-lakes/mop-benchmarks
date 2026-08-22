@@ -7,10 +7,10 @@ import mop.java.numbers.BigFractions;
 //----------------------------------------------------------------
 /** BigFraction from Long bug?
  * <br>
- * jy --source 12 src/scripts/java/nzqr/java/scripts/LBF.java
+ * jy --source 25 src/scripts/java/mop/java/scripts/LBF.java
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2019-02-22
+ * @version 2026-08-21
  */
 
 @SuppressWarnings("unused")

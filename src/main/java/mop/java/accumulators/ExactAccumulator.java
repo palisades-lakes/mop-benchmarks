@@ -6,8 +6,9 @@ package mop.java.accumulators;
  * adds, so that they are exact if {@link #add(double)} is.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2019-09-06
+ * @version 2026-08-21
  */
+
 @SuppressWarnings("unchecked")
 public abstract class ExactAccumulator<T extends ExactAccumulator>
 implements Accumulator<T> {

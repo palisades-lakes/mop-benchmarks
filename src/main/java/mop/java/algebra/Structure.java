@@ -15,7 +15,7 @@ import com.google.common.collect.ImmutableMap;
  * @author palisades dot lakes at gmail dot com
  * @version 2019-02-23
  */
-@SuppressWarnings("unchecked")
+
 public abstract class Structure implements Set {
 
   private final Set _elements;

@@ -7,10 +7,10 @@ import mop.java.prng.Generators;
 /** Benchmark l1 norm.
  *
  * <pre>
- * jy --source 12 src/scripts/java/xfp/java/scripts/TotalL1Norm.java
+ * jy --source 25 src/scripts/java/xfp/java/scripts/TotalL1Norm.java
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2019-10-09
+ * @version 2026-08-21
  * 7
  */
 @SuppressWarnings("unused")

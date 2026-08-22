@@ -6,7 +6,7 @@ import mop.java.accumulators.Accumulator;
  * j mop.java.TotalDot
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2019-07-27
+ * @version 2026-08-21
  */
 
 public class TotalDot extends Base {
@@ -18,5 +18,6 @@ public class TotalDot extends Base {
     return new double[]
       { ac.clear().addProducts(z0,z1).doubleValue() }; }
 
+  @SuppressWarnings("unused")
   public static final void main (final String[] args)  {
     Defaults.run("TotalDot"); } }

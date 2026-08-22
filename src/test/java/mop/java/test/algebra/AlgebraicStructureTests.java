@@ -27,13 +27,14 @@ import mop.java.numbers.Ratios;
  * @version 2026-05-25
  */
 
-@SuppressWarnings("unchecked")
+
 public final class AlgebraicStructureTests {
   private static final int TRYS = 31;
   //static final int SPACE_TRYS = 5;
 
   //--------------------------------------------------------------
 
+  @SuppressWarnings("unchecked")
   private static final void
   structureTests (final Structure s,
                   final int n) {

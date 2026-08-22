@@ -6,7 +6,7 @@ import mop.java.accumulators.Accumulator;
  * java -cp target\benchmarks.jar mop.java.TotalL2Norm
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2019-07-27
+ * @version 2026-08-21
  */
 
 public class TotalL2Norm extends Base {
@@ -18,5 +18,6 @@ public class TotalL2Norm extends Base {
     return new double[]
       {  ac.clear().add2All(z0).doubleValue() }; }
 
+  @SuppressWarnings("unused")
   public static final void main (final String[] args)  {
     Defaults.run("TotalL2Norm"); } }

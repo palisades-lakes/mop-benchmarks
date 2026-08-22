@@ -11,11 +11,11 @@ import mop.java.numbers.ERationals;
 /** Test desired properties of ERational.
  * <p>
  * <pre>
- * mvn -c clean -Dtest=nzqr/jmh/test/numbers/ERationalTest test > ERationalTest.txt
+ * mvn -c clean -Dtest=mop/jmh/test/numbers/ERationalTest test > ERationalTest.txt
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2021-01-22
+ * @version 2026-08-21
  */
 
 public final class ERationalTest {

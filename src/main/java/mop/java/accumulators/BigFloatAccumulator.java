@@ -6,7 +6,7 @@ import mop.java.numbers.BigFloat;
  * accumulator.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2019-08-16
+ * @version 2026-08-21
  */
 public final class BigFloatAccumulator
 extends ExactAccumulator<BigFloatAccumulator> {

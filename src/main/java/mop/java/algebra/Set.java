@@ -18,7 +18,7 @@ import mop.java.prng.PRNG;
 /** General, possibly unbounded, sets of <code>Object</code>s,
  * and primitive values, as opposed to <code>java.util.Set</code>
  * (and primitive variants) which are enumerated finite sets.
- *
+ * <br>
  * A usable set provides 2 basic functionalities:
  * <ol>
  * <li> Given a thing, a way to tell if that thing is in the set
@@ -40,12 +40,12 @@ import mop.java.prng.PRNG;
  * This might be more accurately called
  * (see <a href="https://en.wikipedia.org/wiki/Setoid">
  * <code>Setoid</code></a>.
- *
+ * <br>
  * Default <code>contains</code> return <code>false</code>
  * for every thing (ie, default is empty set).
- *
+ * <br>
  * <b>TODO:</b> replace sampling iterators with 0-arg functions?
- *
+ * <br>
  * <b>TODO:</b> should a Set require an equality relation,
  * not necessarily the same as <code>equals</code>?
  * ...since multiple classes might be used to represent the
@@ -53,9 +53,10 @@ import mop.java.prng.PRNG;
  * classes, represented by some element of each equivalence class.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2021-06-07
+ * @version 2026-08-21
  */
 
+@SuppressWarnings("unused")
 public interface Set {
 
   // TODO: would it be better treat base sets as collections
@@ -234,7 +235,7 @@ public interface Set {
   /** should eventually cover the whole set.
    * might be used for testing, so might make sense 'travel fast',
    * and go back to fill in.
-   *
+   * <br>
    * TODO: unify with {@link #generator(Map)}
    * via options?
    */

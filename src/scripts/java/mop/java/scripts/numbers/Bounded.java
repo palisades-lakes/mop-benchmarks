@@ -7,12 +7,12 @@ import mop.java.numbers.NaturalInts;
 /** Test bounded ranges for various number implementations.
  * <p>
  * <pre>
- * j src/scripts/java/nzqr/java/scripts/numbers/Bounded.java
- * jy src/scripts/java/nzqr/java/scripts/numbers/Bounded.java
+ * j src/scripts/java/mop/java/scripts/numbers/Bounded.java
+ * jy src/scripts/java/mop/java/scripts/numbers/Bounded.java
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2022-08-25
+ * @version 2026-08-21
  */
 
 public final class Bounded {
@@ -29,7 +29,7 @@ public final class Bounded {
         //.add(n0)
         .add(n0);
       BoundedNatural n = n1;
-      for (int i=1;i<=Integer.MAX_VALUE;i++) {
+      for (int i=1;i<Integer.MAX_VALUE;i++) {
         //        System.out.print("BoundedNatural: " + i + ": " +
         //          Integer.toUnsignedString(n.hiBit(),16));
         //final long t = System.nanoTime();
@@ -44,7 +44,7 @@ public final class Bounded {
       } }
     finally {
       System.out.printf("Total seconds: %4.3f\n",
-        Double.valueOf((System.nanoTime()-t0)*1.0e-9)); } }
+                        (System.nanoTime() - t0) * 1.0e-9); } }
 
   //  private static final void additionBigInteger () {
   //    final long t0 = System.nanoTime();
@@ -105,6 +105,7 @@ public final class Bounded {
   //      System.out.printf("Total seconds: %4.3f\n",
   //        Double.valueOf((System.nanoTime()-t0)*1.0e-9)); } }
 
+  @SuppressWarnings("unused")
   public static final void main (final String[] args) {
     System.out.println();
     //overflowBoundedNatural();

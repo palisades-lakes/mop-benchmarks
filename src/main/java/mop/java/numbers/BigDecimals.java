@@ -16,7 +16,6 @@ import org.apache.commons.rng.sampling.distribution.ContinuousUniformSampler;
 import mop.java.algebra.OneSetOneOperation;
 import mop.java.algebra.OneSetTwoOperations;
 import mop.java.algebra.Set;
-import mop.java.numbers.Doubles;
 import mop.java.prng.Generator;
 import mop.java.prng.GeneratorBase;
 
@@ -24,7 +23,7 @@ import mop.java.prng.GeneratorBase;
  * <code>BigDecimal</code>.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2019-10-15
+ * @version 2026-08-21
  */
 @SuppressWarnings({"unchecked","static-method"})
 public final class BigDecimals implements Set {
@@ -100,9 +99,8 @@ public final class BigDecimals implements Set {
   private final BigDecimal reciprocal (final BigDecimal q) {
     //assert contains(q);
     // only a partial inverse
-    if (BigDecimal.valueOf(0L).equals(q)) { return null; }
+    if (BigDecimal.ZERO.equals(q)) { return null; }
     return BigDecimal.ONE.divide(q);  }
-
 
   public final UnaryOperator<BigDecimal> multiplicativeInverse () {
     return new UnaryOperator<> () {
@@ -122,15 +120,13 @@ public final class BigDecimals implements Set {
 
   //--------------------------------------------------------------
 
-  /** Note: BigDecimal.equal doesn't test for equality as rational
+  /** Note: BigDecimal.equals doesn't test for equality as rational
    * numbers.
    */
   public final boolean equals (final BigDecimal q0,
                                final BigDecimal q1) {
     if (q0 == q1) { return true; }
-    if (null == q0) {
-      if (null == q1) { return true; }
-      return false; }
+    if (null == q0) { return null == q1; }
     if (null == q1) { return false; }
     final int c = q0.compareTo(q1);
     return 0 == c; }
@@ -151,10 +147,7 @@ public final class BigDecimals implements Set {
   public final Supplier generator (final Map options) {
     final UniformRandomProvider urp = Set.urp(options);
     final Generator bfs = BigDecimals.bigDecimalGenerator(urp);
-    return
-      new Supplier () {
-      @Override
-      public final Object get () { return bfs.next(); } }; }
+    return bfs::next; }
 
   //--------------------------------------------------------------
   // Object methods
@@ -181,7 +174,7 @@ public final class BigDecimals implements Set {
    * otherwise return <code>BigDecimal.valueOf(0L)</code> or
    * {@link BigDecimal#ONE}, <code>BigDecimal.valueOf(10L)</code>,
    * with equal probability (these are potential edge cases).
-   *
+   * <br>
    * TODO: sample rounding modes?
    */
 
@@ -205,6 +198,7 @@ public final class BigDecimals implements Set {
         if (edge) { return edgeCases.sample(); }
         return new BigDecimal(fdg.nextDouble()); } }; }
 
+  @SuppressWarnings("unused")
   public static final Generator
   bigDecimalGenerator (final int n,
                        final UniformRandomProvider urp) {

@@ -10,7 +10,7 @@ import mop.java.Exceptions;
  * unsupported operation exceptions where convenient.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-08-17
+ * @version 2026-08-21
  */
 
 @SuppressWarnings("unchecked")

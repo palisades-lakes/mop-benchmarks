@@ -13,10 +13,10 @@ import mop.java.prng.PRNG;
  * At least 4*2<sup>32</sup> tests to get calls to BoundedNatural.divadd.
  *
  * <pre>
- * jy --source 20 -ea src/scripts/java/nzqr/java/scripts/Division.java > division.txt
+ * jy --source 20 -ea src/scripts/java/mop/java/scripts/Division.java > division.txt
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2023-08-15
+ * @version 2026-08-21
  */
 @SuppressWarnings("unused")
 public final class Division {

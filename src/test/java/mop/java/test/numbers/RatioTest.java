@@ -1,6 +1,6 @@
 package mop.java.test.numbers;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -16,11 +16,11 @@ import mop.java.numbers.Ratios;
  * rationals rather than <code>clojure.lang.Ratio</code>.
  * <p>
  * <pre>
- * mvn -c -Dtest=nzqr/java/test/sets/RatioTest test > RatioTest.txt
+ * mvn -c -Dtest=mop/java/test/sets/RatioTest test > RatioTest.txt
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2019-12-01
+ * @version 2026-08-21
  */
 
 public final class RatioTest {
@@ -38,7 +38,7 @@ public final class RatioTest {
     final Ratio q1 = new Ratio(
       java.math.BigInteger.TWO,java.math.BigInteger.TWO);
     // WRONG: this should be true, but clojure Ratio is broken.
-    assertFalse(q0.equals(q1)); }
+    assertNotEquals(q0, q1); }
 
   //--------------------------------------------------------------
 
@@ -48,26 +48,24 @@ public final class RatioTest {
 
     Assertions.assertThrows(
       AssertionFailedError.class,
-      () -> {
-        Common.doubleRoundingTests(
-          (i0,i1) -> new Ratio(i0,i1),
-          x -> Numbers.toRatio(Double.valueOf(x)),
-          q -> ((Ratio) q).doubleValue(),
-          (q0,q1) -> Ratios.abs((Ratio) Numbers.minus(q0,q1)),
-          Object::toString,
-          Common::compareTo, Common::compareTo); },
+      () -> Common.doubleRoundingTests(
+        Ratio::new,
+        Numbers::toRatio,
+        q -> ((Ratio) q).doubleValue(),
+        (q0,q1) -> Ratios.abs((Ratio) Numbers.minus(q0,q1)),
+        Object::toString,
+        Common::compareTo, Common::compareTo),
       "Ratio doesn't round correctly");
 
     Assertions.assertThrows(
       AssertionFailedError.class,
-      () -> {
-        Common.floatRoundingTests(
-          (i0,i1) -> new Ratio(i0,i1),
-          x -> Numbers.toRatio(Float.valueOf(x)),
-          q -> ((Ratio) q).floatValue(),
-          (q0,q1) -> Ratios.abs((Ratio) Numbers.minus(q0,q1)),
-          Object::toString,
-          Common::compareTo, Common::compareTo); },
+      () -> Common.floatRoundingTests(
+        Ratio::new,
+        Numbers::toRatio,
+        q -> ((Ratio) q).floatValue(),
+        (q0,q1) -> Ratios.abs((Ratio) Numbers.minus(q0,q1)),
+        Object::toString,
+        Common::compareTo, Common::compareTo),
       "Ratio doesn't round correctly");
 
   }

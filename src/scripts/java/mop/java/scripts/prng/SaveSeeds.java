@@ -7,11 +7,11 @@ import mop.java.prng.Seeds;
 
 //----------------------------------------------------------------
 /** <pre>
- * j --source 12 src/scripts/java/xfp/java/scripts/SaveSeeds.java
+ * j --source 25 src/scripts/java/xfp/java/scripts/SaveSeeds.java
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2019-01-05
+ * @version 2026-08-21
  */
 
 @SuppressWarnings("unused")

@@ -8,10 +8,10 @@ import mop.java.benchmarks.accumulate.Common;
 /** Profile accumulators.
  *
  * <pre>
- * jy --source 12 src/scripts/java/xfp/java/scripts/ZhuHayesProfile.java
+ * jy --source 25 src/scripts/java/xfp/java/scripts/ZhuHayesProfile.java
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2019-04-16
+ * @version 2026-08-21
  */
 @SuppressWarnings("unused")
 public final class ZhuHayesProfile {

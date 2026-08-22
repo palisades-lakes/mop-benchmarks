@@ -12,7 +12,7 @@ import mop.java.numbers.BoundedNatural;
 /** Test bounded ranges for various number implementations.
  * <p>
  * <pre>
- * mvn -q -Dtest=nzqr/java/test/numbers/BoundsTest test > BT.txt
+ * mvn -q -Dtest=mop/java/test/numbers/BoundsTest test > BT.txt
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com

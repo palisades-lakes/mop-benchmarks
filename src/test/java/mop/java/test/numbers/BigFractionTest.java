@@ -18,7 +18,7 @@ import mop.java.benchmarks.accumulate.Common;
  *  should return the <code>double</code> you start with.
  *  May revive in the future...
  * <pre>
- * mvn -Dtest=nzqr/java/test/numbers/BigFractionTest test > BigFractionTest.txt
+ * mvn -Dtest=mop/java/test/numbers/BigFractionTest test > BigFractionTest.txt
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com

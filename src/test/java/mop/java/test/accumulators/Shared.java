@@ -6,7 +6,7 @@ import java.util.List;
  * Not instantiable. Class slots/methods only.
  *
  * @author mcdonald dot john dot alan at gmail dot com
- * @version 2024-01-16
+ * @version 2026-08-21
  */
 public final class Shared {
 

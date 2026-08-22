@@ -4,10 +4,11 @@ package mop.java.benchmarks.accumulate;
  * j mop.java.All
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2019-10-10
+ * @version 2026-08-21
  */
 
 public final class All {
+  @SuppressWarnings("unused")
   public static final void main (final String[] args)  {
     Defaults.run("PartialSums");
     Defaults.run("PartialL1s");

@@ -3,17 +3,15 @@ package mop.java.accumulators;
 import com.upokecenter.numbers.EInteger;
 import com.upokecenter.numbers.ERational;
 
-import mop.java.accumulators.ExactAccumulator;
-
 /** Naive sum of <code>double</code> values with ERational
  * accumulator (for testing).
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2019-10-15
+ * @version 2026-08-21
  */
 public final class ERationalAccumulator
 
-extends ExactAccumulator<ERationalAccumulator> {
+  extends ExactAccumulator<ERationalAccumulator> {
 
   private ERational _sum;
 
@@ -83,7 +81,7 @@ extends ExactAccumulator<ERationalAccumulator> {
     _sum = reduce(
       _sum.Add(
         ERational.FromDouble(z0)
-        .Multiply(ERational.FromDouble(z1))));
+                 .Multiply(ERational.FromDouble(z1))));
     return this; }
 
   //--------------------------------------------------------------
@@ -93,9 +91,9 @@ extends ExactAccumulator<ERationalAccumulator> {
   public static final String toHexString (final ERational q) {
     return
       "(" + q.getNumerator().ToRadixString(0x10)
-      + " / "
-      //      + "\n/\n"
-      + q.getDenominator().ToRadixString(0x10) + ")"; }
+        + " / "
+        //      + "\n/\n"
+        + q.getDenominator().ToRadixString(0x10) + ")"; }
 
   //--------------------------------------------------------------
 

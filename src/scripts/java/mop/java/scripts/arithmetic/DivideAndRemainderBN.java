@@ -12,12 +12,12 @@ import mop.java.prng.PRNG;
 /** Profile natural number division.
  * <p>
  * <pre>
- * j --enable-preview --source 21 src/scripts/java/nzqr/java/scripts/profile/arithmetic/DivideAndRemainderBN.java
- * jy --enable-preview --source 21 src/scripts/java/nzqr/java/scripts/profile/arithmetic/DivideAndRemainderBN.java
+ * j --enable-preview --source 25 src/scripts/java/mop/java/scripts/profile/arithmetic/DivideAndRemainderBN.java
+ * jy --enable-preview --source 25 src/scripts/java/mop/java/scripts/profile/arithmetic/DivideAndRemainderBN.java
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2023-12-29
+ * @version 2026-08-21
  */
 
 public final class DivideAndRemainderBN {
@@ -62,6 +62,7 @@ public final class DivideAndRemainderBN {
 
   //--------------------------------------------------------------
 
+  @SuppressWarnings("unused")
   public static final void main (final String[] args) {
     warmup(); profile();   }
 

@@ -1,6 +1,6 @@
 package mop.java.test.numbers;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.math.BigInteger;
 
@@ -17,11 +17,11 @@ import mop.java.numbers.ERationals;
 /** Test desired properties of EInteger.
  * <p>
  * <pre>
- * mvn -Dtest=nzqr/java/test/numbers/EIntegerTest test > EIntegerTest.txt
+ * mvn -Dtest=mop/java/test/numbers/EIntegerTest test > EIntegerTest.txt
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2022-11-07
+ * @version 2026-08-21
  */
 
 public final class EIntegerTest {
@@ -45,7 +45,7 @@ public final class EIntegerTest {
       //System.out.println(b0);
       //System.out.println(ei);
       final BigInteger b1 = new BigInteger(ei.ToBytes(false));
-      assertTrue(b0.equals(b1)); } }
+      assertEquals(b0, b1); } }
 
   /** Check conversion from EInteger to BigInteger to EInteger */
 
@@ -63,7 +63,7 @@ public final class EIntegerTest {
       //System.out.println(i);
       //System.out.println(e0);
       //System.out.println(b);
-      assertTrue(e0.equals(e1)); } }
+      assertEquals(e0, e1); } }
 
   //--------------------------------------------------------------
 }

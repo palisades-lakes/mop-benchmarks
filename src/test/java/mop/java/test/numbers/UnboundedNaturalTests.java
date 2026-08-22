@@ -19,13 +19,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 //----------------------------------------------------------------
 /** <pre>
- * mvn -Dtest=nzqr/java/test/numbers/NaiveUnboundedNaturalTests test > UNT.txt
+ * mvn -Dtest=mop/java/test/numbers/NaiveUnboundedNaturalTests test > UNT.txt
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2024-01-22
+ * @version 2026-08-21
  */
 
-@SuppressWarnings("unchecked")
+
 public final class UnboundedNaturalTests {
 
   @SuppressWarnings({ "static-method" })
@@ -54,7 +54,7 @@ public final class UnboundedNaturalTests {
       (cmp < 0),
       () -> "\nadd one doesn't increase value\ncompareTo -> " + cmp); }
 
-  @SuppressWarnings({ "static-method" })
+  @SuppressWarnings({"static-method","unchecked"})
   @Test
   public final void monoid () {
 

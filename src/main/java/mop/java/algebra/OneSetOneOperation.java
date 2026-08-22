@@ -14,7 +14,7 @@ import com.google.common.collect.ImmutableList;
  * @author palisades dot lakes at gmail dot com
  * @version 2019-02-24
  */
-@SuppressWarnings("unchecked")
+
 public final class OneSetOneOperation extends Structure {
 
   private final BinaryOperator _operation;
@@ -46,8 +46,7 @@ public final class OneSetOneOperation extends Structure {
   @Override
   public final boolean equals (final Object obj) {
     if (this == obj) { return true; }
-    if ((obj == null) || !(obj instanceof OneSetOneOperation)) { return false; }
-    final OneSetOneOperation other = (OneSetOneOperation) obj;
+    if (!(obj instanceof final OneSetOneOperation other)) { return false; }
     // WARNING: hard to tell if 2 operations are the same,
     // unless the implementing class has some kind of singleton
     // constraint.
@@ -125,6 +124,7 @@ public final class OneSetOneOperation extends Structure {
 
   //--------------------------------------------------------------
 
+  @SuppressWarnings("unused")
   public static final OneSetOneOperation
   commutativeGroup (final BinaryOperator operation,
                     final Set elements,

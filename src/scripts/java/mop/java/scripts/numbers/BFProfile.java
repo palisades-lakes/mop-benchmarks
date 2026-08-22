@@ -5,7 +5,7 @@ import mop.java.numbers.BigFloat;
 import mop.java.prng.Generator;
 
 /** <pre>
- * jy --source 12 src/scripts/java/xfp/java/scripts/BFProfile.java
+ * jy --source 25 src/scripts/java/xfp/java/scripts/BFProfile.java
  * </pre>
  * @author palisades dot lakes at gmail dot com
  * @version 2019-06-19

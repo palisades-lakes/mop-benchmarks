@@ -9,12 +9,12 @@ import mop.java.prng.PRNG;
 /** Profiling {@link UnboundedNatural}.
  * <p>
  * <pre>
- * j src/scripts/java/nzqr/java/scripts/numbers/Unbounded.java
- * jy src/scripts/java/nzqr/java/scripts/numbers/Unbounded.java
+ * j src/scripts/java/mop/java/scripts/numbers/Unbounded.java
+ * jy src/scripts/java/mop/java/scripts/numbers/Unbounded.java
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2022-07-31
+ * @version 2026-08-21
  */
 
 @SuppressWarnings("unused")

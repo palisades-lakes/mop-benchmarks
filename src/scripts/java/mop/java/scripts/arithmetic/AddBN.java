@@ -13,13 +13,14 @@ import java.math.BigInteger;
 /** Profile natural number division.
  * <p>
  * <pre>
- * jy --enable-preview --source 21 src/scripts/java/nzqr/java/scripts/profile/arithmetic/AddBN.java
+ * jy --enable-preview --source 25 src/scripts/java/mop/java/scripts/profile/arithmetic/AddBN.java
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2024-01-16
+ * @version 2026-08-21
  */
 
+@SuppressWarnings("unused")
 public final class AddBN {
   private static final Naturals NATURALS = Naturals.get();
   private static final int FACTOR = 1;

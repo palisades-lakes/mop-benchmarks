@@ -63,7 +63,7 @@ import static mop.java.numbers.Numbers.*;
  * @version 2026-08-13
  */
 
-//@SuppressWarnings("unchecked")
+//
 public final class BoundedNatural
 implements Ringlike<BoundedNatural> {
 

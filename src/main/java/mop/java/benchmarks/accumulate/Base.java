@@ -16,7 +16,7 @@ import org.openjdk.jmh.infra.Blackhole;
  * @version 2026-05-05
  */
 
-//@SuppressWarnings("unchecked")
+//
 @State(Scope.Thread)
 public abstract class Base {
 

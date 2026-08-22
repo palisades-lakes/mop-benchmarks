@@ -8,9 +8,10 @@ import mop.java.algebra.Set;
 /** Utilities for <code>long</code>, <code>long[]</code>.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2019-07-31
+ * @version 2026-08-21
  */
 
+@SuppressWarnings("unused")
 public final class Longs implements Set {
 
   //--------------------------------------------------------------
@@ -39,7 +40,8 @@ public final class Longs implements Set {
   //--------------------------------------------------------------
 
   private Longs () {
-    Exceptions.unsupportedOperation(Longs.class,"new"); }
+    throw
+      Exceptions.unsupportedOperation(Longs.class,"new"); }
 
   //--------------------------------------------------------------
 }

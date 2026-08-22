@@ -25,9 +25,9 @@ import mop.java.prng.Generators;
  * <code>RationalFloat</code>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2022-11-07
+ * @version 2026-08-21
  */
-@SuppressWarnings({"unchecked","static-method"})
+@SuppressWarnings({"unchecked","static-method","unused"})
 public final class RationalFloats implements Set {
 
   //--------------------------------------------------------------
@@ -198,11 +198,7 @@ public final class RationalFloats implements Set {
 
   @Override
   public final BiPredicate equivalence () {
-    return new BiPredicate<RationalFloat,RationalFloat>() {
-      @Override
-      public final boolean test (final RationalFloat q0,
-                                 final RationalFloat q1) {
-        return q0.equals(q1); } }; }
+    return (BiPredicate<RationalFloat, RationalFloat>) RationalFloat::equals; }
 
   //--------------------------------------------------------------
 
@@ -301,10 +297,7 @@ public final class RationalFloats implements Set {
   public final Supplier generator (final Map options) {
     final UniformRandomProvider urp = Set.urp(options);
     final Generator g = generator(urp);
-    return
-      new Supplier () {
-      @Override
-      public final Object get () { return g.next(); } }; }
+    return g::next; }
 
   //--------------------------------------------------------------
   // Object methods

@@ -6,7 +6,7 @@ import mop.java.accumulators.Accumulator;
  * j mop.java.TotalL2Distance
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2019-10-10
+ * @version 2026-08-21
  */
 
 public class TotalL2Distance extends Base {
@@ -18,5 +18,6 @@ public class TotalL2Distance extends Base {
     return new double[]
       { ac.clear().addL2Distance(z0,z1).doubleValue() }; }
 
+  @SuppressWarnings("unused")
   public static final void main (final String[] args)  {
     Defaults.run("TotalL2Distance"); } }

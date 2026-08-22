@@ -11,7 +11,7 @@ import mop.java.Exceptions;
  * @version 2026-07-27
  */
 
-//@SuppressWarnings("unchecked")
+//
 public interface Generator {
 
   // default methods throw UnsupportetOperationException.

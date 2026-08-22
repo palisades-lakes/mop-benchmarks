@@ -10,7 +10,7 @@ import java.util.Arrays;
  * @version 2026-08-11
  */
 
-//@SuppressWarnings("unchecked")
+//
 public final class NaturalInts {
 
   /** The value of <code>hiBit</code> is assumed to fit in an

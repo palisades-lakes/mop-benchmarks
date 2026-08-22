@@ -9,7 +9,7 @@ import java.util.Arrays;
  * @author palisades dot lakes at gmail dot com
  * @version 2019-07-23
  */
-@SuppressWarnings("unchecked")
+
 public final class DistilledAccumulator
 extends ExactAccumulator<DistilledAccumulator> {
 
@@ -62,8 +62,7 @@ extends ExactAccumulator<DistilledAccumulator> {
     return _sums[0]; }
 
   @Override
-  public final Object value () {
-    return Double.valueOf(doubleValue()); }
+  public final Object value () { return doubleValue(); }
 
   @Override
   public final float floatValue () {

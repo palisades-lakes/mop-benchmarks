@@ -6,7 +6,7 @@ import mop.java.numbers.RationalFloat;
  * accumulator (for testing).
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2019-10-09
+ * @version 2026-08-21
  */
 public final class RationalFloatAccumulator
 extends ExactAccumulator<RationalFloatAccumulator> {

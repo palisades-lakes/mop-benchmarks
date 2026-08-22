@@ -13,10 +13,10 @@ import mop.java.Exceptions;
  * TODO: tighten this requirement.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2019-07-29
+ * @version 2026-08-21
  */
 
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked","unused"})
 public interface Accumulator<T extends Accumulator> {
 
   //--------------------------------------------------------------

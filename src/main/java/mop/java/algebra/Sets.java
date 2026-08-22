@@ -8,30 +8,24 @@ import java.util.function.Supplier;
 import org.apache.commons.rng.UniformRandomProvider;
 import org.apache.commons.rng.sampling.CollectionSampler;
 
-import mop.java.Classes;
 import mop.java.Exceptions;
 
 /** Utilities merging <code>java.util.Set</code> and
  * <code>mop.java.sets.Set</code>.
- *
+ * >br>
  * Static methods only; no state.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2019-06-26
+ * @version 2026-08-21
  */
+
 
 @SuppressWarnings("unchecked")
 public final class Sets {
 
   /** Default notion of equivalence for most sets.
    */
-  public static final BiPredicate OBJECT_EQUALS =
-    new BiPredicate() {
-    @Override
-    public final boolean test (final Object t,
-                               final Object u) {
-      return Objects.equals(t,u); }
-  };
+  public static final BiPredicate OBJECT_EQUALS = Objects::equals;
 
   //--------------------------------------------------------------
   /** Does the set contain the element?
@@ -56,12 +50,10 @@ public final class Sets {
     if (set instanceof java.util.Set) {
       final UniformRandomProvider urp = Set.urp(options);
       assert null != urp;
+      @SuppressWarnings("unchecked")
       final CollectionSampler cs =
         new CollectionSampler(urp,((java.util.Set) set));
-      return
-        new Supplier () {
-        @Override
-        public final Object get () { return cs.sample(); } }; }
+      return cs::sample; }
 
     throw Exceptions.unsupportedOperation(
       null,"contains",set,options); }
@@ -96,13 +88,13 @@ public final class Sets {
     assert elements.contains(b);
     final boolean ab = equivalent.test(a,b);
     final boolean ba = equivalent.test(b,a);
-    assert ab==ba :
-      "\nset=" + Classes.className(elements) + " " + elements
-      + "\nequivalent=" + Classes.className(equivalent) + " " + equivalent
-      + "\na=" + Classes.className(a) + " " + a
-      + "\nb=" + Classes.className(b) + " " + b
-      + "\na==b -> " + ab
-      + "\nb==a -> " + ba;
+//    assert ab==ba :
+//      "\nset=" + Classes.className(elements) + " " + elements
+//      + "\nequivalent=" + Classes.className(equivalent) + " " + equivalent
+//      + "\na=" + Classes.className(a) + " " + a
+//      + "\nb=" + Classes.className(b) + " " + b
+//      + "\na==b -> " + ab
+//      + "\nb==a -> " + ba;
     return ab == ba; }
 
   /** Is a = a?

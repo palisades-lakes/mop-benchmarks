@@ -10,9 +10,9 @@ import mop.java.Exceptions;
  * TODO: Special case D1, D2, D3, D4...?
  *
  * @author palisades dot lakes at gmail dot com
- * @since 2018-09-07
- * @version 2018-09-07
+ * @version 2026-08-21
  */
+
 @SuppressWarnings("unchecked")
 public final class Dn implements Domain {
 
@@ -52,10 +52,8 @@ public final class Dn implements Domain {
   @Override
   public final boolean equals (final Object obj) {
     if (this == obj) { return true; }
-    if ((obj == null) || !(obj instanceof Dn)) { return false; }
-    final Dn other = (Dn) obj;
-    if (_dimension != other._dimension) { return false; }
-    return true; }
+    if (!(obj instanceof final Dn other)) { return false; }
+    return _dimension == other._dimension; }
 
   @Override
   public final String toString () { return "D" + _dimension; }
@@ -68,8 +66,7 @@ public final class Dn implements Domain {
     assert dimension > 0;
     _dimension = dimension; }
 
-  private static final IntObjectMap<Dn> _cache =
-    new IntObjectHashMap();
+  private static final IntObjectMap<Dn> _cache = new IntObjectHashMap();
 
   // TODO: test speed
   //  public static final Dn get (final int dimension) {

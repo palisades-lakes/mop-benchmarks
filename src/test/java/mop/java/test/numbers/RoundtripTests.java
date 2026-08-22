@@ -29,11 +29,11 @@ import mop.java.accumulators.EFloatAccumulator;
 /** Test number conversions expected to be lossless.
  * <p>
  * <pre>
- * mvn -Dtest=nzqr/java/test/numbers/RoundtripTests test > RoundtripTests.txt
+ * mvn -Dtest=mop/java/test/numbers/RoundtripTests test > RoundtripTests.txt
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-05-22
+ * @version 2026-08-21
  */
 
 public final class RoundtripTests {

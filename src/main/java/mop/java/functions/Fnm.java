@@ -8,9 +8,10 @@ import mop.java.Exceptions;
 /** Function spaces.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2018-09-13
+ * @version 2026-08-21
  */
-@SuppressWarnings("unchecked")
+
+@SuppressWarnings("unused")
 public final class Fnm implements Domain {
 
   private final Domain _domain;
@@ -59,10 +60,9 @@ public final class Fnm implements Domain {
   @Override
   public boolean equals (final Object obj) {
     if (this == obj) { return true; }
-    if ((obj == null) || !(obj instanceof Fnm)) { return false; }
-    final Fnm other = (Fnm) obj;
-    if (!_codomain.equals(other._codomain) || !_domain.equals(other._domain)) { return false; }
-    return true; }
+    if (!(obj instanceof final Fnm other)) { return false; }
+    return _codomain.equals(other._codomain) &&
+      _domain.equals(other._domain); }
 
   @Override
   public String toString () {
@@ -84,6 +84,7 @@ public final class Fnm implements Domain {
 
   private static final Map _cache = new HashMap();
 
+  @SuppressWarnings("unchecked")
   public static final Fnm get (final Domain domain,
                                final Domain codomain) {
     final Fnm t = new Fnm(domain,codomain);

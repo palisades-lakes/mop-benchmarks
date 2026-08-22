@@ -28,7 +28,7 @@ import mop.java.prng.Generators;
  * by <code>int</code>.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2024-01-22
+ * @version 2026-08-21
  */
 
 @SuppressWarnings("unchecked")

@@ -10,11 +10,11 @@ import mop.java.benchmarks.accumulate.Common;
 /** Test desired properties of EFloat.
  * <p>
  * <pre>
- * mvn -Dtest=nzqr/java/test/numbers/EFloatTest test > EFloatTest.txt
+ * mvn -Dtest=mop/java/test/numbers/EFloatTest test > EFloatTest.txt
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2019-12-01
+ * @version 2026-08-21
  */
 
 public final class EFloatTest {

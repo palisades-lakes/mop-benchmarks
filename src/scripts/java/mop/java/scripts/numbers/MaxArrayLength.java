@@ -10,7 +10,7 @@ package mop.java.scripts.numbers;
  * Unfortunately, there does not appear any way
  * to determine the JVM-specific maximum array length
  * at runtime.
- *
+ * <br>
  * This script does an adhoc test, but I haven't found any
  * guarantees that the "VM limit" is the same across JVMs of the
  * same type, across different invocations of the same JVM,
@@ -18,15 +18,16 @@ package mop.java.scripts.numbers;
  * or even stays constant for a running JVM.
  *
  * <pre>
- * j src/scripts/java/nzqr/java/scripts/numbers/MaxArrayLength.java
+ * j src/scripts/java/mop/java/scripts/numbers/MaxArrayLength.java
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2021-06-07
+ * @version 2026-08-21
  */
 
 public final class MaxArrayLength {
 
+  @SuppressWarnings("unused")
   public static final void main (final String[] args) {
 
     System.getProperties().list(System.out);

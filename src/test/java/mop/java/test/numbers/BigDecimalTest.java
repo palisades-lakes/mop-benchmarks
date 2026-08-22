@@ -11,11 +11,11 @@ import mop.java.benchmarks.accumulate.Common;
 /** Test desired properties of BigDecimal.
  * <p>
  * <pre>
- * mvn -Dtest=nzqr/jmh/test/numbers/BigDecimalTest test > BigDecimalTest.txt
+ * mvn -Dtest=mop/jmh/test/numbers/BigDecimalTest test > BigDecimalTest.txt
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2019-12-01
+ * @version 2026-08-21
  */
 
 public final class BigDecimalTest {

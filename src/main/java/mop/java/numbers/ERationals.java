@@ -20,7 +20,6 @@ import mop.java.Exceptions;
 import mop.java.algebra.OneSetOneOperation;
 import mop.java.algebra.OneSetTwoOperations;
 import mop.java.algebra.Set;
-import mop.java.numbers.Doubles;
 import mop.java.prng.Generator;
 import mop.java.prng.GeneratorBase;
 import mop.java.prng.Generators;
@@ -29,9 +28,9 @@ import mop.java.prng.Generators;
  * <code>ERational</code>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2019-10-15
+ * @version 2026-08-21
  */
-@SuppressWarnings({"unchecked","static-method"})
+@SuppressWarnings({"unused","unchecked"})
 public final class ERationals implements Set {
 
   //--------------------------------------------------------------
@@ -328,9 +327,7 @@ public final class ERationals implements Set {
   public final boolean equals (final ERational q0,
                                final ERational q1) {
     if (q0 == q1) { return true; }
-    if (null == q0) {
-      if (null == q1) { return true; }
-      return false; }
+    if (null == q0) { return null == q1; }
     if (null == q1) { return false; }
     final EInteger n0 = q0.getNumerator();
     final EInteger d0 = q0.getDenominator();
@@ -340,11 +337,7 @@ public final class ERationals implements Set {
 
   @Override
   public final BiPredicate equivalence () {
-    return new BiPredicate<ERational,ERational>() {
-      @Override
-      public final boolean test (final ERational q0,
-                                 final ERational q1) {
-        return ERationals.this.equals(q0,q1); } }; }
+    return (BiPredicate<ERational, ERational>) ERationals.this::equals; }
 
   //--------------------------------------------------------------
 
@@ -354,10 +347,7 @@ public final class ERationals implements Set {
     final Generator g =
       ERationals.eRationalFromEIntegerGenerator(urp);
     //    Generators.eRationalFromDoubleGenerator(urp);
-    return
-      new Supplier () {
-      @Override
-      public final Object get () { return g.next(); } }; }
+    return g::next; }
 
   //--------------------------------------------------------------
   // Object methods
@@ -411,8 +401,7 @@ public final class ERationals implements Set {
         if (edge) { return edgeCases.sample(); }
         final EInteger n = (EInteger) gn.next();
         final EInteger d = (EInteger) gd.next();
-        final ERational f = ERational.Create(n,d);
-        return f; } }; }
+        return ERational.Create(n, d); } }; }
 
   public static final Generator
   eRationalFromDoubleGenerator (final int n,

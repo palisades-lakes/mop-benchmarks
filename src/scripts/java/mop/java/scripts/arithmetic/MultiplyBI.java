@@ -9,13 +9,14 @@ import mop.java.prng.PRNG;
 
 //----------------------------------------------------------------
 /** <pre>
- * jy --enable-preview --source 21 src/scripts/java/nzqr/java/scripts/profile/arithmetic/MultiplyBI.java
+ * jy --enable-preview --source 25 src/scripts/java/mop/java/scripts/profile/arithmetic/MultiplyBI.java
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2024-01-15
+ * @version 2026-08-21
  */
 
+@SuppressWarnings("unused")
 public final class MultiplyBI {
 
   private static final Naturals NATURALS = Naturals.get();
@@ -30,28 +31,32 @@ public final class MultiplyBI {
   private static final BigInteger[] y0 = (BigInteger[]) generator.next();
   private static final BigInteger[] y1 = (BigInteger[]) generator.next();
 
-    private static final BigInteger[] p = new BigInteger[NINTS];
+  private static final BigInteger[] p = new BigInteger[NINTS];
 
-  private static final void multiply (final String stage,
-                                      final int iterations) {
+  private static final BigInteger[] multiply (final String stage,
+                                              final int iterations) {
     final int n = y0.length;
     for (int j=0;j<iterations;j++) {
       final long t0 = System.nanoTime();
       for (int i=0;i<n;i++) {
         p[i] =  y0[i].multiply(y1[i]); }
       System.out.printf(stage + " Total seconds: %4.3f\n",
-        Double.valueOf((System.nanoTime()-t0)*1.0e-9)); } }
+                        (System.nanoTime() - t0) * 1.0e-9); }
+    return p; }
 
   // distinguish warmup run from profile run in call tree
-  private static final void warmup () { multiply("warmup",8); }
-  private static final void profile () { multiply("profile",64); }
+  private static final BigInteger[] warmup () {
+    return multiply("warmup",8); }
+  private static final BigInteger[] profile () {
+    return multiply("profile",64); }
+
+  //--------------------------------------------------------------
 
   //--------------------------------------------------------------
 
   public static final void main (final String[] args) {
-    warmup();
-    profile();
-  }
+    System.out.println(warmup().length);
+    System.out.println(profile().length); }
 
   //--------------------------------------------------------------
 }

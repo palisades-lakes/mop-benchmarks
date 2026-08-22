@@ -9,10 +9,10 @@ import mop.java.numbers.Doubles;
 /** Benchmark algebraic structure tests.
  *
  * <pre>
- * jy --source 12 src/scripts/java/xfp/java/scripts/Sum.java
+ * jy --source 25 src/scripts/java/xfp/java/scripts/Sum.java
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2022-07-31
+ * @version 2026-08-21
  */
 @SuppressWarnings("unused")
 public final class Sum {

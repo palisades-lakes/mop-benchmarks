@@ -13,13 +13,12 @@ import mop.java.numbers.BoundedNatural;
 import mop.java.prng.Generator;
 import mop.java.prng.Generators;
 import mop.java.prng.PRNG;
-import nzqr.openjdk.math.BigIntegerJDK;
 import org.openjdk.jmh.infra.Blackhole;
 
 /** Benchmark arithmetic operations on various number classes.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2024-01-20
+ * @version 2026-08-21
  */
 
 @State(Scope.Thread)
@@ -37,7 +36,6 @@ public abstract class Base {
                                              final String dest) {
     return switch (dest) {
       case "BigInteger" -> x;
-      case "BigIntegerJDK" -> new BigIntegerJDK(x.toByteArray());
       case "BoundedNatural" -> BoundedNatural.valueOf(x);
       //case "UnboundedNatural" -> UnboundedNatural.valueOf(x);
       default -> throw new UnsupportedOperationException(); }; }
@@ -52,7 +50,6 @@ public abstract class Base {
 
   @Param({
     "BigInteger",
-    "BigIntegerJDK",
     //"UnboundedNatural",
     "BoundedNatural",
     })

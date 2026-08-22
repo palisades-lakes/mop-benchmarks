@@ -16,7 +16,7 @@ import com.upokecenter.numbers.EInteger;
  * Static methods only; no state.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2019-05-11
+ * @version 2026-08-21
  */
 
 @SuppressWarnings("unused")

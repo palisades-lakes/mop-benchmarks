@@ -20,19 +20,16 @@ import mop.java.Exceptions;
 import mop.java.algebra.OneSetOneOperation;
 import mop.java.algebra.OneSetTwoOperations;
 import mop.java.algebra.Set;
-import mop.java.numbers.Doubles;
 import mop.java.prng.Generator;
 import mop.java.prng.GeneratorBase;
-import mop.java.prng.Generators;
-
 
 /** The set of rational numbers represented by
  * <code>BigFraction</code>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2019-04-01
+ * @version 2026-08-21
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unused","unchecked"})
 public final class BigFractions implements Set {
 
   //--------------------------------------------------------------
@@ -62,19 +59,19 @@ public final class BigFractions implements Set {
   public static final BigFraction toBigFraction (final Number x) {
     if (x instanceof BigFraction) { return (BigFraction) x; }
     if (x instanceof Double) {
-      return new BigFraction(((Double) x).doubleValue()); }
+      return new BigFraction(x.doubleValue()); }
     if (x instanceof Integer) {
-      return new BigFraction(((Integer) x).intValue()); }
+      return new BigFraction(x.intValue()); }
     if (x instanceof Long) {
-      final BigInteger bi = BigInteger.valueOf(((Long) x).longValue());
+      final BigInteger bi = BigInteger.valueOf(x.longValue());
       return new BigFraction(bi); }
     //    return new BigFraction(((Long) x).longValue()); }
     if (x instanceof Float) {
-      return new BigFraction(((Float) x).floatValue()); }
+      return new BigFraction(x.floatValue()); }
     if (x instanceof Short) {
-      return new BigFraction(((Short) x).intValue()); }
+      return new BigFraction(x.intValue()); }
     if (x instanceof Byte) {
-      return new BigFraction(((Byte) x).intValue()); }
+      return new BigFraction(x.intValue()); }
     if (x instanceof BigInteger) {
       return new BigFraction(((BigInteger) x)); }
     throw Exceptions.unsupportedOperation(
@@ -89,42 +86,42 @@ public final class BigFractions implements Set {
     return y; }
 
   public static final BigFraction[]
-    toBigFraction (final double[] x) {
+  toBigFraction (final double[] x) {
     final int n = x.length;
     final BigFraction[] y = new BigFraction[n];
     for (int i=0;i<n;i++) { y[i] = toBigFraction(x[i]); }
     return y; }
 
   public static final BigFraction[]
-    toBigFraction (final float[] x) {
+  toBigFraction (final float[] x) {
     final int n = x.length;
     final BigFraction[] y = new BigFraction[n];
     for (int i=0;i<n;i++) { y[i] = toBigFraction(x[i]); }
     return y; }
 
   public static final BigFraction[]
-    toBigFraction (final long[] x) {
+  toBigFraction (final long[] x) {
     final int n = x.length;
     final BigFraction[] y = new BigFraction[n];
     for (int i=0;i<n;i++) { y[i] = toBigFraction(x[i]); }
     return y; }
 
   public static final BigFraction[]
-    toBigFraction (final int[] x) {
+  toBigFraction (final int[] x) {
     final int n = x.length;
     final BigFraction[] y = new BigFraction[n];
     for (int i=0;i<n;i++) { y[i] = toBigFraction(x[i]); }
     return y; }
 
   public static final BigFraction[]
-    toBigFraction (final short[] x) {
+  toBigFraction (final short[] x) {
     final int n = x.length;
     final BigFraction[] y = new BigFraction[n];
     for (int i=0;i<n;i++) { y[i] = toBigFraction(x[i]); }
     return y; }
 
   public static final BigFraction[]
-    toBigFraction (final byte[] x) {
+  toBigFraction (final byte[] x) {
     final int n = x.length;
     final BigFraction[] y = new BigFraction[n];
     for (int i=0;i<n;i++) { y[i] = toBigFraction(x[i]); }
@@ -297,8 +294,8 @@ public final class BigFractions implements Set {
                                                  final BigFraction q1) {
     if (q0 == q1) { return true; }
     if (null == q0) {
-      if (null == q1) { return true; }
-      return false; }
+      return null == q1;
+    }
     final BigInteger n0 = q0.getNumerator();
     final BigInteger d0 = q0.getDenominator();
     final BigInteger n1 = q1.getNumerator();
@@ -318,8 +315,8 @@ public final class BigFractions implements Set {
                                final BigFraction q1) {
     if (q0 == q1) { return true; }
     if (null == q0) {
-      if (null == q1) { return true; }
-      return false; }
+      return null == q1;
+    }
     if (null == q1) { return false; }
     final BigInteger n0 = q0.getNumerator();
     final BigInteger d0 = q0.getDenominator();
@@ -329,23 +326,17 @@ public final class BigFractions implements Set {
 
   private static final BiPredicate<BigFraction,BigFraction>
     BIGFRACTION_EQUALS =
-    new BiPredicate<>() {
-
-      // BigFraction.equals reduces both arguments before checking
-      // numerator and denominators are equal.
-      // Guessing our BigFractions are usually already reduced.
-      // Try n0*d1 == n1*d0 instead
-      // TODO: try using BigINteger.bitLength() to decide
-      // which method to use?
-      //    @Override
-      //    public final boolean test (final BigFraction q0,
-      //                               final BigFraction q1) {
-      //     return Objects.deepEquals(q0,q1); }
-      @Override
-      public final boolean test (final BigFraction q0,
-                                 final BigFraction q1) {
-         return equalBigFractions(q0,q1); }
-    };
+    // BigFraction.equals reduces both arguments before checking
+    // numerator and denominators are equal.
+    // Guessing our BigFractions are usually already reduced.
+    // Try n0*d1 == n1*d0 instead
+    // TODO: try using BigINteger.bitLength() to decide
+    // which method to use?
+    //    @Override
+    //    public final boolean test (final BigFraction q0,
+    //                               final BigFraction q1) {
+    //     return Objects.deepEquals(q0,q1); }
+    BigFractions::equalBigFractions;
 
   @Override
   public final BiPredicate equivalence () {
@@ -357,10 +348,7 @@ public final class BigFractions implements Set {
   public final Supplier generator (final Map options) {
     final UniformRandomProvider urp = Set.urp(options);
     final Generator bfs = BigFractions.bigFractionGenerator(urp);
-    return
-      new Supplier () {
-      @Override
-      public final Object get () { return bfs.next(); } }; }
+    return bfs::next; }
 
   //--------------------------------------------------------------
   // Object methods

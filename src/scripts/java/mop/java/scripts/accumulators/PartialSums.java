@@ -7,10 +7,10 @@ import mop.java.prng.Generators;
 /** Profile partial sums.
  *
  * <pre>
- * jy --source 12 src/scripts/java/xfp/java/scripts/PartialSums.java
+ * jy --source 25 src/scripts/java/xfp/java/scripts/PartialSums.java
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2019-10-11
+ * @version 2026-08-21
  */
 @SuppressWarnings("unused")
 public final class PartialSums {

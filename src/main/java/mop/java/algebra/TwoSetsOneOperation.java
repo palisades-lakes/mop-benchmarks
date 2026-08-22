@@ -32,8 +32,9 @@ import com.google.common.collect.ImmutableMap;
  * linear to affine spaces, etc.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2019-02-26
+ * @version 2026-08-21
  */
+
 @SuppressWarnings("unchecked")
 public final class TwoSetsOneOperation extends Structure {
 

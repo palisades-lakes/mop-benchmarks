@@ -6,11 +6,11 @@ import org.apache.commons.rng.simple.RandomSource;
 import mop.java.Exceptions;
 
 /** Providers for pseudo-random number generators.
- *
+ * <br>
  * Static methods only; no state.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2022-07-31
+ * @version 2026-08-21
  */
 
 public final class PRNG {
@@ -18,7 +18,7 @@ public final class PRNG {
   //--------------------------------------------------------------
   // providers
   //--------------------------------------------------------------
-  /** http://www.iro.umontreal.ca/~panneton/WELLRNG.html
+  /** <a href="http://www.iro.umontreal.ca/~panneton/WELLRNG.html">WELLRNG</a>
    */
 
   public static final UniformRandomProvider
@@ -50,6 +50,7 @@ public final class PRNG {
   mersenneTwister (final String resource) {
     return mersenneTwister(Seeds.seed(resource)); }
 
+  @SuppressWarnings("unused")
   public static final UniformRandomProvider
   mersenneTwister (final Object seed) {
     if (seed instanceof int[]) {

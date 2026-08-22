@@ -7,10 +7,10 @@ import mop.java.prng.Generators;
 /** Profile L2 distance.
  *
  * <pre>
- * jy --source 12 src/scripts/java/xfp/java/scripts/TotalL2Distance.java
+ * jy --source 25 src/scripts/java/xfp/java/scripts/TotalL2Distance.java
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2019-10-10
+ * @version 2026-08-21
  */
 @SuppressWarnings("unused")
 public final class TotalL2Distance {

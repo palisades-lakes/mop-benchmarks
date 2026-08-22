@@ -25,7 +25,7 @@ import org.openjdk.jmh.infra.Blackhole;
  * @author palisades dot lakes at gmail dot com
  * @version 2023-08-16
  */
-@SuppressWarnings("unchecked")
+
 @State(Scope.Thread)
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
@@ -33,7 +33,7 @@ public class Roundtrip {
 
   //--------------------------------------------------------------
 
-  private static final int TRYS = 1*1024;
+  private static final int TRYS = 2*1024;
 
   @SuppressWarnings("static-method")
   @Benchmark

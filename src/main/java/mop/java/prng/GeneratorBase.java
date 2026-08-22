@@ -3,10 +3,10 @@ package mop.java.prng;
 /** Base class for generators, providing <code>name</code> method.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2019-04-01
+ * @version 2026-08-21
  */
 
-@SuppressWarnings("unchecked")
+
 public abstract class GeneratorBase implements Generator {
 
   private final String _name;

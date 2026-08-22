@@ -17,7 +17,7 @@ import mop.java.benchmarks.accumulate.Common;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2019-12-01
+ * @version 2026-08-21
  */
 
 public final class RationalFloatTest {

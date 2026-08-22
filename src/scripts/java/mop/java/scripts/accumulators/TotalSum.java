@@ -6,11 +6,11 @@ import mop.java.prng.Generators;
 /** Benchmark sums.
  *
  * <pre>
- * jy --source 12 src/scripts/java/xfp/java/scripts/TotalSum.java
- * j --source 12 src/scripts/java/xfp/java/scripts/TotalSum.java
+ * jy --source 25 src/scripts/java/xfp/java/scripts/TotalSum.java
+ * j --source 25 src/scripts/java/xfp/java/scripts/TotalSum.java
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2019-09-05
+ * @version 2026-08-21
  */
 @SuppressWarnings("unused")
 public final class TotalSum {
@@ -63,7 +63,7 @@ public final class TotalSum {
   //    //final Generator g = Generators.make("laplace",dim);
   //    //final Generator g = Generators.make("uniform",dim);
   //    final Accumulator a0 =
-  //      nzqr.jmh.accumulators.BigFloatAccumulator0.make();
+  //      mop.jmh.accumulators.BigFloatAccumulator0.make();
   //    final Accumulator a1 =
   //      mop.java.accumulators.BigFloatAccumulator.make();
   //    assert a0.isExact();

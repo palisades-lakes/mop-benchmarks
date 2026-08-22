@@ -4,16 +4,17 @@ package mop.java.scripts.numbers;
 /** Test long -> double -> long arithmetic.
  * <p>
  * <pre>
- * j src/scripts/java/nzqr/java/scripts/numbers/LDL.java
- * jy src/scripts/java/nzqr/java/scripts/numbers/LDL.java
+ * j src/scripts/java/mop/java/scripts/numbers/LDL.java
+ * jy src/scripts/java/mop/java/scripts/numbers/LDL.java
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2021-06-08
+ * @version 2026-08-21
  */
 
 public final class LDL {
 
+  @SuppressWarnings("unused")
   public static final void main (final String[] args) {
 
     for (int i=0;i<256;i++) {

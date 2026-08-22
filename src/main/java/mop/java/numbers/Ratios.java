@@ -19,7 +19,6 @@ import clojure.lang.Ratio;
 import mop.java.algebra.OneSetOneOperation;
 import mop.java.algebra.OneSetTwoOperations;
 import mop.java.algebra.Set;
-import mop.java.numbers.Doubles;
 import mop.java.prng.Generator;
 import mop.java.prng.GeneratorBase;
 
@@ -27,9 +26,10 @@ import mop.java.prng.GeneratorBase;
  * <code>Ratio</code>.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2019-05-11
+ * @version 2026-08-21
  */
-@SuppressWarnings("unchecked")
+
+@SuppressWarnings({"unchecked","unused"})
 public final class Ratios implements Set {
 
   //--------------------------------------------------------------
@@ -152,9 +152,7 @@ public final class Ratios implements Set {
   public final boolean equals (final Ratio q0,
                                final Ratio q1) {
     if (q0 == q1) { return true; }
-    if (null == q0) {
-      if (null == q1) { return true; }
-      return false; }
+    if (null == q0) { return (null == q1); }
     if (null == q1) { return false; }
     final BigInteger n0 = q0.numerator;
     final BigInteger d0 = q0.denominator;
@@ -164,11 +162,7 @@ public final class Ratios implements Set {
 
   @Override
   public final BiPredicate equivalence () {
-    return new BiPredicate<Ratio,Ratio>() {
-      @Override
-      public final boolean test (final Ratio q0,
-                                 final Ratio q1) {
-        return Ratios.this.equals(q0,q1); } }; }
+    return (BiPredicate<Ratio, Ratio>) Ratios.this::equals; }
 
   //--------------------------------------------------------------
   /** Intended primarily for testing. Sample a random double
@@ -178,7 +172,7 @@ public final class Ratios implements Set {
    * otherwise return ZERO or
    * ONE, TEN,
    * with equal probability (these are potential edge cases).
-   *
+   * <br>
    * TODO: sample rounding modes?
    */
 
@@ -228,10 +222,7 @@ public final class Ratios implements Set {
   public final Supplier generator (final Map options) {
     final UniformRandomProvider urp = Set.urp(options);
     final Generator bfs = Ratios.ratioGenerator(urp);
-    return
-      new Supplier () {
-      @Override
-      public final Object get () { return bfs.next(); } }; }
+    return bfs::next; }
 
   //--------------------------------------------------------------
   // Object methods

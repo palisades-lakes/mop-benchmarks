@@ -11,10 +11,10 @@ import mop.java.prng.PRNG;
 /** Benchmark partial l2 norms
  *
  * <pre>
- * jy --source 12 src/scripts/java/xfp/java/scripts/PartialL2s.java
+ * jy --source 25 src/scripts/java/xfp/java/scripts/PartialL2s.java
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2019-07-25
+ * @version 2026-08-21
  */
 @SuppressWarnings("unused")
 public final class PartialL2s {

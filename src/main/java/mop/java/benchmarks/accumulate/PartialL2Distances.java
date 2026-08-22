@@ -6,10 +6,9 @@ import mop.java.accumulators.Accumulator;
  * java -cp target\benchmarks.jar mop.java.PartialL2Distances
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2019-07-31
+ * @version 2026-08-21
  */
 
-@SuppressWarnings("unchecked")
 public class PartialL2Distances extends Base {
 
   @Override
@@ -18,5 +17,6 @@ public class PartialL2Distances extends Base {
                                    final double[] z1) {
     return ac.clear().partialL2Distances(z0,z1); }
 
+  @SuppressWarnings("unused")
   public static final void main (final String[] args)  {
     Defaults.run("PartialL2Distances"); } }

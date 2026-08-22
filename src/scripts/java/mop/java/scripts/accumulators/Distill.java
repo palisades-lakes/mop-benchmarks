@@ -16,7 +16,7 @@ import mop.java.prng.PRNG;
 /** Distillation experiments.
  *
  * <pre>
- * j --source 12 -ea src/scripts/java/xfp/java/scripts/Distill.java > distilled.txt
+ * j --source 25 -ea src/scripts/java/xfp/java/scripts/Distill.java > distilled.txt
  * </pre>
  * @author palisades dot lakes at gmail dot com
  * @version 2019-10-17

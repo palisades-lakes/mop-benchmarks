@@ -17,10 +17,10 @@ import mop.java.numbers.Doubles;
  * that return different values on each call.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2022-11-07
+ * @version 2026-08-21
  */
 
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unused","unchecked"})
 public final class Generators {
 
   //--------------------------------------------------------------
@@ -33,21 +33,19 @@ public final class Generators {
       @Override
       public final byte nextByte () { return (byte) urp.nextInt(); }
       @Override
-      public final Object next () {
-        return Byte.valueOf(nextByte()); } }; }
+      public final Object next () { return nextByte(); } }; }
 
   public static final Generator
   nonNegativeByteGenerator (final UniformRandomProvider urp) {
     return new GeneratorBase ("byteGenerator") {
       // TODO: make this uniform over non-negative values
       @Override
-      public final byte nextByte () { 
-        // No unsigned 8 bit integer in Java, so use the low 7 
+      public final byte nextByte () {
+        // No unsigned 8 bit integer in Java, so use the low 7
         // bits as an unsigned not quite byte
         return (byte) (0x7F & urp.nextInt()); }
       @Override
-      public final Object next () {
-        return Byte.valueOf(nextByte()); } }; }
+      public final Object next () { return nextByte(); } }; }
 
   public static final Generator
   byteGenerator (final int n,
@@ -68,20 +66,18 @@ public final class Generators {
       @Override
       public final short nextShort () { return (short) urp.nextInt(); }
       @Override
-      public final Object next () {
-        return Short.valueOf(nextShort()); } }; }
+      public final Object next () { return nextShort(); } }; }
 
   public static final Generator
   nonNegativeShortGenerator (final UniformRandomProvider urp) {
     return new GeneratorBase ("shortGenerator") {
       // TODO: make this uniform over non-negative values
       @Override
-      public final short nextShort () { 
+      public final short nextShort () {
         // No unsigned short in Java, so use the lower 15 bits.
         return (short) (0x7FFF & urp.nextInt()); }
       @Override
-      public final Object next () {
-        return Short.valueOf(nextShort()); } }; }
+      public final Object next () { return nextShort(); } }; }
 
   public static final Generator
   shortGenerator (final int n,
@@ -102,19 +98,17 @@ public final class Generators {
       @Override
       public final int nextInt () { return urp.nextInt(); }
       @Override
-      public final Object next () {
-        return Integer.valueOf(nextInt()); } }; }
+      public final Object next () { return nextInt(); } }; }
 
   public static final Generator
   nonNegativeIntGenerator (final UniformRandomProvider urp) {
     return new GeneratorBase ("intGenerator") {
       // TODO: make this uniform over non-negative values
       @Override
-      public final int nextInt () { 
+      public final int nextInt () {
         return Math.abs(urp.nextInt()); }
       @Override
-      public final Object next () {
-        return Integer.valueOf(nextInt()); } }; }
+      public final Object next () { return nextInt(); } }; }
 
   public static final Generator
   intGenerator (final int n,
@@ -139,9 +133,7 @@ public final class Generators {
           final int x = urp.nextInt();
           if (x != 0) { return Math.abs(x); } } }
       @Override
-      public final Object next () {
-
-        return Long.valueOf(nextLong()); } }; }
+      public final Object next () { return nextLong(); } }; }
 
   public static final Generator
   positiveIntGenerator (final int n,
@@ -162,19 +154,17 @@ public final class Generators {
       @Override
       public final long nextLong () { return urp.nextLong(); }
       @Override
-      public final Object next () {
-        return Long.valueOf(nextLong()); } }; }
+      public final Object next () { return nextLong(); } }; }
 
   public static final Generator
   nonNegativeLongGenerator (final UniformRandomProvider urp) {
     return new GeneratorBase ("longGenerator") {
       // TODO: make this uniform over non-negative values
       @Override
-      public final long nextLong () { 
+      public final long nextLong () {
         return Math.abs(urp.nextLong()); }
       @Override
-      public final Object next () {
-        return Long.valueOf(nextLong()); } }; }
+      public final Object next () { return nextLong(); } }; }
 
   public static final Generator
   longGenerator (final int n,
@@ -199,9 +189,7 @@ public final class Generators {
           final long x = urp.nextLong();
           if (x != 0L) { return Math.abs(x); } } }
       @Override
-      public final Object next () {
-
-        return Long.valueOf(nextLong()); } }; }
+      public final Object next () { return nextLong(); } }; }
 
   public static final Generator
   positiveLongGenerator (final int n,
@@ -217,8 +205,8 @@ public final class Generators {
   //--------------------------------------------------------------
 
   public static final byte[]
-    nextBytes (final UniformRandomProvider urp,
-               final int n) {
+  nextBytes (final UniformRandomProvider urp,
+             final int n) {
     final byte[] b = new byte[n];
     urp.nextBytes(b);
     return b; }
@@ -229,7 +217,7 @@ public final class Generators {
    */
 
   public static final Generator
-  bigIntegerGenerator (final int nbytes, 
+  bigIntegerGenerator (final int nbytes,
                        final UniformRandomProvider urp) {
     final double dp = 0.99;
     return new GeneratorBase ("bigIntegerGenerator") {
@@ -251,7 +239,7 @@ public final class Generators {
 
   public static final Generator
   bigIntegerGenerator (final int nbytes,
-                       final UniformRandomProvider urp, 
+                       final UniformRandomProvider urp,
                        final int nints) {
     return new GeneratorBase ("bigIntegerGenerator:" + nints) {
       final Generator g = bigIntegerGenerator(nbytes, urp);
@@ -267,7 +255,7 @@ public final class Generators {
    */
 
   public static final Generator
-  nonNegativeBigIntegerGenerator (final int nbytes, 
+  nonNegativeBigIntegerGenerator (final int nbytes,
                                   final UniformRandomProvider urp) {
     return new GeneratorBase ("nonNegativeBigIntegerGenerator") {
       // TODO: choose within a range, rather than number of bytes
@@ -278,7 +266,7 @@ public final class Generators {
 
   public static final Generator
   nonNegativeBigIntegerGenerator (final int nbytes,
-                                  final UniformRandomProvider urp, 
+                                  final UniformRandomProvider urp,
                                   final int nints) {
     return new GeneratorBase ("nonNegativeBigIntegerGenerator:" + nints) {
       final Generator g = nonNegativeBigIntegerGenerator(nbytes, urp);
@@ -294,7 +282,7 @@ public final class Generators {
    */
 
   public static final Generator
-  nonzeroBigIntegerGenerator (final int nbytes, 
+  nonzeroBigIntegerGenerator (final int nbytes,
                               final UniformRandomProvider urp) {
     final double dp = 0.99;
     return new GeneratorBase ("nonzeroBigIntegerGenerator") {
@@ -320,7 +308,7 @@ public final class Generators {
 
   public static final Generator
   nonzeroBigIntegerGenerator (int nbytes,
-                              final UniformRandomProvider urp, 
+                              final UniformRandomProvider urp,
                               final int nints) {
     return new GeneratorBase ("nonzeroBigIntegerGenerator:" + nints) {
       final Generator g = nonzeroBigIntegerGenerator(nbytes, urp);
@@ -332,12 +320,11 @@ public final class Generators {
 
   //--------------------------------------------------------------
   /** Intended primarily for testing. <b>
-   * @param nbytes TODO
    * @param nbytes generate a BigInteger with up to this many bytes
    */
 
   public static final Generator
-  positiveBigIntegerGenerator (final int nbytes, 
+  positiveBigIntegerGenerator (final int nbytes,
                                final UniformRandomProvider urp) {
     final double dp = 0.99;
     return new GeneratorBase ("positiveBigIntegerGenerator") {
@@ -364,14 +351,14 @@ public final class Generators {
 
   public static final Generator
   positiveBigIntegerGenerator (final int nbytes,
-                               final UniformRandomProvider urp, 
+                               final UniformRandomProvider urp,
                                final int nints) {
     return new GeneratorBase ("positiveBigIntegerGenerator:" + nints) {
       final Generator g = positiveBigIntegerGenerator(nbytes, urp);
       @Override
       public final Object next () {
         final BigInteger[] z = new BigInteger[nints];
-        for (int i=0;i<nints;i++) { 
+        for (int i=0;i<nints;i++) {
           z[i] = (BigInteger) g.next(); }
         return z; } }; }
 
@@ -437,12 +424,10 @@ public final class Generators {
   //    "seeds/Well44497b-2019-01-07.txt";
 
   public static final Map<String,IntFunction<Generator>>
-  factories =
-  Map.of(
-    "exponential",
-    new IntFunction<Generator>() {
-      @Override
-      public final Generator apply (final int dim) {
+    factories =
+    Map.of(
+      "exponential",
+      dim -> {
         final UniformRandomProvider urp0 = PRNG.well44497b(SEED0);
         //final UniformRandomProvider urp1 = PRNG.well44497b(SEED1);
         final int emax = Doubles.deMax(dim)/2;
@@ -453,12 +438,9 @@ public final class Generators {
           Doubles.exponentialGenerator(dim,urp0,0.0,dmax)
           //),
           //urp1)
-          ; }
-    },
-    "finite",
-    new IntFunction<Generator>() {
-      @Override
-      public final Generator apply (final int dim) {
+          ; },
+      "finite",
+      dim -> {
         final UniformRandomProvider urp0 = PRNG.well44497b(SEED0);
         //final UniformRandomProvider urp1 = PRNG.well44497b(SEED1);
         final int emax = Doubles.deMax(dim)/2;
@@ -468,12 +450,9 @@ public final class Generators {
           Doubles.finiteGenerator(dim,urp0,emax)
           //),
           //urp1)
-          ; }
-    },
-    "gaussian",
-    new IntFunction<Generator>() {
-      @Override
-      public final Generator apply (final int dim) {
+          ; },
+      "gaussian",
+      dim -> {
         final UniformRandomProvider urp0 = PRNG.well44497b(SEED0);
         //final UniformRandomProvider urp1 = PRNG.well44497b(SEED1);
         final int emax = Doubles.deMax(dim)/2;
@@ -484,12 +463,9 @@ public final class Generators {
           Doubles.gaussianGenerator(dim,urp0,0.0,dmax)
           //),
           //urp1)
-          ; }
-    },
-    "laplace",
-    new IntFunction<Generator>() {
-      @Override
-      public final Generator apply (final int dim) {
+          ; },
+      "laplace",
+      dim -> {
         final UniformRandomProvider urp0 = PRNG.well44497b(SEED0);
         //final UniformRandomProvider urp1 = PRNG.well44497b(SEED1);
         final int emax = Doubles.deMax(dim)/2;
@@ -499,12 +475,9 @@ public final class Generators {
           //Doubles.zeroSumGenerator(
           Doubles.laplaceGenerator(dim,urp0,0.0,dmax)
           //),urp1)
-          ; }
-    },
-    "uniform",
-    new IntFunction<Generator>() {
-      @Override
-      public final Generator apply (final int dim) {
+          ; },
+      "uniform",
+      dim -> {
         final UniformRandomProvider urp0 = PRNG.well44497b(SEED0);
         //final UniformRandomProvider urp1 = PRNG.well44497b(SEED1);
         final int emax = Doubles.deMax(dim)/2;
@@ -516,8 +489,7 @@ public final class Generators {
           //),
           //urp1)
           ; }
-    }
-    );
+          );
 
   public static final Generator make (final String name,
                                       final int dim) {

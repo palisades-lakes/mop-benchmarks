@@ -7,12 +7,12 @@ import mop.java.numbers.BoundedNatural;
  * <p>
  * <pre>
  * mvn clean install -DskipTests
- * j src/scripts/java/nzqr/java/scripts/numbers/Overflow.java
- * jy src/scripts/java/nzqr/java/scripts/numbers/Overflow.java
+ * j src/scripts/java/mop/java/scripts/numbers/Overflow.java
+ * jy src/scripts/java/mop/java/scripts/numbers/Overflow.java
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2022-08-25
+ * @version 2026-08-21
  */
 
 public final class Overflow {
@@ -31,6 +31,7 @@ public final class Overflow {
     n = n.add(n);
     System.out.println(n.hiBit()); }
 
+  @SuppressWarnings("unused")
   public static final void main (final String[] args) {
     System.out.println();
     overflowBoundedNatural();
