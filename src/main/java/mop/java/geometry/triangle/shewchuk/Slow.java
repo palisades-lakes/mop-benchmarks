@@ -64,13 +64,13 @@ public final class Slow extends Triangle2D {
 
     return detx.add(dety); }
 
-  public final boolean inCircleExact () { return true; }
+  public final boolean inCircleDistanceExact () { return true; }
 
   /** signed distance of <code>pd</code> from the circumcircle thru
    * <code>pa,pb,pc</code>, negative means outside.
    */
 
-  public final double inCircle (final Vector2D p) {
+  public final double inCircleDistance (final Vector2D p) {
     final Vector2D pa = getP0();
     final Vector2D pb = getP1();
     final Vector2D pc = getP2();

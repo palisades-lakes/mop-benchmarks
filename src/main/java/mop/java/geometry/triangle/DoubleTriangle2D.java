@@ -59,9 +59,9 @@ public final class DoubleTriangle2D extends Triangle2D {
 
   //--------------------------------------------------------------------
 
-  public final boolean inCircleExact () { return false; }
+  public final boolean inCircleDistanceExact () { return false; }
 
-  public final double inCircle (final Vector2D p) {
+  public final double inCircleDistance (final Vector2D p) {
 
     final double xp0 = p.getX() - getP0().getX();
     final double yp0 = p.getY() - getP0().getY();

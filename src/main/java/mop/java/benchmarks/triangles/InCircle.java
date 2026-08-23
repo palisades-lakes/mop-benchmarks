@@ -16,7 +16,7 @@ public class InCircle extends Base {
   @Override
   public final double operation (final Triangle2D t,
                                  final Vector2D p) {
-    return t.inCircle(p); }
+    return t.inCircleDistance(p); }
 
   @SuppressWarnings("unused")
   public static final void main (final String[] args)  {

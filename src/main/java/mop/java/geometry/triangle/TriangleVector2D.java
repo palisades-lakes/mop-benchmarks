@@ -35,7 +35,7 @@ public final class TriangleVector2D extends Triangle2D {
   // TODO: permute area calls to use cached differences?
 
   @Override
-  public final double inCircle (final Vector2D p) {
+  public final double inCircleDistance (final Vector2D p) {
     // TODO: cache normSq?
     final Vector2D a = getP0();
     final Vector2D b = getP1();

@@ -45,16 +45,16 @@ public final class DIBFTriangle2D extends Triangle2D {
 
   //--------------------------------------------------------------------
 
-  public final boolean inCircleExact () { return false; }
+  public final boolean inCircleDistanceExact () { return false; }
 
-  public final double inCircle (final Vector2D p) {
+  public final double inCircleDistance (final Vector2D p) {
     final DoubleInterval interval =
       getDiTriangle().inCircleInterval(p);
     if (interval.containsZero()) {
 //      System.out.println("inCircle: " + interval);
 //      System.out.println(this);
 //      System.out.println(p);
-      return getBfTriangle().inCircle(p); }
+      return getBfTriangle().inCircleDistance(p); }
     return interval.doubleValue(); }
 
   //--------------------------------------------------------------------

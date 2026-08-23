@@ -5,7 +5,7 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
 /** Triangles "embedded" in Vector2D.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-07-27
+ * @version 2026-08-23
  */
 
 public abstract class Triangle2D {
@@ -79,6 +79,7 @@ public abstract class Triangle2D {
 
   public int orientation () {
     // TODO: what to do with NaN? Return 0 meaning 'not oriented'?
+    //  Make return value double to allow explicit NaN?
     // NOTE: Double.compare() doesn't handle +-0.0 correctly.
     final double a = twiceSignedArea();
     if (0.0 < a) { return 1; }
@@ -87,7 +88,7 @@ public abstract class Triangle2D {
 
   //--------------------------------------------------------------------
 
-  public boolean inCircleExact () { return false; }
+  public boolean inCircleDistanceExact () { return false; }
 
   /** Return a positive value if the point pd lies inside the circle
    * passing through p0, p1, and p2; a negative value if it lies
@@ -108,8 +109,23 @@ public abstract class Triangle2D {
    * inCircle() is usually quite fast, but will run more slowly when the
    * input points are cocircular or nearly so.
    */
-  public double inCircle (final Vector2D p) {
+  public double inCircleDistance (final Vector2D p) {
     throw new UnsupportedOperationException(getClass().getSimpleName()); }
+
+  //--------------------------------------------------------------------
+
+//  public boolean inCircleRobust () { return inCircleDistanceExact(); }
+
+  /** Return -1, 0, 1 if the point is
+   * outside, on, or inside the circumcircle.
+   */
+
+  public int inCircle (final Vector2D p) {
+    // TODO: what to do with NaN?
+    final double a = inCircleDistance(p);
+    if (0.0 < a) { return 1; }
+    if (0.0 > a) { return -1; }
+    return 0; }
 
   //--------------------------------------------------------------------
   // construction

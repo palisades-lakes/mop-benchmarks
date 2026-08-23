@@ -8,6 +8,8 @@ import mop.java.prng.Generator;
 import mop.java.prng.GeneratorBase;
 import org.apache.commons.geometry.euclidean.threed.Vector3D;
 import org.apache.commons.geometry.euclidean.twod.Vector2D;
+import org.apache.commons.geometry.euclidean.twod.shape.Circle;
+import org.apache.commons.numbers.core.Precision;
 
 import java.util.function.Function;
 
@@ -16,7 +18,7 @@ import java.util.function.Function;
  * <br>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-07-29
+ * @version 2026-08-23
  */
 
 public final class Generators {
@@ -39,22 +41,22 @@ public final class Generators {
   // </ol>
   // use double[n] array generators for coordinates
   // random mu, sigma, zmin, zmax?
-//  subnormalGenerator
-//  exponentialGenerator
-//    laplaceGenerator
-//      normalGenerator
-//  finiteGenerator
-//  uniformGenerator (final int n,
-//                    final UniformRandomProvider urp,
-//                    final double zmin,
-//                    final double zmax)
-//  gaussianGenerator (final int n,
-//                     final UniformRandomProvider urp,
-//                     final double mu,
-//                     final double sigma)
+  //  subnormalGenerator
+  //  exponentialGenerator
+  //    laplaceGenerator
+  //      normalGenerator
+  //  finiteGenerator
+  //  uniformGenerator (final int n,
+  //                    final UniformRandomProvider urp,
+  //                    final double zmin,
+  //                    final double zmax)
+  //  gaussianGenerator (final int n,
+  //                     final UniformRandomProvider urp,
+  //                     final double mu,
+  //                     final double sigma)
   //--------------------------------------------------------------
-//  public static final Function<double[], Object>
-//    vector2D = Vector2D::of;
+  //  public static final Function<double[], Object>
+  //    vector2D = Vector2D::of;
 
   public static final Generator
   vector2dGenerator (final Generator doubleGenerator) {
@@ -77,6 +79,32 @@ public final class Generators {
         for (int i = 0; i < n; i++) {
           p[i] = (Vector2D) vGenerator.next(); }
         return p; } }; }
+
+  //--------------------------------------------------------------
+
+  public static final Generator
+  circleGenerator (final Generator centerGenerator,
+                   final Generator radiusGenerator) {
+    // TODO: named local class rather than anonymous with name?
+    return new GeneratorBase("circleGenerator") {
+      @Override
+      public final Object next () {
+        final Vector2D center = (Vector2D) centerGenerator.next();
+        final double radius = radiusGenerator.nextDouble();
+        final Precision.DoubleEquivalence precision =
+        Precision.doubleEquivalenceOfEpsilon(0.0);
+        return Circle.from(center,radius,precision); } }; }
+
+//  public static final Generator
+//  circleGenerator (final int n,
+//                     final Generator circleGenerator) {
+//    return new GeneratorBase("circleGenerator[" + n + "]") {
+//      @Override
+//      public final Object next () {
+//        final Circle[] p =  new Circle[n];
+//        for (int i = 0; i < n; i++) {
+//          p[i] = (Circle) circleGenerator.next(); }
+//        return p; } }; }
 
   //--------------------------------------------------------------
 
@@ -180,30 +208,30 @@ public final class Generators {
         return p; } }; }
 
 
-  public static final Generator
-  tetrahedraGenerator (final Function<Tetrahedron3D,Tetrahedron3D> converter,
-                     Generator vectorGenerator) {
-    final Generator tGenerator = tetrahedraGenerator(vectorGenerator);
-    return new GeneratorBase(
-      converter + " * tetrahedraGenerator") {
-      @Override
-      public final Object next () {
-        return converter.apply((Tetrahedron3D) tGenerator.next()); } }; }
+//  public static final Generator
+//  tetrahedraGenerator (final Function<Tetrahedron3D,Tetrahedron3D> converter,
+//                     Generator vectorGenerator) {
+//    final Generator tGenerator = tetrahedraGenerator(vectorGenerator);
+//    return new GeneratorBase(
+//      converter + " * tetrahedraGenerator") {
+//      @Override
+//      public final Object next () {
+//        return converter.apply((Tetrahedron3D) tGenerator.next()); } }; }
 
-  public static final Generator
-  tetrahedraGenerator (final int n,
-                     final Function<Tetrahedron3D,Tetrahedron3D> converter,
-                     final Generator vectorGenerator) {
-    return new GeneratorBase(
-      converter + " * tetrahedraGenerator[" + n + "]") {
-      final Generator tGenerator =
-        tetrahedraGenerator(converter, vectorGenerator);
-      @Override
-      public final Object next () {
-        final Tetrahedron3D[] p =  new Tetrahedron3D[n];
-        for (int i = 0; i < n; i++) {
-          p[i] = (Tetrahedron3D) tGenerator.next(); }
-        return p; } }; }
+//  public static final Generator
+//  tetrahedraGenerator (final int n,
+//                     final Function<Tetrahedron3D,Tetrahedron3D> converter,
+//                     final Generator vectorGenerator) {
+//    return new GeneratorBase(
+//      converter + " * tetrahedraGenerator[" + n + "]") {
+//      final Generator tGenerator =
+//        tetrahedraGenerator(converter, vectorGenerator);
+//      @Override
+//      public final Object next () {
+//        final Tetrahedron3D[] p =  new Tetrahedron3D[n];
+//        for (int i = 0; i < n; i++) {
+//          p[i] = (Tetrahedron3D) tGenerator.next(); }
+//        return p; } }; }
 
   //--------------------------------------------------------------------
   // disable construction

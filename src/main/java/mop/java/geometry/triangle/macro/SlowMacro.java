@@ -27,11 +27,11 @@ public final class SlowMacro extends Triangle2D {
 
   //--------------------------------------------------------------------
 
-  public final boolean inCircleExact () { return true; }
+  public final boolean inCircleDistanceExact () { return true; }
 
   // from macro expanded C code:
 
-  public final double inCircle (final Vector2D pd) {
+  public final double inCircleDistance (final Vector2D pd) {
     final Vector2D pa = getP0();
     final Vector2D pb = getP1();
     final Vector2D pc = getP2();

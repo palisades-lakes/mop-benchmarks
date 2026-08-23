@@ -36,7 +36,7 @@ import mop.java.prng.PRNG;
 /** Utilities for <code>double</code>, <code>double[]</code>.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-07-27
+ * @version 2026-08-23
  */
 @SuppressWarnings("unused")
 public final class Doubles implements Set {
@@ -730,6 +730,16 @@ public final class Doubles implements Set {
     return arrayGenerator(m,n,gaussianGenerator(urp,mu,sigma)); }
 
   //--------------------------------------------------------------
+
+  public static final Generator
+  exponentialGenerator (final UniformRandomProvider urp,
+                       final double lambda) {
+    return new GeneratorBase (
+      "exponential-" + lambda) {
+      private final ContinuousSampler e =
+        new AhrensDieterExponentialSampler(urp,lambda);
+      @Override
+      public final double nextDouble () { return e.sample(); } }; }
 
   public static final Generator
   exponentialGenerator (final UniformRandomProvider urp,

@@ -53,7 +53,7 @@ public final class DoubleIntervalTriangle2D extends Triangle2D {
 
   //--------------------------------------------------------------------
 
-  public final boolean inCircleExact () { return false; }
+  public final boolean inCircleDistanceExact () { return false; }
 
   public final DoubleInterval inCircleInterval (final Vector2D p) {
 
@@ -71,7 +71,7 @@ public final class DoubleIntervalTriangle2D extends Triangle2D {
 
     return DoubleInterval.dot(p2,b2,c2,bxc,pxc,bxp); }
 
-  public final double inCircle (final Vector2D p) {
+  public final double inCircleDistance (final Vector2D p) {
     return inCircleInterval(p).doubleValue(); }
 
   //--------------------------------------------------------------------

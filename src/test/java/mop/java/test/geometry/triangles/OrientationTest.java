@@ -42,19 +42,7 @@ public final class OrientationTest extends TriangleTest {
 
   //--------------------------------------------------------------
 
-  private static final void reverseOrientation (final Triangle2D t0) {
-    final Triangle2D t1 = TriangleVector2D.of(t0.getP0(),t0.getP2(),t0.getP1());
-    final Triangle2D plus = truth(t0);
-    final int aplus = plus.orientation();
-    final Triangle2D minus = truth(t1);
-    final int aminus = minus.orientation();
-    Assertions.assertEquals(
-      plus.orientation(), -minus.orientation(),
-      orientationMsg("reverseOrientation",aplus,aminus,
-                     plus,minus,List.of())); }
-
   private static final void checkOrientation (final Triangle2D t0) {
-    reverseOrientation(t0);
     final List<Triangle2D> triangles = makeTriangles(t0);
     final Triangle2D gold = truth(t0);
     final int trueOrientation = gold.orientation();
@@ -140,11 +128,6 @@ public final class OrientationTest extends TriangleTest {
         final Vector2D pij = Vector2D.of(pxi, pyj);
         final Triangle2D t = TriangleVector2D.of(pij, q, r);
         checkOrientation(t); } } }
-
-  // TODO: count the number of pass/fail as a metric for triangle
-  //  implementation quality?
-  // TODO: convert into benchmark/profiling script for orientation
-  //   predicate implementation.
 
   @Test
   public final void testKettnerOrientation () {

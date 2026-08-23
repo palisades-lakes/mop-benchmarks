@@ -37,8 +37,8 @@ public final class InCircleTest extends TriangleTest {
                                        final Vector2D p3) {
     final Triangle2D gold = AdaptMacro.from(t);
     final Triangle2D p = Adapt.from(t);
-    final double trueInc = gold.inCircle(p3);
-    final double inc = p.inCircle(p3);
+    final double trueInc = gold.inCircleDistance(p3);
+    final double inc = p.inCircleDistance(p3);
     // with delta=0.0 handles +0 vs -0 'correctly'
     Assertions.assertEquals(
       trueInc, inc, 0.0,
@@ -50,11 +50,11 @@ public final class InCircleTest extends TriangleTest {
                                       final Vector2D p3) {
     adaptTest(t,p3);
     final Triangle2D gold = truth(t);
-    final double trueInc = gold.inCircle(p3);
+    final double trueInc = gold.inCircleDistance(p3);
     final List<Triangle2D> triangles = makeTriangles(t);
     for (final Triangle2D p :triangles) {
-      final double inc = p.inCircle(p3);
-      if (p.inCircleExact()) {
+      final double inc = p.inCircleDistance(p3);
+      if (p.inCircleDistanceExact()) {
         // with delta=0.0 handles +0 vs -0 'correctly'
         Assertions.assertEquals(
           trueInc, inc, 0.0,

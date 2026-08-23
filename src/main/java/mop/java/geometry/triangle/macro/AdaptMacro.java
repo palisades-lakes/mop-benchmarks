@@ -339,8 +339,8 @@ public final class AdaptMacro extends Triangle2D {
   private static final double iccerrboundB =
     (4.0 + 48.0 * EPSILON) * EPSILON;
 
-  public final double inCircle (final Vector2D p) {
-    return DefaultMacro.of(getP0(),getP1(),getP2()).inCircle(p); }
+  public final double inCircleDistance (final Vector2D p) {
+    return DefaultMacro.of(getP0(),getP1(),getP2()).inCircleDistance(p); }
 
   public static final double inCircle (final Vector2D pa,
                                        final Vector2D pb,

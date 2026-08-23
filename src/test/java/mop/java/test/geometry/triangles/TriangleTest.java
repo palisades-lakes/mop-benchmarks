@@ -32,7 +32,6 @@ public abstract class TriangleTest {
     final Triangle2D ddFast = DDFast.from(t);
     final Triangle2D ddNormalized = DDNormalized.from(t);
     final Triangle2D ddSlow = DDSlow.from(t);
-//    final Triangle2D inCircleCC = InCircleCC.from(t);
     final Triangle2D doubleNonRobust = DoubleNonRobust.from(t);
     final Triangle2D inCircleNormalized = InCircleNormalized.from(t);
     final Triangle2D adapt = Adapt.from(t);
@@ -97,7 +96,7 @@ public abstract class TriangleTest {
         msg.append("\n").append(t).append(" ->\n");
         if (null!=p3) {
           msg.append(p3).append(" \n");
-          msg.append(Double.toHexString(t.inCircle(p3))); }
+          msg.append(Double.toHexString(t.inCircleDistance(p3))); }
         else {
           msg.append(Double.toHexString(t.twiceSignedArea())); }}}
     return msg + "\n"; }

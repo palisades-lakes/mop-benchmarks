@@ -65,9 +65,9 @@ public final class Exact extends Triangle2D {
       (bcd.multiplyBySq(flip,ax))
         .add(bcd.multiplyBySq(flip,ay)); }
 
-  public final boolean inCircleExact () { return true; }
+  public final boolean inCircleDistanceExact () { return true; }
 
-  public final double inCircle (final Vector2D p) {
+  public final double inCircleDistance (final Vector2D p) {
     final Vector2D pa = getP0();
     final Vector2D pb = getP1();
     final Vector2D pc = getP2();

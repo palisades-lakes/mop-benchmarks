@@ -54,7 +54,7 @@ public final class InCircle {
       int k=0;
       for (final Triangle2D t : triangles) {
         for (final Vector2D p : points) {
-          d[k++] = t.inCircle(p); } }
+          d[k++] = t.inCircleDistance(p); } }
 
       final ZhuHayesAccumulator zh = ZhuHayesAccumulator.make();
       zh.addAll(d);

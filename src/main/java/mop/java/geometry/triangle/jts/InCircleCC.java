@@ -133,7 +133,7 @@ public final class InCircleCC extends Triangle2D {
   //--------------------------------------------------------------------
   /** TrianglePredicate.isInCircleNonRobust.
    */
-  public final double inCircle (final Vector2D p) {
+  public final double inCircleDistance (final Vector2D p) {
     final Vector2D cc = circumcentre(getP0(),getP1(),getP2());
     // sign reversed from JTS for consistency with other predicates
     // TODO: could we use squared distance?
