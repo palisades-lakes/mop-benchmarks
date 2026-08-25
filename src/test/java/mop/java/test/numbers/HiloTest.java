@@ -2,9 +2,6 @@ package mop.java.test.numbers;
 
 import mop.java.benchmarks.accumulate.Common;
 import mop.java.numbers.*;
-import mop.java.prng.Generator;
-import mop.java.prng.PRNG;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.function.BinaryOperator;
@@ -17,12 +14,12 @@ import java.util.function.BinaryOperator;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-05-21
+ * @version 2026-08-25
  */
 
 public final class HiloTest {
 
-  private static final int TRYS = 257;
+//  private static final int TRYS = 257;
 
   private static final BinaryOperator dist =
     (q0,q1) -> ((Hilo) q0).subtract((Hilo) q1).abs();
@@ -92,22 +89,23 @@ public final class HiloTest {
     //Debug.DEBUG=false;
   }
 
-  @SuppressWarnings("static-method")
-  @Test
-  public final void squareTest () {
-    final Generator g =
-      BigFloats.fromBigIntegerGenerator(
-        PRNG.well44497b("seeds/Well44497b-2019-01-05.txt"));
-    for (int i=0;i<TRYS;i++) {
-      final BigFloat bf = (BigFloat) g.next();
-      final Hilo x = Hilo.valueOf(bf);
-//      assert x.isFinite() :
-//        x.toHexString()
-//        + "\n" + Double.toHexString(bf.doubleValue())
-//        + "\n" + bf;
-      final Hilo x2 = x.square();
-      final Hilo xx = x.multiply(x);
-      Assertions.assertEquals(x2,xx); } }
+  // Eliminated multiply and square methods
+//  @SuppressWarnings("static-method")
+//  @Test
+//  public final void squareTest () {
+//    final Generator g =
+//      BigFloats.fromBigIntegerGenerator(
+//        PRNG.well44497b("seeds/Well44497b-2019-01-05.txt"));
+//    for (int i=0;i<TRYS;i++) {
+//      final BigFloat bf = (BigFloat) g.next();
+//      final Hilo x = Hilo.valueOf(bf);
+// //      assert x.isFinite() :
+// //        x.toHexString()
+// //        + "\n" + Double.toHexString(bf.doubleValue())
+// //        + "\n" + bf;
+//      final Hilo x2 = x.square();
+//      final Hilo xx = x.multiply(x);
+//      Assertions.assertEquals(x2,xx); } }
 
   //--------------------------------------------------------------
 }

@@ -94,7 +94,7 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
  *   even <code>BigInteger</code> to extend range.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-08-08
+ * @version 2026-08-25
  */
 
 public final class XDouble
@@ -554,8 +554,8 @@ public final class XDouble
   public final boolean isOne () {
     return (1 == terms().size()) && (1.0 == terms().get(0)); }
 
-  public static final XDouble MINUS_ONE =
-    new XDouble(DoubleArrayList.from(-1.0));
+//    public static final XDouble MINUS_ONE =
+//    new XDouble(DoubleArrayList.from(-1.0));
 
   public final boolean isMinusOne () {
     return (1 == terms().size()) && (-1.0 == terms().get(0)); }
@@ -580,17 +580,17 @@ public final class XDouble
 //  y = (alo * blo) - err3
 
   // TODO: call twoProduct2PreSplit?
-  private static final Hilo twoProductPresplit (final double a,
-                                                final double b,
-                                                final Hilo bhilo) {
-    final double x = a * b;
-    final Hilo ahilo = Hilo.split (a);
-    final double err1 = x - (ahilo.hi() * bhilo.hi());
-    final double err2 = err1 - (ahilo.lo() * bhilo.hi());
-    final double err3 = err2 - (ahilo.hi() * bhilo.lo());
-    final double y = (ahilo.lo() * bhilo.lo()) - err3;
-
-    return new Hilo(x,y);}
+//  private static final Hilo twoProductPresplit (final double a,
+//                                                final double b,
+//                                                final Hilo bhilo) {
+//    final double x = a * b;
+//    final Hilo ahilo = Hilo.split (a);
+//    final double err1 = x - (ahilo.hi() * bhilo.hi());
+//    final double err2 = err1 - (ahilo.lo() * bhilo.hi());
+//    final double err3 = err2 - (ahilo.hi() * bhilo.lo());
+//    final double y = (ahilo.lo() * bhilo.lo()) - err3;
+//
+//    return new Hilo(x,y);}
 
   //  #define Two_Product_2Presplit(a, ahi, alo, b, bhi, blo, x, y) \
   //  x = (double) (a * b); \
@@ -601,29 +601,44 @@ public final class XDouble
 
   // TODO: is this worth the complexity?
   //  Check whether aSplit and bSplit are used anywhere else.
-  private static final Hilo twoProduct2Presplit (final double a,
-                                                 final Hilo aSplit,
-                                                 final double b,
-                                                 final Hilo bSplit) {
-    final double hi = a * b;
-    final double err1 = hi - (aSplit.hi() * bSplit.hi());
-    final double err2 = err1 - (aSplit.lo() * bSplit.hi());
-    final double err3 = err2 - (aSplit.hi() * bSplit.lo());
-    final double lo = (aSplit.lo() * bSplit.lo()) - err3;
-    // TODO: call twoSum to enforce ulp constraint?
-    //  or replace ulp constraint --- is non-overlapping different?
-    return new Hilo(hi,lo); }
+//  private static final Hilo twoProduct2Presplit (final double a,
+//                                                 final Hilo aSplit,
+//                                                 final double b,
+//                                                 final Hilo bSplit) {
+//    final double hi = a * b;
+//    final double err1 = hi - (aSplit.hi() * bSplit.hi());
+//    final double err2 = err1 - (aSplit.lo() * bSplit.hi());
+//    final double err3 = err2 - (aSplit.hi() * bSplit.lo());
+//    final double lo = (aSplit.lo() * bSplit.lo()) - err3;
+//    // TODO: call twoSum to enforce ulp constraint?
+//    //  or replace ulp constraint --- is non-overlapping different?
+//    return new Hilo(hi,lo); }
 
   //--------------------------------------------------------------------
 
+//  public static final XDouble product (final Hilo a,
+//                                       final double b) {
+// //    Split(b, bhi, blo); \
+//    final Hilo bHilo = Hilo.split(b);
+// //    Two_Product_Presplit(a0, b, bhi, blo, _i, x0); \
+//    final Hilo _ix0 = twoProductPresplit(a.lo(), b, bHilo);
+// //    Two_Product_Presplit(a1, b, bhi, blo, _j, _0); \
+//    final Hilo _j_0 = twoProductPresplit(a.hi(), b, bHilo);
+// //    Two_Sum(_i, _0, _k, x1);
+//    final Hilo _kx1 = Hilo.sum(_ix0.hi(), _j_0.lo());
+// //    Fast_Two_Sum(_j, _k, x3, x2)
+//    final Hilo x3x2 = Hilo.fastSum(_j_0.hi(), _kx1.hi());
+//    final DoubleArrayList terms = DoubleArrayList.from(
+//      _ix0.lo(), _kx1.lo(), x3x2.lo(), x3x2.hi());
+//    // TODO: special case 4 terms
+//    unsafeCompress(terms);
+//    return unsafe(terms); }
+
+  // FMA version
   public static final XDouble product (final Hilo a,
                                        final double b) {
-//    Split(b, bhi, blo); \
-    final Hilo bHilo = Hilo.split(b);
-//    Two_Product_Presplit(a0, b, bhi, blo, _i, x0); \
-    final Hilo _ix0 = twoProductPresplit(a.lo(), b, bHilo);
-//    Two_Product_Presplit(a1, b, bhi, blo, _j, _0); \
-    final Hilo _j_0 = twoProductPresplit(a.hi(), b, bHilo);
+    final Hilo _ix0 = Hilo.product(a.lo(), b);
+    final Hilo _j_0 = Hilo.product(a.hi(), b);
 //    Two_Sum(_i, _0, _k, x1);
     final Hilo _kx1 = Hilo.sum(_ix0.hi(), _j_0.lo());
 //    Fast_Two_Sum(_j, _k, x3, x2)
@@ -635,7 +650,7 @@ public final class XDouble
     return unsafe(terms); }
 
   //--------------------------------------------------------------------
-
+  // FMA version
   public static final XDouble product (final Hilo a,
                                        final Hilo b) {
     final double[] ab = new double[8];
@@ -643,14 +658,10 @@ public final class XDouble
     final double b0 = b.lo();
     final double a1 = a.hi();
     final double b1 = b.hi();
-    final Hilo a1S = Hilo.split(a1);
-    final Hilo a0S = Hilo.split(a0);
-    final Hilo b1S = Hilo.split(b1);
-    final Hilo b0S = Hilo.split(b0);
-    final Hilo a0b0 = twoProduct2Presplit(a0,a0S,b0,b0S);
-    final Hilo a1b0 = twoProduct2Presplit(a1,a1S,b0,b0S);
-    final Hilo a0b1 = twoProduct2Presplit(a0,a0S,b1,b1S);
-    final Hilo a1b1 = twoProduct2Presplit(a1,a1S,b1,b1S);
+    final Hilo a0b0 = Hilo.product(a0,b0);
+    final Hilo a1b0 = Hilo.product(a1,b0);
+    final Hilo a0b1 = Hilo.product(a0,b1);
+    final Hilo a1b1 = Hilo.product(a1,b1);
     ab[0] = a0b0.lo();
     final Hilo s0 = Hilo.sum(a0b0.hi(), a1b0.lo());
     final Hilo s1 = Hilo.fastSum(a1b0.hi(), s0.hi());
@@ -679,6 +690,49 @@ public final class XDouble
     unsafeCompress(terms);
     return unsafe(terms); }
 
+//  public static final XDouble product (final Hilo a,
+//                                       final Hilo b) {
+//    final double[] ab = new double[8];
+//    final double a0 = a.lo();
+//    final double b0 = b.lo();
+//    final double a1 = a.hi();
+//    final double b1 = b.hi();
+//    final Hilo a1S = Hilo.split(a1);
+//    final Hilo a0S = Hilo.split(a0);
+//    final Hilo b1S = Hilo.split(b1);
+//    final Hilo b0S = Hilo.split(b0);
+//    final Hilo a0b0 = twoProduct2Presplit(a0,a0S,b0,b0S);
+//    final Hilo a1b0 = twoProduct2Presplit(a1,a1S,b0,b0S);
+//    final Hilo a0b1 = twoProduct2Presplit(a0,a0S,b1,b1S);
+//    final Hilo a1b1 = twoProduct2Presplit(a1,a1S,b1,b1S);
+//    ab[0] = a0b0.lo();
+//    final Hilo s0 = Hilo.sum(a0b0.hi(), a1b0.lo());
+//    final Hilo s1 = Hilo.fastSum(a1b0.hi(), s0.hi());
+//    final Hilo s2 = Hilo.sum(s0.lo(), a0b1.lo());
+//    ab[1] = s2.lo();
+//    final Hilo s3 = Hilo.sum(s1.lo(), s2.hi());
+//    final Hilo s4 = Hilo.sum(s1.hi(), s3.hi());
+//    final Hilo s5 = Hilo.sum(a0b1.hi(), a1b1.lo());
+//    final Hilo s6 = Hilo.sum(s3.lo(), s5.lo());
+//    ab[2] = s6.lo();
+//    final Hilo s7 = Hilo.sum(s4.lo(), s6.hi());
+//    final Hilo s8 = Hilo.sum(s4.hi(), s7.hi());
+//    final Hilo s9 = Hilo.sum(a1b1.hi(), s5.hi());
+//    final Hilo s10 = Hilo.sum(s7.lo(), s9.lo());
+//    ab[3] = s10.lo();
+//    final Hilo s11 = Hilo.sum(s8.lo(), s10.hi());
+//    final Hilo s12 = Hilo.sum(s8.hi(), s11.hi());
+//    final Hilo s13 = Hilo.sum(s11.lo(), s9.hi());
+//    ab[4] = s13.lo();
+//    final Hilo s14 = Hilo.sum(s12.lo(), s13.hi());
+//    ab[5] = s14.lo();
+//    final Hilo s15 = Hilo.sum(s12.hi(), s14.hi());
+//    ab[7] = s15.hi();
+//    ab[6] = s15.lo();
+//    final DoubleArrayList terms = DoubleArrayList.from(ab);
+//    unsafeCompress(terms);
+//    return unsafe(terms); }
+
   //--------------------------------------------------------------------
   /** See <code>scale_expansion_zeroelim</code>
    * from Shewchuk's predicates.c.
@@ -690,19 +744,14 @@ public final class XDouble
     final DoubleArrayList h =
       new DoubleArrayList(2*e.size());
 
-//    Split(b, bhi, blo);
-//    Two_Product_Presplit(e[0], b, bhi, blo, Q, hh);
-    final Hilo bhilo = Hilo.split(b);
-    Hilo Q_hh = twoProductPresplit(e.get(0),b,bhilo);
+    Hilo Q_hh = Hilo.product(e.get(0),b);
     double Q = Q_hh.hi();
     double hh = Q_hh.lo();
     if (hh != 0) { h.add(hh); }
 
     for (int eindex = 1; eindex < e.size(); eindex++) {
       final double enow = e.get(eindex);
-//      Two_Product_Presplit(enow, b, bhi, blo, product1, product0);
-//      Two_Sum(Q, product0, sum, hh);
-      final Hilo product10 = twoProductPresplit(enow,b,bhilo);
+      final Hilo product10 = Hilo.product(enow,b);
       final Hilo sum_hh = Hilo.sum(Q,product10.lo());
       hh = sum_hh.lo();
       if (hh != 0) { h.add(hh); }
@@ -713,6 +762,36 @@ public final class XDouble
       if (hh != 0) {  h.add(hh); } }
     if ((Q != 0.0) || h.isEmpty()) { h.add(Q); }
     return h; }
+
+//  private static final DoubleArrayList
+//  fastMultiply (final DoubleArrayList e,
+//                final double b) {
+//    final DoubleArrayList h =
+//      new DoubleArrayList(2*e.size());
+//
+//  //    Split(b, bhi, blo);
+// //    Two_Product_Presplit(e[0], b, bhi, blo, Q, hh);
+//    final Hilo bhilo = Hilo.split(b);
+//    Hilo Q_hh = twoProductPresplit(e.get(0),b,bhilo);
+//    double Q = Q_hh.hi();
+//    double hh = Q_hh.lo();
+//    if (hh != 0) { h.add(hh); }
+//
+//    for (int eindex = 1; eindex < e.size(); eindex++) {
+//      final double enow = e.get(eindex);
+// //      Two_Product_Presplit(enow, b, bhi, blo, product1, product0);
+// //      Two_Sum(Q, product0, sum, hh);
+//      final Hilo product10 = twoProductPresplit(enow,b,bhilo);
+//      final Hilo sum_hh = Hilo.sum(Q,product10.lo());
+//      hh = sum_hh.lo();
+//      if (hh != 0) { h.add(hh); }
+//      //Fast_Two_Sum(product1, sum, Q, hh);
+//      Q_hh = Hilo.fastSum(product10.hi(),sum_hh.hi());
+//      Q = Q_hh.hi();
+//      hh = Q_hh.lo();
+//      if (hh != 0) {  h.add(hh); } }
+//    if ((Q != 0.0) || h.isEmpty()) { h.add(Q); }
+//    return h; }
 
   //--------------------------------------------------------------------
 

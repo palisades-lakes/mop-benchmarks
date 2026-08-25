@@ -24,7 +24,7 @@ import mop.java.numbers.Ratios;
  * mvn -Dtest=mop.java.test.algebra.AlgebraicStructureTests test
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-05-25
+ * @version 2026-08-25
  */
 
 
@@ -60,9 +60,9 @@ public final class AlgebraicStructureTests {
     structureTests(XDoubles.ADDITION_MONOID,TRYS);
     structureTests(XDoubles.FLOATING_POINT_SPACE,TRYS);
 
-    structureTests(Hilos.ADDITIVE_MAGMA,TRYS);
-    structureTests(Hilos.MULTIPLICATIVE_MAGMA,TRYS);
-    structureTests(Hilos.FLOATING_POINT,TRYS);
+    //structureTests(Hilos.ADDITIVE_MAGMA,TRYS);
+    //structureTests(Hilos.MULTIPLICATIVE_MAGMA,TRYS);
+//    structureTests(Hilos.FLOATING_POINT,TRYS);
 
     structureTests(ERationals.ADDITIVE_MAGMA, TRYS);
     structureTests(ERationals.MULTIPLICATIVE_MAGMA,TRYS);

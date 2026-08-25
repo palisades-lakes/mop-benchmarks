@@ -90,7 +90,7 @@ public final class AlmostCocircular {
                   final Vector2D p,
                   final ObjectIntMap<Class> successes) {
     int ntrys = 0;
-    final int n = 6;
+    final int n = 4;
     double px = p.getX();
     for (int i=0;i<n;i++) {
       double py = p.getY();
@@ -127,13 +127,13 @@ public final class AlmostCocircular {
   public static final int
   nearlyCocircluar (final ObjectIntMap<Class> successes) {
 
-    final int ncircles = 10;
-    final int npts = 10;
+    final int ncircles = 33;
+    final int npts = 33;
 
     final Generator centerGenerator = Generators.vector2dGenerator(
       Doubles.laplaceGenerator(
         PRNG.well44497b("seeds/Well44497b-2019-01-07.txt"),
-        0.0, 1000.0));
+        0.0, 100000.0));
     final Generator radiusGenerator = Doubles.exponentialGenerator(
       PRNG.well44497b("seeds/Well44497b-2019-01-09.txt"),
       1.0);
@@ -142,7 +142,7 @@ public final class AlmostCocircular {
     final Generator pointGenerator = Generators.vector2dGenerator(
       Doubles.laplaceGenerator(
         PRNG.well44497b("seeds/Well44497b-2019-01-11.txt"),
-        0.0, 10.0));
+        0.0, 1000.0));
     int ntrys = 0;
     for (int i=0;i<ncircles;i++) {
       final Circle circle = (Circle) circleGenerator.next();
