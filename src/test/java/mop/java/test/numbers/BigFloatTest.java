@@ -19,7 +19,7 @@ import java.util.function.BinaryOperator;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-08-17
+ * @version 2026-08-27
  */
 
 public final class BigFloatTest {
@@ -29,7 +29,6 @@ public final class BigFloatTest {
   private static final BinaryOperator dist =
     (q0, q1) -> ((BigFloat) q0).subtract((BigFloat) q1).abs();
 
-  @SuppressWarnings({ "static-method" })
   @Test
   public final void testRounding () {
     //Debug.DEBUG=false;
@@ -122,6 +121,36 @@ public final class BigFloatTest {
 
   @Test
   public final void sumTest () {
+    final UniformRandomProvider urp =
+      PRNG.well44497b("seeds/Well44497b-2019-01-09.txt");
+    final Generator g =
+      Doubles.laplaceGenerator(urp, 0.0, 1000.0);
+    for (int i = 0; i < TRYS; i++) {
+      final double z0 = g.nextDouble();
+      final double z1 = g.nextDouble();
+      final BigFloat b0 = BigFloat.valueOf(z0);
+      final BigFloat b1 = BigFloat.valueOf(z1);
+      final BigFloat expected = b0.add(b1);
+      final BigFloat add01 = b0.add(z1);
+      Assertions.assertEquals(
+        expected, add01, sumFailureMsg("b0.add(b1) vs b0.add(z1)",
+                                       z0, z1, b0, b1, expected, add01));
+      final BigFloat add10 = b1.add(z0);
+      Assertions.assertEquals(
+        expected, add10, sumFailureMsg("b0.add(b1) vs b1.add(z0)",
+                                       z0, z1, b0, b1, expected, add10));
+      final BigFloat sum10 = BigFloat.sum(z0, z1);
+      Assertions.assertEquals(
+        expected, sum10, sumFailureMsg("b0.add(b1) vs sum(z1,z0)",
+                                       z0, z1, b0, b1, expected, sum10));
+      final BigFloat sum01 = BigFloat.sum(z0, z1);
+      Assertions.assertEquals(
+        expected, sum01, sumFailureMsg("b0.add(b1) vs sum(z0,z1)",
+                                       z0, z1, b0, b1, expected, sum01));
+    }
+  }
+  @Test
+  public final void nonfiniteTest () {
     final UniformRandomProvider urp =
       PRNG.well44497b("seeds/Well44497b-2019-01-09.txt");
     final Generator g =

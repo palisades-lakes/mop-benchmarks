@@ -6,9 +6,30 @@ import java.util.Objects;
 //----------------------------------------------------------------------
 /** A sign times a {@link BoundedNatural} significand times 2 to a
  * <code>int</code> exponent.
+ * <br>
+ * Implementation:
+ * (compare with
+ * <a href="https://en.wikipedia.org/wiki/Double-precision_floating-point_format">
+ *   IEEE 754 binary64</a>)
+ *
+ * <dl>
+ * <dt>nonNegative()</dt> <code>boolean</code>
+ * <dt>exponent()</dt> signed 32bit <code>int</code>.
+ * Values in [<code>Integer.MIN_VALUE+1</code>,
+ * <code>Integer.MAX_VALUE]</code> indicate finite
+ * <code>BigFloat</code>s.
+ * <code>Integer.MIN_VALUE</code> means a non-finite value.
+ * <code>NaN</code> vs positive and negative infinity
+ * is determined by the <code>significand()</code>,
+ * with <code>null</code> meaning NaN and anything else infinity.
+ * <dt>significand()</dt> (unsigned) <code>BoundedNatural</code>,
+ * an non-negative integer in [0,<code>BoundedNatural.maxValue()</code>]
+ * </dl>
+ * Finite values are
+ * <code>(nonNegative()?1:-1) * significand() * 2^exponent()</code>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-08-11
+ * @version 2026-08-27
  */
 
 @SuppressWarnings("unused")
@@ -30,31 +51,87 @@ public final class BigFloat implements Ringlike<BigFloat> {
   public final BoundedNatural significand () { return _significand; }
 
   //--------------------------------------------------------------
-  // Ringlike
+  // Constants
   //--------------------------------------------------------------
-  // TODO: NaN, infinities
+
+  public static final BigFloat ZERO =
+    new BigFloat(true,BoundedNatural.ZERO,0);
+
+  public static final BigFloat POSITIVE_ZERO = ZERO;
+
+  public static final BigFloat NEGATIVE_ZERO =
+    new BigFloat(false,BoundedNatural.ZERO,0);
+
+  private static final BigFloat ONE =
+    new BigFloat(true,BoundedNatural.valueOf(1),0);
+
+  public static final BigFloat NaN =
+    new BigFloat(true,null,Integer.MIN_VALUE);
+
+  public static final BigFloat POSITIVE_INFINITY =
+    new BigFloat(true,BoundedNatural.ZERO,Integer.MIN_VALUE);
+
+  public static final BigFloat NEGATIVE_INFINITY =
+    new BigFloat(false,BoundedNatural.ZERO,Integer.MIN_VALUE);
+
+  //    private static final BigFloat TWO =
+  //    new BigFloat(true,BoundedNatural.valueOf(1),1);
+  //
+  //  private static final BigFloat TEN =
+  //    new BigFloat(true,BoundedNatural.valueOf(5),1);
+  //
+  //  private static final BigFloat MINUS_ONE =
+  //    new BigFloat(false,BoundedNatural.valueOf(1),0);
+
+  //--------------------------------------------------------------
+  // Value classification
+  //--------------------------------------------------------------
+
+  public final boolean isFinite () {
+    return exponent()>Integer.MIN_VALUE; }
+
+  public final boolean isNaN () {
+    return (exponent() == Integer.MIN_VALUE) &&
+      (null == significand()); }
+
+  public final boolean isInfinite () {
+    return (exponent() == Integer.MIN_VALUE) &&
+      (null != significand()); }
+
+  public final boolean isPositiveInfinity () {
+    return isInfinite() && nonNegative(); }
+
+  public final boolean isNegativeInfinity () {
+    return isInfinite() && (! nonNegative()); }
+
+  /** Note: has positive and negative zero, like <code>double</code>
+   * via nonNegative().
+   */
+  @Override
+  public final boolean isZero () { return equals(ZERO); }
 
   @Override
-  public final boolean isZero () {
-    return significand().isZero(); }
-
-  @Override
-  public final boolean isOne () {
-    return equals(ONE); }
+  public final boolean isOne () { return equals(ONE); }
 
   //--------------------------------------------------------------
 
   @Override
   public final BigFloat negate () {
-    if (isZero()) { return this; }
+    if (isNaN()) { return this; }
+    // TODO: is saving a few new instances worth this?
+    if (isPositiveInfinity()) { return NEGATIVE_INFINITY; }
+    if (isNegativeInfinity()) { return POSITIVE_INFINITY; }
+    // positive and negative zeros!
     return valueOf(! nonNegative(),significand(),exponent()); }
 
   @Override
   public final BigFloat abs () {
+    if (isNaN()) { return this; }
     if (nonNegative()) { return this; }
-    return negate(); }
+    return valueOf(true,significand(),exponent()); }
 
   //--------------------------------------------------------------
+  // assuming args correspond to finite numbers
 
   private static final BigFloat add6 (final boolean p0,
                                       final BoundedNatural t0,
@@ -80,13 +157,18 @@ public final class BigFloat implements Ringlike<BigFloat> {
 
   @Override
   public final BigFloat add (final BigFloat q) {
+
+    if (isNaN() || q.isNaN()) { return NaN; }
+    if (isPositiveInfinity()) {
+      if (q.isNegativeInfinity()) { return NaN; }
+      return POSITIVE_INFINITY; }
+    if (isNegativeInfinity()) {
+      if (q.isPositiveInfinity()) { return NaN; }
+      return NEGATIVE_INFINITY; }
+
     return add6(
-      nonNegative(),
-      significand(),
-      exponent(),
-      q.nonNegative(),
-      q.significand(),
-      q.exponent()); }
+      nonNegative(), significand(), exponent(),
+      q.nonNegative(), q.significand(), q.exponent()); }
 
   //--------------------------------------------------------------
 
@@ -97,8 +179,8 @@ public final class BigFloat implements Ringlike<BigFloat> {
         final long t1,
         final int upShift,
         final int e) {
-    //assert 0L<t1;
-    //assert 0<=upShift
+    assert 0L<t1;
+    assert 0<=upShift;
     if (p0==p1) { return valueOf(p0,t0.add(t1,upShift),e); }
     final int c = t0.compareTo(t1,upShift);
     if (0<c) { return valueOf(p0,t0.subtract(t1,upShift),e); }
@@ -113,7 +195,7 @@ public final class BigFloat implements Ringlike<BigFloat> {
         final boolean p1,
         final long t1,
         final int e) {
-    //assert 0L<=t1;
+    assert 0L<=t1;
     if (p0==p1) { return valueOf(p0,t0.add(t1),e); }
     // different signs
     final int c = t0.compareTo(t1);
@@ -129,7 +211,8 @@ public final class BigFloat implements Ringlike<BigFloat> {
   add3 (final boolean p1,
         final long t11,
         final int e11) {
-    //assert 0L<=t11;
+    // only called when this.isFinite() is true!
+    assert 0L<=t11;
     //if (0L==t11) { return this; }
 
     final boolean p0 = nonNegative();
@@ -149,7 +232,15 @@ public final class BigFloat implements Ringlike<BigFloat> {
 
   public final BigFloat
   add (final double z) {
-    //assert Double.isFinite(z);
+    if (isNaN()) { return NaN; }
+    if (Double.isNaN(z)) { return NaN; }
+    if (isPositiveInfinity()) {
+      if (Double.NEGATIVE_INFINITY==z) { return NaN; }
+      return POSITIVE_INFINITY; }
+    if (isNegativeInfinity()) {
+      if (Double.POSITIVE_INFINITY==z) { return NaN; }
+      return NEGATIVE_INFINITY; }
+
     // escape on zero needed for add()
     if (0.0==z) { return this; }
     return add3(
@@ -159,7 +250,7 @@ public final class BigFloat implements Ringlike<BigFloat> {
 
   public final BigFloat
   addAll (final double[] z) {
-    //assert Double.isFinite(z);
+    assert isFinite();
     BigFloat s = this;
     for (final double zi : z) { s = s.add(zi); }
     return s; }
@@ -168,7 +259,12 @@ public final class BigFloat implements Ringlike<BigFloat> {
 
   public final BigFloat
   addAbs (final double z) {
-    //assert Double.isFinite(z);
+    if (isNaN()) { return NaN; }
+    if (Double.isNaN(z)) { return NaN; }
+    if (isPositiveInfinity()) { return POSITIVE_INFINITY; }
+    if (isNegativeInfinity()) {
+      if (Double.NEGATIVE_INFINITY==z) { return NaN; }
+      return NEGATIVE_INFINITY; }
     // escape on zero needed for add()
     if (0.0==z) { return this; }
     return add3(
@@ -178,7 +274,7 @@ public final class BigFloat implements Ringlike<BigFloat> {
 
   public final BigFloat
   addAbsAll (final double[] z) {
-    //assert Double.isFinite(z);
+    assert isFinite();
     BigFloat s = this;
     for (final double zi : z) { s = s.addAbs(zi); }
     return s; }
@@ -188,6 +284,14 @@ public final class BigFloat implements Ringlike<BigFloat> {
   @Override
   public final BigFloat
   subtract (final BigFloat q) {
+    if (isNaN() || q.isNaN()) { return NaN; }
+    if (isPositiveInfinity()) {
+      if (q.isPositiveInfinity()) { return NaN; }
+      return POSITIVE_INFINITY; }
+    if (isNegativeInfinity()) {
+      if (q.isNegativeInfinity()) { return NaN; }
+      return NEGATIVE_INFINITY; }
+
     return add6(
       nonNegative(),
       significand(),
@@ -203,8 +307,22 @@ public final class BigFloat implements Ringlike<BigFloat> {
 
   public static final BigFloat sum (final double z0,
                                     final double z1) {
-    // TODO: NaN and infinities
-    if (0.0==z0) { return BigFloat.valueOf(z1); }
+    if (Double.isNaN(z0) || Double.isNaN(z1)) { return NaN; }
+    switch (z0) {
+      case Double.POSITIVE_INFINITY -> {
+        if (Double.NEGATIVE_INFINITY == z1) { return NaN; }
+        return POSITIVE_INFINITY;
+      }
+      case Double.NEGATIVE_INFINITY -> {
+        if (Double.POSITIVE_INFINITY == z1) { return NaN; }
+        return NEGATIVE_INFINITY;
+      }
+      case 0.0 -> {
+        return BigFloat.valueOf(z1);
+      }
+      default -> {
+      }
+    }
     if (0.0==z1) { return BigFloat.valueOf(z0); }
     final int e0 = Doubles.exponent(z0);
     final int e1 = Doubles.exponent(z1);
@@ -249,27 +367,28 @@ public final class BigFloat implements Ringlike<BigFloat> {
   product (final BoundedNatural x0,
            final boolean p1,
            final long x1) {
-    //assert 0L<=x1;
+    assert 0L<=x1;
     final int e0 = x0.loBit();
     final int e1 = Numbers.loBit(x1);
     final BoundedNatural y0 =  ((0==e0) ? x0 : x0.shiftDown(e0));
     final long y1 = (((0==e1)||(64==e1)) ? x1 : (x1 >>> e1));
     return valueOf(p1,NaturalMultiply.multiply(y0,y1),e0+e1); }
 
-  private final BigFloat
-  multiply (final boolean p,
-            final BoundedNatural t,
-            final int e) {
-    return valueOf(
-      (nonNegative()==p),
-      significand().multiply(t),
-      Math.addExact(exponent(),e)); }
-
   @Override
   public final BigFloat
   multiply (final BigFloat q) {
-    return
-      multiply(q.nonNegative(),q.significand(),q.exponent()); }
+    if (isNaN() || q.isNaN()) { return NaN; }
+    final boolean sameSigns = (nonNegative()==q.nonNegative());
+    if (isPositiveInfinity()) {
+      if (sameSigns) { return POSITIVE_INFINITY; }
+      return NEGATIVE_INFINITY; }
+    if (isNegativeInfinity()) {
+      if (sameSigns) { return POSITIVE_INFINITY; }
+      return NEGATIVE_INFINITY; }
+    return valueOf(
+      sameSigns,
+      significand().multiply(q.significand()),
+      Math.addExact(exponent(),q.exponent()));}
 
   //--------------------------------------------------------------
 
@@ -277,7 +396,7 @@ public final class BigFloat implements Ringlike<BigFloat> {
   multiply (final boolean p1,
             final long t11,
             final int e11) {
-
+    // handle nonfinite cases in caller
     // minimize long bits
     final int shift = Numbers.loBit(t11);
     final long t1 = (t11>>>shift);
@@ -290,9 +409,17 @@ public final class BigFloat implements Ringlike<BigFloat> {
 
   public final BigFloat
   multiply (final double z) {
-    //assert Double.isFinite(z);
-    // escape on zero needed for add()
-    if (0.0==z) { return this; }
+    if (isNaN() || Double.isNaN(z)) { return NaN; }
+    // escape on zero needed for add()?
+    //if (0.0==z) { return this; }
+    final boolean sameSigns = (nonNegative() == Doubles.nonNegative(z));
+    if (isPositiveInfinity()) {
+      if (sameSigns) { return POSITIVE_INFINITY; }
+      return NEGATIVE_INFINITY; }
+    if (isNegativeInfinity()) {
+      if (sameSigns) { return POSITIVE_INFINITY; }
+      return NEGATIVE_INFINITY; }
+
     return multiply(
       Doubles.nonNegative(z),
       Doubles.significand(z),
@@ -303,9 +430,12 @@ public final class BigFloat implements Ringlike<BigFloat> {
   @Override
   public final BigFloat
   square () {
-    //if (isZero() ) { return EMPTY; }
-    //if (isOne()) { return ONE; }
-    return valueOf(true,significand().square(),2*exponent()); }
+    if (isNaN()) { return NaN; }
+    if (isPositiveInfinity()) { return POSITIVE_INFINITY; }
+    if (isNegativeInfinity()) { return POSITIVE_INFINITY; }
+    if (isZero() ) { return ZERO; }
+    if (isOne()) { return ONE; }
+    return valueOf(true, significand().square(),2*exponent()); }
 
   //--------------------------------------------------------------
   // geometry
@@ -314,6 +444,9 @@ public final class BigFloat implements Ringlike<BigFloat> {
 
   public static final BigFloat l2norm2 (final BigFloat x,
                                         final BigFloat y) {
+    if (x.isNaN() || y.isNaN()) { return NaN; }
+    if ((! x.isFinite()) || (! y.isFinite())) {
+      return POSITIVE_INFINITY; }
     return add6(true,x.significand().square(),2*x.exponent(),
                 true,y.significand().square(),2*y.exponent()); }
 
@@ -324,6 +457,10 @@ public final class BigFloat implements Ringlike<BigFloat> {
                 final BigFloat y0,
                 final BigFloat x1,
                 final BigFloat y1) {
+    assert x0.isFinite();
+    assert y0.isFinite();
+    assert x1.isFinite();
+    assert y1.isFinite();
 
     return
       add6(
@@ -344,6 +481,13 @@ public final class BigFloat implements Ringlike<BigFloat> {
        final BigFloat y1,
        final BigFloat z1) {
 
+    assert x0.isFinite();
+    assert y0.isFinite();
+    assert z0.isFinite();
+    assert x1.isFinite();
+    assert y1.isFinite();
+    assert z1.isFinite();
+
     final BigFloat dxy =
       add6(
         (x0.nonNegative()==x1.nonNegative()),
@@ -363,10 +507,15 @@ public final class BigFloat implements Ringlike<BigFloat> {
   //--------------------------------------------------------------
   // accumulator methods
   //--------------------------------------------------------------
+  /** add z*z */
 
   public final BigFloat
   add2 (final double z) {
-    //assert Double.isFinite(z);
+    if (isNaN() || Double.isNaN(z)) { return NaN; }
+    if (isNegativeInfinity()) {
+      if (Double.isFinite(z)) { return NEGATIVE_INFINITY; }
+      return NaN; }
+    if (isPositiveInfinity()) { return POSITIVE_INFINITY; }
     if (0.0==z) { return this; }
     final long tz = Doubles.significand(z);
     final int ez = Doubles.exponent(z);
@@ -396,10 +545,26 @@ public final class BigFloat implements Ringlike<BigFloat> {
   public final BigFloat
   addProduct (final double z0,
               final double z1) {
-    //assert Double.isFinite(z0);
-    //assert Double.isFinite(z1);
+    if (isNaN() || Double.isNaN(z0) || Double.isNaN(z1)) { return NaN; }
     if ((0.0==z0) || (0.0==z1)) { return this; }
+    final boolean nonnegativeProduct =
+      (Doubles.nonNegative(z0) == Doubles.nonNegative(z1));
+    final boolean infiniteProduct =
+      Double.isInfinite(z0) || Double.isInfinite(z1);
+    if (nonnegativeProduct) {
+      if (isPositiveInfinity()) { return POSITIVE_INFINITY; }
+      if (infiniteProduct) {
+        if (isNegativeInfinity()) { return NaN; }
+        return POSITIVE_INFINITY; }
+      if (isNegativeInfinity()) { return NEGATIVE_INFINITY; } }
+    else {
+      if (isNegativeInfinity()) { return NEGATIVE_INFINITY; }
+      if (infiniteProduct) {
+        if (isPositiveInfinity()) { return NaN; }
+        return NEGATIVE_INFINITY; }
+      if (isPositiveInfinity()) { return POSITIVE_INFINITY; } }
 
+    // everything is finite
     final long t01 = Doubles.significand(z0);
     final int e01 = Doubles.exponent(z0);
     final int shift0 = Numbers.loBit(t01);
@@ -414,7 +579,7 @@ public final class BigFloat implements Ringlike<BigFloat> {
 
     return
       add6(
-        Doubles.nonNegative(z0)==Doubles.nonNegative(z1),
+        nonnegativeProduct,
         BoundedNatural.product(t0,t1),
         e0+e1,
         nonNegative(),
@@ -425,7 +590,7 @@ public final class BigFloat implements Ringlike<BigFloat> {
   addProducts (final double[] z0,
                final double[] z1)  {
     final int n = z0.length;
-    //assert n==z1.length;
+    assert n==z1.length;
     BigFloat s = this;
     for (int i=0;i<n;i++) { s = s.addProduct(z0[i],z1[i]); }
     return s; }
@@ -437,6 +602,11 @@ public final class BigFloat implements Ringlike<BigFloat> {
   axpy (final double a,
         final double x,
         final double y) {
+    // TODO: axpy should return exact s+e with both doubles?
+    //  if true, could call add
+    assert Double.isFinite(a);
+    assert Double.isFinite(x);
+    assert Double.isFinite(y);
     if ((0.0==a) || (0.0==x)) { return valueOf(y); }
     final long t01 = Doubles.significand(a);
     final int e01 = Doubles.exponent(a);
@@ -465,8 +635,8 @@ public final class BigFloat implements Ringlike<BigFloat> {
                                        final double[] x,
                                        final double[] y) {
     final int n = a.length;
-    //assert n==x.length;
-    //assert n==y.length;
+    assert n==x.length;
+    assert n==y.length;
     final BigFloat[] bf = new BigFloat[n];
     for (int i=0;i<n;i++) { bf[i] = axpy(a[i],x[i],y[i]); }
     return bf; }
@@ -477,6 +647,9 @@ public final class BigFloat implements Ringlike<BigFloat> {
   axpy (final double a,
         final BigFloat x,
         final double y) {
+    assert Double.isFinite(a);
+    assert x.isFinite();
+    assert Double.isFinite(y);
     return x.multiply(a).add(y); }
 
   /** Exact <code>(a*x) + y</code> (aka fma). */
@@ -485,8 +658,8 @@ public final class BigFloat implements Ringlike<BigFloat> {
                                        final BigFloat[] x,
                                        final double[] y) {
     final int n = x.length;
-    //assert n==x.length;
-    //assert n==y.length;
+    assert n==a.length;
+    assert n==y.length;
     final BigFloat[] bf = new BigFloat[n];
     for (int i=0;i<n;i++) { bf[i] = axpy(a[i],x[i],y[i]); }
     return bf; }
@@ -503,7 +676,7 @@ public final class BigFloat implements Ringlike<BigFloat> {
   addL1Distance (final double[] z0,
                  final double[] z1) {
     final int n = z0.length;
-    //assert n==z1.length;
+    assert n==z1.length;
     BigFloat s = this;
     for (int i=0;i<n;i++) { s = s.addL1(z0[i],z1[i]); }
     return s; }
@@ -514,8 +687,9 @@ public final class BigFloat implements Ringlike<BigFloat> {
   private final BigFloat
   addProductTwice (final double z0,
                    final double z1) {
-    //assert Double.isFinite(z0);
-    //assert Double.isFinite(z1);
+    assert isFinite();
+    assert Double.isFinite(z0);
+    assert Double.isFinite(z1);
     if ((0.0==z0) || (0.0==z1)) { return this; }
 
     final long t01 = Doubles.significand(z0);
@@ -552,7 +726,7 @@ public final class BigFloat implements Ringlike<BigFloat> {
   addL2Distance (final double[] z0,
                  final double[] z1) {
     final int n = z0.length;
-    //assert n==z1.length;
+    assert n==z1.length;
     BigFloat s = this;
     for (int i=0;i<n;i++) { s = s.addL2(z0[i],z1[i]); }
     return s; }
@@ -751,10 +925,29 @@ public final class BigFloat implements Ringlike<BigFloat> {
 
   @Override
   public final int compareTo (final BigFloat q) {
+    // see java.lang.Double.compareTo(Double)
+    if (isNaN()) {
+      if (q.isNaN()) { return 0; }
+      return 1; }
+    if (q.isNaN()) { return -1; }
 
+    // handle pos and neg zeros here
     if (nonNegative() && (! q.nonNegative())) { return 1; }
     if ((! nonNegative()) && q.nonNegative()) { return -1; }
-    // same signs
+
+    // same signs, but may not be finite
+    if (isPositiveInfinity()) {
+      if (q.isPositiveInfinity()) { return 0; }
+      return 1; }
+    if (isNegativeInfinity()) {
+      if (q.isNegativeInfinity()) { return 0; }
+      return -1; }
+
+    // <code>this</code> is finite
+    if (q.isPositiveInfinity()) { return -1; }
+    if (q.isNegativeInfinity()) { return 1; }
+
+    // both finite
     final BoundedNatural t0 = significand();
     final BoundedNatural t1 = q.significand();
     final int e0 = exponent();
@@ -780,7 +973,12 @@ public final class BigFloat implements Ringlike<BigFloat> {
     return (a.nonNegative() == b.nonNegative())
       && (a.exponent() == b.exponent()); }
 
+  /** See Double.equals(Object). Compares field values, so NaN==NaN!
+   * Goal is to be consistent with <code>equals()</code> and
+   * <code>hashCode()</code>
+   */
   public final boolean equals (final BigFloat q) {
+    if (isNaN() && q.isNaN()) { return true; }
     return reducedEquals(reduce(),q.reduce()); }
 
   @Override
@@ -800,7 +998,7 @@ public final class BigFloat implements Ringlike<BigFloat> {
   public final String toHexString () {
     return
       (nonNegative() ? "" : "-")
-        + "0x" + significand().toHexString()
+        + "0x" + (isNaN() ? "null" : significand().toHexString())
         // TODO: hex exponent?
         + "p" + exponent(); }
 
@@ -814,28 +1012,9 @@ public final class BigFloat implements Ringlike<BigFloat> {
   private BigFloat (final boolean p,
                     final BoundedNatural t,
                     final int e) {
-    //assert null!=t0;
     _nonNegative = p;
     _significand = t;
     _exponent = e; }
-
-  //--------------------------------------------------------------
-  // TODO: infinities, NaN
-
-  public static final BigFloat ZERO =
-    new BigFloat(true,BoundedNatural.ZERO,0);
-
-  private static final BigFloat ONE =
-    new BigFloat(true,BoundedNatural.valueOf(1),0);
-
-  //    private static final BigFloat TWO =
-  //    new BigFloat(true,BoundedNatural.valueOf(1),1);
-  //
-  //  private static final BigFloat TEN =
-  //    new BigFloat(true,BoundedNatural.valueOf(5),1);
-  //
-  //  private static final BigFloat MINUS_ONE =
-  //    new BigFloat(false,BoundedNatural.valueOf(1),0);
 
   //--------------------------------------------------------------
 
@@ -848,6 +1027,7 @@ public final class BigFloat implements Ringlike<BigFloat> {
   //    return new BigFloat(p0, t0.shiftDown(shift),e0+shift); }
 
   private final BigFloat reduce () {
+    if (! isFinite()) { return this; }
     final boolean p0 = nonNegative();
     final BoundedNatural t0 = significand();
     final int e0 = exponent();
@@ -876,6 +1056,9 @@ public final class BigFloat implements Ringlike<BigFloat> {
     return valueOf(nonNegative,BoundedNatural.valueOf(t1),e1); }
 
   public static final BigFloat valueOf (final double z)  {
+    if (Double.isNaN(z)) { return NaN; }
+    if (Double.POSITIVE_INFINITY == z) { return POSITIVE_INFINITY; }
+    if (Double.NEGATIVE_INFINITY == z) { return NEGATIVE_INFINITY; }
     return valueOf(
       Doubles.nonNegative(z),
       Doubles.significand(z),
@@ -889,11 +1072,14 @@ public final class BigFloat implements Ringlike<BigFloat> {
     //if (0==t0) { return ZERO; }
     return valueOf(nonNegative,BoundedNatural.valueOf(t0),e0); }
 
-  public static final BigFloat valueOf (final float x)  {
+  public static final BigFloat valueOf (final float z)  {
+    if (Float.isNaN(z)) { return NaN; }
+    if (Float.POSITIVE_INFINITY == z) { return POSITIVE_INFINITY; }
+    if (Float.NEGATIVE_INFINITY == z) { return NEGATIVE_INFINITY; }
     return valueOf(
-      Floats.nonNegative(x),
-      Floats.significand(x),
-      Floats.exponent(x)); }
+      Floats.nonNegative(z),
+      Floats.significand(z),
+      Floats.exponent(z)); }
 
   //--------------------------------------------------------------
 
