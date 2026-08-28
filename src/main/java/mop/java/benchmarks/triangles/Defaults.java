@@ -20,8 +20,8 @@ import java.util.concurrent.TimeUnit;
  * java -cp target\benchmarks.jar mop.java.benchmarks.arithmetic.Base
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-08-13
- */
+ * @version 2026-08-27
+ * */
 
 public final class Defaults {
 
@@ -64,6 +64,7 @@ public final class Defaults {
         "-ea", "-dsa",
         "-Xmn10g",  "-Xms26g", "-Xmx26g",
         "-XX:+UseFMA",
+        "--enable-preview",
         "-XX:+UseParallelGC",
         "-Xbatch",
         "-server"

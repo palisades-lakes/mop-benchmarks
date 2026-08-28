@@ -311,18 +311,12 @@ public final class BigFloat implements Ringlike<BigFloat> {
     switch (z0) {
       case Double.POSITIVE_INFINITY -> {
         if (Double.NEGATIVE_INFINITY == z1) { return NaN; }
-        return POSITIVE_INFINITY;
-      }
+        return POSITIVE_INFINITY; }
       case Double.NEGATIVE_INFINITY -> {
         if (Double.POSITIVE_INFINITY == z1) { return NaN; }
-        return NEGATIVE_INFINITY;
-      }
-      case 0.0 -> {
-        return BigFloat.valueOf(z1);
-      }
-      default -> {
-      }
-    }
+        return NEGATIVE_INFINITY; }
+      case 0.0 -> { return BigFloat.valueOf(z1); }
+      default -> { } }
     if (0.0==z1) { return BigFloat.valueOf(z0); }
     final int e0 = Doubles.exponent(z0);
     final int e1 = Doubles.exponent(z1);

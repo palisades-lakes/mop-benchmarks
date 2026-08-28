@@ -32,7 +32,7 @@ import org.openjdk.jmh.infra.Blackhole;
 /** Benchmark triangle operations.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-08-25
+ * @version 2026-08-27
  */
 
 @State(Scope.Thread)
@@ -50,7 +50,7 @@ public abstract class Base {
   public static final Triangle2D convertTriangle (final Triangle2D t,
                                                   final String dest) {
     return switch (dest) {
-//      case "TriangleVector2D" -> TriangleVector2D.from(t);
+      case "TriangleVector2D" -> TriangleVector2D.from(t);
       case "DoubleTriangle2D" ->  DoubleTriangle2D.from(t);
       case "DoubleIntervalTriangle2D" ->  DoubleIntervalTriangle2D.from(t);
       case "DoubleIntervalTriangle2D0" ->  DoubleIntervalTriangle2D0.from(t);
@@ -83,16 +83,16 @@ public abstract class Base {
     return t;}
 
   @Param({
-//    "Adapt",
-//    "ExactCache",
-    "Exact",
+   "Adapt",
+    "ExactCache",
+//    "Exact",
 //    "Fast",
-    "Slow",
+//    "Slow",
 //    "TriangleVector2D",
-//    "DoubleTriangle2D",
+    "DoubleTriangle2D",
     "DoubleIntervalTriangle2D",
 //    "DoubleIntervalTriangle2D0",
-//    "DIBFTriangle2D",
+    "DIBFTriangle2D",
     "BigFloatTriangle2D",
 //    "RationalFloatTriangle2D",
 //    "DDFast",

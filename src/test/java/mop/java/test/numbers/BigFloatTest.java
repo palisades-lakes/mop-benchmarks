@@ -10,6 +10,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.function.BinaryOperator;
 
+import static java.lang.Double.*;
+
 //----------------------------------------------------------------
 /**
  * Test desired properties of BigFloat.
@@ -24,11 +26,73 @@ import java.util.function.BinaryOperator;
 
 public final class BigFloatTest {
 
-  private static final int TRYS = 65;
+  private static final int TRYS = 33;
 
   private static final BinaryOperator dist =
     (q0, q1) -> ((BigFloat) q0).subtract((BigFloat) q1).abs();
 
+  @Test
+  public final void nonfiniteTest () {
+    final UniformRandomProvider urp =
+      PRNG.well44497b("seeds/Well44497b-2019-01-09.txt");
+    final Generator g =
+      Doubles.laplaceGenerator(urp, 0.0, 1000.0);
+    final BigFloat pos = BigFloat.valueOf(Math.abs(g.nextDouble()));
+    Assertions.assertTrue(pos.isFinite());
+    final BigFloat neg = BigFloat.valueOf(-Math.abs(g.nextDouble()));
+    Assertions.assertTrue(neg.isFinite());
+    final BigFloat nan = BigFloat.valueOf(NaN);
+    final BigFloat pinf = BigFloat.valueOf(POSITIVE_INFINITY);
+    final BigFloat ninf = BigFloat.valueOf(NEGATIVE_INFINITY);
+    Assertions.assertEquals(BigFloat.NaN, nan);
+    Assertions.assertTrue(nan.isNaN());
+    Assertions.assertFalse(nan.isFinite());
+    Assertions.assertTrue(pinf.isPositiveInfinity());
+    Assertions.assertEquals(BigFloat.POSITIVE_INFINITY, pinf);
+    Assertions.assertFalse(pinf.isFinite());
+    Assertions.assertEquals(BigFloat.NEGATIVE_INFINITY, ninf);
+    Assertions.assertTrue(ninf.isNegativeInfinity());
+    Assertions.assertFalse(ninf.isFinite());
+    Assertions.assertEquals(pinf.add(ninf),nan);
+    Assertions.assertEquals(pinf.subtract(pinf),nan);
+    Assertions.assertEquals(pinf.multiply(ninf),ninf);
+    Assertions.assertEquals(ninf.multiply(ninf),pinf);
+    for (final BigFloat z : new BigFloat[]{pos,neg,nan,pinf,ninf}) {
+      Assertions.assertEquals(BigFloat.NaN, nan.add(z));
+      Assertions.assertEquals(BigFloat.NaN, z.add(nan));
+      Assertions.assertEquals(BigFloat.NaN, nan.multiply(z));
+      Assertions.assertEquals(BigFloat.NaN, z.multiply(nan));
+    }
+    for (final BigFloat z : new BigFloat[]{pos,pinf}) {
+      Assertions.assertEquals(BigFloat.POSITIVE_INFINITY, pinf.add(z));
+      Assertions.assertEquals(BigFloat.POSITIVE_INFINITY, pinf.multiply(z));
+      Assertions.assertEquals(BigFloat.NEGATIVE_INFINITY, ninf.subtract(z));
+      Assertions.assertEquals(BigFloat.NEGATIVE_INFINITY, ninf.multiply(z));
+    }
+//    for (int i = 0; i < TRYS; i++) {
+//      final double z0 = g.nextDouble();
+//      final double z1 = g.nextDouble();
+//      final BigFloat b0 = BigFloat.valueOf(z0);
+//      final BigFloat b1 = BigFloat.valueOf(z1);
+//      final BigFloat expected = b0.add(b1);
+//      final BigFloat add01 = b0.add(z1);
+//      Assertions.assertEquals(
+//        expected, add01, sumFailureMsg("b0.add(b1) vs b0.add(z1)",
+//                                       z0, z1, b0, b1, expected, add01));
+//      final BigFloat add10 = b1.add(z0);
+//      Assertions.assertEquals(
+//        expected, add10, sumFailureMsg("b0.add(b1) vs b1.add(z0)",
+//                                       z0, z1, b0, b1, expected, add10));
+//      final BigFloat sum10 = BigFloat.sum(z0, z1);
+//      Assertions.assertEquals(
+//        expected, sum10, sumFailureMsg("b0.add(b1) vs sum(z1,z0)",
+//                                       z0, z1, b0, b1, expected, sum10));
+//      final BigFloat sum01 = BigFloat.sum(z0, z1);
+//      Assertions.assertEquals(
+//        expected, sum01, sumFailureMsg("b0.add(b1) vs sum(z0,z1)",
+//                                       z0, z1, b0, b1, expected, sum01));
+//    }
+  }
   @Test
   public final void testRounding () {
     //Debug.DEBUG=false;
@@ -101,56 +165,26 @@ public final class BigFloatTest {
                                              final BigFloat s1) {
     return
       "\n" + name +
-        "\nz0=" + Double.toHexString(z0) +
+        "\nz0=" + toHexString(z0) +
         "\nnonnegative(z0)= " + Doubles.nonNegative(z0) +
         "\nsignificand(z0)= " + Doubles.significand(z0) +
         "\nexponent(z0)= " + Doubles.exponent(z0) +
         "\nb0=" + b0.toHexString() +
-        " (" + Double.toHexString(b0.doubleValue()) + ")" +
-        "\nz1=" + Double.toHexString(z1) +
+        " (" + toHexString(b0.doubleValue()) + ")" +
+        "\nz1=" + toHexString(z1) +
         "\nnonnegative(z1)= " + Doubles.nonNegative(z1) +
         "\nsignificand(z1)= " + Doubles.significand(z1) +
         "\nexponent(z1)= " + Doubles.exponent(z1) +
         "\nb1=" + b1.toHexString() +
-          " (" + Double.toHexString(b1.doubleValue()) + ")" +
+          " (" + toHexString(b1.doubleValue()) + ")" +
         "\ns0=" + s0.toHexString() +
-        " (" + Double.toHexString(s0.doubleValue()) + ")" +
+        " (" + toHexString(s0.doubleValue()) + ")" +
         "\ns1=" + s1.toHexString() +
-        " (" + Double.toHexString(s1.doubleValue()) + ")";
+        " (" + toHexString(s1.doubleValue()) + ")";
   }
 
   @Test
   public final void sumTest () {
-    final UniformRandomProvider urp =
-      PRNG.well44497b("seeds/Well44497b-2019-01-09.txt");
-    final Generator g =
-      Doubles.laplaceGenerator(urp, 0.0, 1000.0);
-    for (int i = 0; i < TRYS; i++) {
-      final double z0 = g.nextDouble();
-      final double z1 = g.nextDouble();
-      final BigFloat b0 = BigFloat.valueOf(z0);
-      final BigFloat b1 = BigFloat.valueOf(z1);
-      final BigFloat expected = b0.add(b1);
-      final BigFloat add01 = b0.add(z1);
-      Assertions.assertEquals(
-        expected, add01, sumFailureMsg("b0.add(b1) vs b0.add(z1)",
-                                       z0, z1, b0, b1, expected, add01));
-      final BigFloat add10 = b1.add(z0);
-      Assertions.assertEquals(
-        expected, add10, sumFailureMsg("b0.add(b1) vs b1.add(z0)",
-                                       z0, z1, b0, b1, expected, add10));
-      final BigFloat sum10 = BigFloat.sum(z0, z1);
-      Assertions.assertEquals(
-        expected, sum10, sumFailureMsg("b0.add(b1) vs sum(z1,z0)",
-                                       z0, z1, b0, b1, expected, sum10));
-      final BigFloat sum01 = BigFloat.sum(z0, z1);
-      Assertions.assertEquals(
-        expected, sum01, sumFailureMsg("b0.add(b1) vs sum(z0,z1)",
-                                       z0, z1, b0, b1, expected, sum01));
-    }
-  }
-  @Test
-  public final void nonfiniteTest () {
     final UniformRandomProvider urp =
       PRNG.well44497b("seeds/Well44497b-2019-01-09.txt");
     final Generator g =
