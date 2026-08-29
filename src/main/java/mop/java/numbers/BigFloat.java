@@ -29,7 +29,7 @@ import java.util.Objects;
  * <code>(nonNegative()?1:-1) * significand() * 2^exponent()</code>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-08-27
+ * @version 2026-08-29
  */
 
 @SuppressWarnings("unused")
@@ -914,11 +914,61 @@ public final class BigFloat implements Ringlike<BigFloat> {
     return doubleValue(nonNegative(),significand(),exponent()); }
 
   //--------------------------------------------------------------
+  // methods equivalent to ==,<=,>=,>,< for double
+  // Double.equals and Double.compareTo have results that differ
+  // from the corresponding <code>double</code> operators.
+  //--------------------------------------------------------------
+
+  public final boolean opEQ (final BigFloat q) {
+    if (isNaN() || q.isNaN()) { return false; }
+    if (this==q) { return true; } // identical objects
+    if (isZero()) { return q.isZero(); } // regardless of +/- zero
+    // TODO: mark when reducing
+    final BigFloat r0 = reduce();
+    final BigFloat r1 = q.reduce();
+    return (r0.significand().equals(r1.significand()))
+      && (r0.nonNegative() == r1.nonNegative())
+      && (r0.exponent() == r1.exponent()); }
+
+  public final boolean opGT (final BigFloat q) {
+    if (isNaN() || q.isNaN()) { return false; }
+    if (this == q) { return false; } // identical objects
+    if (isZero() && q.isZero()) { return false; } // regardless of +/- zero
+    if (nonNegative() && (! q.nonNegative())) { return true; }
+    if ((! nonNegative()) &&  q.nonNegative()) { return false; }
+    // same signs
+    // TODO: cache reduced flag?
+    final BigFloat r0 = reduce();
+    final BigFloat r1 = q.reduce();
+    if (r0.nonNegative()) { // both positive
+      if (r0.exponent() > r1.exponent()) { return true; }
+      if (r0.exponent() < r1.exponent()) { return false; }
+      return (r0.significand().compareTo(r1.significand()) > 0); }
+    // else both negative
+    if (r0.exponent() < r1.exponent()) { return true; }
+    if (r0.exponent() > r1.exponent()) { return false; }
+    return (r0.significand().compareTo(r1.significand()) < 0); }
+
+  // TODO: optimize?
+  public final boolean opGE (final BigFloat q) {
+    if (isNaN() || q.isNaN()) { return false; }
+    return  opEQ(q) || opGT(q); }
+
+  public final boolean opLT (final BigFloat q) {
+    if (isNaN() || q.isNaN()) { return false; }
+    return ! opGE(q); }
+
+  public final boolean opLE (final BigFloat q) {
+    if (isNaN() || q.isNaN()) { return false; }
+    return ! opGT(q); }
+
+  //--------------------------------------------------------------
   // Comparable methods
   //--------------------------------------------------------------
 
   @Override
   public final int compareTo (final BigFloat q) {
+    if (this == q) { return 0; }
     // see java.lang.Double.compareTo(Double)
     if (isNaN()) {
       if (q.isNaN()) { return 0; }
