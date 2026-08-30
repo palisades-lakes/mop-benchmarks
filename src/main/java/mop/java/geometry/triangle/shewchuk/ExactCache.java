@@ -15,17 +15,28 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
  *   profiling.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-08-18
+ * @version 2026-08-29
  */
 
 public final class ExactCache extends Triangle2D {
 
-  private final XDouble _axb;
-  private final XDouble getAxB() { return _axb; }
-  private final XDouble _bxc;
-  private final XDouble getBxC() { return _bxc; }
-  private final XDouble _axc;
-  private final XDouble getAxC() { return _axc; }
+  private XDouble _axb;
+  private final XDouble getAxB() {
+    if (null==_axb) {
+      _axb = XDouble.crossProduct(getP0(), getP1()); }
+    return _axb; }
+
+  private XDouble _bxc;
+  private final XDouble getBxC() {
+    if (null==_bxc) {
+      _bxc = XDouble.crossProduct(getP1(), getP2()); }
+    return _bxc; }
+
+  private XDouble _axc;
+  private final XDouble getAxC() {
+    if (null==_axc) {
+      _axc = XDouble.crossProduct(getP0(), getP2()); }
+    return _axc; }
 
   //--------------------------------------------------------------------
 
@@ -104,10 +115,7 @@ public final class ExactCache extends Triangle2D {
   private ExactCache (final Vector2D a,
                       final Vector2D b,
                       final Vector2D c)  {
-    super(a,b,c);
-    _axb = XDouble.crossProduct(a, b);
-    _bxc = XDouble.crossProduct(b, c);
-    _axc = XDouble.crossProduct(a, c); }
+    super(a,b,c); }
 
   public static final Triangle2D of (final Vector2D a,
                                      final Vector2D b,

@@ -19,25 +19,25 @@ import java.util.List;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-08-18
+ * @version 2026-08-29
  */
 
 public final class OrientationTest extends TriangleTest {
 
   public static final String orientationMsg (final String name,
-                                             final int truth,
-                                             final int check,
+                                             final double truth,
+                                             final double check,
                                              final Triangle2D gold,
                                              final Triangle2D pred,
                                              final List<Triangle2D> triangles) {
     final StringBuilder msg = new StringBuilder(
       "\n" + name +
-        "\ngold=" + gold + " -> " + truth +
-        "\npred=" + pred + " -> " + check);
+        "\ngold=" + gold + " -> " + Double.toHexString(truth) +
+        "\npred=" + pred + " -> " + Double.toHexString(check));
     if (null != triangles) {
       for (final Triangle2D t : triangles) {
         msg.append("\n").append(t).append(" ->\n");
-        msg.append(t.orientation()); } }
+        msg.append(Double.toHexString(t.orientation())); } }
     return msg + "\n"; }
 
   //--------------------------------------------------------------
@@ -45,9 +45,9 @@ public final class OrientationTest extends TriangleTest {
   private static final void checkOrientation (final Triangle2D t0) {
     final List<Triangle2D> triangles = makeTriangles(t0);
     final Triangle2D gold = truth(t0);
-    final int trueOrientation = gold.orientation();
+    final double trueOrientation = gold.orientation();
     for (final Triangle2D t : triangles) {
-      final int orientation = t.orientation();
+      final double orientation = t.orientation();
       if (t.isOrientationRobust()) {
       Assertions.assertEquals(
         trueOrientation, orientation,
@@ -92,13 +92,13 @@ public final class OrientationTest extends TriangleTest {
     final Triangle2D t013 = TriangleVector2D.of(p0, p1, p3);
     final Triangle2D bf013 = BigFloatTriangle2D.from(t013);
     System.out.println("bf013=" + bf013);
-    System.out.println(bf013.orientation());
+    System.out.println(Double.toHexString(bf013.orientation()));
     checkOrientation(t013);
 
     final Triangle2D t023 = TriangleVector2D.of(p0, p2, p3);
     final Triangle2D bf023 = BigFloatTriangle2D.from(t023);
     System.out.println("bf023=" + bf023);
-    System.out.println(bf023.orientation());
+    System.out.println(Double.toHexString(bf023.orientation()));
     checkOrientation(t023);
     System.out.println();
   }

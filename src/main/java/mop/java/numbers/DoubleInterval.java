@@ -83,7 +83,7 @@ public record DoubleInterval (double min, double max)
 
   //--------------------------------------------------------------
   /** Return the double error interval value of <code>z0-z1</code>,
-   * without intermediate <code>BigFloat</code> instances.
+   * without intermediate <code>DoubleInterval</code> instances.
    */
 
   public static final DoubleInterval dif (final double z0,

@@ -7,7 +7,7 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
  * Should be exact, up to BigFloat resolution.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-08-18
+ * @version 2026-08-29
  */
 
 public final class BigFloatTriangle2D extends Triangle2D {
@@ -15,22 +15,49 @@ public final class BigFloatTriangle2D extends Triangle2D {
   // TODO: BigFloat vectors
   // cache vector result of translating p0 to origin,
   // and related quantities
-  private final BigFloat _x10;
-  private final BigFloat _y10;
-  private final BigFloat _v10Norm2;
-  private final BigFloat getX10 () { return _x10; }
-  private final BigFloat getY10 () { return _y10; }
-  private final BigFloat getV10Norm2 () { return _v10Norm2; }
 
-  private final BigFloat _x20;
-  private final BigFloat _y20;
-  private final BigFloat _v20Norm2;
-  private final BigFloat getX20 () {  return _x20; }
-  private final BigFloat getY20 () {  return _y20; }
-  private final BigFloat getV20Norm2 () { return _v20Norm2; }
+  private BigFloat _x10;
+  private final BigFloat getX10 () {
+    if (null == _x10) {
+      _x10 = BigFloat.dif(getP1().getX(),getP0().getX()); }
+    return _x10; }
 
-  private final BigFloat _V20xV10;
-  private final BigFloat getV20xV10 () {  return _V20xV10; }
+  private BigFloat _y10;
+  private final BigFloat getY10 () {
+    if (null == _y10) {
+      _y10 = BigFloat.dif(getP1().getY(),getP0().getY()); }
+    return _y10; }
+
+  private BigFloat _v10Norm2;
+  private final BigFloat getV10Norm2 () {
+    if (null==_v10Norm2) {
+      _v10Norm2 = BigFloat.l2norm2(getX10(),getY10()); }
+    return _v10Norm2; }
+
+  private BigFloat _x20;
+  private final BigFloat getX20 () {
+    if (null == _x20) {
+      _x20 = BigFloat.dif(getP2().getX(),getP0().getX()); }
+    return _x20; }
+
+  private BigFloat _y20;
+  private final BigFloat getY20 () {
+    if (null == _y20) {
+      _y20 = BigFloat.dif(getP2().getY(),getP0().getY()); }
+    return _y20; }
+
+  private BigFloat _v20Norm2;
+  private final BigFloat getV20Norm2 () {
+    if (null==_v20Norm2) {
+      _v20Norm2 = BigFloat.l2norm2(getX20(),getY20()); }
+    return _v20Norm2; }
+
+  private BigFloat _V20xV10;
+  private final BigFloat getV20xV10 () {
+    if (null==_V20xV10) {
+      _V20xV10 = BigFloat.crossProduct(getX20(), getY20(),
+                                       getX10(), getY10()); }
+    return _V20xV10; }
 
   //--------------------------------------------------------------------
 
@@ -45,10 +72,12 @@ public final class BigFloatTriangle2D extends Triangle2D {
 
   /** More exact than rounding to <code>double</code>. */
 
-  public final int orientation () {
-    if (getV20xV10().isZero()) { return 0; }
-    if (getV20xV10().nonNegative()) { return -1; }
-    return 1; }
+  public final double orientation () {
+    if (! getV20xV10().isFinite()) {
+      return getV20xV10().doubleValue(); }
+    if (getV20xV10().isZero()) { return 0.0; }
+    if (getV20xV10().nonNegative()) { return -1.0; }
+    return 1.0; }
 
   //--------------------------------------------------------------------
 
@@ -79,18 +108,7 @@ public final class BigFloatTriangle2D extends Triangle2D {
                               final Vector2D b,
                               final Vector2D c)  {
     super(a,b,c);
-    final double ax = a.getX();
-    final double ay = a.getY();
-
-    _x10 = BigFloat.dif(b.getX(),ax);
-    _y10 = BigFloat.dif(b.getY(),ay);
-    _v10Norm2 = BigFloat.l2norm2(_x10,_y10);
-
-    _x20 = BigFloat.dif(c.getX(),ax);
-    _y20 = BigFloat.dif(c.getY(),ay);
-
-    _v20Norm2 = BigFloat.l2norm2(_x20,_y20);
-    _V20xV10 = BigFloat.crossProduct(_x20, _y20,_x10, _y10); }
+     }
 
   public static final Triangle2D of (final Vector2D a,
                                      final Vector2D b,

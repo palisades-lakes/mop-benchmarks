@@ -5,7 +5,7 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
 /** Triangles "embedded" in Vector2D.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-08-23
+ * @version 2026-08-29
  */
 
 public abstract class Triangle2D {
@@ -68,20 +68,20 @@ public abstract class Triangle2D {
   public boolean isOrientationRobust () { return signedAreaExact(); }
 
   //--------------------------------------------------------------------
-  /** Return +1  if the points pa, pb, and pc occur in
-   * counterclockwise order; -1 if they occur in clockwise
-   * order; and zero if they are collinear.
+  /** Return +1.0 if the points pa, pb, and pc occur in
+   * counterclockwise order; -1.0 if they occur in clockwise
+   * order; and +/-0.0 if they are collinear.
+   * Nonfinite values
    * <br>
    * Separating this from <code>twiceSignedArea</code>
    * permits classes that do more precise calculation to get the sign
    * from that, rather than forcing a round to <code>double</code>.
    */
 
-  public int orientation () {
-    // TODO: what to do with NaN? Return 0 meaning 'not oriented'?
-    //  Make return value double to allow explicit NaN?
+  public double orientation () {
     // NOTE: Double.compare() doesn't handle +-0.0 correctly.
     final double a = twiceSignedArea();
+    if (! Double.isFinite(a)) { return a; }
     if (0.0 < a) { return 1; }
     if (0.0 > a) { return -1; }
     return 0; }

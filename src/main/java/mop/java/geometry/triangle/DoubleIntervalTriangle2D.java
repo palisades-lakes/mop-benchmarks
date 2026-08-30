@@ -7,7 +7,7 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
  * using <code>DoubleInterval</code>.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-08-15
+ * @version 2026-08-29
  */
 
 public final class DoubleIntervalTriangle2D extends Triangle2D {
@@ -15,22 +15,48 @@ public final class DoubleIntervalTriangle2D extends Triangle2D {
   // TODO: DoubleInterval vectors
   // cache vector result of translating p0 to origin,
   // and related quantities
-  private final DoubleInterval _x10;
-  private final DoubleInterval _y10;
-  private final DoubleInterval _v10Norm2;
-  private final DoubleInterval getX10 () { return _x10; }
-  private final DoubleInterval getY10 () { return _y10; }
-  private final DoubleInterval getV10Norm2 () { return _v10Norm2; }
+  private DoubleInterval _x10;
+  private final DoubleInterval getX10 () {
+    if (null == _x10) {
+      _x10 = DoubleInterval.dif(getP1().getX(),getP0().getX()); }
+    return _x10; }
 
-  private final DoubleInterval _x20;
-  private final DoubleInterval _y20;
-  private final DoubleInterval _v20Norm2;
-  private final DoubleInterval getX20 () {  return _x20; }
-  private final DoubleInterval getY20 () {  return _y20; }
-  private final DoubleInterval getV20Norm2 () { return _v20Norm2; }
+  private DoubleInterval _y10;
+  private final DoubleInterval getY10 () {
+    if (null == _y10) {
+      _y10 = DoubleInterval.dif(getP1().getY(),getP0().getY()); }
+    return _y10; }
 
-  private final DoubleInterval _V20xV10;
-  private final DoubleInterval getV20xV10 () {  return _V20xV10; }
+  private DoubleInterval _v10Norm2;
+  private final DoubleInterval getV10Norm2 () {
+    if (null==_v10Norm2) {
+      _v10Norm2 = DoubleInterval.l2norm2(getX10(),getY10()); }
+    return _v10Norm2; }
+
+  private DoubleInterval _x20;
+  private final DoubleInterval getX20 () {
+    if (null == _x20) {
+      _x20 = DoubleInterval.dif(getP2().getX(),getP0().getX()); }
+    return _x20; }
+
+  private DoubleInterval _y20;
+  private final DoubleInterval getY20 () {
+    if (null == _y20) {
+      _y20 = DoubleInterval.dif(getP2().getY(),getP0().getY()); }
+    return _y20; }
+
+  private DoubleInterval _v20Norm2;
+  private final DoubleInterval getV20Norm2 () {
+    if (null==_v20Norm2) {
+      _v20Norm2 = DoubleInterval.l2norm2(getX20(),getY20()); }
+    return _v20Norm2; }
+
+  private DoubleInterval _V20xV10;
+  private final DoubleInterval getV20xV10 () {
+    if (null==_V20xV10) {
+      _V20xV10 = DoubleInterval.crossProduct(getX20(), getY20(),
+                                       getX10(), getY10()); }
+    return _V20xV10; }
 
   //--------------------------------------------------------------------
 
@@ -86,19 +112,7 @@ public final class DoubleIntervalTriangle2D extends Triangle2D {
   private DoubleIntervalTriangle2D (final Vector2D a,
                                     final Vector2D b,
                                     final Vector2D c)  {
-    super(a,b,c);
-    final double ax = a.getX();
-    final double ay = a.getY();
-
-    _x10 = DoubleInterval.dif(b.getX(),ax);
-    _y10 = DoubleInterval.dif(b.getY(),ay);
-    _v10Norm2 = DoubleInterval.l2norm2(_x10,_y10);
-
-    _x20 = DoubleInterval.dif(c.getX(),ax);
-    _y20 = DoubleInterval.dif(c.getY(),ay);
-
-    _v20Norm2 = DoubleInterval.l2norm2(_x20,_y20);
-    _V20xV10 = DoubleInterval.crossProduct(_x20, _y20,_x10, _y10); }
+    super(a,b,c); }
 
   public static final Triangle2D of (final Vector2D a,
                                      final Vector2D b,

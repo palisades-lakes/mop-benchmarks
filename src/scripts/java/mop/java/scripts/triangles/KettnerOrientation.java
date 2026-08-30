@@ -33,7 +33,7 @@ import java.util.List;
  * mvn clean install && j src/scripts/java/mop/java/scripts/triangles/KettnerOrientation.java
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-08-23
+ * @version 2026-08-29
  */
 
 public final class KettnerOrientation {
@@ -85,7 +85,7 @@ public final class KettnerOrientation {
                      final ObjectIntMap<Class> successes) {
     final List<Triangle2D> triangles = makeTriangles(t0);
     final Triangle2D gold = truth(t0);
-    final int trueOrientation = gold.orientation();
+    final double trueOrientation = gold.orientation();
     for (final Triangle2D t : triangles) {
       final Class c = t.getClass();
       if (t.orientation() == trueOrientation) {

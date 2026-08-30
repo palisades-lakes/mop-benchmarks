@@ -1,11 +1,5 @@
 package mop.java.numbers;
 
-import static java.lang.Double.MAX_EXPONENT;
-import static java.lang.Double.MIN_EXPONENT;
-import static java.lang.Double.NEGATIVE_INFINITY;
-import static java.lang.Double.doubleToRawLongBits;
-import static java.lang.Double.longBitsToDouble;
-
 import java.util.Arrays;
 import java.util.Map;
 import java.util.function.BiPredicate;
@@ -36,7 +30,7 @@ import mop.java.prng.PRNG;
 /** Utilities for <code>double</code>, <code>double[]</code>.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-08-23
+ * @version 2026-08-29
  */
 @SuppressWarnings("unused")
 public final class Doubles implements Set {
@@ -93,18 +87,18 @@ public final class Doubles implements Set {
    * leading bit = 0.
    */
   public static final int SUBNORMAL_EXPONENT =
-    MIN_EXPONENT - 1;
+    Double.MIN_EXPONENT - 1;
 
   /** Unbiased exponent of smallest non zero value. */
   public static final int MINIMUM_SUBNORMAL_EXPONENT =
-    MIN_EXPONENT - STORED_SIGNIFICAND_BITS;
+    Double.MIN_EXPONENT - STORED_SIGNIFICAND_BITS;
 
   /** Unbiased exponent for {@link Double#NaN},
    * {@link Double#NEGATIVE_INFINITY}, or
    * {@link Double#POSITIVE_INFINITY}.
    */
   public static final int INFINITE_OR_NAN_EXPONENT =
-    MAX_EXPONENT + 1;
+    Double.MAX_EXPONENT + 1;
 
   /** Inclusive lower bound on exponents for rounding to double,
    * treating the significand as an integer.
@@ -128,12 +122,12 @@ public final class Doubles implements Set {
 
   public static final int signBit (final double x) {
     return  (int)
-      ((SIGN_MASK&doubleToRawLongBits(x))
+      ((SIGN_MASK& Double.doubleToRawLongBits(x))
         >> (EXPONENT_BITS + STORED_SIGNIFICAND_BITS)); }
 
   /** Remember 0.0 can be negative. */
   public static final boolean nonNegative (final double x) {
-    return 0==(SIGN_MASK&doubleToRawLongBits(x)); }
+    return 0==(SIGN_MASK& Double.doubleToRawLongBits(x)); }
   //return  0==signBit(x); }
 
   //--------------------------------------------------------------
@@ -142,7 +136,7 @@ public final class Doubles implements Set {
    */
 
   public static final long significandLowBits (final double x) {
-    return STORED_SIGNIFICAND_MASK & doubleToRawLongBits(x); }
+    return STORED_SIGNIFICAND_MASK & Double.doubleToRawLongBits(x); }
 
   /** 53 bit significand.
    * Adds the implicit leading bit to the stored bits,
@@ -150,7 +144,7 @@ public final class Doubles implements Set {
    */
 
   public static final long significand (final double x) {
-    final long bits = doubleToRawLongBits(x);
+    final long bits = Double.doubleToRawLongBits(x);
     final long t = (bits&STORED_SIGNIFICAND_MASK);
     final long e = (bits&EXPONENT_MASK);
     // signed zero or subnormal
@@ -162,7 +156,7 @@ public final class Doubles implements Set {
   public static final int biasedExponent (final double x) {
     return
       (int)
-      ((EXPONENT_MASK & doubleToRawLongBits(x))
+      ((EXPONENT_MASK & Double.doubleToRawLongBits(x))
         >>> STORED_SIGNIFICAND_BITS); }
 
   //--------------------------------------------------------------
@@ -276,7 +270,7 @@ public final class Doubles implements Set {
     final long e = ((long) be) << STORED_SIGNIFICAND_BITS;
     final long t = significand & STORED_SIGNIFICAND_MASK;
     //assert (0L == (s & e & t));
-    return longBitsToDouble(s | e | t); }
+    return Double.longBitsToDouble(s | e | t); }
 
   public static final double
   unsafeMergeBits (final int sign,
@@ -287,7 +281,7 @@ public final class Doubles implements Set {
       (EXPONENT_BITS + STORED_SIGNIFICAND_BITS);
     final long e = ((long) be) << STORED_SIGNIFICAND_BITS;
     final long t = significand & STORED_SIGNIFICAND_MASK;
-    return longBitsToDouble(s | e | t); }
+    return Double.longBitsToDouble(s | e | t); }
 
   //--------------------------------------------------------------
   /** Adjust exponent from viewing signifcand as an integer
@@ -344,7 +338,7 @@ public final class Doubles implements Set {
     final long e =
       Numbers.unsigned(be) << STORED_SIGNIFICAND_BITS;
     final long t = significand & STORED_SIGNIFICAND_MASK;
-    return longBitsToDouble(s | e | t); }
+    return Double.longBitsToDouble(s | e | t); }
 
   //--------------------------------------------------------------
   /**
@@ -370,7 +364,7 @@ public final class Doubles implements Set {
                                          final int exponent) {
 
     final int e = exponent + STORED_SIGNIFICAND_BITS;
-    if (e > MAX_EXPONENT) {
+    if (e > Double.MAX_EXPONENT) {
       return
         (negative
           ? Double.NEGATIVE_INFINITY
@@ -980,7 +974,7 @@ public final class Doubles implements Set {
   //--------------------------------------------------------------
 
   public static final double maxAbs (final double[] x) {
-    double m = NEGATIVE_INFINITY;
+    double m = Double.NEGATIVE_INFINITY;
     for (final double element : x) {
       m = Math.max(m,Math.abs(element)); }
     return m; }

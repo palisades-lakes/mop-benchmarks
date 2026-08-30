@@ -279,6 +279,7 @@
           <compilerArgs>
             <arg>-J-Dclojure.compiler.direct-linking=true</arg>
             <arg>--enable-preview</arg>
+            <arg>-Xlint:preview</arg>
           </compilerArgs>
           <annotationProcessorPaths>
             <path>

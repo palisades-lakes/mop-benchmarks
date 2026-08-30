@@ -25,7 +25,6 @@ public abstract class TriangleTest {
     final Triangle2D triangleV2D = TriangleVector2D.from(t);
     final Triangle2D doubleTriangle = DoubleTriangle2D.from(t);
     final Triangle2D doubleIntervalTriangle = DoubleIntervalTriangle2D.from(t);
-    final Triangle2D doubleIntervalTriangle0 = DoubleIntervalTriangle2D0.from(t);
     final Triangle2D bigFloat = BigFloatTriangle2D.from(t);
     final Triangle2D dibf = DIBFTriangle2D.from(t);
     final Triangle2D rationalFloat = RationalFloatTriangle2D.from(t);
@@ -48,7 +47,6 @@ public abstract class TriangleTest {
       // mine
       triangleV2D, rationalFloat,
       doubleTriangle, doubleIntervalTriangle,
-      doubleIntervalTriangle0,
       bigFloat,
       dibf,
       // JTS
