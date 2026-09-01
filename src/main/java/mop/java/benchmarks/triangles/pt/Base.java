@@ -1,22 +1,8 @@
-package mop.java.benchmarks.triangles;
+package mop.java.benchmarks.triangles.pt;
 
+import mop.java.benchmarks.triangles.Defaults;
 import mop.java.geometry.Generators;
-import mop.java.geometry.triangle.*;
-import mop.java.geometry.triangle.jts.DDFast;
-import mop.java.geometry.triangle.jts.DDNormalized;
-import mop.java.geometry.triangle.jts.DDSlow;
-import mop.java.geometry.triangle.jts.DoubleNonRobust;
-import mop.java.geometry.triangle.jts.InCircleNormalized;
-import mop.java.geometry.triangle.macro.AdaptMacro;
-import mop.java.geometry.triangle.macro.DefaultMacro;
-import mop.java.geometry.triangle.macro.ExactMacro;
-import mop.java.geometry.triangle.macro.FastMacro;
-import mop.java.geometry.triangle.macro.SlowMacro;
-import mop.java.geometry.triangle.shewchuk.Adapt;
-import mop.java.geometry.triangle.shewchuk.Exact;
-import mop.java.geometry.triangle.shewchuk.ExactCache;
-import mop.java.geometry.triangle.shewchuk.Fast;
-import mop.java.geometry.triangle.shewchuk.Slow;
+import mop.java.geometry.triangle.Triangle2D;
 import mop.java.numbers.Doubles;
 import mop.java.prng.Generator;
 import mop.java.prng.PRNG;
@@ -32,7 +18,7 @@ import org.openjdk.jmh.infra.Blackhole;
 /** Benchmark triangle operations.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-08-29
+ * @version 2026-08-31
  */
 
 @State(Scope.Thread)
@@ -41,45 +27,7 @@ public abstract class Base {
   //--------------------------------------------------------------
 
   Generator pointGenerator;
-
   Generator triangleGenerator;
-
-  /** conversions from any Triangle2D to other Triangle classes. */
-  // TODO: lookup method object rather than switch
-
-  public static final Triangle2D convertTriangle (final Triangle2D t,
-                                                  final String dest) {
-    return switch (dest) {
-      case "TriangleVector2D" -> TriangleVector2D.from(t);
-      case "DoubleTriangle2D" ->  DoubleTriangle2D.from(t);
-      case "DoubleIntervalTriangle2D" ->  DoubleIntervalTriangle2D.from(t);
-      case "BigFloatTriangle2D" ->  BigFloatTriangle2D.from(t);
-      case "DIBFTriangle2D" ->  DIBFTriangle2D.from(t);
-      case "RationalFloatTriangle2D" ->  RationalFloatTriangle2D.from(t);
-      case "DDFast" ->  DDFast.from(t);
-      case "DDNormalized" ->  DDNormalized.from(t);
-      case "DDSlow" ->  DDSlow.from(t);
-//    case "InCircleCC" ->  InCircleCC.from(t);
-      case "DoubleNonRobust" ->  DoubleNonRobust.from(t);
-      case "InCircleNormalized" ->  InCircleNormalized.from(t);
-      case "Adapt" ->  Adapt.from(t);
-      case "Exact" ->  Exact.from(t);
-      case "ExactCache" ->  ExactCache.from(t);
-      case "Fast" ->  Fast.from(t);
-      case "Slow" ->  Slow.from(t);
-      case "AdaptMacro" ->  AdaptMacro.from(t);
-      case "DefaultMacro" ->  DefaultMacro.from(t);
-      case "ExactMacro" ->  ExactMacro.from(t);
-      case "FastMacro" ->  FastMacro.from(t);
-      case "SlowMacro" ->  SlowMacro.from(t);
-      default -> throw new UnsupportedOperationException(); }; }
-
-  public static final Triangle2D[]
-  convertTriangles (final Triangle2D[] t,
-                    final String dest) {
-    for (int i=0; i<t.length; i++) {
-      t[i] = convertTriangle(t[i],dest); }
-    return t;}
 
   @Param({
    "Adapt",
@@ -126,9 +74,9 @@ public abstract class Base {
   /** signedArea or inCircle distance */
 
   double[] value;
+
   //--------------------------------------------------------------
   /** This is what is timed.
-   * <code>p</code> is ignored for signedArea.
    */
 
   public abstract double operation (final Triangle2D z,
@@ -157,7 +105,7 @@ public abstract class Base {
   @Setup(Level.Invocation)
   public final void invocationSetup () {
     points = (Vector2D[]) pointGenerator.next();
-    triangles = convertTriangles(
+    triangles = Defaults.convertTriangles(
       (Triangle2D[]) triangleGenerator.next(),
       className);
     value = new double[triangles.length*points.length]; }
