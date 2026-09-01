@@ -18,7 +18,7 @@ import java.util.function.Function;
  * <br>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-08-31
+ * @version 2026-09-01
  */
 
 public final class Generators {
@@ -78,6 +78,21 @@ public final class Generators {
         final Vector2D[] p =  new Vector2D[n];
         for (int i = 0; i < n; i++) {
           p[i] = (Vector2D) vGenerator.next(); }
+        return p; } }; }
+
+  public static final Generator
+  vector2dGenerator (final int m,
+                     final int n,
+                     final Generator doubleGenerator) {
+    return new GeneratorBase(
+      "vector2dGenerator[" + m + "," +n + "]") {
+      final Generator vGenerator = vector2dGenerator(doubleGenerator);
+      @Override
+      public final Object next () {
+        final Vector2D[][] p =  new Vector2D[m][n];
+        for (int i = 0; i < m; i++) {
+          for (int j=0;j<n;j++) {
+            p[i][j] = (Vector2D) vGenerator.next(); } }
         return p; } }; }
 
   //--------------------------------------------------------------
@@ -161,7 +176,7 @@ public final class Generators {
   colinearTriangleGenerator (final Generator vectorGenerator,
                              final Generator doubleGenerator) {
     // TODO: named local class rather than anonymous with name?
-    return new GeneratorBase("collinearTriangleGenerator") {
+    return new GeneratorBase("colinearTriangleGenerator") {
       @Override
       public final Object next () {
         final Vector2D p0 = (Vector2D) vectorGenerator.next();
@@ -174,10 +189,9 @@ public final class Generators {
   colinearTriangleGenerator (final int n,
                              final Generator vectorGenerator,
                              final Generator doubleGenerator) {
-    return new GeneratorBase("collinearTriangleGenerator[" + n + "]") {
+    return new GeneratorBase("colinearTriangleGenerator[" + n + "]") {
       final Generator tGenerator =
-        colinearTriangleGenerator(vectorGenerator,
-                                  doubleGenerator);
+        colinearTriangleGenerator(vectorGenerator,doubleGenerator);
       @Override
       public final Object next () {
         final Triangle2D[] p =  new Triangle2D[n];

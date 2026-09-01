@@ -7,7 +7,7 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
  * Should be exact, up to BigFloat resolution.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-08-29
+ * @version 2026-09-01
  */
 
 public final class BigFloatTriangle2D extends Triangle2D {
@@ -99,6 +99,29 @@ public final class BigFloatTriangle2D extends Triangle2D {
 
     // TODO: reverse crossProducts
     return BigFloat.dot(p2,b2,c2,bxc,pxc,bxp).doubleValue(); }
+
+  //--------------------------------------------------------------------
+
+  public final double inCircle (final Vector2D p) {
+
+    // TODO: BigFloatVector operations
+    final BigFloat xp0 = BigFloat.dif(p.getX(),getP0().getX());
+    final BigFloat yp0 = BigFloat.dif(p.getY(),getP0().getY());
+
+    final BigFloat bxp = BigFloat.crossProduct(getX10(),getY10(),xp0,yp0);
+    final BigFloat bxc = getV20xV10();
+    final BigFloat pxc = BigFloat.crossProduct(xp0,yp0,getX20(),getY20());
+
+    final BigFloat p2 = BigFloat.l2norm2(xp0,yp0);
+    final BigFloat b2 = getV10Norm2();
+    final BigFloat c2 = getV20Norm2();
+
+    // TODO: reverse crossProducts
+    final BigFloat icd = BigFloat.dot(p2,b2,c2,bxc,pxc,bxp);
+    if (! icd.isFinite()) { return icd.doubleValue(); }
+    if (icd.isZero()) { return 0.0; }
+    if (icd.nonNegative()) { return 1.0; }
+    return -1.0; }
 
   //--------------------------------------------------------------------
   // construction

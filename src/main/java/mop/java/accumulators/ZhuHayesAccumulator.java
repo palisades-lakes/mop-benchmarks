@@ -39,7 +39,7 @@ import mop.java.numbers.Doubles;
  * <em>NOT</em> thread safe!
  * <p>
  * @author palisades dot lakes at gmail dot com
- * @version 2019-07-29
+ * @version 2026-09-01
  */
 
 public final class ZhuHayesAccumulator
@@ -299,10 +299,9 @@ extends ExactAccumulator<ZhuHayesAccumulator> {
   //--------------------------------------------------------------
 
   @Override
-  public final Object value () {
-    return Double.valueOf(doubleValue()); }
+  public final Object value () { return doubleValue(); }
 
-  private static final double[] v =  new double[2*NACCUMULATORS];
+  public static final double[] v =  new double[2*NACCUMULATORS];
   @Override
   public final double doubleValue () {
     // Step 5

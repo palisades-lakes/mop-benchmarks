@@ -7,7 +7,7 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
  * using <code>DoubleInterval</code>.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-08-29
+ * @version 2026-09-01
  */
 
 public final class DoubleIntervalTriangle2D extends Triangle2D {
@@ -99,6 +99,14 @@ public final class DoubleIntervalTriangle2D extends Triangle2D {
 
   public final double inCircleDistance (final Vector2D p) {
     return inCircleInterval(p).doubleValue(); }
+
+  public final double inCircle (final Vector2D p) {
+    final DoubleInterval icd = inCircleInterval(p);
+    // TODO: non-finite intervals
+    //if (! icd.isFinite()) { return icd.doubleValue(); }
+    if (icd.min()>0.0) { return 1.0; }
+    if (icd.max()<0.0) { return -1.0; }
+    return 0.0; }
 
   //--------------------------------------------------------------------
 

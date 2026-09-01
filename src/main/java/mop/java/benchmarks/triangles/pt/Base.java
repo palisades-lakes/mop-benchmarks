@@ -7,12 +7,7 @@ import mop.java.numbers.Doubles;
 import mop.java.prng.Generator;
 import mop.java.prng.PRNG;
 import org.apache.commons.geometry.euclidean.twod.Vector2D;
-import org.openjdk.jmh.annotations.Benchmark;
-import org.openjdk.jmh.annotations.Level;
-import org.openjdk.jmh.annotations.Param;
-import org.openjdk.jmh.annotations.Scope;
-import org.openjdk.jmh.annotations.Setup;
-import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
 
 /** Benchmark triangle operations.
@@ -28,9 +23,10 @@ public abstract class Base {
 
   Generator pointGenerator;
   Generator triangleGenerator;
+  Generator circleGenerator;
 
   @Param({
-   "Adapt",
+    "Adapt",
     "ExactCache",
 //    "Exact",
 //    "Fast",
@@ -68,18 +64,18 @@ public abstract class Base {
   })
   int nPoints;
 
-  /** convert to test class on each invocation. */
-  Vector2D[] points;
+  /** multiple points per triangle. */
+  Vector2D[][] points;
 
-  /** signedArea or inCircle distance */
+  /** count signs */
 
-  double[] value;
+  int[] value;
 
   //--------------------------------------------------------------
   /** This is what is timed.
    */
 
-  public abstract double operation (final Triangle2D z,
+  public abstract double operation (final Triangle2D t,
                                     final Vector2D p);
 
   //--------------------------------------------------------------
@@ -87,9 +83,10 @@ public abstract class Base {
    * test class.
    */
   @Setup(Level.Trial)
-  public final void trialSetup () {
+  public void trialSetup () {
     pointGenerator =
       Generators.vector2dGenerator(
+        nTriangles,
         nPoints,
         Doubles.laplaceGenerator(
           PRNG.well44497b("seeds/Well44497b-2019-01-05.txt"),
@@ -102,23 +99,34 @@ public abstract class Base {
             PRNG.well44497b("seeds/Well44497b-2019-01-07.txt"),
             0.0, 1.0))); }
 
+  //--------------------------------------------------------------
+
   @Setup(Level.Invocation)
-  public final void invocationSetup () {
-    points = (Vector2D[]) pointGenerator.next();
+  public void invocationSetup () {
+    points = (Vector2D[][]) pointGenerator.next();
     triangles = Defaults.convertTriangles(
-      (Triangle2D[]) triangleGenerator.next(),
-      className);
-    value = new double[triangles.length*points.length]; }
+      (Triangle2D[]) triangleGenerator.next(),className);
+    value = new int[3]; }
+
+//  @TearDown(Level.Invocation)
+//  public final void invocationTeardown () {
+//    System.out.println(Arrays.toString(value)); }
+
+  //--------------------------------------------------------------
 
   @Benchmark
-  public final Object bench (final Blackhole blackhole) {
-    int k = 0;
-    for (final Triangle2D triangle : triangles) {
-      for (final Vector2D point : points) {
-        value[k++] = operation(triangle, point); } }
+  public Object bench (final Blackhole blackhole) {
+    for (int i=0;i<nTriangles;i++) {
+      final Triangle2D ti = triangles[i];
+      for (int j=0;j<nPoints;j++) {
+        final Vector2D pij = points[i][j];
+        final double sign = operation(ti, pij);
+        if (0.0 > sign) { value[0]++; }
+        else if (0.0 == sign) { value[1]++; }
+        else { value[2]++; } } }
     blackhole.consume(value);
     return value; }
 
   //--------------------------------------------------------------
 }
-//--------------------------------------------------------------
+//----------------------------------------------------------------

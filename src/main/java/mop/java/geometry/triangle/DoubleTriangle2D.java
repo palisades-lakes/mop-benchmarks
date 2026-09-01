@@ -6,13 +6,14 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
  *  implemented in <code>double</code>>.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-08-17
+ * @version 2026-09-01
  */
 
 public final class DoubleTriangle2D extends Triangle2D {
 
   // cache vector result of translating p0 to origin,
   // and related quantities
+
   private final double _x10;
   private final double _y10;
   private final double _v10Norm2;
@@ -84,6 +85,7 @@ public final class DoubleTriangle2D extends Triangle2D {
                             final Vector2D b,
                             final Vector2D c)  {
     super(a,b,c);
+
     final double ax = a.getX();
     final double ay = a.getY();
 

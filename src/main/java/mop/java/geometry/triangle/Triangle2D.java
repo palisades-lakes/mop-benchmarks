@@ -109,6 +109,7 @@ public abstract class Triangle2D {
    * inCircle() is usually quite fast, but will run more slowly when the
    * input points are cocircular or nearly so.
    */
+
   public double inCircleDistance (final Vector2D p) {
     throw new UnsupportedOperationException(getClass().getSimpleName()); }
 
@@ -120,12 +121,13 @@ public abstract class Triangle2D {
    * outside, on, or inside the circumcircle.
    */
 
-  public int inCircle (final Vector2D p) {
+  public double inCircle (final Vector2D p) {
     // TODO: what to do with NaN?
     final double a = inCircleDistance(p);
-    if (0.0 < a) { return 1; }
-    if (0.0 > a) { return -1; }
-    return 0; }
+    if (Double.isNaN(a)) { return Double.NaN; }
+    if (0.0 < a) { return 1.0; }
+    if (0.0 > a) { return -1.0; }
+    return 0.0; }
 
   //--------------------------------------------------------------------
   // construction

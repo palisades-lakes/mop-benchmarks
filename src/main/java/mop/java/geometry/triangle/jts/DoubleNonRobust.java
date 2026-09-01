@@ -26,7 +26,7 @@ public final class DoubleNonRobust extends Triangle2D {
     // TODO: cache difference vectors
     return
       (b.getX() - a.getX()) * (c.getY() - a.getY())
-      -
+        -
         (b.getY() - a.getY()) * (c.getX() - a.getX());
   }
   //--------------------------------------------------------------------
@@ -47,20 +47,24 @@ public final class DoubleNonRobust extends Triangle2D {
     final Vector2D pb = getP1();
     final Vector2D pc = getP2();
 
-    return (pa.getX()*pa.getX()
-      + pa.getY()*pa.getY())*triArea(pb,pc,p)
-      - (pb.getX()*pb.getX() + pb.getY()*pb.getY())*triArea(pa,pc,p)
-      + (pc.getX()*pc.getX()
-      + pc.getY()*pc.getY())*triArea(pa,pb,p)
-      - (p.getX()*p.getX() + p.getY()*p.getY())*triArea(pa,pb,pc); }
+    return
+      (pa.normSq()*triArea(pb,pc,p))
+        - pb.normSq()*triArea(pa,pc,p)
+        + pc.normSq()*triArea(pa,pb,p)
+        - p.normSq()*triArea(pa,pb,pc); }
+//  return
+//    (pa.getX()*pa.getX() + pa.getY()*pa.getY())*triArea(pb,pc,p)
+//      - (pb.getX()*pb.getX() + pb.getY()*pb.getY())*triArea(pa,pc,p)
+//      + (pc.getX()*pc.getX() + pc.getY()*pc.getY())*triArea(pa,pb,p)
+//      - (p.getX()*p.getX() + p.getY()*p.getY())*triArea(pa,pb,pc); }
 
   //--------------------------------------------------------------------
   // construction
   //--------------------------------------------------------------------
 
   private DoubleNonRobust (final Vector2D a,
-                  final Vector2D b,
-                  final Vector2D c)  {
+                           final Vector2D b,
+                           final Vector2D c)  {
     super(a,b,c); }
 
   public static final Triangle2D of (final Vector2D a,

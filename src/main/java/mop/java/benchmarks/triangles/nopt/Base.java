@@ -6,18 +6,15 @@ import mop.java.geometry.triangle.*;
 import mop.java.numbers.Doubles;
 import mop.java.prng.Generator;
 import mop.java.prng.PRNG;
-import org.openjdk.jmh.annotations.Benchmark;
-import org.openjdk.jmh.annotations.Level;
-import org.openjdk.jmh.annotations.Param;
-import org.openjdk.jmh.annotations.Scope;
-import org.openjdk.jmh.annotations.Setup;
-import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
+
+import java.util.Arrays;
 
 /** Benchmark triangle operations.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-08-31
+ * @version 2026-09-01
  */
 
 @State(Scope.Thread)
@@ -35,9 +32,9 @@ public abstract class Base {
 //    "Fast",
 //    "Slow",
 //    "TriangleVector2D",
-    "DoubleTriangle2D",
-    "DoubleIntervalTriangle2D",
-    "DIBFTriangle2D",
+//    "DoubleTriangle2D",
+//    "DoubleIntervalTriangle2D",
+//    "DIBFTriangle2D",
     "BigFloatTriangle2D",
 //    "RationalFloatTriangle2D",
 //    "DDFast",
@@ -62,9 +59,9 @@ public abstract class Base {
   /** convert to test class on each invocation. */
   Triangle2D[] triangles;
 
-  /** signedArea or inCircle distance */
+  /** count signs */
 
-  double[] value;
+  int[] value;
 
   //--------------------------------------------------------------
   /** This is what is timed.
@@ -91,14 +88,19 @@ public abstract class Base {
   public void invocationSetup () {
     triangles = Defaults.convertTriangles(
       (Triangle2D[]) triangleGenerator.next(), className);
-    value = new double[triangles.length]; }
+    value = new int[3]; }
 
+  @TearDown(Level.Invocation)
+  public final void invocationTeardown () {
+    System.out.println(Arrays.toString(value)); }
 
   @Benchmark
   public final Object bench (final Blackhole blackhole) {
-    int k = 0;
     for (final Triangle2D triangle : triangles) {
-      value[k++] = operation(triangle); }
+      final double sign = operation(triangle);
+      if (0.0 > sign) { value[0]++; }
+      else if (0.0 == sign) { value[1]++; }
+      else { value[2]++; } }
     blackhole.consume(value);
     return value; }
 
