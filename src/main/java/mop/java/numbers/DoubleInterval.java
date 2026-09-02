@@ -16,7 +16,7 @@ package mop.java.numbers;
  * only if f is monotone in both arguments over [min,max].
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-08-18
+ * @version 2026-09-01
  */
 
 public record DoubleInterval (double min, double max)
@@ -26,6 +26,9 @@ public record DoubleInterval (double min, double max)
 
   public final boolean containsZero () {
     return (0.0>=min()) && (0.0<=max()); }
+
+  public final boolean contains (final double z) {
+    return (min()<=z) && (z<=max()); }
 
   //--------------------------------------------------------------
   // Ringlike
