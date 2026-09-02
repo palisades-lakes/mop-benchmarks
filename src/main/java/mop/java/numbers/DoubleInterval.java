@@ -292,5 +292,5 @@ public record DoubleInterval (double min, double max)
     return new DoubleInterval(Math.nextDown(z),Math.nextUp(z)); }
 
   //--------------------------------------------------------------
-}
+} // end class
 //--------------------------------------------------------------
