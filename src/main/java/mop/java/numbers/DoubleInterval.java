@@ -16,7 +16,7 @@ package mop.java.numbers;
  * only if f is monotone in both arguments over [min,max].
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-01
+ * @version 2026-09-03
  */
 
 public record DoubleInterval (double min, double max)
@@ -25,10 +25,13 @@ public record DoubleInterval (double min, double max)
   //--------------------------------------------------------------
 
   public final boolean containsZero () {
-    return (0.0>=min()) && (0.0<=max()); }
+    return (min()<=0.0) && (0.0<=max()); }
 
   public final boolean contains (final double z) {
     return (min()<=z) && (z<=max()); }
+
+  public final boolean contains (final DoubleInterval interval) {
+    return (min()<=interval.min()) && (interval.max()<=max()); }
 
   //--------------------------------------------------------------
   // Ringlike
@@ -67,6 +70,8 @@ public record DoubleInterval (double min, double max)
     if (isNaN()) { return NaN; }
     final double z0 = Math.abs(min());
     final double z1 = Math.abs(max());
+    if (containsZero()) {
+      return new DoubleInterval(0.0,Math.max(z0,z1)); }
     if (z0<=z1) { return new DoubleInterval(z0,z1); }
     return new DoubleInterval(z1,z0); }
 
@@ -290,6 +295,11 @@ public record DoubleInterval (double min, double max)
 
   public static final DoubleInterval valueOf (final double z)  {
     return new DoubleInterval(Math.nextDown(z),Math.nextUp(z)); }
+
+  public static final DoubleInterval plusOrMinus (final double z,
+                                                  final double e)  {
+    final double ae = Math.abs(e);
+    return new DoubleInterval(z-ae,z+ae); }
 
   //--------------------------------------------------------------
 } // end class

@@ -1,15 +1,24 @@
 package mop.java.geometry.triangle;
 
+import mop.java.numbers.DoubleInterval;
 import org.apache.commons.geometry.euclidean.twod.Vector2D;
 
-/** Same calculations as <code>BigFloatTriangle</code>,
- *  implemented in <code>double</code>>.
+/** Same calculations as <code>DoubleTriangle2D</code>,
+ * converted to intervals using error bounds in
+ *  <a href="https://www.cs.cmu.edu/~quake/robust.html">
+ * "Adaptive Precision Floating-Point Arithmetic
+ *  and Fast Robust Geometric Predicates",<br>
+ *  Jonathan Richard Shewchuk<br>
+ *  October 1, 1997<br>
+ *  CMU-CS-96-140R<br>
+ *  From Discrete & Computational Geometry 18(3):305–363, October 1997.
+ *  </a>
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-09-01
+ * @version 2026-09-03
  */
 
-public final class DoubleTriangle2D extends Triangle2D {
+public final class ShewchukIntervalTriangle2D extends Triangle2D {
 
   // cache vector result of translating p0 to origin,
   // and related quantities
@@ -31,11 +40,18 @@ public final class DoubleTriangle2D extends Triangle2D {
   private final double _V20xV10;
   private final double getV20xV10 () {  return _V20xV10; }
 
+  private final double _areaBound;
+  public final double areaBound () {  return _areaBound; }
+
   //--------------------------------------------------------------------
 
   public final boolean signedAreaExact () { return false; }
 
   public final double twiceSignedArea () { return -getV20xV10(); }
+
+  public final DoubleInterval twiceSignedAreaInterval () {
+    return DoubleInterval.plusOrMinus(twiceSignedArea(),areaBound()); }
+
 
   //--------------------------------------------------------------------
 
@@ -76,13 +92,36 @@ public final class DoubleTriangle2D extends Triangle2D {
 
     return dot(p2,b2,c2,bxc,pxc,bxp); }
 
+  public final double inCircleBound (final Vector2D p) {
+
+    final double xp0 = p.getX() - getP0().getX();
+    final double yp0 = p.getY() - getP0().getY();
+
+    final double p2 = l2norm2(xp0,yp0);
+    final double b2 = getV10Norm2();
+    final double c2 = getV20Norm2();
+
+    final double factor = (10.0 + 96.0 * EPSILON) * EPSILON;
+    return factor *
+      ((p2 * (Math.abs(_x20*_y10) + Math.abs(_y20*_x10))) +
+        (b2 * (Math.abs(xp0*_y20) + Math.abs(yp0*_x20))) +
+        (c2 * (Math.abs(_x10*yp0) + Math.abs(_y10*xp0)))); }
+
+  public final DoubleInterval inCircleInterval (final Vector2D p) {
+
+    return DoubleInterval.plusOrMinus(
+      inCircleDistance(p),
+      inCircleBound(p)); }
+
   //--------------------------------------------------------------------
   // construction
   //--------------------------------------------------------------------
 
-  private DoubleTriangle2D (final Vector2D a,
-                            final Vector2D b,
-                            final Vector2D c)  {
+  private static final double EPSILON = 0x1.0p-53;
+
+  private ShewchukIntervalTriangle2D (final Vector2D a,
+                                      final Vector2D b,
+                                      final Vector2D c)  {
     super(a,b,c);
 
     final double ax = a.getX();
@@ -94,14 +133,19 @@ public final class DoubleTriangle2D extends Triangle2D {
 
     _x20 = c.getX() - ax;
     _y20 = c.getY() - ay;
-
     _v20Norm2 = l2norm2(_x20,_y20);
-    _V20xV10 = crossProduct(_x20, _y20,_x10, _y10); }
+
+    _V20xV10 = crossProduct(_x20, _y20, _x10, _y10);
+
+    _areaBound =
+      16 * 8 * (EPSILON * (3.0 + 16.0 * EPSILON)) *
+        (Math.abs(_x20*_y10) + Math.abs(_y20*_x10));
+  }
 
   public static final Triangle2D of (final Vector2D a,
                                      final Vector2D b,
                                      final Vector2D c) {
-    return new DoubleTriangle2D(a, b, c); }
+    return new ShewchukIntervalTriangle2D(a, b, c); }
 
   /** Convert other triangle classes. */
 
