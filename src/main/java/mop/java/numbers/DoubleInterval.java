@@ -1,6 +1,7 @@
 package mop.java.numbers;
 
 //----------------------------------------------------------------------
+
 /** A <code>double</code> interval.
  * <br>
  * See <a href="https://en.wikipedia.org/wiki/Interval_arithmetic">
@@ -16,7 +17,7 @@ package mop.java.numbers;
  * only if f is monotone in both arguments over [min,max].
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-03
+ * @version 2026-09-05
  */
 
 public record DoubleInterval (double min, double max)
@@ -90,15 +91,32 @@ public record DoubleInterval (double min, double max)
     return new DoubleInterval(min()-q.max(),max()-q.min()); }
 
   //--------------------------------------------------------------
-  /** Return the double error interval value of <code>z0-z1</code>,
+  /** Return the double interval value of <code>z0-z1</code>,
    * without intermediate <code>DoubleInterval</code> instances.
    */
 
+//  public static final DoubleInterval dif (final double z0,
+//                                          final double z1) {
+//    // TODO: twoSum and a minimal +/- interval?
+//    final double mz1 = -z1;
+//    return new DoubleInterval(Math.nextDown(z0)+Math.nextDown(mz1),
+//                              Math.nextUp(z0)+Math.nextUp(mz1)); }
+
   public static final DoubleInterval dif (final double z0,
                                           final double z1) {
-    final double mz1 = -z1;
-    return new DoubleInterval(Math.nextDown(z0)+Math.nextDown(mz1),
-                              Math.nextUp(z0)+Math.nextUp(mz1)); }
+    return new DoubleInterval(Math.nextDown(z0-z1),Math.nextUp(z0-z1)); }
+
+//  public static final DoubleInterval dif (final double z0,
+//                                          final double z1) {
+//    // TODO: is this correct?
+//    final Hilo z01 = Hilo.sum(z0,-z1);
+//    final double hi = z01.hi();
+//    final double lo = z01.lo();
+//    if (0.0<lo) {
+//      return new DoubleInterval(hi,Math.nextUp(hi)); }
+//    if (0.0>lo) {
+//      return new DoubleInterval(Math.nextDown(hi), hi); }
+//    return new DoubleInterval(Math.nextDown(hi),Math.nextUp(hi)); }
 
   //--------------------------------------------------------------
 

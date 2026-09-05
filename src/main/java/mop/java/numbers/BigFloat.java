@@ -916,6 +916,7 @@ public final class BigFloat implements Ringlike<BigFloat> {
   // methods equivalent to ==,<=,>=,>,< for double
   // Double.equals and Double.compareTo have results that differ
   // from the corresponding <code>double</code> operators.
+  // TODO: optimize using appropriate benchmarks
   //--------------------------------------------------------------
 
   public final boolean opEQ (final BigFloat q) {
@@ -959,6 +960,47 @@ public final class BigFloat implements Ringlike<BigFloat> {
 
   public final boolean opLE (final BigFloat q) {
     if (isNaN() || q.isNaN()) { return false; }
+    return ! opGT(q); }
+
+  //--------------------------------------------------------------
+
+  public final boolean opEQ (final double q) {
+    if (isNaN() || Double.isNaN(q)) { return false; }
+    if (isZero()) { return 0.0==q; } // regardless of +/- zero
+    // TODO: mark when reduced
+    final BigFloat r0 = reduce();
+    return (r0.significand().equals(Doubles.significand(q)))
+      && (r0.nonNegative() == Doubles.nonNegative(q))
+      && (r0.exponent() == Doubles.exponent(q)); }
+
+  public final boolean opGT (final double q) {
+    if (isNaN() || Double.isNaN(q)) { return false; }
+    if (isZero()) { return 0.0>q; } // regardless of +/- zero
+    if (nonNegative() && (! Doubles.nonNegative(q))) { return true; }
+    if ((! nonNegative()) &&  Doubles.nonNegative(q)) { return false; }
+    // same signs
+    // TODO: cache reduced flag?
+    final BigFloat r0 = reduce();
+    if (r0.nonNegative()) { // both positive
+      if (r0.exponent() > Doubles.exponent(q)) { return true; }
+      if (r0.exponent() < Doubles.exponent(q)) { return false; }
+      return (r0.significand().compareTo(Doubles.significand(q)) > 0); }
+    // else both negative
+    if (r0.exponent() < Doubles.exponent(q)) { return true; }
+    if (r0.exponent() > Doubles.exponent(q)) { return false; }
+    return (r0.significand().compareTo(Doubles.significand(q)) < 0); }
+
+  // TODO: optimize?
+  public final boolean opGE (final double q) {
+    if (isNaN() || Double.isNaN(q)) { return false; }
+    return  opEQ(q) || opGT(q); }
+
+  public final boolean opLT (final double q) {
+    if (isNaN() || Double.isNaN(q)) { return false; }
+    return ! opGE(q); }
+
+  public final boolean opLE (final double q) {
+    if (isNaN() || Double.isNaN(q)) { return false; }
     return ! opGT(q); }
 
   //--------------------------------------------------------------
@@ -1069,7 +1111,7 @@ public final class BigFloat implements Ringlike<BigFloat> {
   //    if (0>=shift) { return new BigFloat(p0,t0,e0); }
   //    return new BigFloat(p0, t0.shiftDown(shift),e0+shift); }
 
-  private final BigFloat reduce () {
+  public final BigFloat reduce () {
     if (! isFinite()) { return this; }
     final boolean p0 = nonNegative();
     final BoundedNatural t0 = significand();

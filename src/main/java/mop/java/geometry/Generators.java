@@ -172,6 +172,19 @@ public final class Generators {
 
   //--------------------------------------------------------------
 
+  private static final Vector2D fmaAffine (final double a,
+                                           final Vector2D p0,
+                                           final Vector2D p1) {
+    final double x1 = p1.getX();
+    final double y1 = p1.getY();
+    final double dx = p0.getX() - x1;
+    final double dy = p0.getY() - y1;
+    final double x2 = Math.fma(a,dx,x1);
+    final double y2 = Math.fma(a,dy,y1);
+    return Vector2D.of(x2,y2); }
+
+  //--------------------------------------------------------------
+
   public static final Generator
   colinearTriangleGenerator (final Generator vectorGenerator,
                              final Generator doubleGenerator) {
@@ -182,7 +195,8 @@ public final class Generators {
         final Vector2D p0 = (Vector2D) vectorGenerator.next();
         final Vector2D p1 = (Vector2D) vectorGenerator.next();
         final double a = doubleGenerator.nextDouble();
-        final Vector2D p2 = p0.multiply(a).add(1.0-a,p1);
+        //final Vector2D p2 = p0.multiply(a).add(1.0-a,p1);
+        final Vector2D p2 = fmaAffine(a,p0,p1);
         return TriangleVector2D.of(p0,p1,p2); } }; }
 
   public static final Generator

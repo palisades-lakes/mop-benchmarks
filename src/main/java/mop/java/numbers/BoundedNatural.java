@@ -60,7 +60,7 @@ import static mop.java.numbers.Numbers.*;
  * when the operation result exceeds the bound.
  *  <br>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-08-13
+ * @version 2026-09-05
  */
 
 //
@@ -172,6 +172,9 @@ implements Ringlike<BoundedNatural> {
       if (tti<ulo) { return -1; }
       if (tti>ulo) { return 1; } }
     return 0; }
+
+  public final boolean equals (final long u) {
+    return 0 == compareTo(u); }
 
   //--------------------------------------------------------------
 

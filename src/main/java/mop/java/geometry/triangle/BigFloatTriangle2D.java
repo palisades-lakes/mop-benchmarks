@@ -7,7 +7,7 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
  * Should be exact, up to BigFloat resolution.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-09-01
+ * @version 2026-09-05
  */
 
 public final class BigFloatTriangle2D extends Triangle2D {
@@ -53,7 +53,7 @@ public final class BigFloatTriangle2D extends Triangle2D {
     return _v20Norm2; }
 
   private BigFloat _V20xV10;
-  private final BigFloat getV20xV10 () {
+  public final BigFloat getV20xV10 () {
     if (null==_V20xV10) {
       _V20xV10 = BigFloat.crossProduct(getX20(), getY20(),
                                        getX10(), getY10()); }
@@ -83,7 +83,7 @@ public final class BigFloatTriangle2D extends Triangle2D {
 
   public final boolean inCircleDistanceExact () { return true; }
 
-  public final double inCircleDistance (final Vector2D p) {
+  public final BigFloat inCircleDistanceBF (final Vector2D p) {
 
     // TODO: BigFloatVector operations
     final BigFloat xp0 = BigFloat.dif(p.getX(),getP0().getX());
@@ -98,7 +98,10 @@ public final class BigFloatTriangle2D extends Triangle2D {
     final BigFloat c2 = getV20Norm2();
 
     // TODO: reverse crossProducts
-    return BigFloat.dot(p2,b2,c2,bxc,pxc,bxp).doubleValue(); }
+    return BigFloat.dot(p2,b2,c2,bxc,pxc,bxp); }
+
+  public final double inCircleDistance (final Vector2D p) {
+    return inCircleDistanceBF(p).doubleValue(); }
 
   //--------------------------------------------------------------------
 

@@ -108,7 +108,6 @@ public final class ShewchukIntervalTriangle2D extends Triangle2D {
         (c2 * (Math.abs(_x10*yp0) + Math.abs(_y10*xp0)))); }
 
   public final DoubleInterval inCircleInterval (final Vector2D p) {
-
     return DoubleInterval.plusOrMinus(
       inCircleDistance(p),
       inCircleBound(p)); }
