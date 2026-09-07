@@ -9,7 +9,7 @@ import java.io.Serializable;
  * <a href="https://github.com/locationtech/jts/blob/master/modules/core/src/main/java/org/locationtech/jts/math/DD.java">
  *  org.locationtech.jts.math.DD</a>
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-08-25
+ * @version 2026-09-07
  */
 
 public record Hilo (double hi, double lo)
@@ -138,8 +138,8 @@ public record Hilo (double hi, double lo)
     return add(-y.hi, -y.lo); }
 
   //--------------------------------------------------------------------
-
   // TODO: sum probably not necessary
+
   @Override
   public final Hilo negate () { return sum(-hi, -lo); }
 
@@ -306,12 +306,8 @@ public record Hilo (double hi, double lo)
   // FMA version
   public static final Hilo square (final double a) {
     final double x =  (a * a);
-    final double y = Math.fma(a,a,x);
+    final double y = Math.fma(a,a,-x);
     return new Hilo(x, y); }
-
-  // TODO: optimize as in predicates.c
-//  @Override
-//  public final Hilo square () { return multiply(this); }
 
   //-------------------------------------------------------------------
 

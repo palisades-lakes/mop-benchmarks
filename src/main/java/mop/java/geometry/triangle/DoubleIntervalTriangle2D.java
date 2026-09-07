@@ -111,7 +111,8 @@ public final class DoubleIntervalTriangle2D extends Triangle2D {
   //--------------------------------------------------------------------
 
   public final String toString () {
-    return toHexString() + ":" + twiceSignedAreaInterval(); }
+    return toHexString(); }
+  //+ " 2*area: " + twiceSignedAreaInterval(); }
 
   //--------------------------------------------------------------------
   // construction

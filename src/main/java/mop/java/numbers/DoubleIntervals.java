@@ -88,7 +88,7 @@ public final class DoubleIntervals implements Set {
   //--------------------------------------------------------------
 
   public final DoubleInterval multiplicativeIdentity () {
-    return DoubleInterval.valueOf(1L); }
+    return new DoubleInterval(1.0,1.0); }
 
   //--------------------------------------------------------------
   // Set methods
@@ -131,11 +131,11 @@ public final class DoubleIntervals implements Set {
         new CollectionSampler(
           urp,
           List.of(
-            DoubleInterval.valueOf(0L),
-            DoubleInterval.valueOf(1L),
-            DoubleInterval.valueOf(2L),
-            DoubleInterval.valueOf(10L),
-            DoubleInterval.valueOf(-1L)));
+            DoubleInterval.ZERO,
+            DoubleInterval.ONE,
+            new DoubleInterval(2.0,2.0),
+            new DoubleInterval(10.0,10.0),
+            new DoubleInterval(-1.0,-1.0)));
       @Override
       public Object next () {
         final boolean edge = choose.sample() > dp;

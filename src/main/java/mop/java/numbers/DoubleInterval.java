@@ -17,7 +17,7 @@ package mop.java.numbers;
  * only if f is monotone in both arguments over [min,max].
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-05
+ * @version 2026-09-07
  */
 
 public record DoubleInterval (double min, double max)
@@ -77,6 +77,8 @@ public record DoubleInterval (double min, double max)
     return new DoubleInterval(z1,z0); }
 
   //--------------------------------------------------------------
+  // TODO: do we need Hilo.sum()? expand intervals for
+  //  rounding in adds?
 
   @Override
   public final DoubleInterval add (final DoubleInterval q) {
@@ -84,6 +86,8 @@ public record DoubleInterval (double min, double max)
     return new DoubleInterval(min()+q.min(),max()+q.max()); }
 
   //--------------------------------------------------------------
+  // TODO: do we need Hilo.sum()? expand intervals for
+  //  rounding in subtracts?
 
   @Override
   public final DoubleInterval subtract (final DoubleInterval q) {
@@ -91,34 +95,43 @@ public record DoubleInterval (double min, double max)
     return new DoubleInterval(min()-q.max(),max()-q.min()); }
 
   //--------------------------------------------------------------
-  /** Return the double interval value of <code>z0-z1</code>,
-   * without intermediate <code>DoubleInterval</code> instances.
+  /** Return the double interval covering the error in
+   *  <code>z0-z1</code>,
    */
 
 //  public static final DoubleInterval dif (final double z0,
 //                                          final double z1) {
-//    // TODO: twoSum and a minimal +/- interval?
-//    final double mz1 = -z1;
-//    return new DoubleInterval(Math.nextDown(z0)+Math.nextDown(mz1),
-//                              Math.nextUp(z0)+Math.nextUp(mz1)); }
+//    // TODO: twice the real width?
+//    return new DoubleInterval(Math.nextDown(z0-z1),Math.nextUp(z0-z1)); }
 
   public static final DoubleInterval dif (final double z0,
                                           final double z1) {
-    return new DoubleInterval(Math.nextDown(z0-z1),Math.nextUp(z0-z1)); }
-
-//  public static final DoubleInterval dif (final double z0,
-//                                          final double z1) {
-//    // TODO: is this correct?
-//    final Hilo z01 = Hilo.sum(z0,-z1);
-//    final double hi = z01.hi();
-//    final double lo = z01.lo();
-//    if (0.0<lo) {
-//      return new DoubleInterval(hi,Math.nextUp(hi)); }
-//    if (0.0>lo) {
-//      return new DoubleInterval(Math.nextDown(hi), hi); }
-//    return new DoubleInterval(Math.nextDown(hi),Math.nextUp(hi)); }
+    // TODO: is this correct?
+    //  Assuming z0, z1 'exact',
+    //  construct a small interval with double bounds guaranteed
+    //  to include the exact, rational difference.
+    final Hilo z01 = Hilo.sum(z0,-z1);
+    final double hi = z01.hi();
+    final double lo = z01.lo();
+    // no rounding
+    if (0.0==lo) { return new DoubleInterval(hi,hi); }
+    // round down
+    if (0.0<lo) {
+      assert hi+lo <= Math.nextUp(hi);
+      return new DoubleInterval(hi,Math.nextUp(hi)); }
+    // round up
+    //else if (0.0>lo) {
+    assert hi+lo >= Math.nextDown(hi) :
+      "\n\nhi: " + Double.toHexString(hi) +
+        "\nlo: " + Double.toHexString(lo) +
+        "\nhi+lo: " + Double.toHexString(hi+lo) +
+        "\nnextDown(hi): " + Double.toHexString(Math.nextDown(hi)) +
+        "\n\n";
+    return new DoubleInterval(Math.nextDown(hi), hi); }
 
   //--------------------------------------------------------------
+  // TODO: do we need Hilo.product()? expand intervals for
+  //  rounding in multiplies?
 
   @Override
   public final DoubleInterval multiply (final DoubleInterval q) {
@@ -138,6 +151,8 @@ public record DoubleInterval (double min, double max)
     return new DoubleInterval(zmin,zmax);  }
 
   //--------------------------------------------------------------
+  // TODO: do we need Hilo.square()? expand intervals for
+  //  rounding in multiplies?
 
   @Override
   public final DoubleInterval
@@ -154,40 +169,9 @@ public record DoubleInterval (double min, double max)
   //--------------------------------------------------------------
   // geometry
   //--------------------------------------------------------------
-// calling new instances from square() vs inlining
-// makes no difference in benchmark
+  // calling new instances from square() vs inlining
+  // makes no difference in benchmark
 
-//  public static final DoubleInterval l2norm2 (final DoubleInterval x,
-//                                              final DoubleInterval y) {
-//    if (x.isNaN() || y.isNaN()) { return NaN; }
-//
-//    final double xxmin = x.min()*x.min();
-//    final double xxmax = x.max()*x.max();
-//    final double xx0, xx1;
-//    if (x.containsZero()) {
-//      xx0 = 0.0;
-//      xx1 = Math.max(xxmin,xxmax); }
-//    else if (xxmin<=xxmax) {
-//      xx0 = xxmin;
-//      xx1 = xxmax; }
-//    else {
-//      xx0 = xxmax;
-//      xx1 = xxmin; }
-//
-//    final double yymin = y.min()*y.min();
-//    final double yymax = y.max()*y.max();
-//    final double yy0, yy1;
-//    if (y.containsZero()) {
-//      yy0 = 0.0;
-//      yy1 = Math.max(yymin,yymax); }
-//    else if (yymin<=yymax) {
-//      yy0 = yymin;
-//      yy1 = yymax; }
-//    else {
-//      yy0 = yymax;
-//      yy1 = yymin; }
-//
-//    return new DoubleInterval(xx0+yy0,xx1+yy1); }
 
   public static final DoubleInterval l2norm2 (final DoubleInterval x,
                                               final DoubleInterval y) {
@@ -213,53 +197,6 @@ public record DoubleInterval (double min, double max)
       x0y1.max()-x1y0.min()); }
 
   //--------------------------------------------------------------
-
-  // 157/147 relative to version with multiply
-//  public static final DoubleInterval
-//  dot (final DoubleInterval x0,
-//       final DoubleInterval y0,
-//       final DoubleInterval z0,
-//       final DoubleInterval x1,
-//       final DoubleInterval y1,
-//       final DoubleInterval z1) {
-//
-//    final double xx00 = x0.min() * x1.min();
-//    final double xx01 = x0.min() * x1.max();
-//    final double xx10 = x0.max() * x1.min();
-//    final double xx11 = x0.max() * x1.max();
-//    double xxmin, xxmax;
-//    if (xx00<=xx01) { xxmin = xx00; xxmax = xx01; }
-//    else { xxmin = xx01; xxmax = xx00; }
-//    if (xx10<xxmin) { xxmin = xx10; }
-//    else if (xxmax<xx10) { xxmax = xx10; }
-//    if (xx11<xxmin) { xxmin = xx11; }
-//    else if (xxmax<xx11) { xxmax = xx11; }
-//
-//    final double yy00 = y0.min() * y1.min();
-//    final double yy01 = y0.min() * y1.max();
-//    final double yy10 = y0.max() * y1.min();
-//    final double yy11 = y0.max() * y1.max();
-//    double yymin, yymax;
-//    if (yy00<=yy01) { yymin = yy00; yymax = yy01; }
-//    else { yymin = yy01; yymax = yy00; }
-//    if (yy10<yymin) { yymin = yy10; }
-//    else if (yymax<yy10) { yymax = yy10; }
-//    if (yy11<yymin) { yymin = yy11; }
-//    else if (yymax<yy11) { yymax = yy11; }
-//
-//    final double zz00 = z0.min() * z1.min();
-//    final double zz01 = z0.min() * z1.max();
-//    final double zz10 = z0.max() * z1.min();
-//    final double zz11 = z0.max() * z1.max();
-//    double zzmin, zzmax;
-//    if (zz00<=zz01) { zzmin = zz00; zzmax = zz01; }
-//    else { zzmin = zz01; zzmax = zz00; }
-//    if (zz10<zzmin) { zzmin = zz10; }
-//    else if (zzmax<zz10) { zzmax = zz10; }
-//    if (zz11<zzmin) { zzmin = zz11; }
-//    else if (zzmax<zz11) { zzmax = zz11; }
-//
-//    return new DoubleInterval(xxmin+yymin+zzmin, xxmax+yymax+zzmax); }
 
   public static final DoubleInterval
   dot (final DoubleInterval x0,
@@ -311,8 +248,14 @@ public record DoubleInterval (double min, double max)
   // construction
   //--------------------------------------------------------------
 
-  public static final DoubleInterval valueOf (final double z)  {
-    return new DoubleInterval(Math.nextDown(z),Math.nextUp(z)); }
+//  public DoubleInterval {
+//    System.out.println(
+//      "[" +
+//        Double.toHexString(min) + ", " +
+//        Double.toHexString(max) + "]");
+//  }
+//  public static final DoubleInterval valueOf (final double z)  {
+//    return new DoubleInterval(Math.nextDown(z),Math.nextUp(z)); }
 
   public static final DoubleInterval plusOrMinus (final double z,
                                                   final double e)  {

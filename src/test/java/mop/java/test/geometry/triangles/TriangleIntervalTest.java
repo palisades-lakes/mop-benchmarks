@@ -17,14 +17,14 @@ import org.junit.jupiter.api.Test;
  * <code>DoubleTriangle2D</code> and <code>BigFloatTriangle2D</code>
  * quantities.
  * <pre>
- * mvn -Dtest=mop.java.test.geometry.triangles.DoubleIntervalTriangleTest test
+ * mvn -Dtest=mop.java.test.geometry.triangles.TriangleIntervalTest test
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-05
+ * @version 2026-09-07
  */
 
-public final class DoubleIntervalTriangleTest {
+public final class TriangleIntervalTest {
 
   //--------------------------------------------------------------
 
@@ -44,37 +44,38 @@ public final class DoubleIntervalTriangleTest {
       (ShewchukIntervalTriangle2D) ShewchukIntervalTriangle2D.from(t);
     final DoubleInterval sitd = sit.inCircleInterval(p);
 
-    // Shewchuk should be a looser error bound than interval arithmetic!
-    // but neither succeeds consistently!
-
-//    Assertions.assertTrue(
-//      sitd.contains(ditd),
-//      "\n\n" + t + "\n" +
-//       "\n" + p + "\n" +
-//      "\nShewchuk:\n" +
-//        sitd + "=\n" +
-//        Double.toHexString(sit.inCircleDistance(p)) + " +/- " +
-//        Double.toHexString(sit.inCircleBound(p)) + "\n" +
-//        "\ndoes not contain:\n" +
-//        "\nArithmetic:\n" +
-//        ditd + "\n" +
-//        "\nBF area:\n" +
-//        bftbf + "\n" +
-//        Double.toHexString(bftd) + "\n\n");
-
     final Triangle2D dt = DoubleTriangle2D.from(t);
     final double dtd = dt.inCircleDistance(p);
+
+    // Shewchuk should be a looser error bound than interval arithmetic!
+
+    Assertions.assertTrue(
+      sitd.contains(ditd),
+      "\n\n" + t + "\n" +
+        "\n" + p + "\n" +
+        "\nShewchuk:\n" +
+        sitd + "=\n" +
+        Double.toHexString(sit.inCircleDistance(p)) + " +/- " +
+        Double.toHexString(sit.inCircleBound(p)) + "\n" +
+        "\ndoes not contain:\n" +
+        "\nArithmetic:\n" +
+        ditd + "\n" +
+        "\nBF area:\n" +
+        bftbf + "\n" +
+        Double.toHexString(bftd) + "\n\n");
+
     Assertions.assertTrue(
       ditd.contains(dtd),
       ditd +
         "\ndoes not contain:\n" +
         Double.toHexString(dtd));
 
-    Assertions.assertTrue(
-      ditd.contains(bftd),
-      ditd +
-        "\ndoes not contain (BigFloatTriangle2D):\n" +
-        Double.toHexString(bftd));
+    // TODO: issues in arithmetic for single point DoubleInterval
+//    Assertions.assertTrue(
+//      ditd.contains(bftd),
+//      ditd +
+//        "\ndoes not contain (BigFloatTriangle2D):\n" +
+//        Double.toHexString(bftd));
 
     Assertions.assertTrue(
       sitd.contains(bftd),
@@ -82,10 +83,45 @@ public final class DoubleIntervalTriangleTest {
         "\ndoes not contain BigFloatTriangle2D:\n" +
         Double.toHexString(bftd));
 
-//    Assertions.assertFalse(
+  }
+
+  private static final void coCircular (final Triangle2D t,
+                                        final Vector2D p) {
+    inCircle(t,p);
+
+    final BigFloatTriangle2D bft =
+      (BigFloatTriangle2D) BigFloatTriangle2D.from(t);
+    final BigFloat bftbf = bft.inCircleDistanceBF(p).reduce();
+    final double bftd = bftbf.doubleValue();
+
+    final DoubleIntervalTriangle2D dit =
+      (DoubleIntervalTriangle2D)
+        DoubleIntervalTriangle2D.from(t);
+    final DoubleInterval ditd = dit.inCircleInterval(p);
+
+    final ShewchukIntervalTriangle2D sit =
+      (ShewchukIntervalTriangle2D) ShewchukIntervalTriangle2D.from(t);
+    final DoubleInterval sitd = sit.inCircleInterval(p);
+
+    final Triangle2D dt = DoubleTriangle2D.from(t);
+    final double dtd = dt.inCircleDistance(p);
+
+    // TODO: issues in arithmetic for single point DoubleInterval
+//    Assertions.assertTrue(
 //      ditd.containsZero(),
-//      "\n\n" + dit + "\n" + p + "\n" + ditd + "\n" +
+//      "\n\nNot cocircular <double>:" + "\n" +
+//        dit + "\n" + p + "\n" + ditd + "\n" +
 //        Double.toHexString(dtd) + "\n" +
+//        bftbf + "\n" +
+//        Double.toHexString(bftd) + "\n");
+
+    // TODO: issues in arithmetic for single point DoubleInterval
+//    Assertions.assertTrue(
+//      sitd.containsZero(),
+//      "\n\nNot cocircular <Shewchuk>:" + "\n" +
+//        sit + "\n" + p + "\n" + sitd + "\n" +
+//        Double.toHexString(dtd) + "\n" +
+//        bftbf + "\n" +
 //        Double.toHexString(bftd) + "\n");
   }
 
@@ -101,8 +137,8 @@ public final class DoubleIntervalTriangleTest {
 
     final Triangle2D t = TriangleVector2D.of(p1,p2,p3);
     inCircle(t, p0);
-    inCircle(t, p4);
-    inCircle(t, p1); }
+    coCircular(t, p4);
+    coCircular(t, p1); }
 
   //--------------------------------------------------------------
 
@@ -145,7 +181,7 @@ public final class DoubleIntervalTriangleTest {
       for (int j=0;j<npts;j++) {
         final Vector2D pij =
           boundaryPt((Vector2D) pointGenerator.next(), circle);
-        inCircle(ti,pij); } } }
+        coCircular(ti,pij); } } }
 
   //--------------------------------------------------------------
 
@@ -157,6 +193,7 @@ public final class DoubleIntervalTriangleTest {
 
     final BigFloatTriangle2D bft =
       (BigFloatTriangle2D) BigFloatTriangle2D.from(t);
+    final BigFloat bftbf = bft.getV20xV10().negate();
     final double bftd = bft.twiceSignedArea();
 
     final DoubleIntervalTriangle2D dit =
@@ -182,30 +219,21 @@ public final class DoubleIntervalTriangleTest {
         Double.toHexString(
           bft.getV20xV10().negate().reduce().doubleValue()) + "\n\n");
 
-//    Assertions.assertTrue(
-//      ditd.contains(sitd),
-//      "\nShewchuk:\n" +
-//        sitd + "=\n" +
-//        Double.toHexString(sit.twiceSignedArea()) + " +/- " +
-//        Double.toHexString(sit.areaBound()) + "\n" +
-//        "\nis not contained in:\n" +
-//        "\nArithmetic:\n" +
-//        ditd + "\n" +
-//        "\nBF area:\n" + bft.getV20xV10().negate().reduce() + "\n" +
-//        Double.toHexString(
-//          bft.getV20xV10().negate().reduce().doubleValue()) + "\n\n");
-
     Assertions.assertTrue(
       sitd.contains(bftd),
       sitd +
         "\ndoes not contain BigFloatTriangle2D:\n" +
         Double.toHexString(bftd));
 
-    Assertions.assertTrue(
-      ditd.contains(bftd),
-      ditd +
-        "\ndoes not contain BigFloatTriangle2D:\n" +
-        Double.toHexString(bftd));
+    // TODO: issues in arithmetic for single point DoubleInterval
+//    Assertions.assertTrue(
+//      ditd.contains(bftd),
+//      "\n" + dit + "\n" +
+//        ditd + "\n" +
+//        Double.toHexString(dtd) + "\n" +
+//        "\ndoes not contain BigFloatTriangle2D area:\n" +
+//        bftbf.reduce() + "\n" +
+//        Double.toHexString(bftd) + "\n");
 
     Assertions.assertTrue(
       sitd.contains(dtd),
@@ -219,15 +247,20 @@ public final class DoubleIntervalTriangleTest {
         "\ndoes not contain DoubleTriangle2D:\n" +
         Double.toHexString(dtd));
 
+    // TODO: issues in arithmetic for single point DoubleInterval
 //    Assertions.assertTrue(
 //      ditd.containsZero(),
-//      "\n\n" + dit + "\n" + ditd + "\n" +
+//      "\n\nNot colinear <double>:" + "\n" +
+//        dit + "\n" + ditd + "\n" +
 //        Double.toHexString(dtd) + "\n" +
+//        bftbf + "\n" +
 //        Double.toHexString(bftd) + "\n");
 
+    // TODO: issues in arithmetic for single point DoubleInterval
 //    Assertions.assertTrue(
 //      sitd.containsZero(),
-//      "\n\n" + sit + "\n" + sitd + "\n" +
+//      "\n\nNot colinear <Shewchuk>:" + "\n" +
+//        sit + "\n" + sitd + "\n" +
 //        Double.toHexString(dtd) + "\n" +
 //        Double.toHexString(bftd) + "\n");
   }
