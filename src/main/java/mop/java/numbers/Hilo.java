@@ -8,6 +8,10 @@ import java.io.Serializable;
  * Essentially the same as
  * <a href="https://github.com/locationtech/jts/blob/master/modules/core/src/main/java/org/locationtech/jts/math/DD.java">
  *  org.locationtech.jts.math.DD</a>
+ *  <br>
+ *  TODO: a lot of this is unnecessary ---
+ *    reduced class size should increase performance
+ *
  * @author palisades dot lakes at gmail dot com,
  * @version 2026-09-07
  */
@@ -61,6 +65,9 @@ public record Hilo (double hi, double lo)
   public static final Hilo sum (final double a,
                                 final double b) {
     final double x = a + b;
+    if (Double.isNaN(x)) { return NaN; }
+    if (Double.POSITIVE_INFINITY == x) { return POSITIVE_INFINITY; }
+    if (Double.NEGATIVE_INFINITY == x) { return NEGATIVE_INFINITY; }
     final double bvirt = x - a;
     final double avirt = x - bvirt;
     final double bround = b - bvirt;
@@ -71,13 +78,16 @@ public record Hilo (double hi, double lo)
   //--------------------------------------------------------------------
 
   public final Hilo add (final double y) {
-    final double S = hi + y;
-    final double e = S - hi;
-    double s = S - e;
+    final double x = hi + y;
+    if (Double.isNaN(x)) { return NaN; }
+    if (Double.POSITIVE_INFINITY == x) { return POSITIVE_INFINITY; }
+    if (Double.NEGATIVE_INFINITY == x) { return NEGATIVE_INFINITY; }
+    final double e = x - hi;
+    double s = x - e;
     s = (y - e) + (hi - s);
     final double f = s + lo;
-    final double H = S + f;
-    final double h = f + (S - H);
+    final double H = x + f;
+    final double h = f + (x - H);
     return sum(H + h, h + (H - hi)); }
 
   private final Hilo add (final double yhi,
@@ -305,9 +315,13 @@ public record Hilo (double hi, double lo)
 
   // FMA version
   public static final Hilo square (final double a) {
+    if (Double.isNaN(a)) { return NaN; }
+    if (Double.isInfinite(a)) { return POSITIVE_INFINITY; }
     final double x =  (a * a);
+    if (Double.isInfinite(x)) { return POSITIVE_INFINITY; }
     final double y = Math.fma(a,a,-x);
-    return new Hilo(x, y); }
+    if (Double.isFinite(y)) { return new Hilo(x, y); }
+    return NaN; }
 
   //-------------------------------------------------------------------
 

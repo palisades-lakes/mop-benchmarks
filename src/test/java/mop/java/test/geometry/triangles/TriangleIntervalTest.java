@@ -71,11 +71,11 @@ public final class TriangleIntervalTest {
         Double.toHexString(dtd));
 
     // TODO: issues in arithmetic for single point DoubleInterval
-//    Assertions.assertTrue(
-//      ditd.contains(bftd),
-//      ditd +
-//        "\ndoes not contain (BigFloatTriangle2D):\n" +
-//        Double.toHexString(bftd));
+    Assertions.assertTrue(
+      ditd.contains(bftd),
+      ditd +
+        "\ndoes not contain (BigFloatTriangle2D):\n" +
+        Double.toHexString(bftd));
 
     Assertions.assertTrue(
       sitd.contains(bftd),
@@ -106,7 +106,9 @@ public final class TriangleIntervalTest {
     final Triangle2D dt = DoubleTriangle2D.from(t);
     final double dtd = dt.inCircleDistance(p);
 
-    // TODO: issues in arithmetic for single point DoubleInterval
+    // TODO: some generated <double> triangle plus point cases are not
+    //  cocircular even in BigFloat. Generate and collect 4 pt sets
+    //  which are cocircular in BigFloat precision
 //    Assertions.assertTrue(
 //      ditd.containsZero(),
 //      "\n\nNot cocircular <double>:" + "\n" +
@@ -114,8 +116,7 @@ public final class TriangleIntervalTest {
 //        Double.toHexString(dtd) + "\n" +
 //        bftbf + "\n" +
 //        Double.toHexString(bftd) + "\n");
-
-    // TODO: issues in arithmetic for single point DoubleInterval
+//
 //    Assertions.assertTrue(
 //      sitd.containsZero(),
 //      "\n\nNot cocircular <Shewchuk>:" + "\n" +
@@ -226,14 +227,14 @@ public final class TriangleIntervalTest {
         Double.toHexString(bftd));
 
     // TODO: issues in arithmetic for single point DoubleInterval
-//    Assertions.assertTrue(
-//      ditd.contains(bftd),
-//      "\n" + dit + "\n" +
-//        ditd + "\n" +
-//        Double.toHexString(dtd) + "\n" +
-//        "\ndoes not contain BigFloatTriangle2D area:\n" +
-//        bftbf.reduce() + "\n" +
-//        Double.toHexString(bftd) + "\n");
+    Assertions.assertTrue(
+      ditd.contains(bftd),
+      "\n" + dit + "\n" +
+        ditd + "\n" +
+        Double.toHexString(dtd) + "\n" +
+        "\ndoes not contain BigFloatTriangle2D area:\n" +
+        bftbf.reduce() + "\n" +
+        Double.toHexString(bftd) + "\n");
 
     Assertions.assertTrue(
       sitd.contains(dtd),
@@ -247,7 +248,9 @@ public final class TriangleIntervalTest {
         "\ndoes not contain DoubleTriangle2D:\n" +
         Double.toHexString(dtd));
 
-    // TODO: issues in arithmetic for single point DoubleInterval
+    // TODO: some generated <double> 3 pt sets are not
+    //  colinear even in BigFloat. Generate and collect 3 pt sets
+    //  which are colinear in BigFloat precision
 //    Assertions.assertTrue(
 //      ditd.containsZero(),
 //      "\n\nNot colinear <double>:" + "\n" +
@@ -255,8 +258,7 @@ public final class TriangleIntervalTest {
 //        Double.toHexString(dtd) + "\n" +
 //        bftbf + "\n" +
 //        Double.toHexString(bftd) + "\n");
-
-    // TODO: issues in arithmetic for single point DoubleInterval
+//
 //    Assertions.assertTrue(
 //      sitd.containsZero(),
 //      "\n\nNot colinear <Shewchuk>:" + "\n" +
