@@ -15,7 +15,7 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
  *  </a>
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-09-03
+ * @version 2026-09-08
  */
 
 public final class ShewchukIntervalTriangle2D extends Triangle2D {
@@ -38,7 +38,7 @@ public final class ShewchukIntervalTriangle2D extends Triangle2D {
   private final double getV20Norm2 () { return _v20Norm2; }
 
   private final double _V20xV10;
-  private final double getV20xV10 () {  return _V20xV10; }
+  public final double getV20xV10 () {  return _V20xV10; }
 
   private final double _areaBound;
   public final double areaBound () {  return _areaBound; }

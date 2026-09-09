@@ -19,7 +19,7 @@ package mop.java.numbers;
  * TODO: any advantage to switching to half-open intervals?
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-07
+ * @version 2026-09-08
  */
 
 public record DoubleInterval (double min, double max)
@@ -28,13 +28,16 @@ public record DoubleInterval (double min, double max)
   //--------------------------------------------------------------
 
   public final boolean containsZero () {
-    return (min()<=0.0) && (0.0<=max()); }
+    return (min<=0.0) && (0.0<=max); }
 
   public final boolean contains (final double z) {
-    return (min()<=z) && (z<=max()); }
+    return (min<=z) && (z<=max); }
 
   public final boolean contains (final DoubleInterval interval) {
-    return (min()<=interval.min()) && (interval.max()<=max()); }
+    return (min<=interval.min) && (interval.max<=max); }
+
+  public final boolean contains (final BigFloat bf) {
+    return bf.opGE(min) && bf.opLE(max); }
 
   //--------------------------------------------------------------
   // Ringlike
@@ -52,28 +55,28 @@ public record DoubleInterval (double min, double max)
 
   @Override
   public final boolean isZero () {
-    return 0.0==min() && 0.0==max(); }
+    return 0.0==min && 0.0==max; }
 
   @Override
   public final boolean isOne () {
-    return 1.0==min() && 1.0==max(); }
+    return 1.0==min && 1.0==max; }
 
   public final boolean isNaN () {
-    return Double.isNaN(min()) && Double.isNaN(max()); }
+    return Double.isNaN(min) && Double.isNaN(max); }
 
   //--------------------------------------------------------------
 
   @Override
   public final DoubleInterval negate () {
     if (isNaN()) { return NaN; }
-    return new DoubleInterval(-max(),-min()); }
+    return new DoubleInterval(-max,-min); }
 
   @Override
   public final DoubleInterval abs () {
     // assuming Math.abs() is exact, just flips sign bit, so no rounding
     if (isNaN()) { return NaN; }
-    final double z0 = Math.abs(min());
-    final double z1 = Math.abs(max());
+    final double z0 = Math.abs(min);
+    final double z1 = Math.abs(max);
     if (containsZero()) {
       return new DoubleInterval(0.0,Math.max(z0,z1)); }
     if (z0<=z1) { return new DoubleInterval(z0,z1); }
@@ -226,7 +229,7 @@ public record DoubleInterval (double min, double max)
 
   /** Return midpoint as approximation. */
   @Override
-  public final double doubleValue () { return (min()+max())/2; }
+  public final double doubleValue () { return (min+max)/2; }
 
   //--------------------------------------------------------------
   // Object methods
@@ -236,7 +239,7 @@ public record DoubleInterval (double min, double max)
   /** Implement to handle NaN. */
   public final boolean equals (final DoubleInterval di) {
     if (isNaN()) { return di.isNaN(); }
-    return (min()==di.min()) && (max()==di.max()); }
+    return (min==di.min) && (max==di.max); }
 
   @Override
   public final boolean equals (final Object o) {
@@ -246,8 +249,8 @@ public record DoubleInterval (double min, double max)
 
   public final String toHexString () {
     return
-      "[" + Double.toHexString(min()) + "," +
-        Double.toHexString(max()) + "]";  }
+      "[" + Double.toHexString(min) + "," +
+        Double.toHexString(max) + "]";  }
 
   @Override
   public final String toString () { return toHexString(); }

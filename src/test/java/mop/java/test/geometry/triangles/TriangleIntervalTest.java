@@ -285,7 +285,8 @@ public final class TriangleIntervalTest {
 
     final int ntriangles = 1023;
     for (int i=0;i<ntriangles;i++) {
-      final TriangleVector2D ti = (TriangleVector2D) triangleGenerator.next();
+      final TriangleVector2D ti =
+        (TriangleVector2D) triangleGenerator.next();
 
       colinearSignedArea(ti); } }
 
