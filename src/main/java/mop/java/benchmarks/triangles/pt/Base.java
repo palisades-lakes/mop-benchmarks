@@ -13,7 +13,7 @@ import org.openjdk.jmh.infra.Blackhole;
 /** Benchmark triangle operations.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-08-31
+ * @version 2026-09-09
  */
 
 @State(Scope.Thread)
@@ -26,16 +26,18 @@ public abstract class Base {
   Generator circleGenerator;
 
   @Param({
-    "Adapt",
-    "ExactCache",
+//    "Adapt",
+//    "ExactCache",
 //    "Exact",
 //    "Fast",
 //    "Slow",
 //    "TriangleVector2D",
 //    "DoubleTriangle2D",
     "DoubleIntervalTriangle2D",
-    "DIBFTriangle2D",
-    "BigFloatTriangle2D",
+    "ShewchukIntervalTriangle2D",
+    "DiBFTriangle2D",
+    "ShBFTriangle2D",
+//    "BigFloatTriangle2D",
 //    "RationalFloatTriangle2D",
 //    "DDFast",
 //    "DDNormalized",

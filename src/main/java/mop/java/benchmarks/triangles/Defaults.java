@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
  * java -cp target\benchmarks.jar mop.java.benchmarks.arithmetic.Base
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-08-27
+ * @version 2026-09-09
  * */
 
 public final class Defaults {
@@ -37,10 +37,12 @@ public final class Defaults {
     // TODO: lookup method object rather than switch (String)
     return switch (dest) {
       case "TriangleVector2D" -> TriangleVector2D.from(t);
-      case "DoubleTriangle2D" ->  DoubleTriangle2D.from(t);
-      case "DoubleIntervalTriangle2D" ->  DoubleIntervalTriangle2D.from(t);
+      case "DoubleTriangle2D" -> DoubleTriangle2D.from(t);
+      case "DoubleIntervalTriangle2D" -> DoubleIntervalTriangle2D.from(t);
+      case "ShewchukIntervalTriangle2D" -> ShewchukIntervalTriangle2D.from(t);
       case "BigFloatTriangle2D" ->  BigFloatTriangle2D.from(t);
-      case "DIBFTriangle2D" ->  DIBFTriangle2D.from(t);
+      case "DiBFTriangle2D" ->  DiBFTriangle2D.from(t);
+      case "ShBFTriangle2D" ->  ShBFTriangle2D.from(t);
       case "RationalFloatTriangle2D" ->  RationalFloatTriangle2D.from(t);
       case "DDFast" ->  DDFast.from(t);
       case "DDNormalized" ->  DDNormalized.from(t);

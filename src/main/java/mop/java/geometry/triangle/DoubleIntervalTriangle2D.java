@@ -7,7 +7,7 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
  * using <code>DoubleInterval</code>.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-09-08
+ * @version 2026-09-09
  */
 
 public final class DoubleIntervalTriangle2D extends Triangle2D {

@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-07
+ * @version 2026-09-09
  */
 
 public final class TriangleIntervalTest {

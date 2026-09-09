@@ -19,7 +19,7 @@ import java.util.List;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-08-29
+ * @version 2026-09-09
  */
 
 public final class OrientationTest extends TriangleTest {
@@ -43,8 +43,8 @@ public final class OrientationTest extends TriangleTest {
   //--------------------------------------------------------------
 
   private static final void checkOrientation (final Triangle2D t0) {
-    final List<Triangle2D> triangles = makeTriangles(t0);
-    final Triangle2D gold = truth(t0);
+    final List<Triangle2D> triangles = Triangle2D.makeTriangles(t0);
+    final Triangle2D gold = Triangle2D.truth(t0);
     final double trueOrientation = gold.orientation();
     for (final Triangle2D t : triangles) {
       final double orientation = t.orientation();
@@ -84,23 +84,23 @@ public final class OrientationTest extends TriangleTest {
     final Vector2D p2 = Vector2D.of( Math.nextDown(a), 0x1.0p10);
     final Vector2D p3 = Vector2D.of( a, 1.0);
 
-    System.out.println("p0=" + Triangle2D.toHexString(p0));
-    System.out.println("p1=" + Triangle2D.toHexString(p1));
-    System.out.println("p2=" + Triangle2D.toHexString(p2));
-    System.out.println("p3=" + Triangle2D.toHexString(p3));
+//    System.out.println("p0=" + Triangle2D.toHexString(p0));
+//    System.out.println("p1=" + Triangle2D.toHexString(p1));
+//    System.out.println("p2=" + Triangle2D.toHexString(p2));
+//    System.out.println("p3=" + Triangle2D.toHexString(p3));
 
     final Triangle2D t013 = TriangleVector2D.of(p0, p1, p3);
-    final Triangle2D bf013 = BigFloatTriangle2D.from(t013);
-    System.out.println("bf013=" + bf013);
-    System.out.println(Double.toHexString(bf013.orientation()));
+//    final Triangle2D bf013 = BigFloatTriangle2D.from(t013);
+//    System.out.println("bf013=" + bf013);
+//    System.out.println(Double.toHexString(bf013.orientation()));
     checkOrientation(t013);
 
     final Triangle2D t023 = TriangleVector2D.of(p0, p2, p3);
-    final Triangle2D bf023 = BigFloatTriangle2D.from(t023);
-    System.out.println("bf023=" + bf023);
-    System.out.println(Double.toHexString(bf023.orientation()));
+//    final Triangle2D bf023 = BigFloatTriangle2D.from(t023);
+//    System.out.println("bf023=" + bf023);
+//    System.out.println(Double.toHexString(bf023.orientation()));
     checkOrientation(t023);
-    System.out.println();
+//    System.out.println();
   }
 
   @Test

@@ -6,7 +6,6 @@ import com.carrotsearch.hppc.procedures.ObjectIntProcedure;
 import mop.java.geometry.Generators;
 import mop.java.geometry.triangle.*;
 import mop.java.geometry.triangle.jts.*;
-import mop.java.geometry.triangle.macro.*;
 import mop.java.geometry.triangle.shewchuk.*;
 import mop.java.numbers.Doubles;
 import mop.java.prng.Generator;
@@ -16,56 +15,17 @@ import org.apache.commons.geometry.euclidean.twod.shape.Circle;
 
 import java.util.List;
 
+import static mop.java.geometry.triangle.Triangle2D.makeTriangles;
+import static mop.java.geometry.triangle.Triangle2D.truth;
+
 /** <pre>
  * mvn clean install && j src/scripts/java/mop/java/scripts/triangles/Cocircular.java
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-01
+ * @version 2026-09-09
  */
 
 public final class CoCircular {
-
-  // ground truth predicate.
-  public static final Triangle2D truth (final Triangle2D t) {
-    return BigFloatTriangle2D.from(t); }
-
-  public static final List<Triangle2D> makeTriangles (final Triangle2D t) {
-    final Triangle2D triangleV2D = TriangleVector2D.from(t);
-    final Triangle2D doubleTriangle = DoubleTriangle2D.from(t);
-    final Triangle2D doubleIntervalTriangle = DoubleIntervalTriangle2D.from(t);
-    final Triangle2D bigFloat = BigFloatTriangle2D.from(t);
-    final Triangle2D dibf = DIBFTriangle2D.from(t);
-    final Triangle2D rationalFloat = RationalFloatTriangle2D.from(t);
-    final Triangle2D ddFast = DDFast.from(t);
-    final Triangle2D ddNormalized = DDNormalized.from(t);
-    final Triangle2D ddSlow = DDSlow.from(t);
-    final Triangle2D doubleNonRobust = DoubleNonRobust.from(t);
-    final Triangle2D inCircleNormalized = InCircleNormalized.from(t);
-    final Triangle2D adapt = Adapt.from(t);
-    final Triangle2D exact = Exact.from(t);
-    final Triangle2D exactCache = ExactCache.from(t);
-    final Triangle2D fast = Fast.from(t);
-    final Triangle2D slow = Slow.from(t);
-//    final Triangle2D adaptMacro = AdaptMacro.from(t);
-//    final Triangle2D defaultMacro = DefaultMacro.from(t);
-//    final Triangle2D exactMacro = ExactMacro.from(t);
-//    final Triangle2D fastMacro = FastMacro.from(t);
-//    final Triangle2D slowMacro = SlowMacro.from(t);
-    return List.of(
-      // mine
-      triangleV2D, rationalFloat,
-      doubleTriangle, doubleIntervalTriangle,
-      bigFloat,
-      dibf,
-      // JTS
-      ddFast,ddNormalized,ddSlow,doubleNonRobust,inCircleNormalized,
-      // Shewchuk predicates.c
-      adapt,
-      exact,
-      exactCache,
-      fast ,slow//,
-//      exactMacro, adaptMacro, defaultMacro, fastMacro, slowMacro
-                  ); }
 
   //--------------------------------------------------------------
 

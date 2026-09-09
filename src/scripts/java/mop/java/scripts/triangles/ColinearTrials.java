@@ -10,11 +10,13 @@ import mop.java.prng.GeneratorBase;
 import mop.java.prng.PRNG;
 import org.apache.commons.geometry.euclidean.twod.Vector2D;
 
-/** <pre>
- * mvn clean install && j src/scripts/java/mop/java/scripts/triangles/ColinearTrials.java
+/** TODO: worth creating 'exact' colinear points represented
+ *    by implied affine combination: <code>a,p0,p1</code>?
+ * <pre>
+ * mvn -q clean install && j src/scripts/java/mop/java/scripts/triangles/ColinearTrials.java
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-08
+ * @version 2026-09-09
  */
 
 public final class ColinearTrials {
@@ -61,15 +63,19 @@ public final class ColinearTrials {
   public static final void
   colinearTrials () {
 
+    final double pMu = 1.0;
+    final double pSigma = 1.0;
+    final double aMu = 0.0;
+    final double aSigma = 3.0;
     final Generator colinearGenerator =
       colinearTriangleGenerator(
         Generators.vector2dGenerator(
           Doubles.laplaceGenerator(
             PRNG.well44497b("seeds/Well44497b-2019-01-07.txt"),
-            0.0, 1.0)),
+            pMu, pSigma)),
         Doubles.laplaceGenerator(
           PRNG.well44497b("seeds/Well44497b-2019-01-09.txt"),
-          0.0, 1.0));
+          aMu,aSigma));
 
     final int ntriangles = 1023*1023;
     int nexact = 0;
@@ -102,6 +108,10 @@ public final class ColinearTrials {
       if (si.contains(bf)) { nsibf++; }
       if (si.contains(bfd)) { nsibfd++; }
     }
+    System.out.println("pMu,pSigma= " + Double.toHexString(pMu) +
+                         ", " + Double.toHexString(pSigma));
+    System.out.println("aMu,aSigma= " + Double.toHexString(aMu) +
+                         ", " + Double.toHexString(aSigma));
     System.out.println(
       "Exact colinear= " + nexact + "/" + ntriangles +
         " = " + ((double) nexact)/ntriangles);

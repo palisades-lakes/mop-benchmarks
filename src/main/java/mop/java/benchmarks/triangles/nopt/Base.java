@@ -14,7 +14,7 @@ import java.util.Arrays;
 /** Benchmark triangle operations.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-01
+ * @version 2026-09-09
  */
 
 @State(Scope.Thread)
@@ -34,7 +34,7 @@ public abstract class Base {
 //    "TriangleVector2D",
 //    "DoubleTriangle2D",
 //    "DoubleIntervalTriangle2D",
-//    "DIBFTriangle2D",
+//    "DiBFTriangle2D",
     "BigFloatTriangle2D",
 //    "RationalFloatTriangle2D",
 //    "DDFast",

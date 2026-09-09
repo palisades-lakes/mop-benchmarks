@@ -1,11 +1,16 @@
 package mop.java.geometry.triangle;
 
+import mop.java.geometry.triangle.jts.*;
+import mop.java.geometry.triangle.macro.*;
+import mop.java.geometry.triangle.shewchuk.*;
 import org.apache.commons.geometry.euclidean.twod.Vector2D;
+
+import java.util.List;
 
 /** Triangles "embedded" in Vector2D.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-08-29
+ * @version 2026-09-09
  */
 
 public abstract class Triangle2D {
@@ -13,6 +18,52 @@ public abstract class Triangle2D {
   private final Vector2D p0;
   private final Vector2D p1;
   private final Vector2D p2;
+
+  public static final List<Triangle2D> makeTriangles (final Triangle2D t) {
+    final Triangle2D triangleV2D = TriangleVector2D.from(t);
+    final Triangle2D doubleTriangle = DoubleTriangle2D.from(t);
+    final Triangle2D doubleIntervalTriangle = DoubleIntervalTriangle2D.from(t);
+    final Triangle2D shewchukIntervalTriangle = ShewchukIntervalTriangle2D.from(t);
+    final Triangle2D bigFloat = BigFloatTriangle2D.from(t);
+    final Triangle2D dibf = DiBFTriangle2D.from(t);
+    final Triangle2D shbf = ShBFTriangle2D.from(t);
+    final Triangle2D rationalFloat = RationalFloatTriangle2D.from(t);
+    final Triangle2D ddFast = DDFast.from(t);
+    final Triangle2D ddNormalized = DDNormalized.from(t);
+    final Triangle2D ddSlow = DDSlow.from(t);
+    final Triangle2D doubleNonRobust = DoubleNonRobust.from(t);
+    final Triangle2D inCircleNormalized = InCircleNormalized.from(t);
+    final Triangle2D adapt = Adapt.from(t);
+    final Triangle2D exact = Exact.from(t);
+    final Triangle2D exactCache = ExactCache.from(t);
+    final Triangle2D fast = Fast.from(t);
+    final Triangle2D slow = Slow.from(t);
+    final Triangle2D adaptMacro = AdaptMacro.from(t);
+    final Triangle2D defaultMacro = DefaultMacro.from(t);
+    final Triangle2D exactMacro = ExactMacro.from(t);
+    final Triangle2D fastMacro = FastMacro.from(t);
+    final Triangle2D slowMacro = SlowMacro.from(t);
+    return List.of(
+      // mine
+      triangleV2D, rationalFloat,
+      doubleTriangle, doubleIntervalTriangle,
+      shewchukIntervalTriangle,
+      bigFloat,
+      dibf,shbf,
+      // JTS
+      ddFast,ddNormalized,ddSlow,doubleNonRobust,inCircleNormalized,
+      // Shewchuk predicates.c
+      adapt,
+      exact, exactCache
+      ,
+      fast ,slow,
+      exactMacro, adaptMacro, defaultMacro, fastMacro, slowMacro
+                  ); }
+
+  /** ground truth predicate. */
+  public static final Triangle2D truth (final Triangle2D t) {
+    return BigFloatTriangle2D.from(t); }
+
   public final Vector2D getP0 () { return p0; }
   public final Vector2D getP1 () { return p1; }
   public final Vector2D getP2 () { return p2; }

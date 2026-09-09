@@ -16,7 +16,7 @@ import org.openjdk.jmh.annotations.Setup;
  * mvn clean install && jmh mop.java.benchmarks.triangles.pt.CocircularInCircle
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-01
+ * @version 2026-09-09
  */
 
 public class CocircularInCircle extends Base {
@@ -28,27 +28,31 @@ public class CocircularInCircle extends Base {
 
   @Setup(Level.Trial)
   public final void trialSetup () {
+    final double cMu = 1.0;
+    final double cSigma = 1.0;
+    final double rLambda = 1.0;
+    final double pMu = 0.0;
+    final double pSigma = 3.0;
     final Generator centerGenerator = Generators.vector2dGenerator(
       Doubles.laplaceGenerator(
         PRNG.well44497b("seeds/Well44497b-2019-01-07.txt"),
-        0.0, 1024.0));
+        cMu, cSigma));
     final Generator radiusGenerator = Doubles.exponentialGenerator(
       PRNG.well44497b("seeds/Well44497b-2019-01-09.txt"),
-      1.0);
+      rLambda);
     circleGenerator =
-      Generators.circleGenerator(centerGenerator, radiusGenerator);
+      Generators.circleGenerator(centerGenerator,radiusGenerator);
     pointGenerator = Generators.vector2dGenerator(
       Doubles.laplaceGenerator(
         PRNG.well44497b("seeds/Well44497b-2019-01-11.txt"),
-        0.0, 4096.0)); }
+        pMu, pSigma)); }
 
-  //--------------------------------------------------------------
+    //--------------------------------------------------------------
 
-  private static final Vector2D radiusPt (final Vector2D v,
-                                          final Circle circle) {
-    final Vector2D c = circle.getCenter();
-    final double r = circle.getRadius();
-    return v.subtract(c).withNorm(r).add(c); }
+  /** Project <code>p</code> onto (the boundary of) <code>c</code>. */
+  private static final Vector2D project (final Circle c,
+                                         final Vector2D p) {
+    return c.project(p); }
 
   @Setup(Level.Invocation)
   public final void invocationSetup () {
@@ -58,13 +62,12 @@ public class CocircularInCircle extends Base {
       final Circle circle = (Circle) circleGenerator.next();
       final Triangle2D ti =
         TriangleVector2D.of(
-          radiusPt((Vector2D) pointGenerator.next(), circle),
-          radiusPt((Vector2D) pointGenerator.next(), circle),
-          radiusPt((Vector2D) pointGenerator.next(), circle));
+          project(circle,(Vector2D) pointGenerator.next()),
+          project(circle,(Vector2D) pointGenerator.next()),
+          project(circle,(Vector2D) pointGenerator.next()));
       triangles[i] = Defaults.convertTriangle(ti, className);
       for (int j=0;j<nPoints; j++) {
-        points[i][j] =
-          radiusPt((Vector2D) pointGenerator.next(), circle); } }
+        points[i][j] = project(circle,(Vector2D) pointGenerator.next()); } }
     value = new int[3]; }
 
   //--------------------------------------------------------------

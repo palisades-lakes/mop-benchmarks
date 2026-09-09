@@ -3,23 +3,23 @@ package mop.java.geometry.triangle;
 import mop.java.numbers.DoubleInterval;
 import org.apache.commons.geometry.euclidean.twod.Vector2D;
 
-/** Compute intervals using a <code>DoubleIntervalTrianmgle2D</code>.
+/** Compute intervals using a <code>ShewchukIntervalTriangle2D</code>.
  * If interval contains 0.0, fall back to lazy cached
  * <code>BigFloatTriangle</code>
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-08-18
+ * @version 2026-09-09
  */
 
-public final class DIBFTriangle2D extends Triangle2D {
+public final class ShBFTriangle2D extends Triangle2D {
 
-  // Wrap an instance of DoubleIntervalTriangle2D, so that this gets
+  // Wrap an instance of ShewchukIntervalTriangle2D, so that this gets
   // any performance improvements without having to repeat the edits
   // here.
 
-  private final DoubleIntervalTriangle2D diTriangle;
-  private final DoubleIntervalTriangle2D getDiTriangle () {
-    return diTriangle; }
+  private final ShewchukIntervalTriangle2D shTriangle;
+  private final ShewchukIntervalTriangle2D getShTriangle () {
+    return shTriangle; }
 
   private BigFloatTriangle2D bfTriangle;
   private final BigFloatTriangle2D getBfTriangle () {
@@ -33,7 +33,7 @@ public final class DIBFTriangle2D extends Triangle2D {
 
    public final double twiceSignedArea () {
     final DoubleInterval interval =
-      getDiTriangle().twiceSignedAreaInterval();
+      getShTriangle().twiceSignedAreaInterval();
     if (interval.containsZero()) {
 //      System.out.println("twiceSignedArea: " + interval);
 //      System.out.println(this);
@@ -48,8 +48,7 @@ public final class DIBFTriangle2D extends Triangle2D {
   public final boolean inCircleDistanceExact () { return false; }
 
   public final double inCircleDistance (final Vector2D p) {
-    final DoubleInterval interval =
-      getDiTriangle().inCircleInterval(p);
+    final DoubleInterval interval = getShTriangle().inCircleInterval(p);
     if (interval.containsZero()) {
 //      System.out.println("inCircle: " + interval);
 //      System.out.println(this);
@@ -61,17 +60,18 @@ public final class DIBFTriangle2D extends Triangle2D {
   // construction
   //--------------------------------------------------------------------
 
-  private DIBFTriangle2D (final Vector2D a,
+  private ShBFTriangle2D (final Vector2D a,
                           final Vector2D b,
                           final Vector2D c)  {
     super(a,b,c);
-    diTriangle =
-      (DoubleIntervalTriangle2D) DoubleIntervalTriangle2D.of(a, b, c); }
+    shTriangle =
+      (ShewchukIntervalTriangle2D)
+        ShewchukIntervalTriangle2D.of(a, b, c); }
 
   public static final Triangle2D of (final Vector2D a,
                                      final Vector2D b,
                                      final Vector2D c) {
-    return new DIBFTriangle2D(a, b, c); }
+    return new ShBFTriangle2D(a, b, c); }
 
   /** Convert other triangle classes. */
 

@@ -22,7 +22,7 @@ import java.util.List;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-07-27
+ * @version 2026-09-09
  */
 
 public final class InCircleTest extends TriangleTest {
@@ -49,9 +49,9 @@ public final class InCircleTest extends TriangleTest {
   private static final void inCircle (final Triangle2D t,
                                       final Vector2D p3) {
     adaptTest(t,p3);
-    final Triangle2D gold = truth(t);
+    final Triangle2D gold = Triangle2D.truth(t);
     final double trueInc = gold.inCircleDistance(p3);
-    final List<Triangle2D> triangles = makeTriangles(t);
+    final List<Triangle2D> triangles = Triangle2D.makeTriangles(t);
     for (final Triangle2D p :triangles) {
       final double inc = p.inCircleDistance(p3);
       if (p.inCircleDistanceExact()) {

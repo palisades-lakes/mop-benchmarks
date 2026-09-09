@@ -1,7 +1,6 @@
 package mop.java.test.geometry.triangles;
 
 import mop.java.geometry.Generators;
-import mop.java.geometry.triangle.BigFloatTriangle2D;
 import mop.java.geometry.triangle.Triangle2D;
 import mop.java.geometry.triangle.TriangleVector2D;
 import mop.java.numbers.Doubles;
@@ -19,7 +18,7 @@ import java.util.List;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-08-18
+ * @version 2026-09-09
  */
 
 public final class SignedAreaTest extends TriangleTest {
@@ -28,9 +27,9 @@ public final class SignedAreaTest extends TriangleTest {
 
   private static final void reverseSignedArea (final Triangle2D t0) {
     final Triangle2D t1 = TriangleVector2D.of(t0.getP0(),t0.getP2(),t0.getP1());
-    final Triangle2D plus = truth(t0);
+    final Triangle2D plus = Triangle2D.truth(t0);
     final double aplus = plus.twiceSignedArea();
-    final Triangle2D minus = truth(t1);
+    final Triangle2D minus = Triangle2D.truth(t1);
     final double aminus = minus.twiceSignedArea();
         // with delta=0.0 handles +0 vs -0 'correctly'
         Assertions.assertEquals(
@@ -40,8 +39,8 @@ public final class SignedAreaTest extends TriangleTest {
 
   private static final void signedArea (final Triangle2D t0) {
     reverseSignedArea(t0);
-    final List<Triangle2D> triangles = makeTriangles(t0);
-    final Triangle2D gold = truth(t0);
+    final List<Triangle2D> triangles = Triangle2D.makeTriangles(t0);
+    final Triangle2D gold = Triangle2D.truth(t0);
     final double trueAreaX2 = gold.twiceSignedArea();
     for (final Triangle2D t : triangles) {
       final double areaX2 = t.twiceSignedArea();
@@ -87,23 +86,23 @@ public final class SignedAreaTest extends TriangleTest {
     final Vector2D p2 = Vector2D.of( Math.nextDown(a), 0x1.0p10);
     final Vector2D p3 = Vector2D.of( a, 1.0);
 
-    System.out.println("p0=" + Triangle2D.toHexString(p0));
-    System.out.println("p1=" + Triangle2D.toHexString(p1));
-    System.out.println("p2=" + Triangle2D.toHexString(p2));
-    System.out.println("p3=" + Triangle2D.toHexString(p3));
+//    System.out.println("p0=" + Triangle2D.toHexString(p0));
+//    System.out.println("p1=" + Triangle2D.toHexString(p1));
+//    System.out.println("p2=" + Triangle2D.toHexString(p2));
+//    System.out.println("p3=" + Triangle2D.toHexString(p3));
 
     final Triangle2D t013 = TriangleVector2D.of(p0, p1, p3);
-    final Triangle2D bf013 = BigFloatTriangle2D.from(t013);
-    System.out.println("bf013=" + bf013);
-    System.out.println(Double.toHexString(bf013.twiceSignedArea()));
+//    final Triangle2D bf013 = BigFloatTriangle2D.from(t013);
+//    System.out.println("bf013=" + bf013);
+//    System.out.println(Double.toHexString(bf013.twiceSignedArea()));
     signedArea(t013);
 
     final Triangle2D t023 = TriangleVector2D.of(p0, p2, p3);
-    final Triangle2D bf023 = BigFloatTriangle2D.from(t023);
-    System.out.println("bf023=" + bf023);
-    System.out.println(Double.toHexString(bf023.twiceSignedArea()));
+//    final Triangle2D bf023 = BigFloatTriangle2D.from(t023);
+//    System.out.println("bf023=" + bf023);
+//    System.out.println(Double.toHexString(bf023.twiceSignedArea()));
     signedArea(t023);
-    System.out.println();
+//    System.out.println();
   }
 
   @Test
