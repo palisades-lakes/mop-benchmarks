@@ -13,7 +13,7 @@ import org.openjdk.jmh.annotations.Level;
 import org.openjdk.jmh.annotations.Setup;
 
 /** <pre>
- * mvn clean install && jmh mop.java.benchmarks.triangles.pt.CocircularInCircle
+ * mvn -q clean install && jmh mop.java.benchmarks.triangles.pt.CocircularInCircle
  * </pre>
  * @author palisades dot lakes at gmail dot com
  * @version 2026-09-09
