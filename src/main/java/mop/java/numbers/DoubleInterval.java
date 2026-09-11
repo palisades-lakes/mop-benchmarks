@@ -1,8 +1,7 @@
 package mop.java.numbers;
 
 //----------------------------------------------------------------------
-
-/** A <code>double</code> interval, closed at both ends.
+/** A <code>double</code> interval.
  * <br>
  * See <a href="https://en.wikipedia.org/wiki/Interval_arithmetic">
  *   Interval Arithmetic</a>
@@ -15,11 +14,9 @@ package mop.java.numbers;
  * More generally,
  * { f(z,z) : z in [min,max] } == { f(z0,z1) : z0,z1 in [min,max] }
  * only if f is monotone in both arguments over [min,max].
- * <br>
- * TODO: any advantage to switching to half-open intervals?
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-09
+ * @version 2026-09-11
  */
 
 public record DoubleInterval (double min, double max)
@@ -35,6 +32,9 @@ public record DoubleInterval (double min, double max)
 
   public final boolean contains (final DoubleInterval interval) {
     return (min<=interval.min) && (interval.max<=max); }
+
+  public final boolean contains (final RoundingInterval interval) {
+    return (min<=interval.min()) && (interval.max()<=max); }
 
   public final boolean contains (final BigFloat bf) {
     return bf.opGE(min) && bf.opLE(max); }
@@ -73,7 +73,6 @@ public record DoubleInterval (double min, double max)
 
   @Override
   public final DoubleInterval abs () {
-    // assuming Math.abs() is exact, just flips sign bit, so no rounding
     if (isNaN()) { return NaN; }
     final double z0 = Math.abs(min);
     final double z1 = Math.abs(max);
@@ -83,9 +82,20 @@ public record DoubleInterval (double min, double max)
     return new DoubleInterval(z1,z0); }
 
   //--------------------------------------------------------------
-  /** Return the smallest double interval covering the exact value
-   * of <code>z0+z1</code>,
-   */
+
+  @Override
+  public final DoubleInterval add (final DoubleInterval q) {
+    if (isNaN() || q.isNaN()) { return NaN; }
+    return new DoubleInterval(min+q.min,max+q.max); }
+
+  //--------------------------------------------------------------
+
+  @Override
+  public final DoubleInterval subtract (final DoubleInterval q) {
+    if (isNaN() || q.isNaN()) { return NaN; }
+    return new DoubleInterval(min-q.max,max-q.min); }
+
+  //--------------------------------------------------------------
 
   private static final DoubleInterval sum (final double z0,
                                            final double z1) {
@@ -99,103 +109,79 @@ public record DoubleInterval (double min, double max)
     final double hi = s.hi();
     final double lo = s.lo();
     // no rounding
-    if (0.0==lo) { return new DoubleInterval(hi,hi); }
+    if (0.0==lo) { return new DoubleInterval(hi, hi); }
     // rounded down
-    if (0.0<lo) { return new DoubleInterval(hi,Math.nextUp(hi)); }
+    if (0.0<lo) { return new DoubleInterval(hi, Math.nextUp(hi)); }
     // rounded up
     return new DoubleInterval(Math.nextDown(hi), hi); }
 
-  private static final DoubleInterval sum (final DoubleInterval i,
-                                           final double z) {
-    return cover(sum(i.min, z), sum(i.max, z)); }
+//  public static final DoubleInterval dif (final double z0,
+//                                          final double z1) {
+//    // TODO: twoSum and a minimal +/- interval?
+//    final double mz1 = -z1;
+//    return new DoubleInterval(Math.nextDown(z0)+Math.nextDown(mz1),
+//                              Math.nextUp(z0)+Math.nextUp(mz1)); }
 
-  private static final DoubleInterval sum (final double z0,
-                                           final double z1,
-                                           final double z2) {
-//    final Hilo s01 = Hilo.sum(z0,z1);
-//    final Hilo h012 = Hilo.sum(s01.hi(),z2);
-//    final Hilo l012 = Hilo.sum(s01.lo(),z2);
-//    return sum(s01,z2); }
-  return sum(sum(z0,z1),z2); }
-
-  //--------------------------------------------------------------
-  /** Return the smallest double interval covering the exact value
-   * of <code>z0-z1</code>,
-   */
+//  public static final DoubleInterval dif (final double z0,
+//                                          final double z1) {
+//    return new DoubleInterval(Math.nextDown(z0-z1),Math.nextUp(z0-z1)); }
 
   public static final DoubleInterval dif (final double z0,
                                           final double z1) {
-    // Assuming subtraction is exact.
     return sum(z0,-z1); }
 
   //--------------------------------------------------------------
-//  /** Return the smallest double interval covering the exact value
-//   * of <code>z0*z1</code>,
-//   */
-//
-//  public static final DoubleInterval square (final double z) {
-//    return coverExactSum(Hilo.square(z)); }
 
-  //--------------------------------------------------------------
-  // TODO: do we need Hilo.sum()? expand intervals for
-  //  rounding in adds?
+//  @Override
+//  public final DoubleInterval multiply (final DoubleInterval q) {
+//    if (isNaN() || q.isNaN()) { return NaN; }
+//    final double z00 = min*q.min;
+//    final double z01 = min*q.max;
+//    final double z10 = max*q.min;
+//    final double z11 = max*q.max;
+//    double zmin, zmax;
+//    if (z00<=z01) { zmin = z00; zmax = z01; }
+//    else { zmin = z01; zmax = z00; }
+//    if (z10<zmin) { zmin = z10; }
+//    else if (z10>zmax) { zmax = z10; }
+//    if (z11<zmin) { zmin = z11; }
+//    else if (z11>zmax) { zmax = z11; }
+//    return new DoubleInterval(zmin,zmax);  }
 
-  @Override
-  public final DoubleInterval add (final DoubleInterval q) {
-    if (isNaN() || q.isNaN()) { return NaN; }
-    return cover(sum(min, q.min), sum(max, q.max)); }
-
-  //--------------------------------------------------------------
-  // TODO: do we need Hilo.sum()? expand intervals for
-  //  rounding in subtracts?
-
-  @Override
-  public final DoubleInterval subtract (final DoubleInterval q) {
-    if (isNaN() || q.isNaN()) { return NaN; }
-    if (isNaN() || q.isNaN()) { return NaN; }
-    return cover(
-      dif(min, q.max),
-      dif(max, q.min)); }
-
-  //--------------------------------------------------------------
-//  /** Return the smallest double interval covering the exact value
-//   * of <code>z0*z1</code>,
-//   */
-//
-//  private static final DoubleInterval product (final double z0,
-//                                              final double z1) {
-//    return coverExactSum(Hilo.product(z0, z1)); }
-
-  //--------------------------------------------------------------
-  // TODO: do we need Hilo.product()? expand intervals for
-  //  rounding in multiplies?
-
-  @Override
   public final DoubleInterval multiply (final DoubleInterval q) {
-    if (isNaN()) { return NaN; }
-    if (q.isNaN()) { return NaN; }
+    if (isNaN() || q.isNaN()) { return NaN; }
     final Hilo z00 = Hilo.product(min,q.min);
     final Hilo z01 = Hilo.product(min,q.max);
     final Hilo z10 = Hilo.product(max,q.min);
     final Hilo z11 = Hilo.product(max,q.max);
     Hilo zmin,zmax;
-    if (0 >= z00.compareTo(z01)) { zmin = z00; zmax = z01; }
+    if (z00.compareTo(z01) <= 0) { zmin = z00; zmax = z01; }
     else { zmin = z01; zmax = z00; }
-    if (0 > z10.compareTo(zmin)) { zmin = z10; }
-    else if (0 < z10.compareTo(zmax)) { zmax = z10; }
-    if (0 > z11.compareTo(zmin)) { zmin = z11; }
-    else if (0 < z11.compareTo(zmax)) { zmax = z11; }
+    if (z10.compareTo(zmin) < 0) { zmin = z10; }
+    else if (z10.compareTo(zmax) > 0) { zmax = z10; }
+    if (z11.compareTo(zmin) < 0) { zmin = z11; }
+    else if (z11.compareTo(zmax) > 0) { zmax = z11; }
     final double dmin =
       (zmin.lo() >= 0.0) ? zmin.hi() : Math.nextDown(zmin.hi());
     final double dmax =
       (zmax.lo() <= 0.0) ? zmax.hi() : Math.nextUp(zmax.hi());
-    return new DoubleInterval(dmin,dmax);  }
+    return new DoubleInterval(dmin, dmax);  }
 
   //--------------------------------------------------------------
 
-  @Override
-  public final DoubleInterval
-  square () {
+//  @Override
+//  public final DoubleInterval
+//  square () {
+//    if (isNaN()) { return NaN; }
+//    final double z0 = min*min;
+//    final double z1 = max*max;
+//    if (containsZero()) {
+//      if (z0<=z1) { return new DoubleInterval(0.0,z1); }
+//      return new DoubleInterval(0.0,z0); }
+//    if (z0<=z1) { return new DoubleInterval(z0,z1); }
+//    return new DoubleInterval(z1,z0); }
+
+  public final DoubleInterval square () {
     if (isNaN()) { return NaN; }
     final Hilo z0 = Hilo.square(min);
     final Hilo z1 = Hilo.square(max);
@@ -203,30 +189,37 @@ public record DoubleInterval (double min, double max)
       final Hilo zmax = (0 >= z0.compareTo(z1)) ? z1 : z0;
       final double dmax =
         (zmax.lo() <= 0.0) ? zmax.hi() : Math.nextUp(zmax.hi());
-      return new DoubleInterval(0.0,dmax); }
+      return new DoubleInterval(0.0, dmax); }
     final Hilo zmin,zmax;
-    if (0 >= z0.compareTo(z1)) { zmin = z0; zmax = z1; }
+    if (z0.compareTo(z1) <= 0) { zmin = z0; zmax = z1; }
     else { zmin = z1; zmax = z0; }
     final double dmin =
       (zmin.lo() >= 0.0) ? zmin.hi() : Math.nextDown(zmin.hi());
     final double dmax =
       (zmax.lo() <= 0.0) ? zmax.hi() : Math.nextUp(zmax.hi());
-    return new DoubleInterval(dmin,dmax);  }
+    return new DoubleInterval(dmin, dmax);  }
 
   //--------------------------------------------------------------
   // geometry
   //--------------------------------------------------------------
-  // calling new instances from square() vs inlining
-  // makes no difference in benchmark
+
+  private static final DoubleInterval cover (final DoubleInterval i0,
+                                             final DoubleInterval i1) {
+    return new DoubleInterval(Math.min(i0.min, i1.min),
+                              Math.max(i0.max,i1.max)); }
 
 
   public static final DoubleInterval l2norm2 (final DoubleInterval x,
                                               final DoubleInterval y) {
+    //if (x.isNaN() || y.isNaN()) { return NaN; }
+
     final DoubleInterval xx = x.square();
     final DoubleInterval yy = y.square();
-    return cover(
-      sum(xx.min,yy.min),
-      sum(xx.max,yy.max)); }
+
+    return new DoubleInterval(xx.min+yy.min,xx.max+yy.max); }
+//    return cover(
+//      sum(xx.min,yy.min),
+//      sum(xx.max,yy.max)); }
 
   //--------------------------------------------------------------
 
@@ -235,13 +228,65 @@ public record DoubleInterval (double min, double max)
                 final DoubleInterval y0,
                 final DoubleInterval x1,
                 final DoubleInterval y1) {
+
     final DoubleInterval x0y1 = x0.multiply(y1);
     final DoubleInterval x1y0 = x1.multiply(y0);
+//   return new DoubleInterval(
+//      x0y1.min-x1y0.max,
+//      x0y1.max-x1y0.min); }
     return cover(
       dif(x0y1.min,x1y0.max),
       dif(x0y1.max,x1y0.min)); }
 
-  //--------------------------------------------------------------
+
+//--------------------------------------------------------------
+
+// 157/147 relative to version with multiply
+//  public static final DoubleInterval
+//  dot (final DoubleInterval x0,
+//       final DoubleInterval y0,
+//       final DoubleInterval z0,
+//       final DoubleInterval x1,
+//       final DoubleInterval y1,
+//       final DoubleInterval z1) {
+//
+//    final double xx00 = x0.min * x1.min;
+//    final double xx01 = x0.min * x1.max;
+//    final double xx10 = x0.max * x1.min;
+//    final double xx11 = x0.max * x1.max;
+//    double xxmin, xxmax;
+//    if (xx00<=xx01) { xxmin = xx00; xxmax = xx01; }
+//    else { xxmin = xx01; xxmax = xx00; }
+//    if (xx10<xxmin) { xxmin = xx10; }
+//    else if (xxmax<xx10) { xxmax = xx10; }
+//    if (xx11<xxmin) { xxmin = xx11; }
+//    else if (xxmax<xx11) { xxmax = xx11; }
+//
+//    final double yy00 = y0.min * y1.min;
+//    final double yy01 = y0.min * y1.max;
+//    final double yy10 = y0.max * y1.min;
+//    final double yy11 = y0.max * y1.max;
+//    double yymin, yymax;
+//    if (yy00<=yy01) { yymin = yy00; yymax = yy01; }
+//    else { yymin = yy01; yymax = yy00; }
+//    if (yy10<yymin) { yymin = yy10; }
+//    else if (yymax<yy10) { yymax = yy10; }
+//    if (yy11<yymin) { yymin = yy11; }
+//    else if (yymax<yy11) { yymax = yy11; }
+//
+//    final double zz00 = z0.min * z1.min;
+//    final double zz01 = z0.min * z1.max;
+//    final double zz10 = z0.max * z1.min;
+//    final double zz11 = z0.max * z1.max;
+//    double zzmin, zzmax;
+//    if (zz00<=zz01) { zzmin = zz00; zzmax = zz01; }
+//    else { zzmin = zz01; zzmax = zz00; }
+//    if (zz10<zzmin) { zzmin = zz10; }
+//    else if (zzmax<zz10) { zzmax = zz10; }
+//    if (zz11<zzmin) { zzmin = zz11; }
+//    else if (zzmax<zz11) { zzmax = zz11; }
+//
+//    return new DoubleInterval(xxmin+yymin+zzmin, xxmax+yymax+zzmax); }
 
   public static final DoubleInterval
   dot (final DoubleInterval x0,
@@ -253,22 +298,22 @@ public record DoubleInterval (double min, double max)
     final DoubleInterval x01 = x0.multiply(x1);
     final DoubleInterval y01 = y0.multiply(y1);
     final DoubleInterval z01 = z0.multiply(z1);
-    return cover(
-      sum(x01.min,y01.min,z01.min),
-      sum(x01.max,y01.max,z01.max)); }
+    return new DoubleInterval(
+      x01.min+y01.min+z01.min,
+      x01.max+y01.max+z01.max); }
 
-  //--------------------------------------------------------------
-  // Number methods
-  //--------------------------------------------------------------
+//--------------------------------------------------------------
+// Number methods
+//--------------------------------------------------------------
 
   /** Return midpoint as approximation. */
   @Override
   public final double doubleValue () { return (min+max)/2; }
 
-  //--------------------------------------------------------------
-  // Object methods
-  //--------------------------------------------------------------
-  // TODO: OK to use default record hashcode?
+//--------------------------------------------------------------
+// Object methods
+//--------------------------------------------------------------
+// TODO: OK to use default record hashcode?
 
   /** Implement to handle NaN. */
   public final boolean equals (final DoubleInterval di) {
@@ -289,61 +334,17 @@ public record DoubleInterval (double min, double max)
   @Override
   public final String toString () { return toHexString(); }
 
-  //--------------------------------------------------------------
-  // construction
-  //--------------------------------------------------------------
+//--------------------------------------------------------------
+// construction
+//--------------------------------------------------------------
 
-//  public DoubleInterval {
-//    System.out.println(
-//      "[" +
-//        Double.toHexString(min) + ", " +
-//        Double.toHexString(max) + "]");
-//  }
-//  public static final DoubleInterval valueOf (final double z)  {
-//    return new DoubleInterval(Math.nextDown(z),Math.nextUp(z)); }
+  public static final DoubleInterval valueOf (final double z)  {
+    return new DoubleInterval(Math.nextDown(z),Math.nextUp(z)); }
 
-  /** Return the smallest <code>double</code> interval that covers
-   * both <code>i0</code> and <code>i1</code>
-   */
-
-  private static final DoubleInterval cover (final DoubleInterval i0,
-                                             final DoubleInterval i1) {
-    return new DoubleInterval(Math.min(i0.min,i1.min),
-                              Math.max(i0.max,i1.max)); }
-
-//  /** Return the smallest <code>double</code> interval that covers
-//   * the exact value of <code>hi+lo</code>.
-//   * Expects that, in <code>double</code> arithmetic,
-//   * <code>hi+lo==hi</code>
-//   */
-//
-//  private static final DoubleInterval coverExactSum (final double hi,
-//                                                     final double lo) {
-////    assert hi == hi+lo :
-////      "\nhi= " + Double.toHexString(hi) +
-////        "\nlo= "  + Double.toHexString(lo) +
-////        "\n";
-//    // no rounding
-//    if (0.0==lo) { return new DoubleInterval(hi,hi); }
-//    // rounded down
-//    if (0.0<lo) {
-//      return new DoubleInterval(hi,Math.nextUp(hi)); }
-//    // rounded up
-//    return new DoubleInterval(Math.nextDown(hi), hi); }
-
-//  /** Return the smallest <code>double</code> interval that covers
-//   * the exact value of <code>hi+lo</code>.
-//   * Assumes that, in <code>double</code> arithmetic,
-//   * <code>hi+lo==hi</code>
-//   */
-//
-//  private static final DoubleInterval coverExactSum (final Hilo hilo) {
-//    return coverExactSum(hilo.hi(), hilo.lo()); }
-
-  public static final DoubleInterval plusOrMinus (final double z,
-                                                  final double e)  {
-    final double ae = Math.abs(e);
-    return new DoubleInterval(z-ae,z+ae); }
+//  public static final DoubleInterval plusOrMinus (final double z,
+//                                                  final double e)  {
+//    final double ae = Math.abs(e);
+//    return new DoubleInterval(z-ae,z+ae); }
 
 //--------------------------------------------------------------
 } // end class

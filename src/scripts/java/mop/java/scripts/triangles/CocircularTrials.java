@@ -4,6 +4,7 @@ import mop.java.geometry.Generators;
 import mop.java.geometry.triangle.*;
 import mop.java.numbers.BigFloat;
 import mop.java.numbers.DoubleInterval;
+import mop.java.numbers.RoundingInterval;
 import mop.java.numbers.Doubles;
 import mop.java.prng.Generator;
 import mop.java.prng.PRNG;
@@ -69,10 +70,13 @@ public final class CocircularTrials {
     int nexact = 0;
     int nround = 0;
     int ndit = 0;
-    int nsit = 0;
     int ndibf = 0;
-    int nsibf = 0;
     int ndibfd = 0;
+    int nrit = 0;
+    int nribf = 0;
+    int nribfd = 0;
+    int nsit = 0;
+    int nsibf = 0;
     int nsibfd = 0;
     for (int i=0;i<ntriangles;i++) {
       final Circle c = (Circle) circleGenerator.next();
@@ -88,6 +92,12 @@ public final class CocircularTrials {
         final double bfd = bf.doubleValue();
         if (bf.isZero()) { nexact++; }
         if (0.0 == bfd) { nround++; }
+        final RoundingIntervalTriangle2D rit =
+          (RoundingIntervalTriangle2D) RoundingIntervalTriangle2D.from(t);
+        final RoundingInterval ri = rit.inCircleInterval(p);
+        if (ri.containsZero()) { nrit++; }
+        if (ri.contains(bf)) { nribf++; }
+        if (ri.contains(bfd)) { nribfd++; }
         final DoubleIntervalTriangle2D dit =
           (DoubleIntervalTriangle2D) DoubleIntervalTriangle2D.from(t);
         final DoubleInterval di = dit.inCircleInterval(p);
@@ -121,6 +131,15 @@ public final class CocircularTrials {
     System.out.println(
       "Double interval contains bfd= " + ndibfd + "/" + ntrys +
         " = " + ((double) ndibfd)/ntrys);
+    System.out.println(
+      "Rounding interval cocircular= " + nrit + "/" + ntrys +
+        " = " + ((double) nrit)/ntrys);
+    System.out.println(
+      "Rounding interval contains bf= " + nribf + "/" + ntrys +
+        " = " + ((double) nribf)/ntrys);
+    System.out.println(
+      "Rounding interval contains bfd= " + nribfd + "/" + ntrys +
+        " = " + ((double) nribfd)/ntrys);
     System.out.println(
       "Shewchuk interval cocircular= " + nsit + "/" + ntrys +
         " = " + ((double) nsit)/ntrys);

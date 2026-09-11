@@ -15,7 +15,7 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
  *  </a>
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-09-09
+ * @version 2026-09-11
  */
 
 public final class ShewchukIntervalTriangle2D extends Triangle2D {
@@ -50,10 +50,13 @@ public final class ShewchukIntervalTriangle2D extends Triangle2D {
   public final double twiceSignedArea () { return -getV20xV10(); }
 
   public final DoubleInterval twiceSignedAreaInterval () {
-    return DoubleInterval.plusOrMinus(twiceSignedArea(),areaBound()); }
+   //    return DoubleInterval.plusOrMinus(twiceSignedArea(),areaBound()); }
+    // TODO: already nonnegative?
+  final double ae = Math.abs(areaBound());
+    return new DoubleInterval(twiceSignedArea()-ae, twiceSignedArea()+ae); }
 
 
-  //--------------------------------------------------------------------
+//--------------------------------------------------------------------
 
   private static final double crossProduct (final double x0,
                                             final double y0,
@@ -108,9 +111,10 @@ public final class ShewchukIntervalTriangle2D extends Triangle2D {
         (c2 * (Math.abs(_x10*yp0) + Math.abs(_y10*xp0)))); }
 
   public final DoubleInterval inCircleInterval (final Vector2D p) {
-    return DoubleInterval.plusOrMinus(
-      inCircleDistance(p),
-      inCircleBound(p)); }
+    final double z = inCircleDistance(p);
+    // TODO: already nonnegative?
+    final double e = Math.abs(inCircleBound(p));
+    return new DoubleInterval(z-e, z+e); }
 
   //--------------------------------------------------------------------
   // construction

@@ -23,9 +23,10 @@ public abstract class Triangle2D {
     final Triangle2D triangleV2D = TriangleVector2D.from(t);
     final Triangle2D doubleTriangle = DoubleTriangle2D.from(t);
     final Triangle2D doubleIntervalTriangle = DoubleIntervalTriangle2D.from(t);
+    final Triangle2D roundingIntervalTriangle = RoundingIntervalTriangle2D.from(t);
     final Triangle2D shewchukIntervalTriangle = ShewchukIntervalTriangle2D.from(t);
     final Triangle2D bigFloat = BigFloatTriangle2D.from(t);
-    final Triangle2D dibf = DiBFTriangle2D.from(t);
+    final Triangle2D dibf = RiBFTriangle2D.from(t);
     final Triangle2D shbf = ShBFTriangle2D.from(t);
     final Triangle2D rationalFloat = RationalFloatTriangle2D.from(t);
     final Triangle2D ddFast = DDFast.from(t);
@@ -46,7 +47,7 @@ public abstract class Triangle2D {
     return List.of(
       // mine
       triangleV2D, rationalFloat,
-      doubleTriangle, doubleIntervalTriangle,
+      doubleTriangle, doubleIntervalTriangle,roundingIntervalTriangle,
       shewchukIntervalTriangle,
       bigFloat,
       dibf,shbf,

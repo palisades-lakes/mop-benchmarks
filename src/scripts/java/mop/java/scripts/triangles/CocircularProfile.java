@@ -1,8 +1,8 @@
 package mop.java.scripts.triangles;
 
 import mop.java.geometry.Generators;
-import mop.java.geometry.triangle.DoubleIntervalTriangle2D;
-import mop.java.numbers.DoubleInterval;
+import mop.java.geometry.triangle.RoundingIntervalTriangle2D;
+import mop.java.numbers.RoundingInterval;
 import mop.java.numbers.Doubles;
 import mop.java.prng.Generator;
 import mop.java.prng.PRNG;
@@ -29,7 +29,7 @@ public final class CocircularProfile {
   //--------------------------------------------------------------
   // each row contains npoints 'cocircular' points
 
-  private static final Vector2D[][]
+  public static final Vector2D[][]
   cocircularPoints (final int ncircles,
                     final int npoints) {
 
@@ -80,12 +80,12 @@ public final class CocircularProfile {
     for (int i=0; i<ncircles; i++) {
       final Vector2D[] p = points[i];
       for (int j=0;j<npoints-3;j++) {
-        final DoubleIntervalTriangle2D dit =
-          (DoubleIntervalTriangle2D)
-            DoubleIntervalTriangle2D.of(p[j],p[j+1],p[j+2]);
+        final RoundingIntervalTriangle2D dit =
+          (RoundingIntervalTriangle2D)
+            RoundingIntervalTriangle2D.of(p[j], p[j+1], p[j+2]);
         for (int k=j+3; k<npoints; k++) {
           ntrys++;
-          final DoubleInterval di = dit.inCircleInterval(p[k]);
+          final RoundingInterval di = dit.inCircleInterval(p[k]);
           if (di.containsZero()) { ndit++; } } } }
     System.out.println(
       "Double interval cocircular= " + ndit + "/" + ntrys +

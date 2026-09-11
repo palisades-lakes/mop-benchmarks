@@ -2,7 +2,7 @@ package mop.java.scripts.triangles;
 
 import mop.java.accumulators.ZhuHayesAccumulator;
 import mop.java.geometry.Generators;
-import mop.java.geometry.triangle.DoubleIntervalTriangle2D;
+import mop.java.geometry.triangle.RoundingIntervalTriangle2D;
 import mop.java.geometry.triangle.Triangle2D;
 import mop.java.numbers.Doubles;
 import mop.java.prng.Generator;
@@ -13,7 +13,7 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
  * mvn clean install && jy src/scripts/java/mop/java/scripts/triangles/InCircle.java
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-09
+ * @version 2026-09-11
  */
 
 public final class InCircle {
@@ -34,8 +34,8 @@ public final class InCircle {
         8192,
         //ExactCache::from,
         //BigFloatTriangle2D::from,
-        DoubleIntervalTriangle2D::from,
-        //DiBFTriangle2D::from,
+        RoundingIntervalTriangle2D::from,
+        //RiBFTriangle2D::from,
         Generators.vector2dGenerator(
           Doubles.laplaceGenerator(
             PRNG.well44497b("seeds/Well44497b-2019-01-07.txt"),

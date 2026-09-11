@@ -1,4 +1,4 @@
-package mop.java.benchmarks.triangles.pt;
+package mop.java.benchmarks.triangles.circle;
 
 import mop.java.benchmarks.triangles.Defaults;
 import mop.java.geometry.Generators;
@@ -13,10 +13,10 @@ import org.openjdk.jmh.annotations.Level;
 import org.openjdk.jmh.annotations.Setup;
 
 /** <pre>
- * mvn -q clean install && jmh mop.java.benchmarks.triangles.pt.CocircularInCircle
+ * mvn -q clean install && jmh mop.java.benchmarks.triangles.circle.CocircularInCircle
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-09
+ * @version 2026-09-11
  */
 
 public class CocircularInCircle extends Base {

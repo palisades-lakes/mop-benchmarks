@@ -4,9 +4,8 @@ import com.carrotsearch.hppc.ObjectIntHashMap;
 import com.carrotsearch.hppc.ObjectIntMap;
 import com.carrotsearch.hppc.procedures.ObjectIntProcedure;
 import mop.java.geometry.Generators;
-import mop.java.geometry.triangle.*;
-import mop.java.geometry.triangle.jts.*;
-import mop.java.geometry.triangle.shewchuk.*;
+import mop.java.geometry.triangle.Triangle2D;
+import mop.java.geometry.triangle.TriangleVector2D;
 import mop.java.numbers.Doubles;
 import mop.java.prng.Generator;
 import mop.java.prng.PRNG;
@@ -22,7 +21,7 @@ import static mop.java.geometry.triangle.Triangle2D.truth;
  * mvn clean install && j src/scripts/java/mop/java/scripts/triangles/Cocircular.java
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-09
+ * @version 2026-09-11
  */
 
 public final class CoCircular {

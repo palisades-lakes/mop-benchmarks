@@ -1,4 +1,4 @@
-package mop.java.benchmarks.triangles.nopt;
+package mop.java.benchmarks.triangles.area;
 
 import mop.java.benchmarks.triangles.Defaults;
 import mop.java.geometry.Generators;
@@ -9,7 +9,7 @@ import org.openjdk.jmh.annotations.Level;
 import org.openjdk.jmh.annotations.Setup;
 
 /** <pre>
- * mvn clean install && java -cp target\benchmarks.jar mop.java.benchmarks.triangles.nopt.ColinearOrientation
+ * mvn clean install && java -cp target\benchmarks.jar mop.java.benchmarks.triangles.area.ColinearOrientation
  * </pre>
  * @author palisades dot lakes at gmail dot com
  * @version 2026-09-01

@@ -1,9 +1,9 @@
-package mop.java.benchmarks.triangles.nopt;
+package mop.java.benchmarks.triangles.area;
 
 import mop.java.benchmarks.triangles.Defaults;
 
 /** <pre>
- * mvn clean install && java -cp target\benchmarks.jar mop.java.benchmarks.triangles.nopt.Orientation
+ * mvn clean install && java -cp target\benchmarks.jar mop.java.benchmarks.triangles.area.Orientation
  * </pre>
  * @author palisades dot lakes at gmail dot com
  * @version 2026-08-31

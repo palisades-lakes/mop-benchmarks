@@ -1,9 +1,16 @@
 package mop.java.test.geometry.triangles;
 
 import mop.java.geometry.Generators;
-import mop.java.geometry.triangle.*;
+import mop.java.geometry.triangle.BigFloatTriangle2D;
+import mop.java.geometry.triangle.DoubleIntervalTriangle2D;
+import mop.java.geometry.triangle.DoubleTriangle2D;
+import mop.java.geometry.triangle.RoundingIntervalTriangle2D;
+import mop.java.geometry.triangle.ShewchukIntervalTriangle2D;
+import mop.java.geometry.triangle.Triangle2D;
+import mop.java.geometry.triangle.TriangleVector2D;
 import mop.java.numbers.BigFloat;
 import mop.java.numbers.DoubleInterval;
+import mop.java.numbers.RoundingInterval;
 import mop.java.numbers.Doubles;
 import mop.java.prng.Generator;
 import mop.java.prng.PRNG;
@@ -13,7 +20,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 //----------------------------------------------------------------
-/** check that the intervals contain the corresponding
+/** Check that the intervals contain the corresponding
  * <code>DoubleTriangle2D</code> and <code>BigFloatTriangle2D</code>
  * quantities.
  * <pre>
@@ -21,7 +28,7 @@ import org.junit.jupiter.api.Test;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-09
+ * @version 2026-09-11
  */
 
 public final class TriangleIntervalTest {
@@ -40,6 +47,11 @@ public final class TriangleIntervalTest {
         DoubleIntervalTriangle2D.from(t);
     final DoubleInterval ditd = dit.inCircleInterval(p);
 
+    final RoundingIntervalTriangle2D rit =
+      (RoundingIntervalTriangle2D)
+        RoundingIntervalTriangle2D.from(t);
+    final RoundingInterval ritd = rit.inCircleInterval(p);
+
     final ShewchukIntervalTriangle2D sit =
       (ShewchukIntervalTriangle2D) ShewchukIntervalTriangle2D.from(t);
     final DoubleInterval sitd = sit.inCircleInterval(p);
@@ -50,6 +62,22 @@ public final class TriangleIntervalTest {
     // Shewchuk should be a looser error bound than interval arithmetic!
 
     Assertions.assertTrue(
+      sitd.contains(ritd),
+      "\n\n" + t + "\n" +
+        "\n" + p + "\n" +
+        "\nShewchuk:\n" +
+        sitd + "=\n" +
+        Double.toHexString(sit.inCircleDistance(p)) + " +/- " +
+        Double.toHexString(sit.inCircleBound(p)) + "\n" +
+        "\ndoes not contain:\n" +
+        "\nRounding:\n" +
+        ritd + "\n" +
+        "\nBF distance:\n" +
+        bftbf + "\n" +
+        Double.toHexString(bftd) + "\n\n");
+
+    // failing when sitd is exact [0.0,0.0]
+    Assertions.assertTrue(
       sitd.contains(ditd),
       "\n\n" + t + "\n" +
         "\n" + p + "\n" +
@@ -58,11 +86,16 @@ public final class TriangleIntervalTest {
         Double.toHexString(sit.inCircleDistance(p)) + " +/- " +
         Double.toHexString(sit.inCircleBound(p)) + "\n" +
         "\ndoes not contain:\n" +
-        "\nArithmetic:\n" +
+        "\nDouble:\n" +
         ditd + "\n" +
-        "\nBF area:\n" +
+        dit.description() +
+        "\nBF distance:\n" +
         bftbf + "\n" +
-        Double.toHexString(bftd) + "\n\n");
+        Double.toHexString(bftd) +
+        "\n\nRound:\n" +
+        ritd + "\n" +
+        rit.description() +
+        "\n\n");
 
     Assertions.assertTrue(
       ditd.contains(dtd),
@@ -70,7 +103,7 @@ public final class TriangleIntervalTest {
         "\ndoes not contain:\n" +
         Double.toHexString(dtd));
 
-    // TODO: issues in arithmetic for single point DoubleInterval
+    // TODO: issues in arithmetic for single point RoundingInterval
     Assertions.assertTrue(
       ditd.contains(bftd),
       ditd +
@@ -81,32 +114,35 @@ public final class TriangleIntervalTest {
       sitd.contains(bftd),
       ditd +
         "\ndoes not contain BigFloatTriangle2D:\n" +
-        Double.toHexString(bftd));
-
-  }
+        Double.toHexString(bftd)); }
 
   private static final void coCircular (final Triangle2D t,
                                         final Vector2D p) {
     inCircle(t,p);
 
-    final BigFloatTriangle2D bft =
-      (BigFloatTriangle2D) BigFloatTriangle2D.from(t);
-    final BigFloat bftbf = bft.inCircleDistanceBF(p).reduce();
-    final double bftd = bftbf.doubleValue();
-
-    final DoubleIntervalTriangle2D dit =
-      (DoubleIntervalTriangle2D)
-        DoubleIntervalTriangle2D.from(t);
-    final DoubleInterval ditd = dit.inCircleInterval(p);
-
-    final ShewchukIntervalTriangle2D sit =
-      (ShewchukIntervalTriangle2D) ShewchukIntervalTriangle2D.from(t);
-    final DoubleInterval sitd = sit.inCircleInterval(p);
-
-    final Triangle2D dt = DoubleTriangle2D.from(t);
-    final double dtd = dt.inCircleDistance(p);
-
-    // TODO: some generated <double> triangle plus point cases are not
+//    final BigFloatTriangle2D bft =
+//      (BigFloatTriangle2D) BigFloatTriangle2D.from(t);
+//    final BigFloat bftbf = bft.inCircleDistanceBF(p).reduce();
+//    final double bftd = bftbf.doubleValue();
+//
+//    final RoundingIntervalTriangle2D rit =
+//      (RoundingIntervalTriangle2D)
+//        RoundingIntervalTriangle2D.from(t);
+//    final RoundingInterval ritd = rit.inCircleInterval(p);
+//
+//    final DoubleIntervalTriangle2D dit =
+//      (DoubleIntervalTriangle2D)
+//        DoubleIntervalTriangle2D.from(t);
+//    final DoubleInterval ditd = dit.inCircleInterval(p);
+//
+//    final ShewchukIntervalTriangle2D sit =
+//      (ShewchukIntervalTriangle2D) ShewchukIntervalTriangle2D.from(t);
+//    final DoubleInterval sitd = sit.inCircleInterval(p);
+//
+//    final Triangle2D dt = DoubleTriangle2D.from(t);
+//    final double dtd = dt.inCircleDistance(p);
+//
+//    // TODO: some generated <double> triangle plus point cases are not
     //  cocircular even in BigFloat. Generate and collect 4 pt sets
     //  which are cocircular in BigFloat precision
 //    Assertions.assertTrue(
@@ -197,6 +233,11 @@ public final class TriangleIntervalTest {
     final BigFloat bftbf = bft.getV20xV10().negate();
     final double bftd = bft.twiceSignedArea();
 
+    final RoundingIntervalTriangle2D rit =
+      (RoundingIntervalTriangle2D)
+        RoundingIntervalTriangle2D.from(t);
+    final RoundingInterval ritd = rit.twiceSignedAreaInterval();
+
     final DoubleIntervalTriangle2D dit =
       (DoubleIntervalTriangle2D)
         DoubleIntervalTriangle2D.from(t);
@@ -214,8 +255,21 @@ public final class TriangleIntervalTest {
         Double.toHexString(sit.twiceSignedArea()) + " +/- " +
         Double.toHexString(sit.areaBound()) + "\n" +
         "\ndoes not contain:\n" +
-        "\nArithmetic:\n" +
+        "\nDouble:\n" +
         ditd + "\n" +
+        "\nBF area:\n" + bft.getV20xV10().negate().reduce() + "\n" +
+        Double.toHexString(
+          bft.getV20xV10().negate().reduce().doubleValue()) + "\n\n");
+
+    Assertions.assertTrue(
+      sitd.contains(ritd),
+      "\nShewchuk:\n" +
+        sitd + "=\n" +
+        Double.toHexString(sit.twiceSignedArea()) + " +/- " +
+        Double.toHexString(sit.areaBound()) + "\n" +
+        "\ndoes not contain:\n" +
+        "\nRounding:\n" +
+        ritd + "\n" +
         "\nBF area:\n" + bft.getV20xV10().negate().reduce() + "\n" +
         Double.toHexString(
           bft.getV20xV10().negate().reduce().doubleValue()) + "\n\n");
@@ -226,7 +280,15 @@ public final class TriangleIntervalTest {
         "\ndoes not contain BigFloatTriangle2D:\n" +
         Double.toHexString(bftd));
 
-    // TODO: issues in arithmetic for single point DoubleInterval
+    Assertions.assertTrue(
+      ritd.contains(bftd),
+      "\n" + rit + "\n" +
+        ritd + "\n" +
+        Double.toHexString(dtd) + "\n" +
+        "\ndoes not contain BigFloatTriangle2D area:\n" +
+        bftbf.reduce() + "\n" +
+        Double.toHexString(bftd) + "\n");
+
     Assertions.assertTrue(
       ditd.contains(bftd),
       "\n" + dit + "\n" +
@@ -234,7 +296,13 @@ public final class TriangleIntervalTest {
         Double.toHexString(dtd) + "\n" +
         "\ndoes not contain BigFloatTriangle2D area:\n" +
         bftbf.reduce() + "\n" +
-        Double.toHexString(bftd) + "\n");
+        Double.toHexString(bftd) + "\n" +
+        "\nDoubleInterval\n" +
+        ditd + "\n" +
+        dit.description() + "\n" +
+        "\nRoundingInterval\n" +
+        ritd + "\n" +
+        rit.description());
 
     Assertions.assertTrue(
       sitd.contains(dtd),
@@ -245,6 +313,19 @@ public final class TriangleIntervalTest {
     Assertions.assertTrue(
       ditd.contains(dtd),
       ditd +
+        "\ndoes not contain DoubleTriangle2D:\n" +
+        Double.toHexString(dtd));
+
+
+    Assertions.assertTrue(
+      sitd.contains(dtd),
+      sitd +
+        "\ndoes not contain DoubleTriangle2D:\n" +
+        Double.toHexString(dtd));
+
+    Assertions.assertTrue(
+      ritd.contains(dtd),
+      ritd +
         "\ndoes not contain DoubleTriangle2D:\n" +
         Double.toHexString(dtd));
 

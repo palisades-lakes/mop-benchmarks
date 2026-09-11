@@ -1,9 +1,6 @@
 package mop.java.test.geometry.triangles;
 
-import mop.java.geometry.triangle.*;
-import mop.java.geometry.triangle.jts.*;
-import mop.java.geometry.triangle.macro.*;
-import mop.java.geometry.triangle.shewchuk.*;
+import mop.java.geometry.triangle.Triangle2D;
 import org.apache.commons.geometry.euclidean.twod.Vector2D;
 
 import java.util.List;

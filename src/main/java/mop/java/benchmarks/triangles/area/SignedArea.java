@@ -1,10 +1,10 @@
-package mop.java.benchmarks.triangles.nopt;
+package mop.java.benchmarks.triangles.area;
 
 import mop.java.benchmarks.triangles.Defaults;
 import mop.java.geometry.triangle.Triangle2D;
 
 /** <pre>
- * mvn clean install && java -cp target\benchmarks.jar mop.java.benchmarks.triangles.nopt.SignedArea
+ * mvn clean install && java -cp target\benchmarks.jar mop.java.benchmarks.triangles.area.SignedArea
  * </pre>
  * @author palisades dot lakes at gmail dot com
  * @version 2026-08-31

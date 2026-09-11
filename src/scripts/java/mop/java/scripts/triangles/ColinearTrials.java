@@ -4,6 +4,7 @@ import mop.java.geometry.Generators;
 import mop.java.geometry.triangle.*;
 import mop.java.numbers.BigFloat;
 import mop.java.numbers.DoubleInterval;
+import mop.java.numbers.RoundingInterval;
 import mop.java.numbers.Doubles;
 import mop.java.prng.Generator;
 import mop.java.prng.GeneratorBase;
@@ -81,10 +82,13 @@ public final class ColinearTrials {
     int nexact = 0;
     int nround = 0;
     int ndit = 0;
-    int nsit = 0;
     int ndibf = 0;
-    int nsibf = 0;
     int ndibfd = 0;
+    int nrit = 0;
+    int nribf = 0;
+    int nribfd = 0;
+    int nsit = 0;
+    int nsibf = 0;
     int nsibfd = 0;
     for (int i=0;i<ntriangles;i++) {
       final BigFloatTriangle2D t =
@@ -101,6 +105,12 @@ public final class ColinearTrials {
       if (di.containsZero()) { ndit++; }
       if (di.contains(bf)) { ndibf++; }
       if (di.contains(bfd)) { ndibfd++; }
+      final RoundingIntervalTriangle2D rit =
+        (RoundingIntervalTriangle2D) RoundingIntervalTriangle2D.from(t);
+      final RoundingInterval ri = rit.getV20xV10();
+      if (ri.containsZero()) { nrit++; }
+      if (ri.contains(bf)) { nribf++; }
+      if (ri.contains(bfd)) { nribfd++; }
       final ShewchukIntervalTriangle2D sit =
         (ShewchukIntervalTriangle2D) ShewchukIntervalTriangle2D.from(t);
       final DoubleInterval si = sit.twiceSignedAreaInterval();
@@ -118,6 +128,15 @@ public final class ColinearTrials {
     System.out.println(
       "Round colinear= " + nround + "/" + ntriangles +
         " = " + ((double) nround)/ntriangles);
+    System.out.println(
+      "Round interval colinear= " + nrit + "/" + ntriangles +
+        " = " + ((double) nrit)/ntriangles);
+    System.out.println(
+      "Round interval contains bf= " + nribf + "/" + ntriangles +
+        " = " + ((double) nribf)/ntriangles);
+    System.out.println(
+      "Round interval contains bfd= " + nribfd + "/" + ntriangles +
+        " = " + ((double) nribfd)/ntriangles);
     System.out.println(
       "Double interval colinear= " + ndit + "/" + ntriangles +
         " = " + ((double) ndit)/ntriangles);
