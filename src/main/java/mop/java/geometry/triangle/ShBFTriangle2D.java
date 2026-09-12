@@ -1,6 +1,6 @@
 package mop.java.geometry.triangle;
 
-import mop.java.numbers.DoubleInterval;
+import mop.java.numbers.RelaxedInterval;
 import org.apache.commons.geometry.euclidean.twod.Vector2D;
 
 /** Compute intervals using a <code>ShewchukIntervalTriangle2D</code>.
@@ -32,7 +32,7 @@ public final class ShBFTriangle2D extends Triangle2D {
   public final boolean signedAreaExact () { return false; }
 
    public final double twiceSignedArea () {
-    final DoubleInterval interval =
+    final RelaxedInterval interval =
       getShTriangle().twiceSignedAreaInterval();
     if (interval.containsZero()) {
 //      System.out.println("twiceSignedArea: " + interval);
@@ -48,7 +48,7 @@ public final class ShBFTriangle2D extends Triangle2D {
   public final boolean inCircleDistanceExact () { return false; }
 
   public final double inCircleDistance (final Vector2D p) {
-    final DoubleInterval
+    final RelaxedInterval
       interval = getShTriangle().inCircleInterval(p);
     if (interval.containsZero()) {
 //      System.out.println("inCircle: " + interval);

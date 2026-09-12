@@ -3,6 +3,8 @@ package mop.java.geometry.triangle;
 import mop.java.geometry.triangle.jts.*;
 import mop.java.geometry.triangle.macro.*;
 import mop.java.geometry.triangle.shewchuk.*;
+import mop.java.numbers.DoubleInterval;
+import mop.java.numbers.RoundingInterval;
 import org.apache.commons.geometry.euclidean.twod.Vector2D;
 
 import java.util.List;
@@ -22,11 +24,12 @@ public abstract class Triangle2D {
   public static final List<Triangle2D> makeTriangles (final Triangle2D t) {
     final Triangle2D triangleV2D = TriangleVector2D.from(t);
     final Triangle2D doubleTriangle = DoubleTriangle2D.from(t);
-    final Triangle2D doubleIntervalTriangle = DoubleIntervalTriangle2D.from(t);
+    final Triangle2D doubleIntervalTriangle = RelaxedIntervalTriangle2D.from(t);
     final Triangle2D roundingIntervalTriangle = RoundingIntervalTriangle2D.from(t);
     final Triangle2D shewchukIntervalTriangle = ShewchukIntervalTriangle2D.from(t);
     final Triangle2D bigFloat = BigFloatTriangle2D.from(t);
-    final Triangle2D dibf = RiBFTriangle2D.from(t);
+    final Triangle2D rebf = ReBfTriangle2D.from(t);
+    final Triangle2D robf = RoBfTriangle2D.from(t);
     final Triangle2D shbf = ShBFTriangle2D.from(t);
     final Triangle2D rationalFloat = RationalFloatTriangle2D.from(t);
     final Triangle2D ddFast = DDFast.from(t);
@@ -50,7 +53,7 @@ public abstract class Triangle2D {
       doubleTriangle, doubleIntervalTriangle,roundingIntervalTriangle,
       shewchukIntervalTriangle,
       bigFloat,
-      dibf,shbf,
+      rebf,robf,shbf,
       // JTS
       ddFast,ddNormalized,ddSlow,doubleNonRobust,inCircleNormalized,
       // Shewchuk predicates.c
@@ -93,6 +96,7 @@ public abstract class Triangle2D {
       toHexString(p2) + "]"; }
 
   public String toString () { return toHexString(); }
+  public String description () { return toString(); }
 
   //--------------------------------------------------------------------
   // TODO: an estimate of accuracy for each operation would be better.
@@ -112,6 +116,9 @@ public abstract class Triangle2D {
   public double twiceSignedArea () {
     throw new UnsupportedOperationException(
       getClass().getSimpleName()); }
+
+  public Object twiceSignedAreaInterval () {
+    return Double.toHexString(twiceSignedArea()); }
 
   //--------------------------------------------------------------------
   /** Not clear exactly what I want here. For now, indicate whether
@@ -164,6 +171,12 @@ public abstract class Triangle2D {
 
   public double inCircleDistance (final Vector2D p) {
     throw new UnsupportedOperationException(getClass().getSimpleName()); }
+
+  public DoubleInterval inCircleInterval (final Vector2D p) {
+    final double d = inCircleDistance(p);
+    return new RoundingInterval(d,d); }
+
+  public boolean inCircleIntervals () { return false; }
 
   //--------------------------------------------------------------------
 

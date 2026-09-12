@@ -35,7 +35,7 @@ public final class InCircle {
         //ExactCache::from,
         //BigFloatTriangle2D::from,
         RoundingIntervalTriangle2D::from,
-        //RiBFTriangle2D::from,
+        //RoBfTriangle2D::from,
         Generators.vector2dGenerator(
           Doubles.laplaceGenerator(
             PRNG.well44497b("seeds/Well44497b-2019-01-07.txt"),

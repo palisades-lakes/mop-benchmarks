@@ -1,6 +1,6 @@
 package mop.java.geometry.triangle;
 
-import mop.java.numbers.DoubleInterval;
+import mop.java.numbers.RelaxedInterval;
 import org.apache.commons.geometry.euclidean.twod.Vector2D;
 
 /** Same calculations as <code>DoubleTriangle2D</code>,
@@ -49,11 +49,11 @@ public final class ShewchukIntervalTriangle2D extends Triangle2D {
 
   public final double twiceSignedArea () { return -getV20xV10(); }
 
-  public final DoubleInterval twiceSignedAreaInterval () {
-   //    return DoubleInterval.plusOrMinus(twiceSignedArea(),areaBound()); }
+  public final RelaxedInterval twiceSignedAreaInterval () {
+   //    return RelaxedInterval.plusOrMinus(twiceSignedArea(),areaBound()); }
     // TODO: already nonnegative?
   final double ae = Math.abs(areaBound());
-    return new DoubleInterval(twiceSignedArea()-ae, twiceSignedArea()+ae); }
+    return new RelaxedInterval(twiceSignedArea()-ae, twiceSignedArea()+ae); }
 
 
 //--------------------------------------------------------------------
@@ -110,11 +110,13 @@ public final class ShewchukIntervalTriangle2D extends Triangle2D {
         (b2 * (Math.abs(xp0*_y20) + Math.abs(yp0*_x20))) +
         (c2 * (Math.abs(_x10*yp0) + Math.abs(_y10*xp0)))); }
 
-  public final DoubleInterval inCircleInterval (final Vector2D p) {
+  public final boolean inCircleIntervals () { return true; }
+
+  public final RelaxedInterval inCircleInterval (final Vector2D p) {
     final double z = inCircleDistance(p);
     // TODO: already nonnegative?
     final double e = Math.abs(inCircleBound(p));
-    return new DoubleInterval(z-e, z+e); }
+    return new RelaxedInterval(z-e, z+e); }
 
   //--------------------------------------------------------------------
   // construction

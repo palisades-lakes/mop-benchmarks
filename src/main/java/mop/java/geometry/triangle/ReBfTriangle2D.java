@@ -1,9 +1,9 @@
 package mop.java.geometry.triangle;
 
-import mop.java.numbers.RoundingInterval;
+import mop.java.numbers.RelaxedInterval;
 import org.apache.commons.geometry.euclidean.twod.Vector2D;
 
-/** Compute intervals using a <code>DoubleIntervalTrianmgle2D</code>.
+/** Compute intervals using a <code>RelaxedIntervalTrianmgle2D</code>.
  * If interval contains 0.0, fall back to lazy cached
  * <code>BigFloatTriangle</code>
  *
@@ -11,14 +11,14 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
  * @version 2026-09-09
  */
 
-public final class RiBFTriangle2D extends Triangle2D {
+public final class ReBfTriangle2D extends Triangle2D {
 
-  // Wrap an instance of RoundingIntervalTriangle2D, so that this gets
+  // Wrap an instance of RelaxedIntervalTriangle2D, so that this gets
   // any performance improvements without having to repeat the edits
   // here.
 
-  private final RoundingIntervalTriangle2D diTriangle;
-  private final RoundingIntervalTriangle2D getDiTriangle () {
+  private final RelaxedIntervalTriangle2D diTriangle;
+  private final RelaxedIntervalTriangle2D getDiTriangle () {
     return diTriangle; }
 
   private BigFloatTriangle2D bfTriangle;
@@ -32,7 +32,7 @@ public final class RiBFTriangle2D extends Triangle2D {
   public final boolean signedAreaExact () { return false; }
 
    public final double twiceSignedArea () {
-    final RoundingInterval interval =
+    final RelaxedInterval interval =
       getDiTriangle().twiceSignedAreaInterval();
     if (interval.containsZero()) {
 //      System.out.println("twiceSignedArea: " + interval);
@@ -48,7 +48,7 @@ public final class RiBFTriangle2D extends Triangle2D {
   public final boolean inCircleDistanceExact () { return false; }
 
   public final double inCircleDistance (final Vector2D p) {
-    final RoundingInterval interval =
+    final RelaxedInterval interval =
       getDiTriangle().inCircleInterval(p);
     if (interval.containsZero()) {
 //      System.out.println("inCircle: " + interval);
@@ -61,17 +61,17 @@ public final class RiBFTriangle2D extends Triangle2D {
   // construction
   //--------------------------------------------------------------------
 
-  private RiBFTriangle2D (final Vector2D a,
+  private ReBfTriangle2D (final Vector2D a,
                           final Vector2D b,
                           final Vector2D c)  {
     super(a,b,c);
     diTriangle =
-      (RoundingIntervalTriangle2D) RoundingIntervalTriangle2D.of(a, b, c); }
+      (RelaxedIntervalTriangle2D) RelaxedIntervalTriangle2D.of(a, b, c); }
 
   public static final Triangle2D of (final Vector2D a,
                                      final Vector2D b,
                                      final Vector2D c) {
-    return new RiBFTriangle2D(a, b, c); }
+    return new ReBfTriangle2D(a, b, c); }
 
   /** Convert other triangle classes. */
 

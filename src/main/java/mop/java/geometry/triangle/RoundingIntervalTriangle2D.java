@@ -7,7 +7,7 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
  * using <code>RoundingInterval</code>.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-09-09
+ * @version 2026-09-12
  */
 
 public final class RoundingIntervalTriangle2D extends Triangle2D {
@@ -81,9 +81,11 @@ public final class RoundingIntervalTriangle2D extends Triangle2D {
 
   public final boolean inCircleDistanceExact () { return false; }
 
+  public final boolean inCircleIntervals () { return true; }
+
   public final RoundingInterval inCircleInterval (final Vector2D p) {
 
-    // TODO: DoubleIntervalVector operations
+    // TODO: RelaxedIntervalVector operations
     final RoundingInterval
       xp0 = RoundingInterval.dif(p.getX(), getP0().getX());
     final RoundingInterval
@@ -116,6 +118,7 @@ public final class RoundingIntervalTriangle2D extends Triangle2D {
 
   public final String description () {
     return
+      toHexString() +
       "\nv10: [" + getX10()  + ", " + getY10() + "]"  +
         "\n|v10|^2: " + getV10Norm2() +
         "\nv20: [" + getX20()  + ", " + getY20() + "]" +

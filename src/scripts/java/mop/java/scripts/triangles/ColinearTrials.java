@@ -3,7 +3,7 @@ package mop.java.scripts.triangles;
 import mop.java.geometry.Generators;
 import mop.java.geometry.triangle.*;
 import mop.java.numbers.BigFloat;
-import mop.java.numbers.DoubleInterval;
+import mop.java.numbers.RelaxedInterval;
 import mop.java.numbers.RoundingInterval;
 import mop.java.numbers.Doubles;
 import mop.java.prng.Generator;
@@ -99,9 +99,9 @@ public final class ColinearTrials {
       final double bfd = bf.doubleValue();
       if (t.getV20xV10().isZero()) { nexact++; }
       if (0.0 == bfd) { nround++; }
-      final DoubleIntervalTriangle2D dit =
-        (DoubleIntervalTriangle2D) DoubleIntervalTriangle2D.from(t);
-      final DoubleInterval di = dit.getV20xV10();
+      final RelaxedIntervalTriangle2D dit =
+        (RelaxedIntervalTriangle2D) RelaxedIntervalTriangle2D.from(t);
+      final RelaxedInterval di = dit.getV20xV10();
       if (di.containsZero()) { ndit++; }
       if (di.contains(bf)) { ndibf++; }
       if (di.contains(bfd)) { ndibfd++; }
@@ -113,7 +113,7 @@ public final class ColinearTrials {
       if (ri.contains(bfd)) { nribfd++; }
       final ShewchukIntervalTriangle2D sit =
         (ShewchukIntervalTriangle2D) ShewchukIntervalTriangle2D.from(t);
-      final DoubleInterval si = sit.twiceSignedAreaInterval();
+      final RelaxedInterval si = sit.twiceSignedAreaInterval();
       if (si.containsZero()) { nsit++; }
       if (si.contains(bf)) { nsibf++; }
       if (si.contains(bfd)) { nsibfd++; }
@@ -138,13 +138,13 @@ public final class ColinearTrials {
       "Round interval contains bfd= " + nribfd + "/" + ntriangles +
         " = " + ((double) nribfd)/ntriangles);
     System.out.println(
-      "Double interval colinear= " + ndit + "/" + ntriangles +
+      "Relaxed Interval colinear= " + ndit + "/" + ntriangles +
         " = " + ((double) ndit)/ntriangles);
     System.out.println(
-      "Double interval contains bf= " + ndibf + "/" + ntriangles +
+      "Relaxed Interval contains bf= " + ndibf + "/" + ntriangles +
         " = " + ((double) ndibf)/ntriangles);
     System.out.println(
-      "Double interval contains bfd= " + ndibfd + "/" + ntriangles +
+      "Relaxed Interval contains bfd= " + ndibfd + "/" + ntriangles +
         " = " + ((double) ndibfd)/ntriangles);
     System.out.println(
       "Shewchuk interval colinear= " + nsit + "/" + ntriangles +

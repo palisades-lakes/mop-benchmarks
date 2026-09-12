@@ -34,7 +34,7 @@ public abstract class Base {
 //    "TriangleVector2D",
 //    "DoubleTriangle2D",
 //    "RoundingIntervalTriangle2D",
-//    "RiBFTriangle2D",
+//    "RoBfTriangle2D",
     "BigFloatTriangle2D",
 //    "RationalFloatTriangle2D",
 //    "DDFast",

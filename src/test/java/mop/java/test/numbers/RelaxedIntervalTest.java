@@ -2,17 +2,17 @@ package mop.java.test.numbers;
 
 //----------------------------------------------------------------
 
-import mop.java.numbers.DoubleIntervals;
-import mop.java.numbers.DoubleInterval;
+import mop.java.numbers.RelaxedIntervals;
+import mop.java.numbers.RelaxedInterval;
 import mop.java.prng.Generator;
 import mop.java.prng.PRNG;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-/** Test desired properties of DoubleInterval.
+/** Test desired properties of RelaxedInterval.
  * <p>
  * <pre>
- * mvn -q -Dtest=mop.java.test.numbers.DoubleIntervalTest test > DIT.txt
+ * mvn -q -Dtest=mop.java.test.numbers.RelaxedIntervalTest test > DIT.txt
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
@@ -20,20 +20,20 @@ import org.junit.jupiter.api.Test;
  */
 
 @SuppressWarnings("unused")
-public final class DoubleIntervalTest {
+public final class RelaxedIntervalTest {
 
   private static final int TRYS = 257;
 
   @Test
   public final void l2norm2Test () {
     final Generator g =
-      DoubleIntervals.fromDoubleGenerator(
+      RelaxedIntervals.fromDoubleGenerator(
         PRNG.well44497b("seeds/Well44497b-2019-01-09.txt"));
     for (int i = 0; i < TRYS; i++) {
-      final DoubleInterval x = (DoubleInterval) g.next();
-      final DoubleInterval y = (DoubleInterval) g.next();
-      final DoubleInterval l20 = DoubleInterval.l2norm2(x, y);
-      final DoubleInterval l21 = x.square().add(y.square());
+      final RelaxedInterval x = (RelaxedInterval) g.next();
+      final RelaxedInterval y = (RelaxedInterval) g.next();
+      final RelaxedInterval l20 = RelaxedInterval.l2norm2(x, y);
+      final RelaxedInterval l21 = x.square().add(y.square());
       Assertions.assertEquals(
         l20,l21,
         "\nx=" + x.toHexString() +
@@ -44,10 +44,10 @@ public final class DoubleIntervalTest {
 //  private static final String sumFailureMsg (final String name,
 //                                             final double z0,
 //                                             final double z1,
-//                                             final DoubleInterval b0,
-//                                             final DoubleInterval b1,
-//                                             final DoubleInterval s0,
-//                                             final DoubleInterval s1) {
+//                                             final RelaxedInterval b0,
+//                                             final RelaxedInterval b1,
+//                                             final RelaxedInterval s0,
+//                                             final RelaxedInterval s1) {
 //    return
 //      "\n" + name +
 //        "\nz0=" + Double.toHexString(z0) +
@@ -67,22 +67,22 @@ public final class DoubleIntervalTest {
 //    for (int i = 0; i < TRYS; i++) {
 //      final double z0 = g.nextDouble();
 //      final double z1 = g.nextDouble();
-//      final DoubleInterval b0 = DoubleInterval.valueOf(z0);
-//      final DoubleInterval b1 = DoubleInterval.valueOf(z1);
-//      final DoubleInterval expected = b0.add(b1);
-//      final DoubleInterval add01 = b0.add(z1);
+//      final RelaxedInterval b0 = RelaxedInterval.valueOf(z0);
+//      final RelaxedInterval b1 = RelaxedInterval.valueOf(z1);
+//      final RelaxedInterval expected = b0.add(b1);
+//      final RelaxedInterval add01 = b0.add(z1);
 //      Assertions.assertEquals(
 //        expected, add01, sumFailureMsg("b0.add(b1) vs b0.add(z1)",
 //                                       z0, z1, b0, b1, expected, add01));
-//      final DoubleInterval add10 = b1.add(z0);
+//      final RelaxedInterval add10 = b1.add(z0);
 //      Assertions.assertEquals(
 //        expected, add10, sumFailureMsg("b0.add(b1) vs b1.add(z0)",
 //                                       z0, z1, b0, b1, expected, add10));
-//      final DoubleInterval sum10 = DoubleInterval.sum(z0, z1);
+//      final RelaxedInterval sum10 = RelaxedInterval.sum(z0, z1);
 //      Assertions.assertEquals(
 //        expected, sum10, sumFailureMsg("b0.add(b1) vs sum(z1,z0)",
 //                                       z0, z1, b0, b1, expected, sum10));
-//      final DoubleInterval sum01 = DoubleInterval.sum(z0, z1);
+//      final RelaxedInterval sum01 = RelaxedInterval.sum(z0, z1);
 //      Assertions.assertEquals(
 //        expected, sum01, sumFailureMsg("b0.add(b1) vs sum(z0,z1)",
 //                                       z0, z1, b0, b1, expected, sum01));

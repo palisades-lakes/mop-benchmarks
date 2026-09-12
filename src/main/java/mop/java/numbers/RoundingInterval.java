@@ -1,44 +1,25 @@
 package mop.java.numbers;
 
 //----------------------------------------------------------------------
-
 /** A <code>double</code> interval, closed at both ends.
+ * The interval will contain the exact rational
+ * value of whatever is being calculated.
  * <br>
- * See <a href="https://en.wikipedia.org/wiki/Interval_arithmetic">
- *   Interval Arithmetic</a>
+ * Ideally, this will create the smallest such closed
+ * <code>double</code> interval.
+ * In that case the end points would be the same <code>double</code>
+ * (a single point interval), or a <code>double</code>
+ * and its <code>nextUp</code> or <code>nextDown</code>.
  * <br>
- * Note the need to be careful when the same interval is both arguments
- * to an operation (eg <code>square</code> and <code>multiply</code>).
- * The set of values that result from
- * { z*z : z in [min,max]} is different from
- * { z0*z1 : z0,z1 in [min,max]}.
- * More generally,
- * { f(z,z) : z in [min,max] } == { f(z0,z1) : z0,z1 in [min,max] }
- * only if f is monotone in both arguments over [min,max].
- * <br>
- * TODO: any advantage to switching to half-open intervals?
+ * At present, this is not true. What is actually produced is
+ * a compromise, trading looser intervals for performance.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-11
+ * @version 2026-09-12
  */
 
 public record RoundingInterval(double min, double max)
-//  implements Ringlike<RoundingInterval>
-{
-
-  //--------------------------------------------------------------
-
-  public final boolean containsZero () {
-    return (min<=0.0) && (0.0<=max); }
-
-  public final boolean contains (final double z) {
-    return (min<=z) && (z<=max); }
-
-  public final boolean contains (final RoundingInterval interval) {
-    return (min<=interval.min) && (interval.max<=max); }
-
-  public final boolean contains (final BigFloat bf) {
-    return bf.opGE(min) && bf.opLE(max); }
+  implements DoubleInterval {
 
   //--------------------------------------------------------------
   // Ringlike
@@ -54,34 +35,23 @@ public record RoundingInterval(double min, double max)
   public static final RoundingInterval NaN =
     new RoundingInterval(Double.NaN, Double.NaN);
 
-//  @Override
-  public final boolean isZero () {
-    return 0.0==min && 0.0==max; }
-
-//  @Override
-//  public final boolean isOne () {
-//    return 1.0==min && 1.0==max; }
-
-  public final boolean isNaN () {
-    return Double.isNaN(min) && Double.isNaN(max); }
-
   //--------------------------------------------------------------
 
-//  @Override
+  //  @Override
   public final RoundingInterval negate () {
     if (isNaN()) { return NaN; }
     return new RoundingInterval(-max, -min); }
 
-//  @Override
-//  public final RoundingInterval abs () {
-//    // assuming Math.abs() is exact, just flips sign bit, so no rounding
-//    if (isNaN()) { return NaN; }
-//    final double z0 = Math.abs(min);
-//    final double z1 = Math.abs(max);
-//    if (containsZero()) {
-//      return new RoundingInterval(0.0,Math.max(z0,z1)); }
-//    if (z0<=z1) { return new RoundingInterval(z0,z1); }
-//    return new RoundingInterval(z1,z0); }
+  @Override
+  public final RoundingInterval abs () {
+    // assuming Math.abs() is exact, just flips sign bit, so no rounding
+    if (isNaN()) { return NaN; }
+    final double z0 = Math.abs(min);
+    final double z1 = Math.abs(max);
+    if (containsZero()) {
+      return new RoundingInterval(0.0,Math.max(z0,z1)); }
+    if (z0<=z1) { return new RoundingInterval(z0,z1); }
+    return new RoundingInterval(z1,z0); }
 
   //--------------------------------------------------------------
   /** Return the smallest double interval covering the exact value
@@ -108,7 +78,9 @@ public record RoundingInterval(double min, double max)
 
   private static final RoundingInterval sum (final RoundingInterval i,
                                              final double z) {
-    return cover(sum(i.min, z), sum(i.max, z)); }
+    return new RoundingInterval(
+      sum(i.min, z).min,
+      sum(i.max, z).max); }
 
   private static final RoundingInterval sum (final double z0,
                                              final double z1,
@@ -117,7 +89,7 @@ public record RoundingInterval(double min, double max)
 //    final Hilo h012 = Hilo.sum(s01.hi(),z2);
 //    final Hilo l012 = Hilo.sum(s01.lo(),z2);
 //    return sum(s01,z2); }
-  return sum(sum(z0,z1),z2); }
+    return sum(sum(z0,z1),z2); }
 
   //--------------------------------------------------------------
   /** Return the smallest double interval covering the exact value
@@ -138,40 +110,27 @@ public record RoundingInterval(double min, double max)
 //    return coverExactSum(Hilo.square(z)); }
 
   //--------------------------------------------------------------
-  // TODO: do we need Hilo.sum()? expand intervals for
-  //  rounding in adds?
 
-//  @Override
   public final RoundingInterval add (final RoundingInterval q) {
     if (isNaN() || q.isNaN()) { return NaN; }
-    return cover(sum(min, q.min), sum(max, q.max)); }
+    return new RoundingInterval(
+      sum(min, q.min).min,
+      sum(max, q.max).max); }
 
   //--------------------------------------------------------------
   // TODO: do we need Hilo.sum()? expand intervals for
   //  rounding in subtracts?
 
-//  @Override
-//  public final RoundingInterval subtract (final RoundingInterval q) {
-//    if (isNaN() || q.isNaN()) { return NaN; }
-//    if (isNaN() || q.isNaN()) { return NaN; }
-//    return cover(
-//      dif(min, q.max),
-//      dif(max, q.min)); }
-
-  //--------------------------------------------------------------
-//  /** Return the smallest double interval covering the exact value
-//   * of <code>z0*z1</code>,
-//   */
-//
-//  private static final RoundingInterval product (final double z0,
-//                                              final double z1) {
-//    return coverExactSum(Hilo.product(z0, z1)); }
+  public final RoundingInterval subtract (final RoundingInterval q) {
+    if (isNaN() || q.isNaN()) { return NaN; }
+    return new RoundingInterval(
+      dif(min, q.max).min,
+      dif(max, q.min).max); }
 
   //--------------------------------------------------------------
   // TODO: do we need Hilo.product()? expand intervals for
   //  rounding in multiplies?
 
-//  @Override
   public final RoundingInterval multiply (final RoundingInterval q) {
     if (isNaN() || q.isNaN()) { return NaN; }
     final Hilo z00 = Hilo.product(min,q.min);
@@ -193,7 +152,7 @@ public record RoundingInterval(double min, double max)
 
   //--------------------------------------------------------------
 
-//  @Override
+  //  @Override
   public final RoundingInterval square () {
     if (isNaN()) { return NaN; }
     final Hilo z0 = Hilo.square(min);
@@ -220,9 +179,9 @@ public record RoundingInterval(double min, double max)
                                                 final RoundingInterval y) {
     final RoundingInterval xx = x.square();
     final RoundingInterval yy = y.square();
-    return cover(
-      sum(xx.min,yy.min),
-      sum(xx.max,yy.max)); }
+    return new RoundingInterval(
+      sum(xx.min,yy.min).min,
+      sum(xx.max,yy.max).max); }
 
   //--------------------------------------------------------------
 
@@ -233,9 +192,9 @@ public record RoundingInterval(double min, double max)
                 final RoundingInterval y1) {
     final RoundingInterval x0y1 = x0.multiply(y1);
     final RoundingInterval x1y0 = x1.multiply(y0);
-    return cover(
-      dif(x0y1.min,x1y0.max),
-      dif(x0y1.max,x1y0.min)); }
+    return new RoundingInterval(
+      dif(x0y1.min,x1y0.max).min,
+      dif(x0y1.max,x1y0.min).max); }
 
   //--------------------------------------------------------------
 
@@ -249,9 +208,9 @@ public record RoundingInterval(double min, double max)
     final RoundingInterval x01 = x0.multiply(x1);
     final RoundingInterval y01 = y0.multiply(y1);
     final RoundingInterval z01 = z0.multiply(z1);
-    return cover(
-      sum(x01.min,y01.min,z01.min),
-      sum(x01.max,y01.max,z01.max)); }
+    return new RoundingInterval(
+      sum(x01.min,y01.min,z01.min).min,
+      sum(x01.max,y01.max,z01.max).max); }
 
   //--------------------------------------------------------------
   // Number methods
@@ -298,14 +257,14 @@ public record RoundingInterval(double min, double max)
 //  public static final RoundingInterval valueOf (final double z)  {
 //    return new RoundingInterval(Math.nextDown(z),Math.nextUp(z)); }
 
-  /** Return the smallest <code>double</code> interval that covers
-   * both <code>i0</code> and <code>i1</code>
-   */
-
-  private static final RoundingInterval cover (final RoundingInterval i0,
-                                               final RoundingInterval i1) {
-    return new RoundingInterval(Math.min(i0.min, i1.min),
-                                Math.max(i0.max,i1.max)); }
+//  /** Return the smallest <code>double</code> interval that covers
+//   * both <code>i0</code> and <code>i1</code>
+//   */
+//
+//  private static final RoundingInterval cover (final RoundingInterval i0,
+//                                               final RoundingInterval i1) {
+//    return new RoundingInterval(Math.min(i0.min, i1.min),
+//                                Math.max(i0.max,i1.max)); }
 
 //  /** Return the smallest <code>double</code> interval that covers
 //   * the exact value of <code>hi+lo</code>.

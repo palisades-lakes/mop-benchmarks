@@ -88,7 +88,7 @@ public final class CocircularProfile {
           final RoundingInterval di = dit.inCircleInterval(p[k]);
           if (di.containsZero()) { ndit++; } } } }
     System.out.println(
-      "Double interval cocircular= " + ndit + "/" + ntrys +
+      "Relaxed Interval cocircular= " + ndit + "/" + ntrys +
         " = " + ((double) ndit) / ntrys); }
 
   //--------------------------------------------------------------------

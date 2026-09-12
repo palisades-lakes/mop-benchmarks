@@ -22,7 +22,7 @@ import java.util.List;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-09
+ * @version 2026-09-12
  */
 
 public final class InCircleTest extends TriangleTest {
@@ -34,35 +34,39 @@ public final class InCircleTest extends TriangleTest {
    */
 
   private static final void adaptTest (final Triangle2D t,
-                                       final Vector2D p3) {
+                                       final Vector2D p) {
     final Triangle2D gold = AdaptMacro.from(t);
-    final Triangle2D p = Adapt.from(t);
-    final double trueInc = gold.inCircleDistance(p3);
-    final double inc = p.inCircleDistance(p3);
+    final Triangle2D tt = Adapt.from(t);
+    final double trueInc = gold.inCircleDistance(p);
+    final double inc = tt.inCircleDistance(p);
     // with delta=0.0 handles +0 vs -0 'correctly'
     Assertions.assertEquals(
       trueInc, inc, 0.0,
-      failureMsg("inCircle",trueInc,inc,gold,p,null,p3)); }
+      failureMsg("inCircle",trueInc,inc,gold,tt,null,p)); }
 
   //--------------------------------------------------------------
 
   private static final void inCircle (final Triangle2D t,
-                                      final Vector2D p3) {
-    adaptTest(t,p3);
+                                      final Vector2D p) {
+    adaptTest(t,p);
     final Triangle2D gold = Triangle2D.truth(t);
-    final double trueInc = gold.inCircleDistance(p3);
+    final double trueInc = gold.inCircleDistance(p);
     final List<Triangle2D> triangles = Triangle2D.makeTriangles(t);
-    for (final Triangle2D p :triangles) {
-      final double inc = p.inCircleDistance(p3);
-      if (p.inCircleDistanceExact()) {
+    for (final Triangle2D ti :triangles) {
+      final double inc = ti.inCircleDistance(p);
+      if (ti.inCircleDistanceExact()) {
         // with delta=0.0 handles +0 vs -0 'correctly'
         Assertions.assertEquals(
           trueInc, inc, 0.0,
-          failureMsg("inCircle",trueInc,inc,gold,p,triangles,p3)); }
+          failureMsg("inCircle",trueInc,inc,gold,ti,triangles,p)); }
+      else if (ti.inCircleIntervals()) {
+        Assertions.assertTrue(
+          ti.inCircleInterval(p).contains(trueInc),
+          failureMsg("inCircle",trueInc,inc,gold,ti,triangles,p)); }
       else {
         Assertions.assertEquals(
           Math.signum(trueInc), Math.signum(inc), 0.0,
-          failureMsg("inCircle",trueInc,inc,gold,p,triangles,p3)); } } }
+          failureMsg("inCircle",trueInc,inc,gold,ti,triangles,p)); } } }
 
   //--------------------------------------------------------------
 
@@ -105,8 +109,8 @@ public final class InCircleTest extends TriangleTest {
     for (int i = 0; i < m; i++) {
       final Triangle2D ti = t[i];
       for (int j=0;j<n;j++) {
-      adaptTest(ti,p[j]);
-      inCircle(ti,p[j]); } } }
+        adaptTest(ti,p[j]);
+        inCircle(ti,p[j]); } } }
 
   //--------------------------------------------------------------
 }

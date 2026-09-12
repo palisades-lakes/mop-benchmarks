@@ -38,11 +38,12 @@ public final class Defaults {
     return switch (dest) {
       case "TriangleVector2D" -> TriangleVector2D.from(t);
       case "DoubleTriangle2D" -> DoubleTriangle2D.from(t);
-      case "DoubleIntervalTriangle2D" -> DoubleIntervalTriangle2D.from(t);
+      case "RelaxedIntervalTriangle2D" -> RelaxedIntervalTriangle2D.from(t);
       case "RoundingIntervalTriangle2D" -> RoundingIntervalTriangle2D.from(t);
       case "ShewchukIntervalTriangle2D" -> ShewchukIntervalTriangle2D.from(t);
       case "BigFloatTriangle2D" ->  BigFloatTriangle2D.from(t);
-      case "RiBFTriangle2D" ->  RiBFTriangle2D.from(t);
+      case "ReBfTriangle2D" ->  ReBfTriangle2D.from(t);
+      case "RoBfTriangle2D" ->  RoBfTriangle2D.from(t);
       case "ShBFTriangle2D" ->  ShBFTriangle2D.from(t);
       case "RationalFloatTriangle2D" ->  RationalFloatTriangle2D.from(t);
       case "DDFast" ->  DDFast.from(t);

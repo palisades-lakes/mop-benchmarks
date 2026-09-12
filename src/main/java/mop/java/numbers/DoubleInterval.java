@@ -9,298 +9,50 @@ package mop.java.numbers;
  * Note the need to be careful when the same interval is both arguments
  * to an operation (eg <code>square</code> and <code>multiply</code>).
  * The set of values that result from
- * { z*z : z in [min,max]} is different from
- * { z0*z1 : z0,z1 in [min,max]}.
+ * { z*z : z in [min(),max()]} is different from
+ * { z0*z1 : z0,z1 in [min(),max()]}.
  * More generally,
- * { f(z,z) : z in [min,max] } == { f(z0,z1) : z0,z1 in [min,max] }
- * only if f is monotone in both arguments over [min,max].
+ * { f(z,z) : z in [min(),max()] } == { f(z0,z1) : z0,z1 in [min(),max()] }
+ * only if f is monotone in both arguments over [min(),max()].
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-11
+ * @version 2026-09-12
  */
 
-public record DoubleInterval (double min, double max)
-  implements Ringlike<DoubleInterval> {
+public interface DoubleInterval extends Ringlike<DoubleInterval> {
 
   //--------------------------------------------------------------
 
-  public final boolean containsZero () {
-    return (min<=0.0) && (0.0<=max); }
+  public double min();
+  public double max();
+  //--------------------------------------------------------------
 
-  public final boolean contains (final double z) {
-    return (min<=z) && (z<=max); }
+  public default boolean containsZero () {
+    return (min()<=0.0) && (0.0<=max()); }
 
-  public final boolean contains (final DoubleInterval interval) {
-    return (min<=interval.min) && (interval.max<=max); }
+  public default boolean contains (final double z) {
+    return (min()<=z) && (z<=max()); }
 
-  public final boolean contains (final RoundingInterval interval) {
-    return (min<=interval.min()) && (interval.max()<=max); }
+  public default boolean contains (final DoubleInterval interval) {
+    return (min()<=interval.min()) && (interval.max()<=max()); }
 
-  public final boolean contains (final BigFloat bf) {
-    return bf.opGE(min) && bf.opLE(max); }
+  public default boolean contains (final BigFloat bf) {
+    return bf.opGE(min()) && bf.opLE(max()); }
 
   //--------------------------------------------------------------
   // Ringlike
   //--------------------------------------------------------------
-  // TODO: infinities?
 
-  public static final DoubleInterval ZERO =
-    new DoubleInterval(0.0,0.0);
-
-  public static final DoubleInterval ONE =
-    new DoubleInterval(1.0,1.0);
-
-  public static final DoubleInterval NaN =
-    new DoubleInterval(Double.NaN,Double.NaN);
+   @Override
+  public default boolean isZero () {
+    return 0.0==min() && 0.0==max(); }
 
   @Override
-  public final boolean isZero () {
-    return 0.0==min && 0.0==max; }
+  public default boolean isOne () {
+    return 1.0==min() && 1.0==max(); }
 
-  @Override
-  public final boolean isOne () {
-    return 1.0==min && 1.0==max; }
-
-  public final boolean isNaN () {
-    return Double.isNaN(min) && Double.isNaN(max); }
-
-  //--------------------------------------------------------------
-
-  @Override
-  public final DoubleInterval negate () {
-    if (isNaN()) { return NaN; }
-    return new DoubleInterval(-max,-min); }
-
-  @Override
-  public final DoubleInterval abs () {
-    if (isNaN()) { return NaN; }
-    final double z0 = Math.abs(min);
-    final double z1 = Math.abs(max);
-    if (containsZero()) {
-      return new DoubleInterval(0.0,Math.max(z0,z1)); }
-    if (z0<=z1) { return new DoubleInterval(z0,z1); }
-    return new DoubleInterval(z1,z0); }
-
-  //--------------------------------------------------------------
-
-  @Override
-  public final DoubleInterval add (final DoubleInterval q) {
-    if (isNaN() || q.isNaN()) { return NaN; }
-    return new DoubleInterval(min+q.min,max+q.max); }
-
-  //--------------------------------------------------------------
-
-  @Override
-  public final DoubleInterval subtract (final DoubleInterval q) {
-    if (isNaN() || q.isNaN()) { return NaN; }
-    return new DoubleInterval(min-q.max,max-q.min); }
-
-  //--------------------------------------------------------------
-
-  private static final DoubleInterval sum (final double z0,
-                                           final double z1) {
-    //if (Double.isNaN(z0) || Double.isNaN(z1)) { return NaN; }
-    final Hilo s = Hilo.sum(z0,z1);
-//    assert hilo.hi() + hilo.lo() == hilo.hi() :
-//      "\nz0= " + Double.toHexString(z0) +
-//        "\nz1= " + Double.toHexString(z1) +
-//        "\nhi= " + Double.toHexString(hilo.hi()) +
-//        "\nz1= " + Double.toHexString(hilo.lo());
-    final double hi = s.hi();
-    final double lo = s.lo();
-    // no rounding
-    if (0.0==lo) { return new DoubleInterval(hi, hi); }
-    // rounded down
-    if (0.0<lo) { return new DoubleInterval(hi, Math.nextUp(hi)); }
-    // rounded up
-    return new DoubleInterval(Math.nextDown(hi), hi); }
-
-//  public static final DoubleInterval dif (final double z0,
-//                                          final double z1) {
-//    // TODO: twoSum and a minimal +/- interval?
-//    final double mz1 = -z1;
-//    return new DoubleInterval(Math.nextDown(z0)+Math.nextDown(mz1),
-//                              Math.nextUp(z0)+Math.nextUp(mz1)); }
-
-//  public static final DoubleInterval dif (final double z0,
-//                                          final double z1) {
-//    return new DoubleInterval(Math.nextDown(z0-z1),Math.nextUp(z0-z1)); }
-
-  public static final DoubleInterval dif (final double z0,
-                                          final double z1) {
-    return sum(z0,-z1); }
-
-  //--------------------------------------------------------------
-
-//  @Override
-//  public final DoubleInterval multiply (final DoubleInterval q) {
-//    if (isNaN() || q.isNaN()) { return NaN; }
-//    final double z00 = min*q.min;
-//    final double z01 = min*q.max;
-//    final double z10 = max*q.min;
-//    final double z11 = max*q.max;
-//    double zmin, zmax;
-//    if (z00<=z01) { zmin = z00; zmax = z01; }
-//    else { zmin = z01; zmax = z00; }
-//    if (z10<zmin) { zmin = z10; }
-//    else if (z10>zmax) { zmax = z10; }
-//    if (z11<zmin) { zmin = z11; }
-//    else if (z11>zmax) { zmax = z11; }
-//    return new DoubleInterval(zmin,zmax);  }
-
-  public final DoubleInterval multiply (final DoubleInterval q) {
-    if (isNaN() || q.isNaN()) { return NaN; }
-    final Hilo z00 = Hilo.product(min,q.min);
-    final Hilo z01 = Hilo.product(min,q.max);
-    final Hilo z10 = Hilo.product(max,q.min);
-    final Hilo z11 = Hilo.product(max,q.max);
-    Hilo zmin,zmax;
-    if (z00.compareTo(z01) <= 0) { zmin = z00; zmax = z01; }
-    else { zmin = z01; zmax = z00; }
-    if (z10.compareTo(zmin) < 0) { zmin = z10; }
-    else if (z10.compareTo(zmax) > 0) { zmax = z10; }
-    if (z11.compareTo(zmin) < 0) { zmin = z11; }
-    else if (z11.compareTo(zmax) > 0) { zmax = z11; }
-    final double dmin =
-      (zmin.lo() >= 0.0) ? zmin.hi() : Math.nextDown(zmin.hi());
-    final double dmax =
-      (zmax.lo() <= 0.0) ? zmax.hi() : Math.nextUp(zmax.hi());
-    return new DoubleInterval(dmin, dmax);  }
-
-  //--------------------------------------------------------------
-
-//  @Override
-//  public final DoubleInterval
-//  square () {
-//    if (isNaN()) { return NaN; }
-//    final double z0 = min*min;
-//    final double z1 = max*max;
-//    if (containsZero()) {
-//      if (z0<=z1) { return new DoubleInterval(0.0,z1); }
-//      return new DoubleInterval(0.0,z0); }
-//    if (z0<=z1) { return new DoubleInterval(z0,z1); }
-//    return new DoubleInterval(z1,z0); }
-
-  public final DoubleInterval square () {
-    if (isNaN()) { return NaN; }
-    final Hilo z0 = Hilo.square(min);
-    final Hilo z1 = Hilo.square(max);
-    if (containsZero()) {
-      final Hilo zmax = (0 >= z0.compareTo(z1)) ? z1 : z0;
-      final double dmax =
-        (zmax.lo() <= 0.0) ? zmax.hi() : Math.nextUp(zmax.hi());
-      return new DoubleInterval(0.0, dmax); }
-    final Hilo zmin,zmax;
-    if (z0.compareTo(z1) <= 0) { zmin = z0; zmax = z1; }
-    else { zmin = z1; zmax = z0; }
-    final double dmin =
-      (zmin.lo() >= 0.0) ? zmin.hi() : Math.nextDown(zmin.hi());
-    final double dmax =
-      (zmax.lo() <= 0.0) ? zmax.hi() : Math.nextUp(zmax.hi());
-    return new DoubleInterval(dmin, dmax);  }
-
-  //--------------------------------------------------------------
-  // geometry
-  //--------------------------------------------------------------
-
-  private static final DoubleInterval cover (final DoubleInterval i0,
-                                             final DoubleInterval i1) {
-    return new DoubleInterval(Math.min(i0.min, i1.min),
-                              Math.max(i0.max,i1.max)); }
-
-
-  public static final DoubleInterval l2norm2 (final DoubleInterval x,
-                                              final DoubleInterval y) {
-    //if (x.isNaN() || y.isNaN()) { return NaN; }
-
-    final DoubleInterval xx = x.square();
-    final DoubleInterval yy = y.square();
-
-    return new DoubleInterval(xx.min+yy.min,xx.max+yy.max); }
-//    return cover(
-//      sum(xx.min,yy.min),
-//      sum(xx.max,yy.max)); }
-
-  //--------------------------------------------------------------
-
-  public static final DoubleInterval
-  crossProduct (final DoubleInterval x0,
-                final DoubleInterval y0,
-                final DoubleInterval x1,
-                final DoubleInterval y1) {
-
-    final DoubleInterval x0y1 = x0.multiply(y1);
-    final DoubleInterval x1y0 = x1.multiply(y0);
-//   return new DoubleInterval(
-//      x0y1.min-x1y0.max,
-//      x0y1.max-x1y0.min); }
-    return cover(
-      dif(x0y1.min,x1y0.max),
-      dif(x0y1.max,x1y0.min)); }
-
-
-//--------------------------------------------------------------
-
-// 157/147 relative to version with multiply
-//  public static final DoubleInterval
-//  dot (final DoubleInterval x0,
-//       final DoubleInterval y0,
-//       final DoubleInterval z0,
-//       final DoubleInterval x1,
-//       final DoubleInterval y1,
-//       final DoubleInterval z1) {
-//
-//    final double xx00 = x0.min * x1.min;
-//    final double xx01 = x0.min * x1.max;
-//    final double xx10 = x0.max * x1.min;
-//    final double xx11 = x0.max * x1.max;
-//    double xxmin, xxmax;
-//    if (xx00<=xx01) { xxmin = xx00; xxmax = xx01; }
-//    else { xxmin = xx01; xxmax = xx00; }
-//    if (xx10<xxmin) { xxmin = xx10; }
-//    else if (xxmax<xx10) { xxmax = xx10; }
-//    if (xx11<xxmin) { xxmin = xx11; }
-//    else if (xxmax<xx11) { xxmax = xx11; }
-//
-//    final double yy00 = y0.min * y1.min;
-//    final double yy01 = y0.min * y1.max;
-//    final double yy10 = y0.max * y1.min;
-//    final double yy11 = y0.max * y1.max;
-//    double yymin, yymax;
-//    if (yy00<=yy01) { yymin = yy00; yymax = yy01; }
-//    else { yymin = yy01; yymax = yy00; }
-//    if (yy10<yymin) { yymin = yy10; }
-//    else if (yymax<yy10) { yymax = yy10; }
-//    if (yy11<yymin) { yymin = yy11; }
-//    else if (yymax<yy11) { yymax = yy11; }
-//
-//    final double zz00 = z0.min * z1.min;
-//    final double zz01 = z0.min * z1.max;
-//    final double zz10 = z0.max * z1.min;
-//    final double zz11 = z0.max * z1.max;
-//    double zzmin, zzmax;
-//    if (zz00<=zz01) { zzmin = zz00; zzmax = zz01; }
-//    else { zzmin = zz01; zzmax = zz00; }
-//    if (zz10<zzmin) { zzmin = zz10; }
-//    else if (zzmax<zz10) { zzmax = zz10; }
-//    if (zz11<zzmin) { zzmin = zz11; }
-//    else if (zzmax<zz11) { zzmax = zz11; }
-//
-//    return new DoubleInterval(xxmin+yymin+zzmin, xxmax+yymax+zzmax); }
-
-  public static final DoubleInterval
-  dot (final DoubleInterval x0,
-       final DoubleInterval y0,
-       final DoubleInterval z0,
-       final DoubleInterval x1,
-       final DoubleInterval y1,
-       final DoubleInterval z1) {
-    final DoubleInterval x01 = x0.multiply(x1);
-    final DoubleInterval y01 = y0.multiply(y1);
-    final DoubleInterval z01 = z0.multiply(z1);
-    return new DoubleInterval(
-      x01.min+y01.min+z01.min,
-      x01.max+y01.max+z01.max); }
+  public default boolean isNaN () {
+    return Double.isNaN(min()) && Double.isNaN(max()); }
 
 //--------------------------------------------------------------
 // Number methods
@@ -308,43 +60,12 @@ public record DoubleInterval (double min, double max)
 
   /** Return midpoint as approximation. */
   @Override
-  public final double doubleValue () { return (min+max)/2; }
+  public default double doubleValue () { return (min()+max())/2; }
 
-//--------------------------------------------------------------
-// Object methods
-//--------------------------------------------------------------
-// TODO: OK to use default record hashcode?
-
-  /** Implement to handle NaN. */
-  public final boolean equals (final DoubleInterval di) {
-    if (isNaN()) { return di.isNaN(); }
-    return (min==di.min) && (max==di.max); }
-
-  @Override
-  public final boolean equals (final Object o) {
-    if (this==o) { return true; }
-    if (!(o instanceof DoubleInterval)) { return false; }
-    return equals((DoubleInterval) o); }
-
-  public final String toHexString () {
+  public default String toHexString () {
     return
-      "[" + Double.toHexString(min) + "," +
-        Double.toHexString(max) + "]";  }
-
-  @Override
-  public final String toString () { return toHexString(); }
-
-//--------------------------------------------------------------
-// construction
-//--------------------------------------------------------------
-
-  public static final DoubleInterval valueOf (final double z)  {
-    return new DoubleInterval(Math.nextDown(z),Math.nextUp(z)); }
-
-//  public static final DoubleInterval plusOrMinus (final double z,
-//                                                  final double e)  {
-//    final double ae = Math.abs(e);
-//    return new DoubleInterval(z-ae,z+ae); }
+      "[" + Double.toHexString(min()) + "," +
+        Double.toHexString(max()) + "]";  }
 
 //--------------------------------------------------------------
 } // end class

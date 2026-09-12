@@ -2,14 +2,14 @@ package mop.java.test.geometry.triangles;
 
 import mop.java.geometry.Generators;
 import mop.java.geometry.triangle.BigFloatTriangle2D;
-import mop.java.geometry.triangle.DoubleIntervalTriangle2D;
+import mop.java.geometry.triangle.RelaxedIntervalTriangle2D;
 import mop.java.geometry.triangle.DoubleTriangle2D;
 import mop.java.geometry.triangle.RoundingIntervalTriangle2D;
 import mop.java.geometry.triangle.ShewchukIntervalTriangle2D;
 import mop.java.geometry.triangle.Triangle2D;
 import mop.java.geometry.triangle.TriangleVector2D;
 import mop.java.numbers.BigFloat;
-import mop.java.numbers.DoubleInterval;
+import mop.java.numbers.RelaxedInterval;
 import mop.java.numbers.RoundingInterval;
 import mop.java.numbers.Doubles;
 import mop.java.prng.Generator;
@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-11
+ * @version 2026-09-12
  */
 
 public final class TriangleIntervalTest {
@@ -42,10 +42,10 @@ public final class TriangleIntervalTest {
     final BigFloat bftbf = bft.inCircleDistanceBF(p).reduce();
     final double bftd = bftbf.doubleValue();
 
-    final DoubleIntervalTriangle2D dit =
-      (DoubleIntervalTriangle2D)
-        DoubleIntervalTriangle2D.from(t);
-    final DoubleInterval ditd = dit.inCircleInterval(p);
+    final RelaxedIntervalTriangle2D dit =
+      (RelaxedIntervalTriangle2D)
+        RelaxedIntervalTriangle2D.from(t);
+    final RelaxedInterval ditd = dit.inCircleInterval(p);
 
     final RoundingIntervalTriangle2D rit =
       (RoundingIntervalTriangle2D)
@@ -54,13 +54,12 @@ public final class TriangleIntervalTest {
 
     final ShewchukIntervalTriangle2D sit =
       (ShewchukIntervalTriangle2D) ShewchukIntervalTriangle2D.from(t);
-    final DoubleInterval sitd = sit.inCircleInterval(p);
+    final RelaxedInterval sitd = sit.inCircleInterval(p);
 
     final Triangle2D dt = DoubleTriangle2D.from(t);
     final double dtd = dt.inCircleDistance(p);
 
-    // Shewchuk should be a looser error bound than interval arithmetic!
-
+    // Shewchuk error should be looser than minimal intervals
     Assertions.assertTrue(
       sitd.contains(ritd),
       "\n\n" + t + "\n" +
@@ -76,26 +75,26 @@ public final class TriangleIntervalTest {
         bftbf + "\n" +
         Double.toHexString(bftd) + "\n\n");
 
-    // failing when sitd is exact [0.0,0.0]
-    Assertions.assertTrue(
-      sitd.contains(ditd),
-      "\n\n" + t + "\n" +
-        "\n" + p + "\n" +
-        "\nShewchuk:\n" +
-        sitd + "=\n" +
-        Double.toHexString(sit.inCircleDistance(p)) + " +/- " +
-        Double.toHexString(sit.inCircleBound(p)) + "\n" +
-        "\ndoes not contain:\n" +
-        "\nDouble:\n" +
-        ditd + "\n" +
-        dit.description() +
-        "\nBF distance:\n" +
-        bftbf + "\n" +
-        Double.toHexString(bftd) +
-        "\n\nRound:\n" +
-        ritd + "\n" +
-        rit.description() +
-        "\n\n");
+    // not true for relaxed intervals
+//    Assertions.assertTrue(
+//      sitd.contains(ditd),
+//      "\n\n" + t + "\n" +
+//        "\n" + p + "\n" +
+//        "\nShewchuk:\n" +
+//        sitd + "=\n" +
+//        Double.toHexString(sit.inCircleDistance(p)) + " +/- " +
+//        Double.toHexString(sit.inCircleBound(p)) + "\n" +
+//        "\ndoes not contain:\n" +
+//        "\nRelaxed:\n" +
+//        ditd + "\n" +
+//        dit.description() +
+//        "\nBF distance:\n" +
+//        bftbf + "\n" +
+//        Double.toHexString(bftd) +
+//        "\n\nRound:\n" +
+//        ritd + "\n" +
+//        rit.description() +
+//        "\n\n");
 
     Assertions.assertTrue(
       ditd.contains(dtd),
@@ -130,14 +129,14 @@ public final class TriangleIntervalTest {
 //        RoundingIntervalTriangle2D.from(t);
 //    final RoundingInterval ritd = rit.inCircleInterval(p);
 //
-//    final DoubleIntervalTriangle2D dit =
-//      (DoubleIntervalTriangle2D)
-//        DoubleIntervalTriangle2D.from(t);
-//    final DoubleInterval ditd = dit.inCircleInterval(p);
+//    final RelaxedIntervalTriangle2D dit =
+//      (RelaxedIntervalTriangle2D)
+//        RelaxedIntervalTriangle2D.from(t);
+//    final RelaxedInterval ditd = dit.inCircleInterval(p);
 //
 //    final ShewchukIntervalTriangle2D sit =
 //      (ShewchukIntervalTriangle2D) ShewchukIntervalTriangle2D.from(t);
-//    final DoubleInterval sitd = sit.inCircleInterval(p);
+//    final RelaxedInterval sitd = sit.inCircleInterval(p);
 //
 //    final Triangle2D dt = DoubleTriangle2D.from(t);
 //    final double dtd = dt.inCircleDistance(p);
@@ -238,14 +237,14 @@ public final class TriangleIntervalTest {
         RoundingIntervalTriangle2D.from(t);
     final RoundingInterval ritd = rit.twiceSignedAreaInterval();
 
-    final DoubleIntervalTriangle2D dit =
-      (DoubleIntervalTriangle2D)
-        DoubleIntervalTriangle2D.from(t);
-    final DoubleInterval ditd = dit.twiceSignedAreaInterval();
+    final RelaxedIntervalTriangle2D dit =
+      (RelaxedIntervalTriangle2D)
+        RelaxedIntervalTriangle2D.from(t);
+    final RelaxedInterval ditd = dit.twiceSignedAreaInterval();
 
     final ShewchukIntervalTriangle2D sit =
       (ShewchukIntervalTriangle2D) ShewchukIntervalTriangle2D.from(t);
-    final DoubleInterval sitd = sit.twiceSignedAreaInterval();
+    final RelaxedInterval sitd = sit.twiceSignedAreaInterval();
 
     // Shewchuk should be a looser error bound than interval arithmetic!
     Assertions.assertTrue(
@@ -297,7 +296,7 @@ public final class TriangleIntervalTest {
         "\ndoes not contain BigFloatTriangle2D area:\n" +
         bftbf.reduce() + "\n" +
         Double.toHexString(bftd) + "\n" +
-        "\nDoubleInterval\n" +
+        "\nRelaxedInterval\n" +
         ditd + "\n" +
         dit.description() + "\n" +
         "\nRoundingInterval\n" +

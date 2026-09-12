@@ -3,7 +3,7 @@ package mop.java.scripts.triangles;
 import mop.java.geometry.Generators;
 import mop.java.geometry.triangle.*;
 import mop.java.numbers.BigFloat;
-import mop.java.numbers.DoubleInterval;
+import mop.java.numbers.RelaxedInterval;
 import mop.java.numbers.RoundingInterval;
 import mop.java.numbers.Doubles;
 import mop.java.prng.Generator;
@@ -17,7 +17,7 @@ import org.apache.commons.geometry.euclidean.twod.shape.Circle;
  * mvn -q clean install && j src/scripts/java/mop/java/scripts/triangles/CocircularTrials.java
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-09
+ * @version 2026-09-12
  */
 
 public final class CocircularTrials {
@@ -98,15 +98,15 @@ public final class CocircularTrials {
         if (ri.containsZero()) { nrit++; }
         if (ri.contains(bf)) { nribf++; }
         if (ri.contains(bfd)) { nribfd++; }
-        final DoubleIntervalTriangle2D dit =
-          (DoubleIntervalTriangle2D) DoubleIntervalTriangle2D.from(t);
-        final DoubleInterval di = dit.inCircleInterval(p);
+        final RelaxedIntervalTriangle2D dit =
+          (RelaxedIntervalTriangle2D) RelaxedIntervalTriangle2D.from(t);
+        final RelaxedInterval di = dit.inCircleInterval(p);
         if (di.containsZero()) { ndit++; }
         if (di.contains(bf)) { ndibf++; }
         if (di.contains(bfd)) { ndibfd++; }
         final ShewchukIntervalTriangle2D sit =
           (ShewchukIntervalTriangle2D) ShewchukIntervalTriangle2D.from(t);
-        final DoubleInterval si = sit.inCircleInterval(p);
+        final RelaxedInterval si = sit.inCircleInterval(p);
         if (si.containsZero()) { nsit++; }
         if (si.contains(bf)) { nsibf++; }
         if (si.contains(bfd)) { nsibfd++; }
@@ -123,13 +123,13 @@ public final class CocircularTrials {
       "Round cocircular= " + nround + "/" + ntrys +
         " = " + ((double) nround)/ntrys);
     System.out.println(
-      "Double interval cocircular= " + ndit + "/" + ntrys +
+      "Relaxed Interval cocircular= " + ndit + "/" + ntrys +
         " = " + ((double) ndit)/ntrys);
     System.out.println(
-      "Double interval contains bf= " + ndibf + "/" + ntrys +
+      "Relaxed Interval contains bf= " + ndibf + "/" + ntrys +
         " = " + ((double) ndibf)/ntrys);
     System.out.println(
-      "Double interval contains bfd= " + ndibfd + "/" + ntrys +
+      "Relaxed Interval contains bfd= " + ndibfd + "/" + ntrys +
         " = " + ((double) ndibfd)/ntrys);
     System.out.println(
       "Rounding interval cocircular= " + nrit + "/" + ntrys +

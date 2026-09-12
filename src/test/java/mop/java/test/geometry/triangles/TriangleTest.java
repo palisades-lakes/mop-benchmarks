@@ -37,21 +37,21 @@ public abstract class TriangleTest {
                                          final Triangle2D gold,
                                          final Triangle2D pred,
                                          final List<Triangle2D> triangles,
-                                         final Vector2D p3) {
+                                         final Vector2D p) {
     final StringBuilder msg = new StringBuilder(
-      "\n" + name +
+      "\n\n" + name +
         "\ngold=" + gold + " -> " + Double.toHexString(truth) +
         "\npred=" + pred + " -> " + Double.toHexString(check));
     msg.append("\ndiff=").append(Double.toHexString(truth-check));
     msg.append("\nulp=").append(Double.toHexString(Math.ulp(truth)));
     if (null != triangles) {
       for (final Triangle2D t : triangles) {
-        msg.append("\n").append(t).append(" ->\n");
-        if (null!=p3) {
-          msg.append(p3).append(" \n");
-          msg.append(Double.toHexString(t.inCircleDistance(p3))); }
+        msg.append("\n").append(t.description()).append(" ->\n");
+        if (null!=p) {
+          msg.append(p).append(" \n");
+          msg.append(t.inCircleInterval(p)); }
         else {
-          msg.append(Double.toHexString(t.twiceSignedArea())); }}}
+          msg.append(t.twiceSignedAreaInterval()); }}}
     return msg + "\n"; }
 
   //--------------------------------------------------------------
