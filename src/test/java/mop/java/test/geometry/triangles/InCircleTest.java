@@ -52,7 +52,7 @@ public final class InCircleTest extends TriangleTest {
     final Triangle2D gold = Triangle2D.truth(t);
     final double trueInc = gold.inCircleDistance(p);
     final List<Triangle2D> triangles = Triangle2D.makeTriangles(t);
-    for (final Triangle2D ti :triangles) {
+    for (final Triangle2D ti : triangles) {
       final double inc = ti.inCircleDistance(p);
       if (ti.inCircleDistanceExact()) {
         // with delta=0.0 handles +0 vs -0 'correctly'

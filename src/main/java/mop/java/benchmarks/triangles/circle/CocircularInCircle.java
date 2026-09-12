@@ -16,7 +16,7 @@ import org.openjdk.jmh.annotations.Setup;
  * mvn -q clean install && jmh mop.java.benchmarks.triangles.circle.CocircularInCircle
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-11
+ * @version 2026-09-12
  */
 
 public class CocircularInCircle extends Base {

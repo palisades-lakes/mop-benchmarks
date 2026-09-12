@@ -46,7 +46,7 @@ public abstract class TriangleTest {
     msg.append("\nulp=").append(Double.toHexString(Math.ulp(truth)));
     if (null != triangles) {
       for (final Triangle2D t : triangles) {
-        msg.append("\n").append(t.description()).append(" ->\n");
+        msg.append("\n\n").append(t.description()).append(" ->\n");
         if (null!=p) {
           msg.append(p).append(" \n");
           msg.append(t.inCircleInterval(p)); }

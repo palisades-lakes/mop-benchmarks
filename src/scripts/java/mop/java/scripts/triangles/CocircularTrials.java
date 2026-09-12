@@ -69,12 +69,12 @@ public final class CocircularTrials {
     int ntrys  = 0;
     int nexact = 0;
     int nround = 0;
-    int ndit = 0;
-    int ndibf = 0;
-    int ndibfd = 0;
-    int nrit = 0;
-    int nribf = 0;
-    int nribfd = 0;
+    int nret = 0;
+    int nrebf = 0;
+    int nrebfd = 0;
+    int nrot = 0;
+    int nrobf = 0;
+    int nrobfd = 0;
     int nsit = 0;
     int nsibf = 0;
     int nsibfd = 0;
@@ -92,18 +92,18 @@ public final class CocircularTrials {
         final double bfd = bf.doubleValue();
         if (bf.isZero()) { nexact++; }
         if (0.0 == bfd) { nround++; }
-        final RoundingIntervalTriangle2D rit =
+        final RoundingIntervalTriangle2D rot =
           (RoundingIntervalTriangle2D) RoundingIntervalTriangle2D.from(t);
-        final RoundingInterval ri = rit.inCircleInterval(p);
-        if (ri.containsZero()) { nrit++; }
-        if (ri.contains(bf)) { nribf++; }
-        if (ri.contains(bfd)) { nribfd++; }
-        final RelaxedIntervalTriangle2D dit =
+        final RoundingInterval ro = rot.inCircleInterval(p);
+        if (ro.containsZero()) { nrot++; }
+        if (ro.contains(bf)) { nrobf++; }
+        if (ro.contains(bfd)) { nrobfd++; }
+        final RelaxedIntervalTriangle2D ret =
           (RelaxedIntervalTriangle2D) RelaxedIntervalTriangle2D.from(t);
-        final RelaxedInterval di = dit.inCircleInterval(p);
-        if (di.containsZero()) { ndit++; }
-        if (di.contains(bf)) { ndibf++; }
-        if (di.contains(bfd)) { ndibfd++; }
+        final RelaxedInterval re = ret.inCircleInterval(p);
+        if (re.containsZero()) { nret++; }
+        if (re.contains(bf)) { nrebf++; }
+        if (re.contains(bfd)) { nrebfd++; }
         final ShewchukIntervalTriangle2D sit =
           (ShewchukIntervalTriangle2D) ShewchukIntervalTriangle2D.from(t);
         final RelaxedInterval si = sit.inCircleInterval(p);
@@ -123,23 +123,23 @@ public final class CocircularTrials {
       "Round cocircular= " + nround + "/" + ntrys +
         " = " + ((double) nround)/ntrys);
     System.out.println(
-      "Relaxed Interval cocircular= " + ndit + "/" + ntrys +
-        " = " + ((double) ndit)/ntrys);
+      "Relaxed Interval cocircular= " + nret + "/" + ntrys +
+        " = " + ((double) nret)/ntrys);
     System.out.println(
-      "Relaxed Interval contains bf= " + ndibf + "/" + ntrys +
-        " = " + ((double) ndibf)/ntrys);
+      "Relaxed Interval contains bf= " + nrebf + "/" + ntrys +
+        " = " + ((double) nrebf)/ntrys);
     System.out.println(
-      "Relaxed Interval contains bfd= " + ndibfd + "/" + ntrys +
-        " = " + ((double) ndibfd)/ntrys);
+      "Relaxed Interval contains bfd= " + nrebfd + "/" + ntrys +
+        " = " + ((double) nrebfd)/ntrys);
     System.out.println(
-      "Rounding interval cocircular= " + nrit + "/" + ntrys +
-        " = " + ((double) nrit)/ntrys);
+      "Rounding interval cocircular= " + nrot + "/" + ntrys +
+        " = " + ((double) nrot)/ntrys);
     System.out.println(
-      "Rounding interval contains bf= " + nribf + "/" + ntrys +
-        " = " + ((double) nribf)/ntrys);
+      "Rounding interval contains bf= " + nrobf + "/" + ntrys +
+        " = " + ((double) nrobf)/ntrys);
     System.out.println(
-      "Rounding interval contains bfd= " + nribfd + "/" + ntrys +
-        " = " + ((double) nribfd)/ntrys);
+      "Rounding interval contains bfd= " + nrobfd + "/" + ntrys +
+        " = " + ((double) nrobfd)/ntrys);
     System.out.println(
       "Shewchuk interval cocircular= " + nsit + "/" + ntrys +
         " = " + ((double) nsit)/ntrys);
