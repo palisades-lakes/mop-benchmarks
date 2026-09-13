@@ -1,6 +1,7 @@
 package mop.java.numbers;
 
 import mop.java.Exceptions;
+
 import java.util.Objects;
 
 //----------------------------------------------------------------------
@@ -949,10 +950,14 @@ public final class BigFloat implements Ringlike<BigFloat> {
   // directly comparable!!!
 
   public final boolean opEQ (final double q) {
-    return opEQ(valueOf(q)); }
+    if (isNaN() || Double.isNaN(q)) { return false; }
+    if (isZero()) { return q==0.0; } // regardless of +/- zero
+    return 0==compareTo(q); }
 
   public final boolean opGT (final double q) {
-    return opGT(valueOf(q)); }
+    if (isNaN() || Double.isNaN(q)) { return false; }
+    if (isZero() && (q == 0.0)) { return false; } // regardless of +/- zero
+    return 0 < compareTo(q);  }
 
 //  public final boolean opEQ (final double q) {
 //    if (isNaN() || Double.isNaN(q)) { return false; }
@@ -1001,9 +1006,7 @@ public final class BigFloat implements Ringlike<BigFloat> {
   public final int compareTo (final BigFloat q) {
     if (this == q) { return 0; }
     // see java.lang.Double.compareTo(Double)
-    if (isNaN()) {
-      if (q.isNaN()) { return 0; }
-      return 1; }
+    if (isNaN()) { return q.isNaN() ? 0 : 1; }
     if (q.isNaN()) { return -1; }
 
     // handle pos and neg zeros here
@@ -1029,6 +1032,36 @@ public final class BigFloat implements Ringlike<BigFloat> {
     final int e1 = q.exponent();
     final int c;
     //if (e0 <= e1) { c = t0.compareTo(t1.shiftUp(e1-e0)); }
+    if (e0 <= e1) { c = t0.compareTo(t1.shiftUp(e1-e0)); }
+    else { c = t0.shiftUp(e0-e1).compareTo(t1); }
+    return (nonNegative() ? c : -c); }
+
+  public final int compareTo (final double q) {
+    // see java.lang.Double.compareTo(Double)
+    if (isNaN()) { return Double.isNaN(q) ?  0 : 1; }
+    if (Double.isNaN(q)) { return -1; }
+
+    // handle pos and neg zeros here
+    if (nonNegative() && (q<0.0)) { return 1; }
+    if ((! nonNegative()) && (q>=0.0)) { return -1; }
+
+    // same signs, but may not be finite
+    if (isPositiveInfinity()) {
+      return (q == Double.POSITIVE_INFINITY) ? 0 : 1; }
+    if (isNegativeInfinity()) {
+      return (q == Double.NEGATIVE_INFINITY) ?  0 : -1; }
+
+    // <code>this</code> is finite
+    if (q == Double.POSITIVE_INFINITY) { return -1; }
+    if (q == Double.NEGATIVE_INFINITY) { return 1; }
+
+    // both finite
+    final BoundedNatural t0 = significand();
+    final BoundedNatural t1 =
+      BoundedNatural.valueOf(Doubles.significand(q));
+    final int e0 = exponent();
+    final int e1 = Doubles.exponent(q);
+    final int c;
     if (e0 <= e1) { c = t0.compareTo(t1.shiftUp(e1-e0)); }
     else { c = t0.shiftUp(e0-e1).compareTo(t1); }
     return (nonNegative() ? c : -c); }
