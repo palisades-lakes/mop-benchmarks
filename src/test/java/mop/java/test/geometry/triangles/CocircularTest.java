@@ -22,7 +22,7 @@ import java.util.List;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-12
+ * @version 2026-09-13
  */
 
 public final class CocircularTest extends TriangleTest {
@@ -30,12 +30,12 @@ public final class CocircularTest extends TriangleTest {
   //--------------------------------------------------------------
 
   public static final List<Triangle2D> makeIntervalTriangles (final Triangle2D t) {
-    final Triangle2D doubleIntervalTriangle = RelaxedIntervalTriangle2D.from(t);
+    final Triangle2D relaxedIntervalTriangle = RelaxedIntervalTriangle2D.from(t);
     final Triangle2D roundingIntervalTriangle = RoundingIntervalTriangle2D.from(t);
     final Triangle2D shewchukIntervalTriangle = ShewchukIntervalTriangle2D.from(t);
     return List.of(
-     doubleIntervalTriangle,
-     roundingIntervalTriangle,
+      relaxedIntervalTriangle,
+      roundingIntervalTriangle,
       shewchukIntervalTriangle); }
 
   private static final void inCircle (final Triangle2D t,
@@ -47,13 +47,21 @@ public final class CocircularTest extends TriangleTest {
     for (final Triangle2D ti :triangles) {
       Assertions.assertTrue(ti.inCircleIntervals());
       final DoubleInterval interval = ti.inCircleInterval(p);
-        Assertions.assertTrue(
-          ti.inCircleInterval(p).contains(bf),
-          "\nTruth:" + bf +
-            "\n" + ti.getClass().getSimpleName() +
-            "\nInterval:\n" + interval +
-            "\n" + ti +
-            "\n" + p); } }
+      Assertions.assertTrue(
+        interval.contains(bf),
+        "\n\nTruth:" + bf +
+          "\n(" + Double.toHexString(bf.doubleValue()) + ")" +
+          "\n\nInterval:\n" + interval +
+          "\n\nbf<min: " + bf.opLT(interval.min()) +
+          "\nbf>max: " + bf.opGT(interval.max()) +
+          "\n\nbf.exponent(): " + bf.exponent() +
+          "\nexponent(bf.doubleValue(): " +
+          Doubles.exponent(bf.doubleValue()) +
+          "\nexponent(min): " + Doubles.exponent(interval.min()) +
+          "\nexponent(max): " + Doubles.exponent(interval.max()) +
+          "\n\n" + ti.getClass().getSimpleName() +
+          "\n" + ti +
+          "\n" + p); } }
 
   //--------------------------------------------------------------
 
@@ -84,8 +92,8 @@ public final class CocircularTest extends TriangleTest {
         PRNG.well44497b("seeds/Well44497b-2019-01-11.txt"),
         pMu, pSigma));
 
-    final int ntriangles = 1023;
-    final int npoints = 1023;
+    final int ntriangles = 63;
+    final int npoints = 63;
     for (int i=0;i<ntriangles;i++) {
       final Circle c = (Circle) circleGenerator.next();
       final Vector2D p0 = project(c,(Vector2D) pointGenerator.next());

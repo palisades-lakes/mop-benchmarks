@@ -29,7 +29,7 @@ import java.util.Objects;
  * <code>(nonNegative()?1:-1) * significand() * 2^exponent()</code>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-08-29
+ * @version 2026-09-13
  */
 
 @SuppressWarnings("unused")
@@ -923,31 +923,13 @@ public final class BigFloat implements Ringlike<BigFloat> {
     if (isNaN() || q.isNaN()) { return false; }
     if (this==q) { return true; } // identical objects
     if (isZero()) { return q.isZero(); } // regardless of +/- zero
-    // TODO: mark when reducing
-    final BigFloat r0 = reduce();
-    final BigFloat r1 = q.reduce();
-    return (r0.significand().equals(r1.significand()))
-      && (r0.nonNegative() == r1.nonNegative())
-      && (r0.exponent() == r1.exponent()); }
+    return 0==compareTo(q); }
 
   public final boolean opGT (final BigFloat q) {
     if (isNaN() || q.isNaN()) { return false; }
     if (this == q) { return false; } // identical objects
     if (isZero() && q.isZero()) { return false; } // regardless of +/- zero
-    if (nonNegative() && (! q.nonNegative())) { return true; }
-    if ((! nonNegative()) &&  q.nonNegative()) { return false; }
-    // same signs
-    // TODO: cache reduced flag?
-    final BigFloat r0 = reduce();
-    final BigFloat r1 = q.reduce();
-    if (r0.nonNegative()) { // both positive
-      if (r0.exponent() > r1.exponent()) { return true; }
-      if (r0.exponent() < r1.exponent()) { return false; }
-      return (r0.significand().compareTo(r1.significand()) > 0); }
-    // else both negative
-    if (r0.exponent() < r1.exponent()) { return true; }
-    if (r0.exponent() > r1.exponent()) { return false; }
-    return (r0.significand().compareTo(r1.significand()) < 0); }
+    return 0 < compareTo(q);  }
 
   // TODO: optimize?
   public final boolean opGE (final BigFloat q) {
@@ -963,32 +945,40 @@ public final class BigFloat implements Ringlike<BigFloat> {
     return ! opGT(q); }
 
   //--------------------------------------------------------------
+  // WARNING: Doubles.exponent() and BigFloat.exponent() are not
+  // directly comparable!!!
 
   public final boolean opEQ (final double q) {
-    if (isNaN() || Double.isNaN(q)) { return false; }
-    if (isZero()) { return 0.0==q; } // regardless of +/- zero
-    // TODO: mark when reduced
-    final BigFloat r0 = reduce();
-    return (r0.significand().equals(Doubles.significand(q)))
-      && (r0.nonNegative() == Doubles.nonNegative(q))
-      && (r0.exponent() == Doubles.exponent(q)); }
+    return opEQ(valueOf(q)); }
 
   public final boolean opGT (final double q) {
-    if (isNaN() || Double.isNaN(q)) { return false; }
-    if (isZero()) { return 0.0>q; } // regardless of +/- zero
-    if (nonNegative() && (! Doubles.nonNegative(q))) { return true; }
-    if ((! nonNegative()) &&  Doubles.nonNegative(q)) { return false; }
-    // same signs
-    // TODO: cache reduced flag?
-    final BigFloat r0 = reduce();
-    if (r0.nonNegative()) { // both positive
-      if (r0.exponent() > Doubles.exponent(q)) { return true; }
-      if (r0.exponent() < Doubles.exponent(q)) { return false; }
-      return (r0.significand().compareTo(Doubles.significand(q)) > 0); }
-    // else both negative
-    if (r0.exponent() < Doubles.exponent(q)) { return true; }
-    if (r0.exponent() > Doubles.exponent(q)) { return false; }
-    return (r0.significand().compareTo(Doubles.significand(q)) < 0); }
+    return opGT(valueOf(q)); }
+
+//  public final boolean opEQ (final double q) {
+//    if (isNaN() || Double.isNaN(q)) { return false; }
+//    if (isZero()) { return 0.0==q; } // regardless of +/- zero
+//    // TODO: mark when reduced
+//    final BigFloat r0 = reduce();
+//    return (r0.significand().equals(Doubles.significand(q)))
+//      && (r0.nonNegative() == Doubles.nonNegative(q))
+//      && (r0.exponent() == Doubles.exponent(q)); }
+//
+//  public final boolean opGT (final double q) {
+//    if (isNaN() || Double.isNaN(q)) { return false; }
+//    if (isZero()) { return 0.0>q; } // regardless of +/- zero
+//    if (nonNegative() && (! Doubles.nonNegative(q))) { return true; }
+//    if ((! nonNegative()) &&  Doubles.nonNegative(q)) { return false; }
+//    // same signs
+//    // TODO: cache reduced flag?
+//    final BigFloat r0 = reduce();
+//    if (r0.nonNegative()) { // both positive
+//      if (r0.exponent() > Doubles.exponent(q)) { return true; }
+//      if (r0.exponent() < Doubles.exponent(q)) { return false; }
+//      return (r0.significand().compareTo(Doubles.significand(q)) > 0); }
+//    // else both negative
+//    if (r0.exponent() < Doubles.exponent(q)) { return true; }
+//    if (r0.exponent() > Doubles.exponent(q)) { return false; }
+//    return (r0.significand().compareTo(Doubles.significand(q)) < 0); }
 
   // TODO: optimize?
   public final boolean opGE (final double q) {
