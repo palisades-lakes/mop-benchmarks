@@ -61,34 +61,50 @@ public record RoundingInterval(double min, double max)
   private static final RoundingInterval sum (final double z0,
                                              final double z1) {
     //if (Double.isNaN(z0) || Double.isNaN(z1)) { return NaN; }
-    final Hilo s = Hilo.sum(z0,z1);
-//    assert hilo.hi() + hilo.lo() == hilo.hi() :
-//      "\nz0= " + Double.toHexString(z0) +
-//        "\nz1= " + Double.toHexString(z1) +
-//        "\nhi= " + Double.toHexString(hilo.hi()) +
-//        "\nz1= " + Double.toHexString(hilo.lo());
-    final double hi = s.hi();
-    final double lo = s.lo();
-    // no rounding
-    if (0.0==lo) { return new RoundingInterval(hi, hi); }
+    final double hi = z0 + z1;
+    final double e1 = hi - z0;
+    final double e0 = hi - e1;
+    final double r1 = z1 - e1;
+    final double r0 = z0 - e0;
+    final double lo = r0 + r1;
     // rounded down
     if (0.0<lo) { return new RoundingInterval(hi, Math.nextUp(hi)); }
     // rounded up
-    return new RoundingInterval(Math.nextDown(hi), hi); }
+    if (0.0>lo) { return new RoundingInterval(Math.nextDown(hi), hi); }
+    // no rounding
+    return new RoundingInterval(hi, hi); }
 
   private static final RoundingInterval sum (final RoundingInterval i,
                                              final double z) {
-    return new RoundingInterval(
-      sum(i.min, z).min,
-      sum(i.max, z).max); }
+    final double zmin;
+    { final double hi = i.min + z;
+      final double e1 = hi - z;
+      final double e0 = hi - e1;
+      final double r1 = i.min - e1;
+      final double r0 = z - e0;
+      final double lo = r0 + r1;
+      zmin = (lo < 0.0) ? Math.nextDown(hi) : hi; }
+
+    final double zmax;
+    { final double hi = i.max + z;
+      final double e1 = hi - z;
+      final double e0 = hi - e1;
+      final double r1 = i.max - e1;
+      final double r0 = z - e0;
+      final double lo = r0 + r1;
+      zmax = (lo > 0.0) ? Math.nextUp(hi) : hi; }
+
+    return new RoundingInterval(zmin,zmax); }
+
+//  private static final RoundingInterval sum (final RoundingInterval i,
+//                                             final double z) {
+//    return new RoundingInterval(
+//      sum(i.min, z).min,
+//      sum(i.max, z).max); }
 
   private static final RoundingInterval sum (final double z0,
                                              final double z1,
                                              final double z2) {
-//    final Hilo s01 = Hilo.sum(z0,z1);
-//    final Hilo h012 = Hilo.sum(s01.hi(),z2);
-//    final Hilo l012 = Hilo.sum(s01.lo(),z2);
-//    return sum(s01,z2); }
     return sum(sum(z0,z1),z2); }
 
   //--------------------------------------------------------------
@@ -98,16 +114,19 @@ public record RoundingInterval(double min, double max)
 
   public static final RoundingInterval dif (final double z0,
                                             final double z1) {
-    // Assuming subtraction is exact.
-    return sum(z0,-z1); }
-
-  //--------------------------------------------------------------
-//  /** Return the smallest double interval covering the exact value
-//   * of <code>z0*z1</code>,
-//   */
-//
-//  public static final RoundingInterval square (final double z) {
-//    return coverExactSum(Hilo.square(z)); }
+    final double mz1 = -z1;
+    final double hi = z0 + mz1;
+    final double e1 = hi - z0;
+    final double e0 = hi - e1;
+    final double r1 = mz1 - e1;
+    final double r0 = z0 - e0;
+    final double lo = r0 + r1;
+    // rounded down
+    if (0.0<lo) { return new RoundingInterval(hi, Math.nextUp(hi)); }
+    // rounded up
+    if (0.0>lo) { return new RoundingInterval(Math.nextDown(hi), hi); }
+    // no rounding
+    return new RoundingInterval(hi, hi); }
 
   //--------------------------------------------------------------
 
@@ -118,8 +137,6 @@ public record RoundingInterval(double min, double max)
       sum(max, q.max).max); }
 
   //--------------------------------------------------------------
-  // TODO: do we need Hilo.sum()? expand intervals for
-  //  rounding in subtracts?
 
   public final RoundingInterval subtract (final RoundingInterval q) {
     if (isNaN() || q.isNaN()) { return NaN; }
@@ -127,49 +144,59 @@ public record RoundingInterval(double min, double max)
       dif(min, q.max).min,
       dif(max, q.min).max); }
 
+  // FMA version
+  public static final RoundingInterval product (final double z0,
+                                                final double z1) {
+    final double hi = (z0 * z1);
+    final double lo = Math.fma(z0,z1,-hi);
+    // rounded down
+    if (0.0<lo) { return new RoundingInterval(hi, Math.nextUp(hi)); }
+    // rounded up
+    if (0.0>lo) { return new RoundingInterval(Math.nextDown(hi), hi); }
+    // no rounding
+    return new RoundingInterval(hi, hi); }
+
   //--------------------------------------------------------------
-  // TODO: do we need Hilo.product()? expand intervals for
-  //  rounding in multiplies?
 
   public final RoundingInterval multiply (final RoundingInterval q) {
-    if (isNaN() || q.isNaN()) { return NaN; }
-    final Hilo z00 = Hilo.product(min,q.min);
-    final Hilo z01 = Hilo.product(min,q.max);
-    final Hilo z10 = Hilo.product(max,q.min);
-    final Hilo z11 = Hilo.product(max,q.max);
-    Hilo zmin,zmax;
-    if (z00.compareTo(z01) <= 0) { zmin = z00; zmax = z01; }
-    else { zmin = z01; zmax = z00; }
-    if (z10.compareTo(zmin) < 0) { zmin = z10; }
-    else if (z10.compareTo(zmax) > 0) { zmax = z10; }
-    if (z11.compareTo(zmin) < 0) { zmin = z11; }
-    else if (z11.compareTo(zmax) > 0) { zmax = z11; }
-    final double dmin =
-      (zmin.lo() >= 0.0) ? zmin.hi() : Math.nextDown(zmin.hi());
-    final double dmax =
-      (zmax.lo() <= 0.0) ? zmax.hi() : Math.nextUp(zmax.hi());
-    return new RoundingInterval(dmin, dmax);  }
+    //if (isNaN() || q.isNaN()) { return NaN; }
+    final RoundingInterval z00 = product(min,q.min);
+    final RoundingInterval z01 = product(min,q.max);
+    final RoundingInterval z10 = product(max,q.min);
+    final RoundingInterval z11 = product(max,q.max);
+    double zmin = Math.min(z00.min,z01.min);
+    if (z10.min < zmin) { zmin = z10.min; }
+    if (z11.min < zmin) { zmin = z11.min; }
+    double zmax = Math.max(z00.max,z01.max);
+    if (z10.max > zmax) { zmax = z10.max; }
+    if (z11.max > zmax) { zmax = z11.max; }
+    return new RoundingInterval(zmin, zmax);  }
 
   //--------------------------------------------------------------
+
+  // FMA version
+  public static final RoundingInterval square (final double z) {
+    final double hi =  (z * z);
+    final double lo = Math.fma(z,z,-hi);
+    // rounded down
+    if (0.0<lo) { return new RoundingInterval(hi, Math.nextUp(hi)); }
+    // rounded up
+    if (0.0>lo) {
+      final double min = Math.max(0.0,Math.nextDown(hi));
+      return new RoundingInterval(min, hi); }
+    // no rounding
+    return new RoundingInterval(hi, hi); }
 
   //  @Override
   public final RoundingInterval square () {
-    if (isNaN()) { return NaN; }
-    final Hilo z0 = Hilo.square(min);
-    final Hilo z1 = Hilo.square(max);
+    //if (isNaN()) { return NaN; }
+    final RoundingInterval z0 = square(min);
+    final RoundingInterval z1 = square(max);
     if (containsZero()) {
-      final Hilo zmax = (0 >= z0.compareTo(z1)) ? z1 : z0;
-      final double dmax =
-        (zmax.lo() <= 0.0) ? zmax.hi() : Math.nextUp(zmax.hi());
-      return new RoundingInterval(0.0, dmax); }
-    final Hilo zmin,zmax;
-    if (z0.compareTo(z1) <= 0) { zmin = z0; zmax = z1; }
-    else { zmin = z1; zmax = z0; }
-    final double dmin =
-      (zmin.lo() >= 0.0) ? zmin.hi() : Math.nextDown(zmin.hi());
-    final double dmax =
-      (zmax.lo() <= 0.0) ? zmax.hi() : Math.nextUp(zmax.hi());
-    return new RoundingInterval(dmin, dmax);  }
+      return new RoundingInterval(0.0, Math.max(z0.max,z1.max)); }
+    return new RoundingInterval(
+      Math.min(z0.min,z1.min),
+      Math.max(z0.max,z1.max));  }
 
   //--------------------------------------------------------------
   // geometry
@@ -215,9 +242,9 @@ public record RoundingInterval(double min, double max)
   //--------------------------------------------------------------
   // Number methods
   //--------------------------------------------------------------
-
   /** Return midpoint as approximation. */
-//  @Override
+
+  //  @Override
   public final double doubleValue () { return (min+max)/2; }
 
   //--------------------------------------------------------------
@@ -243,62 +270,6 @@ public record RoundingInterval(double min, double max)
 
   @Override
   public final String toString () { return toHexString(); }
-
-  //--------------------------------------------------------------
-  // construction
-  //--------------------------------------------------------------
-
-//  public RoundingInterval {
-//    System.out.println(
-//      "[" +
-//        Double.toHexString(min) + ", " +
-//        Double.toHexString(max) + "]");
-//  }
-//  public static final RoundingInterval valueOf (final double z)  {
-//    return new RoundingInterval(Math.nextDown(z),Math.nextUp(z)); }
-
-//  /** Return the smallest <code>double</code> interval that covers
-//   * both <code>i0</code> and <code>i1</code>
-//   */
-//
-//  private static final RoundingInterval cover (final RoundingInterval i0,
-//                                               final RoundingInterval i1) {
-//    return new RoundingInterval(Math.min(i0.min, i1.min),
-//                                Math.max(i0.max,i1.max)); }
-
-//  /** Return the smallest <code>double</code> interval that covers
-//   * the exact value of <code>hi+lo</code>.
-//   * Expects that, in <code>double</code> arithmetic,
-//   * <code>hi+lo==hi</code>
-//   */
-//
-//  private static final RoundingInterval coverExactSum (final double hi,
-//                                                     final double lo) {
-//    assert hi == hi+lo :
-//      "\nhi= " + Double.toHexString(hi) +
-//        "\nlo= "  + Double.toHexString(lo) +
-//        "\n";
-//    // no rounding
-//    if (0.0==lo) { return new RoundingInterval(hi,hi); }
-//    // rounded down
-//    if (0.0<lo) {
-//      return new RoundingInterval(hi,Math.nextUp(hi)); }
-//    // rounded up
-//    return new RoundingInterval(Math.nextDown(hi), hi); }
-
-//  /** Return the smallest <code>double</code> interval that covers
-//   * the exact value of <code>hi+lo</code>.
-//   * Assumes that, in <code>double</code> arithmetic,
-//   * <code>hi+lo==hi</code>
-//   */
-//
-//  private static final RoundingInterval coverExactSum (final Hilo hilo) {
-//    return coverExactSum(hilo.hi(), hilo.lo()); }
-
-//  public static final RoundingInterval plusOrMinus (final double z,
-//                                                  final double e)  {
-//    final double ae = Math.abs(e);
-//    return new RoundingInterval(z-ae,z+ae); }
 
 //--------------------------------------------------------------
 } // end class

@@ -309,10 +309,6 @@ public record Hilo (double hi, double lo)
     final double y = Math.fma(a,a,-x);
     return new Hilo(x, y); }
 
-  // TODO: optimize as in predicates.c
-//  @Override
-//  public final Hilo square () { return multiply(this); }
-
   //-------------------------------------------------------------------
 
 //  public final Hilo divide (final double y) {

@@ -16,7 +16,7 @@ package mop.java.numbers;
  * only if f is monotone in both arguments over [min(),max()].
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-12
+ * @version 2026-09-14
  */
 
 public interface DoubleInterval extends Ringlike<DoubleInterval> {
@@ -25,6 +25,7 @@ public interface DoubleInterval extends Ringlike<DoubleInterval> {
 
   public double min();
   public double max();
+
   //--------------------------------------------------------------
 
   public default boolean containsZero () {

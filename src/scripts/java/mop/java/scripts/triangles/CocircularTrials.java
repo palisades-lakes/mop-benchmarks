@@ -17,23 +17,12 @@ import org.apache.commons.geometry.euclidean.twod.shape.Circle;
  * mvn -q clean install && j src/scripts/java/mop/java/scripts/triangles/CocircularTrials.java
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-12
+ * @version 2026-09-14
  */
 
 public final class CocircularTrials {
 
   //--------------------------------------------------------------
-
-//  private static final Vector2D fmaAffine (final double a,
-//                                           final Vector2D p0,
-//                                           final Vector2D p1) {
-//    final double x1 = p1.getX();
-//    final double y1 = p1.getY();
-//    final double dx = p0.getX() - x1;
-//    final double dy = p0.getY() - y1;
-//    final double x2 = Math.fma(a,dx,x1);
-//    final double y2 = Math.fma(a,dy,y1);
-//    return Vector2D.of(x2,y2); }
 
   /** Project <code>p</code> onto (the boundary of) <code>c</code>. */
   private static final Vector2D project (final Circle c,
@@ -111,22 +100,23 @@ public final class CocircularTrials {
         if (si.contains(bf)) { nsibf++; }
         if (si.contains(bfd)) { nsibfd++; }
       } }
+    System.out.println("ntriangles,npoints= " + ntriangles + ", " + npoints);
     System.out.println("cMu,cSigma= " + Double.toHexString(cMu) +
                          ", " + Double.toHexString(cSigma));
     System.out.println("rLambda= " + Double.toHexString(rLambda));
     System.out.println("pMu,pSigma= " + Double.toHexString(pMu) +
                          ", " + Double.toHexString(pSigma));
     System.out.println(
-      "Exact cocircular= " + nexact + "/" + ntrys +
+      "Exact bf  cocircular= " + nexact + "/" + ntrys +
         " = " + ((double) nexact)/ntrys);
     System.out.println(
-      "Round cocircular= " + nround + "/" + ntrys +
+      "Round bfd cocircular= " + nround + "/" + ntrys +
         " = " + ((double) nround)/ntrys);
     System.out.println(
       "Relaxed Interval cocircular= " + nret + "/" + ntrys +
         " = " + ((double) nret)/ntrys);
     System.out.println(
-      "Relaxed Interval contains bf= " + nrebf + "/" + ntrys +
+      "Relaxed Interval contains bf = " + nrebf + "/" + ntrys +
         " = " + ((double) nrebf)/ntrys);
     System.out.println(
       "Relaxed Interval contains bfd= " + nrebfd + "/" + ntrys +
@@ -135,7 +125,7 @@ public final class CocircularTrials {
       "Rounding interval cocircular= " + nrot + "/" + ntrys +
         " = " + ((double) nrot)/ntrys);
     System.out.println(
-      "Rounding interval contains bf= " + nrobf + "/" + ntrys +
+      "Rounding interval contains bf = " + nrobf + "/" + ntrys +
         " = " + ((double) nrobf)/ntrys);
     System.out.println(
       "Rounding interval contains bfd= " + nrobfd + "/" + ntrys +
@@ -144,10 +134,10 @@ public final class CocircularTrials {
       "Shewchuk interval cocircular= " + nsit + "/" + ntrys +
         " = " + ((double) nsit)/ntrys);
     System.out.println(
-      "Shewchuk interval contains bf= = " + nsibf + "/" + ntrys +
+      "Shewchuk interval contains bf=  " + nsibf + "/" + ntrys +
         " = " + ((double) nsibf)/ntrys);
     System.out.println(
-      "Shewchuk interval contains bfd= = " + nsibfd + "/" + ntrys +
+      "Shewchuk interval contains bfd= " + nsibfd + "/" + ntrys +
         " = " + ((double) nsibfd)/ntrys);
   }
 

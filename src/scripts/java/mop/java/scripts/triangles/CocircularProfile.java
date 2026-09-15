@@ -14,7 +14,7 @@ import org.apache.commons.geometry.euclidean.twod.shape.Circle;
  * mvn -q clean install && jy src/scripts/java/mop/java/scripts/triangles/CocircularProfile.java
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-09
+ * @version 2026-09-14
  */
 
 public final class CocircularProfile {
@@ -58,6 +58,7 @@ public final class CocircularProfile {
       for (int j=0;j<npoints;j++) {
         points[i][j] =  project(c,(Vector2D) pointGenerator.next()); } }
 
+    System.out.println("ncircles,npoints= " + ncircles + ", " + npoints);
     System.out.println("cMu,cSigma= " + Double.toHexString(cMu) +
                          ", " + Double.toHexString(cSigma));
     System.out.println("rLambda= " + Double.toHexString(rLambda));
@@ -88,7 +89,7 @@ public final class CocircularProfile {
           final RoundingInterval di = dit.inCircleInterval(p[k]);
           if (di.containsZero()) { ndit++; } } } }
     System.out.println(
-      "Relaxed Interval cocircular= " + ndit + "/" + ntrys +
+      "Rounding Interval cocircular= " + ndit + "/" + ntrys +
         " = " + ((double) ndit) / ntrys); }
 
   //--------------------------------------------------------------------
