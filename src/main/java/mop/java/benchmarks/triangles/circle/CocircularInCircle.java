@@ -68,7 +68,8 @@ public class CocircularInCircle extends Base {
       triangles[i] = Defaults.convertTriangle(ti, className);
       for (int j=0;j<nPoints; j++) {
         points[i][j] = project(circle,(Vector2D) pointGenerator.next()); } }
-    value = new int[3]; }
+    value = new int[3];
+    System.gc(); }
 
   //--------------------------------------------------------------
 

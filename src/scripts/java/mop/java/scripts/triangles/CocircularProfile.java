@@ -14,7 +14,7 @@ import org.apache.commons.geometry.euclidean.twod.shape.Circle;
  * mvn -q clean install && jy src/scripts/java/mop/java/scripts/triangles/CocircularProfile.java
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-14
+ * @version 2026-09-15
  */
 
 public final class CocircularProfile {
@@ -78,6 +78,8 @@ public final class CocircularProfile {
     int ntrys = 0;
     int ndit = 0;
     final Vector2D[][] points = cocircularPoints(ncircles, npoints);
+    System.gc();
+    System.gc();
     for (int i=0; i<ncircles; i++) {
       final Vector2D[] p = points[i];
       for (int j=0;j<npoints-3;j++) {

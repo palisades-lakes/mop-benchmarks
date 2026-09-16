@@ -85,7 +85,6 @@ public final class RoundingIntervalTriangle2D extends Triangle2D {
 
   public final RoundingInterval inCircleInterval (final Vector2D p) {
 
-    // TODO: RelaxedIntervalVector operations
     final RoundingInterval
       xp0 = RoundingInterval.dif(p.getX(), getP0().getX());
     final RoundingInterval
