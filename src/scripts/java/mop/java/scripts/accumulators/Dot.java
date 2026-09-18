@@ -1,28 +1,17 @@
 package mop.java.scripts.accumulators;
 
-import static java.lang.Double.NEGATIVE_INFINITY;
-import static java.lang.Double.toHexString;
-
-import java.util.Arrays;
-
-import org.apache.commons.rng.UniformRandomProvider;
-import org.apache.commons.rng.sampling.ListSampler;
-
 import mop.java.Classes;
-import mop.java.accumulators.Accumulator;
-import mop.java.accumulators.BigFloatAccumulator;
-import mop.java.accumulators.DoubleAccumulator;
+import mop.java.accumulators.*;
 import mop.java.numbers.Doubles;
 import mop.java.prng.Generator;
 import mop.java.prng.PRNG;
-import mop.java.accumulators.EFloatAccumulator;
-import mop.java.accumulators.ERationalAccumulator;
-import mop.java.accumulators.BigDecimalAccumulator;
-import mop.java.accumulators.BigFractionAccumulator;
-import mop.java.accumulators.DoubleFmaAccumulator;
-import mop.java.accumulators.FloatAccumulator;
-import mop.java.accumulators.FloatFmaAccumulator;
-import mop.java.accumulators.RatioAccumulator;
+import org.apache.commons.rng.UniformRandomProvider;
+import org.apache.commons.rng.sampling.ListSampler;
+
+import java.util.List;
+
+import static java.lang.Double.NEGATIVE_INFINITY;
+import static java.lang.Double.toHexString;
 
 /** Benchmark double dot products.
  *
@@ -66,7 +55,7 @@ public final class Dot {
   private static double[] sampleDoubles (final Generator g,
                                          final UniformRandomProvider urp) {
     final double[] x = zeroSum((double[]) g.next());
-    ListSampler.shuffle(urp,Arrays.asList(x));
+    ListSampler.shuffle(urp, List.of(x));
     return x; }
 
 

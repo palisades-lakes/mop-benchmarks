@@ -23,6 +23,9 @@ public abstract class Triangle2D {
 
   public static final List<Triangle2D> makeTriangles (final Triangle2D t) {
     final Triangle2D triangleV2D = TriangleVector2D.from(t);
+    final Triangle2D triangleV2DE = TriangleVector2DEager.from(t);
+    final Triangle2D lazyTriangle = LazyTriangle2D.from(t);
+    final Triangle2D eagerTriangle = EagerTriangle2D.from(t);
     final Triangle2D doubleTriangle = DoubleTriangle2D.from(t);
     final Triangle2D doubleIntervalTriangle = RelaxedIntervalTriangle2D.from(t);
     final Triangle2D roundingIntervalTriangle = RoundingIntervalTriangle2D.from(t);
@@ -49,8 +52,9 @@ public abstract class Triangle2D {
     final Triangle2D slowMacro = SlowMacro.from(t);
     return List.of(
       // mine
-      triangleV2D, rationalFloat,
-      doubleTriangle, doubleIntervalTriangle,roundingIntervalTriangle,
+      triangleV2D, triangleV2DE, eagerTriangle, lazyTriangle,
+      rationalFloat,
+      doubleTriangle, doubleIntervalTriangle, roundingIntervalTriangle,
       shewchukIntervalTriangle,
       bigFloat,
       rebf,robf,shbf,
@@ -67,6 +71,50 @@ public abstract class Triangle2D {
   /** ground truth predicate. */
   public static final Triangle2D truth (final Triangle2D t) {
     return BigFloatTriangle2D.from(t); }
+
+  /** conversions from any Triangle2D to other Triangle classes. */
+
+  public static final Triangle2D convertTriangle (final Triangle2D t,
+                                                  final String dest) {
+    // TODO: lookup method object rather than switch (String)
+    return switch (dest) {
+      case "TriangleVector2D" -> TriangleVector2D.from(t);
+      case "TriangleVector2DEager" -> TriangleVector2DEager.from(t);
+      case "LazyTriangle2D" -> LazyTriangle2D.from(t);
+      case "EagerTriangle2D" -> EagerTriangle2D.from(t);
+      case "DoubleTriangle2D" -> DoubleTriangle2D.from(t);
+      case "RelaxedIntervalTriangle2D" -> RelaxedIntervalTriangle2D.from(t);
+      case "RoundingIntervalTriangle2D" -> RoundingIntervalTriangle2D.from(t);
+      case "ShewchukIntervalTriangle2D" -> ShewchukIntervalTriangle2D.from(t);
+      case "BigFloatTriangle2D" ->  BigFloatTriangle2D.from(t);
+      case "ReBfTriangle2D" ->  ReBfTriangle2D.from(t);
+      case "RoBfTriangle2D" ->  RoBfTriangle2D.from(t);
+      case "ShBFTriangle2D" ->  ShBFTriangle2D.from(t);
+      case "RationalFloatTriangle2D" ->  RationalFloatTriangle2D.from(t);
+      case "DDFast" ->  DDFast.from(t);
+      case "DDNormalized" ->  DDNormalized.from(t);
+      case "DDSlow" ->  DDSlow.from(t);
+//    case "InCircleCC" ->  InCircleCC.from(t);
+      case "DoubleNonRobust" ->  DoubleNonRobust.from(t);
+      case "InCircleNormalized" ->  InCircleNormalized.from(t);
+      case "Adapt" ->  Adapt.from(t);
+      case "Exact" ->  Exact.from(t);
+      case "ExactCache" ->  ExactCache.from(t);
+      case "Fast" ->  Fast.from(t);
+      case "Slow" ->  Slow.from(t);
+      case "AdaptMacro" ->  AdaptMacro.from(t);
+      case "DefaultMacro" ->  DefaultMacro.from(t);
+      case "ExactMacro" ->  ExactMacro.from(t);
+      case "FastMacro" ->  FastMacro.from(t);
+      case "SlowMacro" ->  SlowMacro.from(t);
+      default -> throw new UnsupportedOperationException(); }; }
+
+  public static final Triangle2D[]
+  convertTriangles (final Triangle2D[] t,
+                    final String dest) {
+    for (int i=0; i<t.length; i++) {
+      t[i] = convertTriangle(t[i],dest); }
+    return t;}
 
   public final Vector2D getP0 () { return p0; }
   public final Vector2D getP1 () { return p1; }

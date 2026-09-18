@@ -2,50 +2,39 @@ package mop.java.geometry.triangle;
 
 import org.apache.commons.geometry.euclidean.twod.Vector2D;
 
-/** Minimal triangle with Vector2D vertices, caching reusable values.
+/** Triangle with Vector2D vertices, precomputing reusable values.
  *
  * @author palisades dot lakes at gmail dot com,
  * @version 2026-09-17
  */
 
-public final class TriangleVector2D extends Triangle2D {
+public final class TriangleVector2DEager extends Triangle2D {
 
-  // cache vector result of translating p0 to origin,
+  // precomputed vector result of translating p0 to origin,
   // and related quantities
 
-  private Vector2D _v10;
-  private final Vector2D getV10 () {
-    if (null == _v10) { _v10 = getP1().subtract(getP0()); }
-    return _v10; }
+  private final Vector2D _v10;
+  private final Vector2D getV10 () { return _v10; }
 
-  private double _v10Norm2 = Double.NaN;
-  private final double getV10Norm2 () {
-    // TODO: what if computed norm is NaN?
-    if (Double.isNaN(_v10Norm2)) { _v10Norm2 = getV10().normSq(); }
-    return _v10Norm2; }
+  private final double _v10Norm2;
+  private final double getV10Norm2 () { return _v10Norm2; }
 
-  private Vector2D _v20;
-  private final Vector2D getV20 () {
-    if (null == _v20) { _v20 = getP2().subtract(getP0()); }
-    return _v20; }
+  private final Vector2D _v20;
+  private final Vector2D getV20 () { return _v20; }
 
-  private double _v20Norm2 = Double.NaN;
-  private final double getV20Norm2 () {
-    // TODO: what if computed norm is NaN?
-    if (Double.isNaN(_v20Norm2)) { _v20Norm2 = getV20().normSq(); }
-    return _v20Norm2; }
+  private final double _v20Norm2;
+  private final double getV20Norm2 () { return _v20Norm2; }
+
+  private final double _V20xV10;
+  private final double getV20xV10 () { return _V20xV10; }
+
+  //--------------------------------------------------------------------
 
   /** AKA wedge product, cross product (in 3D), ... */
   private static final double blade (final Vector2D v0,
-                                        final Vector2D v1) {
+                                     final Vector2D v1) {
     // TODO: more accurate version via fma?
     return (v0.getX()*v1.getY()) - (v0.getY()*v1.getX()); }
-
-  private double _V20xV10 = Double.NaN;
-  private final double getV20xV10 () {
-    // TODO: what if computed corss product is NaN?
-    if (Double.isNaN(_V20xV10)) { _V20xV10 = blade(getV20(),getV10()); }
-    return _V20xV10; }
 
   //--------------------------------------------------------------------
 
@@ -85,15 +74,20 @@ public final class TriangleVector2D extends Triangle2D {
   // construction
   //--------------------------------------------------------------------
 
-  private TriangleVector2D (final Vector2D a,
-                            final Vector2D b,
-                            final Vector2D c)  {
-    super(a,b,c); }
+  private TriangleVector2DEager (final Vector2D a,
+                                 final Vector2D b,
+                                 final Vector2D c)  {
+    super(a,b,c);
+    _v10 = getP1().subtract(getP0());
+    _v10Norm2 = getV10().normSq();
+    _v20 = getP2().subtract(getP0());
+    _v20Norm2 = getV20().normSq();
+    _V20xV10 = blade(getV20(),getV10()); }
 
   public static final Triangle2D of (final Vector2D a,
                                      final Vector2D b,
                                      final Vector2D c) {
-    return new TriangleVector2D(a, b, c); }
+    return new TriangleVector2DEager(a, b, c); }
 
   /** Convert other triangle classes. */
 

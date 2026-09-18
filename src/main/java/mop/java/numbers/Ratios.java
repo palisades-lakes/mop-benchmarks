@@ -1,5 +1,17 @@
 package mop.java.numbers;
 
+import clojure.lang.Numbers;
+import clojure.lang.Ratio;
+import mop.java.algebra.OneSetOneOperation;
+import mop.java.algebra.OneSetTwoOperations;
+import mop.java.algebra.Set;
+import mop.java.prng.Generator;
+import mop.java.prng.GeneratorBase;
+import org.apache.commons.rng.UniformRandomProvider;
+import org.apache.commons.rng.sampling.CollectionSampler;
+import org.apache.commons.rng.sampling.distribution.ContinuousSampler;
+import org.apache.commons.rng.sampling.distribution.ContinuousUniformSampler;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
@@ -8,19 +20,6 @@ import java.util.function.BiPredicate;
 import java.util.function.BinaryOperator;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
-
-import org.apache.commons.rng.UniformRandomProvider;
-import org.apache.commons.rng.sampling.CollectionSampler;
-import org.apache.commons.rng.sampling.distribution.ContinuousSampler;
-import org.apache.commons.rng.sampling.distribution.ContinuousUniformSampler;
-
-import clojure.lang.Numbers;
-import clojure.lang.Ratio;
-import mop.java.algebra.OneSetOneOperation;
-import mop.java.algebra.OneSetTwoOperations;
-import mop.java.algebra.Set;
-import mop.java.prng.Generator;
-import mop.java.prng.GeneratorBase;
 
 /** The set of rational numbers represented by
  * <code>Ratio</code>.
@@ -151,7 +150,7 @@ public final class Ratios implements Set {
   @SuppressWarnings("static-method")
   public final boolean equals (final Ratio q0,
                                final Ratio q1) {
-    if (q0 == q1) { return true; }
+    if (q0.equals(q1)) { return true; }
     if (null == q0) { return (null == q1); }
     if (null == q1) { return false; }
     final BigInteger n0 = q0.numerator;

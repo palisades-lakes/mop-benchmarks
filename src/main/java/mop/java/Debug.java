@@ -19,7 +19,7 @@ public final class Debug {
 
   public static boolean DEBUG = false;
 
-  public static PrintStream OUT = System.out;
+  public static final PrintStream OUT = System.out;
 
   //--------------------------------------------------------------
   // methods

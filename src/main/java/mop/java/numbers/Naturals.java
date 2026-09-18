@@ -36,9 +36,9 @@ import java.util.function.Supplier;
  * both BigInteger and newly written classes.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2024-01-03
+ * @version 2026-09-17
  */
-@SuppressWarnings({"unchecked","static-method","preview","boxing"})
+@SuppressWarnings({"unchecked","static-method","boxing"})
 public final class Naturals implements Set {
 
   //--------------------------------------------------------------
@@ -47,10 +47,10 @@ public final class Naturals implements Set {
 
   private static final BigInteger toBigInteger (final Object x) {
     return switch (x) {
-    case Byte y -> BigInteger.valueOf(y.longValue()); 
-    case Short y -> BigInteger.valueOf(y.longValue()); 
-    case Integer y -> BigInteger.valueOf(y.longValue()); 
-    case Long y -> BigInteger.valueOf(y.longValue()); 
+    case Byte y -> BigInteger.valueOf(y.longValue());
+    case Short y -> BigInteger.valueOf(y.longValue());
+    case Integer y -> BigInteger.valueOf(y.longValue());
+    case Long y -> BigInteger.valueOf(y.longValue());
     case BoundedNatural y -> y.toBigInteger();
     case BigInteger y -> y;
     default -> throw new UnsupportedOperationException(
@@ -73,7 +73,7 @@ public final class Naturals implements Set {
   //--------------------------------------------------------------
   // operations for algebraic structures over BigFloats.
   //--------------------------------------------------------------
-  // TODO: How do (should) we handle unsigned interpretation of 
+  // TODO: How do (should) we handle unsigned interpretation of
   // all of an int's bits?
   // TODO: cleaner handling of overflow to BigInteger or whatever,
   // especially how to control which larger class is returned?
@@ -98,11 +98,11 @@ public final class Naturals implements Set {
     case final Byte y0 -> add(y0.longValue(),y1);
     case final Short y0 -> add(y0.longValue(),y1);
     case final Integer y0 -> add(y0.longValue(),y1);
-    case final Long y0 -> add(y0,y1); 
+    case final Long y0 -> add(y0,y1);
     case final BigInteger y0 -> y0.add(toBigInteger(y1));
     case final BoundedNatural y0 -> y0.add(toBoundedNatural(y1));
     default -> throw new UnsupportedOperationException(
-      "can't add " + 
+      "can't add " +
         x0.getClass().getName() + " and Long"); }; }
 
   //--------------------------------------------------------------
@@ -173,7 +173,7 @@ public final class Naturals implements Set {
       case final BigInteger y0 -> y0.multiply(toBigInteger(y1));
       case final BoundedNatural y0 -> y0.multiply(toBoundedNatural(y1));
       default -> throw new UnsupportedOperationException(
-      "can't multiply " + 
+      "can't multiply " +
         x0.getClass().getName() + " and Long"); }; }
 
   //--------------------------------------------------------------
@@ -238,11 +238,11 @@ public final class Naturals implements Set {
     case final Byte y0 -> absDiff(y0.longValue(),y1);
     case final Short y0 -> absDiff(y0.longValue(),y1);
     case final Integer y0 -> absDiff(y0.longValue(),y1);
-    case final Long y0 -> absDiff(y0,y1); 
+    case final Long y0 -> absDiff(y0,y1);
     case final BigInteger y0 -> y0.subtract(toBigInteger(y1)).abs();
     case final BoundedNatural y0 -> y0.absDiff(toBoundedNatural(y1));
     default -> throw new UnsupportedOperationException(
-      "can't absDiff " + 
+      "can't absDiff " +
         x0.getClass().getName() + " and Long"); }; }
 
   //--------------------------------------------------------------
@@ -260,13 +260,13 @@ public final class Naturals implements Set {
     case final Short y1 -> absDiff(x0,y1.longValue());
     case final Integer y1 -> absDiff(x0,y1.longValue());
     case final Long y1 -> absDiff(x0,y1);
-    // TODO: these 2 cases return a result of the same type as the 
+    // TODO: these 2 cases return a result of the same type as the
     // first argument. will probably want to change that to return
     // the larger, which needs to be determined
     case final BigInteger y1 -> y1.subtract(toBigInteger(x0)).abs();
     case final BoundedNatural y1 -> y1.absDiff(toBoundedNatural(x0));
     default -> throw new UnsupportedOperationException(
-      "can't absDiff " + 
+      "can't absDiff " +
         x0.getClass().getName() +
         " and " +
         x1.getClass().getName()); }; }

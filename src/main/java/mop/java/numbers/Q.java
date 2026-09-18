@@ -1,17 +1,16 @@
 package mop.java.numbers;
 
+import mop.java.algebra.OneSetOneOperation;
+import mop.java.algebra.OneSetTwoOperations;
+import mop.java.algebra.Set;
+import mop.java.prng.Generator;
+import org.apache.commons.rng.UniformRandomProvider;
+
 import java.util.Map;
 import java.util.function.BiPredicate;
 import java.util.function.BinaryOperator;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
-
-import org.apache.commons.rng.UniformRandomProvider;
-
-import mop.java.algebra.OneSetOneOperation;
-import mop.java.algebra.OneSetTwoOperations;
-import mop.java.algebra.Set;
-import mop.java.prng.Generator;
 
 /** The set of rational numbers, accepting any 'reasonable'
  * representation. Calculation converts to RationalFloat where
@@ -23,7 +22,7 @@ import mop.java.prng.Generator;
 
 // TODO: change name to 'QQ', imitating tex font?
 
-@SuppressWarnings({"unchecked","static-method"})
+@SuppressWarnings({ "static-method"})
 public final class Q implements Set {
 
   //--------------------------------------------------------------
@@ -31,7 +30,7 @@ public final class Q implements Set {
   //--------------------------------------------------------------
 
   // TODO: is consistency with other algebraic structure classes
-  // worth the indirection?
+  //  worth the indirection?
 
   private final Object add (final Object x0,
                             final Object x1) {
@@ -58,7 +57,7 @@ public final class Q implements Set {
   //--------------------------------------------------------------
 
   // TODO: is consistency with other algebraic structure classes
-  // worth the indirection?
+  //  worth the indirection?
 
   private final RationalFloat negate (final Object x) {
     //assert contains(x);
@@ -128,17 +127,24 @@ public final class Q implements Set {
   // TODO: collect some stats and order tests by frequency?
 
   public static final boolean knownRational (final Object x) {
-    if ((x instanceof BigFloat) || (x instanceof RationalFloat)
+    return (x instanceof BigFloat)
+      || (x instanceof RationalFloat)
       || (x instanceof BoundedNatural)
-      || (x instanceof Number)) { return true; }
-    return false; }
+      || (x instanceof Number);
+  }
 
   public static final boolean knownRational (final Class c) {
-    if (BigFloat.class.isAssignableFrom(c) || RationalFloat.class.isAssignableFrom(c) || BoundedNatural.class.isAssignableFrom(c) || Number.class.isAssignableFrom(c)) { return true; }
-    if (Byte.TYPE.equals(c) || Short.TYPE.equals(c) || Integer.TYPE.equals(c) || Long.TYPE.equals(c)) { return true; }
+    if (BigFloat.class.isAssignableFrom(c) ||
+      RationalFloat.class.isAssignableFrom(c) ||
+      BoundedNatural.class.isAssignableFrom(c) ||
+      Number.class.isAssignableFrom(c)) { return true; }
+    if (Byte.TYPE.equals(c) ||
+      Short.TYPE.equals(c) ||
+      Integer.TYPE.equals(c) ||
+      Long.TYPE.equals(c)) { return true; }
     if (Float.TYPE.equals(c)) { return true; }
-    if (Double.TYPE.equals(c)) { return true; }
-    return false; }
+    return Double.TYPE.equals(c);
+  }
 
   @Override
   public final boolean contains (final Object element) {

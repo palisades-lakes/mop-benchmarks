@@ -36,7 +36,7 @@ public class ColinearOrientation extends Orientation {
 
   @Setup(Level.Invocation)
   public void invocationSetup () {
-    triangles = Defaults.convertTriangles(
+    triangles = Triangle2D.convertTriangles(
       (Triangle2D[]) triangleGenerator.next(), className);
     value = new int[3]; }
 

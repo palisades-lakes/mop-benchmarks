@@ -1,23 +1,17 @@
 package mop.java.test.algebra;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import com.google.common.collect.ImmutableMap;
+import mop.java.algebra.Set;
+import mop.java.algebra.Structure;
+import mop.java.numbers.*;
+import mop.java.prng.PRNG;
+import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import mop.java.numbers.*;
-import org.junit.jupiter.api.Test;
-
-import com.google.common.collect.ImmutableMap;
-
-import mop.java.algebra.Set;
-import mop.java.algebra.Structure;
-import mop.java.prng.PRNG;
-import mop.java.numbers.BigDecimals;
-import mop.java.numbers.BigFractions;
-import mop.java.numbers.ERationals;
-import mop.java.numbers.Ratios;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 //----------------------------------------------------------------
 /** <pre>

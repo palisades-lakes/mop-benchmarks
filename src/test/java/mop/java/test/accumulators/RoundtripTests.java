@@ -1,17 +1,16 @@
 package mop.java.test.accumulators;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.math.BigDecimal;
-
-import org.junit.jupiter.api.Test;
-
 import mop.java.numbers.BigFloat;
 import mop.java.numbers.Doubles;
 import mop.java.numbers.Floats;
 import mop.java.numbers.RationalFloat;
 import mop.java.prng.Generator;
 import mop.java.prng.PRNG;
+import org.junit.jupiter.api.Test;
+
+import java.math.BigDecimal;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 //----------------------------------------------------------------
 /** Test number conversions expected to be lossless.
@@ -118,7 +117,7 @@ public final class RoundtripTests {
           + x + " :x\n" + xf + " : xf\n\n" +
           Double.toHexString(x) + " :x\n" +
           Double.toHexString(xf) + " :xf\n\n" +
-          f.toString());
+                             f);
         return false; } }
     return true; }
 

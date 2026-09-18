@@ -1,7 +1,6 @@
 package mop.java.numbers;
 
 import static mop.java.numbers.Numbers.*;
-import static mop.java.numbers.Numbers.hiWord;
 
 /** Multiplication of natural numbers.
  * <br>

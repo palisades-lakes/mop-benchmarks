@@ -1,7 +1,10 @@
 package mop.java.numbers;
 
-import static mop.java.numbers.Numbers.loWord;
-import static mop.java.numbers.Numbers.unsigned;
+import mop.java.algebra.OneSetOneOperation;
+import mop.java.algebra.Set;
+import mop.java.prng.Generator;
+import mop.java.prng.Generators;
+import org.apache.commons.rng.UniformRandomProvider;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -10,12 +13,8 @@ import java.util.function.BinaryOperator;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
-import org.apache.commons.rng.UniformRandomProvider;
-
-import mop.java.algebra.OneSetOneOperation;
-import mop.java.algebra.Set;
-import mop.java.prng.Generator;
-import mop.java.prng.Generators;
+import static mop.java.numbers.Numbers.loWord;
+import static mop.java.numbers.Numbers.unsigned;
 
 /** Utilities for <code>int</code>, <code>int[]</code>.
  *
@@ -60,7 +59,7 @@ public final class Ints implements Set {
     a >>>= aZeros;
     b >>>= bZeros;
 
-    final int t = (aZeros < bZeros ? aZeros : bZeros);
+    final int t = (Math.min(aZeros, bZeros));
 
     while (a != b) {
       if ((a+0x80000000) > (b+0x80000000)) {  // a > b as unsigned

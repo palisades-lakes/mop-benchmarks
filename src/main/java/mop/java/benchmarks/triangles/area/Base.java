@@ -1,8 +1,7 @@
 package mop.java.benchmarks.triangles.area;
 
-import mop.java.benchmarks.triangles.Defaults;
 import mop.java.geometry.Generators;
-import mop.java.geometry.triangle.*;
+import mop.java.geometry.triangle.Triangle2D;
 import mop.java.numbers.Doubles;
 import mop.java.prng.Generator;
 import mop.java.prng.PRNG;
@@ -32,6 +31,8 @@ public abstract class Base {
 //    "Fast",
 //    "Slow",
 //    "TriangleVector2D",
+//    "EagerTriangle2D",
+//    "LazyTriangle2D",
 //    "DoubleTriangle2D",
 //    "RoundingIntervalTriangle2D",
 //    "RoBfTriangle2D",
@@ -86,7 +87,7 @@ public abstract class Base {
 
   @Setup(Level.Invocation)
   public void invocationSetup () {
-    triangles = Defaults.convertTriangles(
+    triangles = Triangle2D.convertTriangles(
       (Triangle2D[]) triangleGenerator.next(), className);
     value = new int[3]; }
 

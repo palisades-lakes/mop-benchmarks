@@ -1,6 +1,5 @@
 package mop.java.benchmarks.triangles.circle;
 
-import mop.java.benchmarks.triangles.Defaults;
 import mop.java.geometry.Generators;
 import mop.java.geometry.triangle.Triangle2D;
 import mop.java.numbers.Doubles;
@@ -32,10 +31,13 @@ public abstract class Base {
 //    "Fast",
 //    "Slow",
 //    "TriangleVector2D",
-//    "DoubleTriangle2D",
+//    "TriangleVector2DEager",
+    "EagerTriangle2D",
+    "LazyTriangle2D",
+    "DoubleTriangle2D",
 //    "RelaxedIntervalTriangle2D",
-    "RoundingIntervalTriangle2D",
-    "ShewchukIntervalTriangle2D",
+//    "RoundingIntervalTriangle2D",
+//    "ShewchukIntervalTriangle2D",
 //    "ReBfTriangle2D",
 //    "RoBfTriangle2D",
 //    "ShBFTriangle2D",
@@ -108,7 +110,7 @@ public abstract class Base {
   @Setup(Level.Invocation)
   public void invocationSetup () {
     points = (Vector2D[][]) pointGenerator.next();
-    triangles = Defaults.convertTriangles(
+    triangles = Triangle2D.convertTriangles(
       (Triangle2D[]) triangleGenerator.next(),className);
     value = new int[3]; }
 

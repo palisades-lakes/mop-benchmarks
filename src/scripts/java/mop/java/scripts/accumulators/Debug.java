@@ -1,11 +1,11 @@
 package mop.java.scripts.accumulators;
 
-import java.io.PrintStream;
-import java.math.BigInteger;
-
 import com.upokecenter.numbers.EContext;
 import com.upokecenter.numbers.EFloat;
 import com.upokecenter.numbers.EInteger;
+
+import java.io.PrintStream;
+import java.math.BigInteger;
 
 /** Debugging output.
  * Hacky substitute for mess of dependencies and
@@ -22,9 +22,9 @@ import com.upokecenter.numbers.EInteger;
 @SuppressWarnings("unused")
 public final class Debug {
 
-  public static boolean DEBUG = false;
+  public static final boolean DEBUG = false;
 
-  public static PrintStream OUT = System.out;
+  public static final PrintStream OUT = System.out;
 
   //--------------------------------------------------------------
   // methods

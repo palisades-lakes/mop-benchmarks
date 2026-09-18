@@ -1,7 +1,6 @@
 package mop.java.test.geometry.triangles;
 
 import mop.java.geometry.Generators;
-import mop.java.geometry.triangle.BigFloatTriangle2D;
 import mop.java.geometry.triangle.Triangle2D;
 import mop.java.geometry.triangle.TriangleVector2D;
 import mop.java.numbers.Doubles;

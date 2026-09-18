@@ -1,33 +1,16 @@
 package mop.java;
 
-import java.io.PrintWriter;
-import java.util.Arrays;
-import java.util.List;
-
-import oshi.hardware.Baseboard;
-import oshi.hardware.CentralProcessor;
+import oshi.hardware.*;
 import oshi.hardware.CentralProcessor.ProcessorIdentifier;
 import oshi.hardware.CentralProcessor.TickType;
-import oshi.hardware.ComputerSystem;
-import oshi.hardware.Display;
-import oshi.hardware.Firmware;
-import oshi.hardware.GlobalMemory;
-import oshi.hardware.HWDiskStore;
-import oshi.hardware.HWPartition;
-import oshi.hardware.HardwareAbstractionLayer;
-import oshi.hardware.NetworkIF;
-import oshi.hardware.PowerSource;
-import oshi.hardware.Sensors;
-import oshi.hardware.UsbDevice;
-import oshi.hardware.VirtualMemory;
-import oshi.software.os.FileSystem;
-import oshi.software.os.NetworkParams;
-import oshi.software.os.OSFileStore;
-import oshi.software.os.OSProcess;
-import oshi.software.os.OperatingSystem;
+import oshi.software.os.*;
 import oshi.software.os.OperatingSystem.ProcessSorting;
 import oshi.util.FormatUtil;
 import oshi.util.Util;
+
+import java.io.PrintWriter;
+import java.util.Arrays;
+import java.util.List;
 
 /** TODO: update to use <code>oshi.SystemInfo</code>.
  *
@@ -195,7 +178,7 @@ public final class SystemInfo {
     for (final double avg : load) {
       procCpu.append(String.format(" %.1f%%",avg * 100));
     }
-    pw.println(procCpu.toString());
+    pw.println(procCpu);
   }
 
   @SuppressWarnings("boxing")
@@ -263,7 +246,7 @@ public final class SystemInfo {
       sb.append(String.format("%n %s @ %.1f%%",pSource.getName(),
         pSource.getRemainingCapacityPercent() * 100d));
     }
-    pw.println(sb.toString());
+    pw.println(sb);
   }
 
   @SuppressWarnings("boxing")
@@ -316,8 +299,8 @@ public final class SystemInfo {
       final long total = fs.getTotalSpace();
       pw.format(" %s (%s) [%s] %s of %s free (%.1f%%) is %s "
         + ((fs.getLogicalVolume() != null)
-          && (fs.getLogicalVolume().length() > 0) ? "[%s]"
-            : "%s")
+          && (!fs.getLogicalVolume().isEmpty()) ? "[%s]"
+                                                : "%s")
         + " and is mounted at %s%n",
         fs.getName(),
         fs.getDescription().isEmpty() ? "file system"

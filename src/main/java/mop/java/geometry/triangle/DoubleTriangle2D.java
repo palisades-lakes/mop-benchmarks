@@ -2,11 +2,11 @@ package mop.java.geometry.triangle;
 
 import org.apache.commons.geometry.euclidean.twod.Vector2D;
 
-/** Same calculations as <code>BigFloatTriangle</code>,
- *  implemented in <code>double</code>>.
+/** Same calculations as <code>EagerTriangle2D</code>,
+ *  implemented in <code>Double</code>>.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-09-01
+ * @version 2026-09-17
  */
 
 public final class DoubleTriangle2D extends Triangle2D {
@@ -14,22 +14,22 @@ public final class DoubleTriangle2D extends Triangle2D {
   // cache vector result of translating p0 to origin,
   // and related quantities
 
-  private final double _x10;
-  private final double _y10;
-  private final double _v10Norm2;
-  private final double getX10 () { return _x10; }
-  private final double getY10 () { return _y10; }
-  private final double getV10Norm2 () { return _v10Norm2; }
+  private final Double _x10;
+  private final Double _y10;
+  private final Double _v10Norm2;
+  private final Double getX10 () { return _x10; }
+  private final Double getY10 () { return _y10; }
+  private final Double getV10Norm2 () { return _v10Norm2; }
 
-  private final double _x20;
-  private final double _y20;
-  private final double _v20Norm2;
-  private final double getX20 () {  return _x20; }
-  private final double getY20 () {  return _y20; }
-  private final double getV20Norm2 () { return _v20Norm2; }
+  private final Double _x20;
+  private final Double _y20;
+  private final Double _v20Norm2;
+  private final Double getX20 () {  return _x20; }
+  private final Double getY20 () {  return _y20; }
+  private final Double getV20Norm2 () { return _v20Norm2; }
 
-  private final double _V20xV10;
-  private final double getV20xV10 () {  return _V20xV10; }
+  private final Double _V20xV10;
+  private final Double getV20xV10 () {  return _V20xV10; }
 
   //--------------------------------------------------------------------
 
@@ -39,22 +39,22 @@ public final class DoubleTriangle2D extends Triangle2D {
 
   //--------------------------------------------------------------------
 
-  private static final double crossProduct (final double x0,
-                                            final double y0,
-                                            final double x1,
-                                            final double y1) {
+  private static final Double crossProduct (final Double x0,
+                                            final Double y0,
+                                            final Double x1,
+                                            final Double y1) {
     return x0*y1 - x1*y0; }
 
-  private static final double l2norm2 (final double x,
-                                       final double y) {
+  private static final Double l2norm2 (final Double x,
+                                       final Double y) {
     return x*x + y*y; }
 
-  private static final double dot (final double x0,
-                                   final double y0,
-                                   final double z0,
-                                   final double x1,
-                                   final double y1,
-                                   final double z1) {
+  private static final Double dot (final Double x0,
+                                   final Double y0,
+                                   final Double z0,
+                                   final Double x1,
+                                   final Double y1,
+                                   final Double z1) {
     return x0*x1 + y0*y1 + z0*z1; }
 
   //--------------------------------------------------------------------
@@ -63,16 +63,16 @@ public final class DoubleTriangle2D extends Triangle2D {
 
   public final double inCircleDistance (final Vector2D p) {
 
-    final double xp0 = p.getX() - getP0().getX();
-    final double yp0 = p.getY() - getP0().getY();
+    final Double xp0 = p.getX() - getP0().getX();
+    final Double yp0 = p.getY() - getP0().getY();
 
-    final double bxp = crossProduct(getX10(),getY10(),xp0,yp0);
-    final double bxc = getV20xV10();
-    final double pxc = crossProduct(xp0,yp0,getX20(),getY20());
+    final Double bxp = crossProduct(getX10(),getY10(),xp0,yp0);
+    final Double bxc = getV20xV10();
+    final Double pxc = crossProduct(xp0,yp0,getX20(),getY20());
 
-    final double p2 = l2norm2(xp0,yp0);
-    final double b2 = getV10Norm2();
-    final double c2 = getV20Norm2();
+    final Double p2 = l2norm2(xp0,yp0);
+    final Double b2 = getV10Norm2();
+    final Double c2 = getV20Norm2();
 
     return dot(p2,b2,c2,bxc,pxc,bxp); }
 

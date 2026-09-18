@@ -1,7 +1,5 @@
 package mop.java.test.numbers;
 
-import org.junit.jupiter.api.Test;
-
 //----------------------------------------------------------------
 /** Test desired properties of integer implementations.
  * <p>
@@ -10,14 +8,14 @@ import org.junit.jupiter.api.Test;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-08-21
+ * @version 2026-09-17
  */
 
 public final class BigIntegerTest {
 
-  @SuppressWarnings({ "static-method" })
-  @Test
-  public final void bigInteger () {
+//  @SuppressWarnings({ "static-method" })
+//  @Test
+//  public final void bigInteger () {
     //Debug.DEBUG=false;
 
 //    final java.math.BigInteger z0 = new java.math.BigInteger(
@@ -28,7 +26,7 @@ public final class BigIntegerTest {
 //      0x10);
 
     //Debug.DEBUG=false;
-  }
+//  }
 
 
 

@@ -13,10 +13,10 @@ import org.openjdk.jmh.annotations.Level;
 import org.openjdk.jmh.annotations.Setup;
 
 /** <pre>
- * mvn -q clean install && jmh mop.java.benchmarks.triangles.circle.CocircularInCircle
+ * mvn -q install && jmh mop.java.benchmarks.triangles.circle.CocircularInCircle
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-14
+ * @version 2026-09-17
  */
 
 public class CocircularInCircle extends Base {
@@ -65,7 +65,7 @@ public class CocircularInCircle extends Base {
           project(circle,(Vector2D) pointGenerator.next()),
           project(circle,(Vector2D) pointGenerator.next()),
           project(circle,(Vector2D) pointGenerator.next()));
-      triangles[i] = Defaults.convertTriangle(ti, className);
+      triangles[i] = Triangle2D.convertTriangle(ti, className);
       for (int j=0;j<nPoints; j++) {
         points[i][j] = project(circle,(Vector2D) pointGenerator.next()); } }
     value = new int[3];
