@@ -190,6 +190,7 @@ final class BurnikelZieglerDivision {
   //--------------------------------------------------------------
   // construction
   //-------------------------------------------------------------
+
   /** not instantiable. */
   private BurnikelZieglerDivision () {
     throw new

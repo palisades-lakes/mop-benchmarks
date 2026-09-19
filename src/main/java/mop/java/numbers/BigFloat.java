@@ -726,6 +726,38 @@ public final class BigFloat implements Ringlike<BigFloat> {
     return s; }
 
   //--------------------------------------------------------------
+  // Dynamic method lookup
+  // Arithmetic cases as needed.
+  //--------------------------------------------------------------
+
+  public final BigFloat add (final Object q) {
+    return switch (q) {
+      case BigFloat qq -> add(qq);
+      case Double qq -> add(qq);
+      default ->
+        throw new UnsupportedOperationException(
+          "No method to add BigFloat to " +
+            q.getClass().getName() ); }; }
+
+  public final BigFloat subtract (final Object q) {
+    return switch (q) {
+      case BigFloat qq -> subtract(qq);
+      case Double qq -> subtract(qq);
+      default ->
+        throw new UnsupportedOperationException(
+          "No method to subtract BigFloat to " +
+            q.getClass().getName() ); }; }
+
+  public final BigFloat multiply (final Object q) {
+    return switch (q) {
+      case BigFloat qq -> multiply(qq);
+      case Double qq -> multiply(qq);
+      default ->
+        throw new UnsupportedOperationException(
+          "No method to multiply BigFloat by " +
+            q.getClass().getName() ); }; }
+
+  //--------------------------------------------------------------
   // Number methods
   //--------------------------------------------------------------
   /** Unsupported.

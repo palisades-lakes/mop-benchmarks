@@ -1,10 +1,10 @@
 package mop.java.benchmarks.arithmetic;
 
 /** <pre>
- * java --enable-preview -cp target\benchmarks.jar mop.java.benchmarks.arithmetic.Add
+ * java --enable-preview -cp target\benchmarks.jar mop.java.benchmarks.arithmetic.Arithmetic
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2024-01-01
+ * @version 2026-09-19
  */
 
 public class Add extends Base {

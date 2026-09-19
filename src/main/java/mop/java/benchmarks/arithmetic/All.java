@@ -4,7 +4,7 @@ package mop.java.benchmarks.arithmetic;
  * java --enable-preview -cp target\benchmarks.jar mop.java.benchmarks.arithmetic.All
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2024-01-17
+ * @version 2026-09-19
  */
 
 public class All extends Base {

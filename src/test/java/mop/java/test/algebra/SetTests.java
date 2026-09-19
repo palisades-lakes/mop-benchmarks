@@ -6,8 +6,8 @@ import mop.java.algebra.Set;
 import mop.java.algebra.Sets;
 import mop.java.numbers.BigFloats;
 import mop.java.numbers.Hilos;
-import mop.java.numbers.Q;
 import mop.java.numbers.RationalFloats;
+import mop.java.numbers.Rationals;
 import mop.java.prng.PRNG;
 import org.junit.jupiter.api.Test;
 
@@ -79,7 +79,7 @@ public final class SetTests {
 
   @SuppressWarnings({ "static-method" })
   @Test
-  public final void Q () { SetTests.tests(Q.get()); }
+  public final void Q () { SetTests.tests(Rationals.get()); }
 
   @SuppressWarnings({ "static-method" })
   @Test

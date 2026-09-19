@@ -70,7 +70,7 @@ public final class AlgebraicStructureTests {
     structureTests(RationalFloats.MULTIPLICATIVE_MAGMA,TRYS);
     structureTests(RationalFloats.FIELD,TRYS);
 
-    structureTests(Q.FIELD,TRYS);
+    structureTests(Rationals.FIELD, TRYS);
 
     structureTests(Floats.ADDITIVE_MAGMA,TRYS);
     structureTests(Floats.MULTIPLICATIVE_MAGMA,TRYS);

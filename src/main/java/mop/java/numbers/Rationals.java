@@ -23,7 +23,7 @@ import java.util.function.UnaryOperator;
 // TODO: change name to 'QQ', imitating tex font?
 
 @SuppressWarnings({ "static-method"})
-public final class Q implements Set {
+public final class Rationals implements Set {
 
   //--------------------------------------------------------------
   // operations for algebraic structures over (rational) Numbers.
@@ -43,11 +43,11 @@ public final class Q implements Set {
   public final BinaryOperator adder () {
     return new BinaryOperator () {
       @Override
-      public final String toString () { return "Q.add()"; }
+      public final String toString () { return "Rationals.add()"; }
       @Override
       public final Object apply (final Object q0,
                                  final Object q1) {
-        return Q.this.add(q0,q1); } }; }
+        return Rationals.this.add(q0, q1); } }; }
 
   //--------------------------------------------------------------
 
@@ -66,10 +66,10 @@ public final class Q implements Set {
   public final UnaryOperator additiveInverse () {
     return new UnaryOperator () {
       @Override
-      public final String toString () { return "Q.negate()"; }
+      public final String toString () { return "Rationals.negate()"; }
       @Override
       public final Object apply (final Object q) {
-        return Q.this.negate(q); } }; }
+        return Rationals.this.negate(q); } }; }
 
   //--------------------------------------------------------------
 
@@ -86,11 +86,11 @@ public final class Q implements Set {
   public final BinaryOperator multiplier () {
     return new BinaryOperator () {
       @Override
-      public final String toString () { return "Q.multiply()"; }
+      public final String toString () { return "Rationals.multiply()"; }
       @Override
       public final Object apply (final Object q0,
                                  final Object q1) {
-        return Q.this.multiply(q0,q1); } }; }
+        return Rationals.this.multiply(q0, q1); } }; }
 
   //--------------------------------------------------------------
 
@@ -110,10 +110,10 @@ public final class Q implements Set {
   public final UnaryOperator multiplicativeInverse () {
     return new UnaryOperator () {
       @Override
-      public final String toString () { return "Q.inverse()"; }
+      public final String toString () { return "Rationals.inverse()"; }
       @Override
       public final Object apply (final Object q) {
-        return Q.this.reciprocal(q); } }; }
+        return Rationals.this.reciprocal(q); } }; }
 
   //--------------------------------------------------------------
   // Set methods
@@ -197,7 +197,7 @@ public final class Q implements Set {
       @Override
       public final boolean test (final Object x0,
                                  final Object x1) {
-        return Q.this.equals(x0,x1); } }; }
+        return Rationals.this.equals(x0, x1); } }; }
 
   //--------------------------------------------------------------
 
@@ -220,20 +220,20 @@ public final class Q implements Set {
   // singleton
   @Override
   public final boolean equals (final Object that) {
-    return that instanceof Q; }
+    return that instanceof Rationals; }
 
   @Override
-  public final String toString () { return "Q"; }
+  public final String toString () { return "Rationals"; }
 
   //--------------------------------------------------------------
   // construction
   //--------------------------------------------------------------
 
-  private Q () { }
+  private Rationals () { }
 
-  private static final Q SINGLETON = new Q();
+  private static final Rationals SINGLETON = new Rationals();
 
-  public static final Q get () { return SINGLETON; }
+  public static final Rationals get () { return SINGLETON; }
 
   //--------------------------------------------------------------
 

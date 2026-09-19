@@ -291,12 +291,12 @@ public final class XDouble
     if ((eindex < elen) && (findex < flen)) {
       Hilo Qnew_hh;
       if ((fnow > enow) == (fnow > -enow)) {
-        //Fast_Two_Sum(enow, Q, Qnew, hh);
+        //Fast_Two_Sum(enow, Rationals, Qnew, hh);
         Qnew_hh = Hilo.sum(enow,Q);
         eindex++;
         if (eindex<e.size()) { enow = e.get(eindex); } }
       else {
-        //Fast_Two_Sum(fnow, Q, Qnew, hh);
+        //Fast_Two_Sum(fnow, Rationals, Qnew, hh);
         Qnew_hh = Hilo.sum(fnow,Q);
         findex++;
         if (findex<f.size()) { fnow = f.get(findex); } }
@@ -306,12 +306,12 @@ public final class XDouble
 
       while ((eindex < elen) && (findex < flen)) {
         if ((fnow > enow) == (fnow > -enow)) {
-          //Two_Sum(Q, enow, Qnew, hh);
+          //Two_Sum(Rationals, enow, Qnew, hh);
           Qnew_hh = Hilo.sum(Q,enow);
           eindex++;
           if (eindex<e.size()) { enow = e.get(eindex); } }
         else {
-          //Two_Sum(Q, fnow, Qnew, hh);
+          //Two_Sum(Rationals, fnow, Qnew, hh);
           Qnew_hh = Hilo.sum(Q,fnow);
           findex++;
           if (findex<f.size()) { fnow = f.get(findex); } }
@@ -319,7 +319,7 @@ public final class XDouble
         hh = Qnew_hh.lo();
         if (hh != 0.0) { h.add(hh); } } }
     while (eindex < elen) {
-      //Two_Sum(Q, enow, Qnew, hh);
+      //Two_Sum(Rationals, enow, Qnew, hh);
       final Hilo Qnew_hh = Hilo.sum(Q,enow);
       eindex++;
       if (eindex<e.size()) { enow = e.get(eindex); }
@@ -327,7 +327,7 @@ public final class XDouble
       final double hh = Qnew_hh.lo();
       if (hh != 0.0) { h.add(hh); } }
     while (findex < flen) {
-      //Two_Sum(Q, fnow, Qnew, hh);
+      //Two_Sum(Rationals, fnow, Qnew, hh);
       final Hilo Qnew_hh = Hilo.sum(Q,fnow);
       findex++;
       if (findex<f.size()) { fnow = f.get(findex); }
@@ -448,12 +448,12 @@ public final class XDouble
     if ((eindex < elen) && (findex < flen)) {
       Hilo Qnew_hh;
       if ((fnow > enow) == (fnow > -enow)) {
-        //Fast_Two_Sum(enow, Q, Qnew, hh);
+        //Fast_Two_Sum(enow, Rationals, Qnew, hh);
         Qnew_hh = Hilo.sum(enow,Q);
         eindex++;
         if (eindex<e.size()) { enow = e.get(eindex); } }
       else {
-        //Fast_Two_Sum(fnow, Q, Qnew, hh);
+        //Fast_Two_Sum(fnow, Rationals, Qnew, hh);
         Qnew_hh = Hilo.sum(fnow,Q);
         findex++;
         if (findex<f.size()) { fnow = -f.get(findex); } }
@@ -463,12 +463,12 @@ public final class XDouble
 
       while ((eindex < elen) && (findex < flen)) {
         if ((fnow > enow) == (fnow > -enow)) {
-          //Two_Sum(Q, enow, Qnew, hh);
+          //Two_Sum(Rationals, enow, Qnew, hh);
           Qnew_hh = Hilo.sum(Q,enow);
           eindex++;
           if (eindex<e.size()) { enow = e.get(eindex); } }
         else {
-          //Two_Sum(Q, fnow, Qnew, hh);
+          //Two_Sum(Rationals, fnow, Qnew, hh);
           Qnew_hh = Hilo.sum(Q,fnow);
           findex++;
           if (findex<f.size()) { fnow = -f.get(findex); } }
@@ -476,7 +476,7 @@ public final class XDouble
         hh = Qnew_hh.lo();
         if (hh != 0.0) { h.add(hh); } } }
     while (eindex < elen) {
-      //Two_Sum(Q, enow, Qnew, hh);
+      //Two_Sum(Rationals, enow, Qnew, hh);
       final Hilo Qnew_hh = Hilo.sum(Q,enow);
       eindex++;
       if (eindex<e.size()) { enow = e.get(eindex); }
@@ -484,7 +484,7 @@ public final class XDouble
       final double hh = Qnew_hh.lo();
       if (hh != 0.0) { h.add(hh); } }
     while (findex < flen) {
-      //Two_Sum(Q, fnow, Qnew, hh);
+      //Two_Sum(Rationals, fnow, Qnew, hh);
       final Hilo Qnew_hh = Hilo.sum(Q,fnow);
       findex++;
       if (findex<f.size()) { fnow = -f.get(findex); }
@@ -755,7 +755,7 @@ public final class XDouble
       final Hilo sum_hh = Hilo.sum(Q,product10.lo());
       hh = sum_hh.lo();
       if (hh != 0) { h.add(hh); }
-      //Fast_Two_Sum(product1, sum, Q, hh);
+      //Fast_Two_Sum(product1, sum, Rationals, hh);
       Q_hh = Hilo.fastSum(product10.hi(),sum_hh.hi());
       Q = Q_hh.hi();
       hh = Q_hh.lo();
@@ -770,27 +770,27 @@ public final class XDouble
 //      new DoubleArrayList(2*e.size());
 //
 //  //    Split(b, bhi, blo);
-// //    Two_Product_Presplit(e[0], b, bhi, blo, Q, hh);
+// //    Two_Product_Presplit(e[0], b, bhi, blo, Rationals, hh);
 //    final Hilo bhilo = Hilo.split(b);
 //    Hilo Q_hh = twoProductPresplit(e.get(0),b,bhilo);
-//    double Q = Q_hh.hi();
+//    double Rationals = Q_hh.hi();
 //    double hh = Q_hh.lo();
 //    if (hh != 0) { h.add(hh); }
 //
 //    for (int eindex = 1; eindex < e.size(); eindex++) {
 //      final double enow = e.get(eindex);
 // //      Two_Product_Presplit(enow, b, bhi, blo, product1, product0);
-// //      Two_Sum(Q, product0, sum, hh);
+// //      Two_Sum(Rationals, product0, sum, hh);
 //      final Hilo product10 = twoProductPresplit(enow,b,bhilo);
-//      final Hilo sum_hh = Hilo.sum(Q,product10.lo());
+//      final Hilo sum_hh = Hilo.sum(Rationals,product10.lo());
 //      hh = sum_hh.lo();
 //      if (hh != 0) { h.add(hh); }
-//      //Fast_Two_Sum(product1, sum, Q, hh);
+//      //Fast_Two_Sum(product1, sum, Rationals, hh);
 //      Q_hh = Hilo.fastSum(product10.hi(),sum_hh.hi());
-//      Q = Q_hh.hi();
+//      Rationals = Q_hh.hi();
 //      hh = Q_hh.lo();
 //      if (hh != 0) {  h.add(hh); } }
-//    if ((Q != 0.0) || h.isEmpty()) { h.add(Q); }
+//    if ((Rationals != 0.0) || h.isEmpty()) { h.add(Rationals); }
 //    return h; }
 
   //--------------------------------------------------------------------
@@ -1117,22 +1117,22 @@ public final class XDouble
 //    // predicates.c assumes silently that e has at least 2 terms!!!
 //    if (1>=h.size()) { return; }
 //    int bottom = h.size() - 1;
-//    double Q = h.get(bottom);
-//    while ((0.0==Q) && (0<bottom)) { bottom--; Q = h.get(bottom); }
+//    double Rationals = h.get(bottom);
+//    while ((0.0==Rationals) && (0<bottom)) { bottom--; Rationals = h.get(bottom); }
 //    for (int eindex = bottom-1; eindex >= 0; eindex--) {
 //      final double enow = h.get(eindex);
-//      final Hilo Qnewq = Hilo.fastSum(Q, enow);
+//      final Hilo Qnewq = Hilo.fastSum(Rationals, enow);
 //      if (Qnewq.lo() != 0.0) {
-//        h.set(bottom--,Qnewq.hi()); Q = Qnewq.lo(); }
-//      else { Q = Qnewq.hi(); } }
+//        h.set(bottom--,Qnewq.hi()); Rationals = Qnewq.lo(); }
+//      else { Rationals = Qnewq.hi(); } }
 //    int top = 0;
 //    for (int hindex = bottom + 1; hindex < h.size(); hindex++) {
 //      final double hnow = h.get(hindex);
 //      if (0.0!=hnow) {
-//        final Hilo Qnewq = Hilo.fastSum(hnow, Q);
+//        final Hilo Qnewq = Hilo.fastSum(hnow, Rationals);
 //        if (Qnewq.lo() != 0.0) { h.set(top++,Qnewq.lo()); }
-//        Q = Qnewq.hi(); } }
-//    h.set(top,Q);
+//        Rationals = Qnewq.hi(); } }
+//    h.set(top,Rationals);
 //    assert top < h.size();
 //    h.resize(top+1); }
 

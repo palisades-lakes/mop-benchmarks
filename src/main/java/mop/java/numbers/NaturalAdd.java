@@ -3,7 +3,7 @@ package mop.java.numbers;
 import static mop.java.numbers.Numbers.hiWord;
 import static mop.java.numbers.Numbers.unsigned;
 
-/** Addition of natural numbersrepresented by (unsigned) int[].
+/** Addition of natural numbers represented by (unsigned) int[].
  * <br>
  * Separating these methods into a small static class seems to
  * make addition/subtraction of BoundedNatural faster,
@@ -12,7 +12,7 @@ import static mop.java.numbers.Numbers.unsigned;
  * Non-instantiable.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2024-01-22
+ * @version 2026-09-19
  */
 
 final class NaturalAdd {

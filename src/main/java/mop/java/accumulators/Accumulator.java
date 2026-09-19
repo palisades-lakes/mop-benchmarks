@@ -102,7 +102,7 @@ public interface Accumulator<T extends Accumulator> {
     for (int i=0;i<n;i++) { addProduct(z0[i],z1[i]); }
     return (T) this; }
 
-  /** Add squared difference. */
+  /** Arithmetic squared difference. */
   default T addL2 (final double z0,
                    final double z1) {
     throw
@@ -117,7 +117,7 @@ public interface Accumulator<T extends Accumulator> {
     for (int i=0;i<n;i++) { addL2(z0[i],z1[i]); }
     return (T) this; }
 
-  /** Add absolute difference. */
+  /** Arithmetic absolute difference. */
   default T addL1 (final double z0,
                    final double z1) {
     throw

@@ -3,14 +3,12 @@ package mop.java.numbers;
 import java.util.Arrays;
 
 /** Utilities for <code>int[]</code>, <code>int</code>,
- * and <code>long</code>,
- * related to {@link BoundedNatural}.
+ * and <code>long</code>, related to {@link BoundedNatural}.
  *  <br>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-08-11
+ * @version 2026-09-19
  */
 
-//
 public final class NaturalInts {
 
   /** The value of <code>hiBit</code> is assumed to fit in an

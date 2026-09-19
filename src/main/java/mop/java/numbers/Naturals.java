@@ -19,11 +19,10 @@ import java.util.function.Supplier;
 /** Natural numbers as a commutative semi-ring,
  * allowing a variety of implementations,
  * some only covering subsets.
- *
+ * <br>
  * Implementations (eventually):
  * <ul>
  * <li> {@link BoundedNatural}
- * <li> {@link UnboundedNatural}
  * <li> <code>java.math.BigInteger</code> (only nonnegative)
  * <li> <code>java.lang.Long</code> (only nonnegative)
  * <li> <code>java.lang.Integer</code> (only nonnegative)
@@ -36,9 +35,9 @@ import java.util.function.Supplier;
  * both BigInteger and newly written classes.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-17
+ * @version 2026-09-19
  */
-@SuppressWarnings({"unchecked","static-method","boxing"})
+
 public final class Naturals implements Set {
 
   //--------------------------------------------------------------
@@ -50,12 +49,12 @@ public final class Naturals implements Set {
     case Byte y -> BigInteger.valueOf(y.longValue());
     case Short y -> BigInteger.valueOf(y.longValue());
     case Integer y -> BigInteger.valueOf(y.longValue());
-    case Long y -> BigInteger.valueOf(y.longValue());
-    case BoundedNatural y -> y.toBigInteger();
-    case BigInteger y -> y;
-    default -> throw new UnsupportedOperationException(
-      "can't convert " + x.getClass().getName() +
-      " to BigInteger"); }; }
+    case Long y -> BigInteger.valueOf(y);
+      case BoundedNatural y -> y.toBigInteger();
+      case BigInteger y -> y;
+      default -> throw new UnsupportedOperationException(
+        "can't convert " + x.getClass().getName() +
+          " to BigInteger"); }; }
 
   private static final BoundedNatural toBoundedNatural (final Object x) {
     return switch (x)  {
@@ -63,7 +62,7 @@ public final class Naturals implements Set {
       case Byte y -> BoundedNatural.valueOf(y.longValue());
       case Short y -> BoundedNatural.valueOf(y.longValue());
       case Integer y -> BoundedNatural.valueOf(y.longValue());
-      case Long y -> BoundedNatural.valueOf(y.longValue());
+      case Long y -> BoundedNatural.valueOf(y);
       case BigInteger y -> BoundedNatural.valueOf(y);
       default ->
         throw new UnsupportedOperationException(
@@ -98,12 +97,12 @@ public final class Naturals implements Set {
     case final Byte y0 -> add(y0.longValue(),y1);
     case final Short y0 -> add(y0.longValue(),y1);
     case final Integer y0 -> add(y0.longValue(),y1);
-    case final Long y0 -> add(y0,y1);
-    case final BigInteger y0 -> y0.add(toBigInteger(y1));
-    case final BoundedNatural y0 -> y0.add(toBoundedNatural(y1));
-    default -> throw new UnsupportedOperationException(
-      "can't add " +
-        x0.getClass().getName() + " and Long"); }; }
+      case final Long y0 -> add(y0,y1);
+      case final BigInteger y0 -> y0.add(toBigInteger(y1));
+      case final BoundedNatural y0 -> y0.add(toBoundedNatural(y1));
+      default -> throw new UnsupportedOperationException(
+        "can't add " +
+          x0.getClass().getName() + " and Long"); }; }
 
   //--------------------------------------------------------------
 
@@ -144,8 +143,7 @@ public final class Naturals implements Set {
 
   //--------------------------------------------------------------
 
-  public final Object additiveIdentity () {
-    return Integer.valueOf(0); }
+  public final Object additiveIdentity () { return 0; }
 
   //--------------------------------------------------------------
 
@@ -173,8 +171,8 @@ public final class Naturals implements Set {
       case final BigInteger y0 -> y0.multiply(toBigInteger(y1));
       case final BoundedNatural y0 -> y0.multiply(toBoundedNatural(y1));
       default -> throw new UnsupportedOperationException(
-      "can't multiply " +
-        x0.getClass().getName() + " and Long"); }; }
+        "can't multiply " +
+          x0.getClass().getName() + " and Long"); }; }
 
   //--------------------------------------------------------------
 
@@ -214,12 +212,12 @@ public final class Naturals implements Set {
         return Naturals.this.multiply(x0,x1); } }; }
 
   //--------------------------------------------------------------
-  public final Object multiplicativeIdentity () {
-    return Integer.valueOf(1); }
+  public final Object multiplicativeIdentity () { return 1; }
 
   //--------------------------------------------------------------
   // non-ring arithmetic methods
   //--------------------------------------------------------------
+
   private static final Object absDiff (final Long y0,
                                        final Long y1) {
 
@@ -238,12 +236,12 @@ public final class Naturals implements Set {
     case final Byte y0 -> absDiff(y0.longValue(),y1);
     case final Short y0 -> absDiff(y0.longValue(),y1);
     case final Integer y0 -> absDiff(y0.longValue(),y1);
-    case final Long y0 -> absDiff(y0,y1);
-    case final BigInteger y0 -> y0.subtract(toBigInteger(y1)).abs();
-    case final BoundedNatural y0 -> y0.absDiff(toBoundedNatural(y1));
-    default -> throw new UnsupportedOperationException(
-      "can't absDiff " +
-        x0.getClass().getName() + " and Long"); }; }
+      case final Long y0 -> absDiff(y0,y1);
+      case final BigInteger y0 -> y0.subtract(toBigInteger(y1)).abs();
+      case final BoundedNatural y0 -> y0.absDiff(toBoundedNatural(y1));
+      default -> throw new UnsupportedOperationException(
+        "can't absDiff " +
+          x0.getClass().getName() + " and Long"); }; }
 
   //--------------------------------------------------------------
 
@@ -252,24 +250,24 @@ public final class Naturals implements Set {
     assert contains(x0);
     assert contains(x1);
     return switch (x1) {
-    // reduce number of cases to implement by converting all
-    // "primitive" numbers to Long.
-    // TODO: profile to determine if it's worth keeping returned
-    // values as int or smaller
+      // reduce number of cases to implement by converting all
+      // "primitive" numbers to Long.
+      // TODO: profile to determine if it's worth keeping returned
+      // values as int or smaller
     case final Byte y1 -> absDiff(x0,y1.longValue());
     case final Short y1 -> absDiff(x0,y1.longValue());
     case final Integer y1 -> absDiff(x0,y1.longValue());
-    case final Long y1 -> absDiff(x0,y1);
-    // TODO: these 2 cases return a result of the same type as the
-    // first argument. will probably want to change that to return
-    // the larger, which needs to be determined
-    case final BigInteger y1 -> y1.subtract(toBigInteger(x0)).abs();
-    case final BoundedNatural y1 -> y1.absDiff(toBoundedNatural(x0));
-    default -> throw new UnsupportedOperationException(
-      "can't absDiff " +
-        x0.getClass().getName() +
-        " and " +
-        x1.getClass().getName()); }; }
+      case final Long y1 -> absDiff(x0,y1);
+      // TODO: these 2 cases return a result of the same type as the
+      // first argument. will probably want to change that to return
+      // the larger, which needs to be determined
+      case final BigInteger y1 -> y1.subtract(toBigInteger(x0)).abs();
+      case final BoundedNatural y1 -> y1.absDiff(toBoundedNatural(x0));
+      default -> throw new UnsupportedOperationException(
+        "can't absDiff " +
+          x0.getClass().getName() +
+          " and " +
+          x1.getClass().getName()); }; }
 
   //--------------------------------------------------------------
 
@@ -295,12 +293,12 @@ public final class Naturals implements Set {
     case final Byte y0 -> divideAndRemainder(y0.longValue(),y1);
     case final Short y0 -> divideAndRemainder(y0.longValue(),y1);
     case final Integer y0 -> divideAndRemainder(y0.longValue(),y1);
-    case final Long y0 -> divideAndRemainder(y0,y1);
-    case final BigInteger y0 -> y0.divideAndRemainder(toBigInteger(y1));
-    case final BoundedNatural y0 -> y0.divideAndRemainder(toBoundedNatural(y1));
-    default -> throw new UnsupportedOperationException(
-      "can't divideAndRemainder " +
-        x0.getClass().getName() + " and Long"); }; }
+      case final Long y0 -> divideAndRemainder(y0,y1);
+      case final BigInteger y0 -> y0.divideAndRemainder(toBigInteger(y1));
+      case final BoundedNatural y0 -> y0.divideAndRemainder(toBoundedNatural(y1));
+      default -> throw new UnsupportedOperationException(
+        "can't divideAndRemainder " +
+          x0.getClass().getName() + " and Long"); }; }
 
   //--------------------------------------------------------------
   /** doesn't pre-check that args are Naturals. */
@@ -356,16 +354,16 @@ public final class Naturals implements Set {
   @Override
   public final boolean contains (final Object x) {
     return switch (x) {
-    case final BoundedNatural y -> true;
-    case final Integer y -> y>=0;
-    case final Long y -> y>=0;
-    case final Short y -> y>=0;
-    case final Byte y -> y>=0;
-    // TODO: is signum() better for all the integer classes?
-    // TODO: might be useful to define signum/isNegative/... for
-    // all Number classes.
-    case final BigInteger y -> y.signum()>=0;
-    default -> throw new UnsupportedOperationException(); }; }
+      case final BoundedNatural y -> true;
+      case final Integer y -> y>=0;
+      case final Long y -> y>=0;
+      case final Short y -> y>=0;
+      case final Byte y -> y>=0;
+      // TODO: is signum() better for all the integer classes?
+      // TODO: might be useful to define signum/isNegative/... for
+      // all Number classes.
+      case final BigInteger y -> y.signum()>=0;
+      default -> throw new UnsupportedOperationException(); }; }
 
   //--------------------------------------------------------------
   // Unfortunately, it looks like Number.equals() is only true
@@ -374,7 +372,7 @@ public final class Naturals implements Set {
   // TODO: profile to check if retaining smaller numbers helps.
 
   /** Test for equal value as Natural numbers.
-   *
+   * <br>
    * UNSAFE: Assumes all arguments are non-negative,
    * and "primitive".
    */
@@ -384,10 +382,10 @@ public final class Naturals implements Set {
     case final Byte y0 -> equals(y0.longValue(),y1);
     case final Short y0 -> equals(y0.longValue(),y1);
     case final Integer y0 -> equals(y0.longValue(),y1);
-    case final Long y0 -> y0.equals(y1);
-    case final BigInteger y0 -> y0.equals(toBigInteger(y1));
-    case final BoundedNatural y0 -> y0.equals(toBoundedNatural(y1));
-    default -> throw new UnsupportedOperationException(); }; }
+      case final Long y0 -> y0.equals(y1);
+      case final BigInteger y0 -> y0.equals(toBigInteger(y1));
+      case final BoundedNatural y0 -> y0.equals(toBoundedNatural(y1));
+      default -> throw new UnsupportedOperationException(); }; }
 
   /** Test for equal values as Natural numbers. */
 
@@ -399,12 +397,12 @@ public final class Naturals implements Set {
     case final Byte y1 -> equals(x0,y1.longValue());
     case final Short y1 -> equals(x0,y1.longValue());
     case final Integer y1 -> equals(x0,y1.longValue());
-    case final Long y1 -> equals(x0,y1);
-    case final BigInteger y1 -> y1.equals(toBigInteger(x0));
-    case final BoundedNatural y1 -> y1.equals(toBoundedNatural(x0));
-    default ->
-    throw new UnsupportedOperationException(
-      x0.getClass().getName() + " " + x1.getClass().getName()); }; }
+      case final Long y1 -> equals(x0,y1);
+      case final BigInteger y1 -> y1.equals(toBigInteger(x0));
+      case final BoundedNatural y1 -> y1.equals(toBoundedNatural(x0));
+      default ->
+        throw new UnsupportedOperationException(
+          x0.getClass().getName() + " " + x1.getClass().getName()); }; }
 
   //--------------------------------------------------------------
 
@@ -412,26 +410,26 @@ public final class Naturals implements Set {
 
   @Override
   public final BiPredicate equivalence () {
-    return new BiPredicate<Object,Object>() {
-      @Override
-      public final boolean test (final Object x0,
-                                 final Object x1) {
-        return get().equals(x0,x1); } }; }
+    return (BiPredicate<Object, Object>)
+      (x0, x1) -> get().equals(x0, x1); }
 
   //--------------------------------------------------------------
 
+  @SuppressWarnings("unchecked")
   public static final Generator
   generator (final UniformRandomProvider urp)  {
     //    final Generator g3 =
     //      randomBitsGenerator (1L+BoundedNatural.MAX_WORDS,urp);
     final CollectionSampler gs =
-      new CollectionSampler(urp,List.of(
-        BoundedNatural.generator(urp,2048),
-        Generators.nonNegativeBigIntegerGenerator(1024, urp),
-        Generators.nonNegativeByteGenerator(urp),
-        Generators.nonNegativeShortGenerator(urp),
-        Generators.nonNegativeIntGenerator(urp),
-        Generators.nonNegativeLongGenerator(urp)));
+      new CollectionSampler(
+        urp,
+        List.of(
+          BoundedNatural.generator(urp,2048),
+          Generators.nonNegativeBigIntegerGenerator(1024, urp),
+          Generators.nonNegativeByteGenerator(urp),
+          Generators.nonNegativeShortGenerator(urp),
+          Generators.nonNegativeIntGenerator(urp),
+          Generators.nonNegativeLongGenerator(urp)));
     return new GeneratorBase ("NaturalsGenerator") {
       @Override
       public final Object next () {
@@ -443,10 +441,7 @@ public final class Naturals implements Set {
   public final Supplier generator (final Map options) {
     final UniformRandomProvider urp = Set.urp(options);
     final Generator g = generator(urp);
-    return
-      new Supplier () {
-      @Override
-      public final Object get () { return g.next(); } }; }
+    return g::next; }
 
   //--------------------------------------------------------------
   // Object methods
