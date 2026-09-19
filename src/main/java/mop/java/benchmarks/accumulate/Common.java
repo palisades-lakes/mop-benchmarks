@@ -1,35 +1,29 @@
 package mop.java.benchmarks.accumulate;
 
+import mop.java.Classes;
+import mop.java.Debug;
+import mop.java.FloatFunction;
+import mop.java.ToFloatFunction;
+import mop.java.accumulators.Accumulator;
+import mop.java.numbers.*;
+import mop.java.prng.Generator;
+import mop.java.prng.Generators;
+import mop.java.prng.PRNG;
+import org.apache.commons.rng.UniformRandomProvider;
+import org.junit.jupiter.api.Assertions;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.BiFunction;
-import java.util.function.BinaryOperator;
-import java.util.function.DoubleFunction;
-import java.util.function.Function;
-import java.util.function.ToDoubleFunction;
-import java.util.function.ToIntBiFunction;
+import java.util.function.*;
 import java.util.stream.Stream;
-
-import mop.java.numbers.*;
-import mop.java.FloatFunction;
-import mop.java.ToFloatFunction;
-import org.apache.commons.rng.UniformRandomProvider;
-import org.junit.jupiter.api.Assertions;
-
-import mop.java.Classes;
-import mop.java.Debug;
-import mop.java.accumulators.Accumulator;
-import mop.java.prng.Generator;
-import mop.java.prng.Generators;
-import mop.java.prng.PRNG;
 
 /** Test utilities
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-05-21
+ * @version 2026-09-19
  */
 @SuppressWarnings({"unchecked", "unused"})
 public final class Common {
@@ -48,8 +42,6 @@ public final class Common {
   public static final List<String> accumulators () {
     return
       Arrays.asList(
-        //"mop.java.accumulators.ERationalAccumulator",
-        //"mop.java.accumulators.EFloatAccumulator",
         "mop.java.accumulators.DistilledAccumulator",
         "mop.java.accumulators.ZhuHayesAccumulator",
         "mop.java.accumulators.BigFloatAccumulator",

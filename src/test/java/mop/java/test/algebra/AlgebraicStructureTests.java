@@ -58,21 +58,6 @@ public final class AlgebraicStructureTests {
     //structureTests(Hilos.MULTIPLICATIVE_MAGMA,TRYS);
 //    structureTests(Hilos.FLOATING_POINT,TRYS);
 
-    structureTests(ERationals.ADDITIVE_MAGMA, TRYS);
-    structureTests(ERationals.MULTIPLICATIVE_MAGMA,TRYS);
-    structureTests(ERationals.FIELD,TRYS);
-
-    structureTests(BigDecimals.ADDITIVE_MAGMA,TRYS);
-    structureTests(BigDecimals.MULTIPLICATIVE_MAGMA,TRYS);
-    structureTests(BigDecimals.RING,TRYS);
-
-    structureTests(BigFractions.ADDITIVE_MAGMA,TRYS);
-    structureTests(BigFractions.MULTIPLICATIVE_MAGMA,TRYS);
-    structureTests(BigFractions.FIELD,TRYS);
-
-    structureTests(Ratios.ADDITIVE_MAGMA,TRYS);
-    structureTests(Ratios.MULTIPLICATIVE_MAGMA,TRYS);
-    structureTests(Ratios.FIELD,TRYS);
     structureTests(Naturals.ADDITION_MONOID,2*TRYS);
     structureTests(Naturals.MULTIPLICATIVE_MAGMA,TRYS);
     structureTests(Naturals.RING,TRYS);

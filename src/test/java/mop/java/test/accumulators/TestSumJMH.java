@@ -1,11 +1,10 @@
 package mop.java.test.accumulators;
 
-import static mop.java.test.accumulators.Shared.accumulators;
-
-import mop.java.accumulators.EFloatAccumulator;
+import mop.java.accumulators.BigFloatAccumulator;
+import mop.java.benchmarks.accumulate.Common;
 import org.junit.jupiter.api.Test;
 
-import mop.java.benchmarks.accumulate.Common;
+import static mop.java.test.accumulators.Shared.accumulators;
 
 //----------------------------------------------------------------
 /** Test summation algorithms.
@@ -15,7 +14,7 @@ import mop.java.benchmarks.accumulate.Common;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-08-21
+ * @version 2026-09-19
  */
 
 public final class TestSumJMH {
@@ -57,7 +56,7 @@ public final class TestSumJMH {
     Common.sumTests(
       Common.generators(Shared.TEST_DIM),
       Common.makeAccumulators(accumulators()),
-      EFloatAccumulator.make()); }
+      BigFloatAccumulator.make()); }
 
   @SuppressWarnings("static-method")
   @Test
@@ -68,7 +67,7 @@ public final class TestSumJMH {
     Common.l2Tests(
       Common.generators(Shared.TEST_DIM),
       Common.makeAccumulators(accumulators()),
-      EFloatAccumulator.make()); }
+      BigFloatAccumulator.make()); }
 
   @SuppressWarnings("static-method")
   @Test
@@ -79,7 +78,7 @@ public final class TestSumJMH {
     Common.dotTests(
       Common.generators(Shared.TEST_DIM),
       Common.makeAccumulators(accumulators()),
-      EFloatAccumulator.make()); }
+      BigFloatAccumulator.make()); }
 
   // TODO: pick expected behavior for non-finite input
   //  @SuppressWarnings("static-method")

@@ -1,19 +1,20 @@
 package mop.java.test.algebra;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.function.Supplier;
-
-import mop.java.numbers.*;
-import org.junit.jupiter.api.Test;
-
 import com.google.common.collect.ImmutableMap;
-
 import mop.java.Classes;
 import mop.java.algebra.Set;
 import mop.java.algebra.Sets;
+import mop.java.numbers.BigFloats;
+import mop.java.numbers.Hilos;
+import mop.java.numbers.Q;
+import mop.java.numbers.RationalFloats;
 import mop.java.prng.PRNG;
+import org.junit.jupiter.api.Test;
+
+import java.util.function.Supplier;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 //----------------------------------------------------------------
 /** Common code for testing sets.
@@ -75,36 +76,14 @@ public final class SetTests {
     tests(set,TRYS); }
 
   //--------------------------------------------------------------
-  @SuppressWarnings({ "static-method" })
-  @Test
-  public final void eRationals () {
-    SetTests.tests(ERationals.get()); }
 
   @SuppressWarnings({ "static-method" })
   @Test
-  public final void bigDecimals () {
-    SetTests.tests(BigDecimals.get()); }
+  public final void Q () { SetTests.tests(Q.get()); }
 
   @SuppressWarnings({ "static-method" })
   @Test
-  public final void bigFractions () {
-    SetTests.tests(BigFractions.get()); }
-
-  @SuppressWarnings({ "static-method" })
-  @Test
-  public final void ratios () {
-    SetTests.tests(Ratios.get()); }
-
-
-  @SuppressWarnings({ "static-method" })
-  @Test
-  public final void Q () {
-    SetTests.tests(Q.get()); }
-
-  @SuppressWarnings({ "static-method" })
-  @Test
-  public final void BigFloats () {
-    SetTests.tests(BigFloats.get()); }
+  public final void BigFloats () { SetTests.tests(BigFloats.get()); }
 
   @SuppressWarnings({ "static-method" })
   @Test

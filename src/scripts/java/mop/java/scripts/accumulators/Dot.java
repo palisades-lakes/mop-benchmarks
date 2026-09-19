@@ -19,7 +19,7 @@ import static java.lang.Double.toHexString;
  * java -ea -jar target\benchmarks.jar TotalDot
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2021-07-08
+ * @version 2026-09-19
  */
 @SuppressWarnings("unused")
 public final class Dot {
@@ -85,10 +85,10 @@ public final class Dot {
     // should be zero with current construction
     final double[] truth = new double[N];
     final double[] pred = new double[N];
-    // assuming ERational is correct!!!
+    // assuming BigFloat is correct!!!
     for (int i=0;i<N;i++) {
       truth[i] =
-        EFloatAccumulator.make().addProducts(x0[i],x1[i]).doubleValue(); }
+        BigFloatAccumulator.make().addProducts(x0[i],x1[i]).doubleValue(); }
 
     for (int i=0;i<N;i++) {
       System.out.println(
@@ -102,13 +102,10 @@ public final class Dot {
     final Accumulator[] accumulators =
     {
      BigDecimalAccumulator.make(),
-     BigFractionAccumulator.make(),
      DoubleAccumulator.make(),
      DoubleFmaAccumulator.make(),
-     ERationalAccumulator.make(),
      FloatAccumulator.make(),
      FloatFmaAccumulator.make(),
-     RatioAccumulator.make(),
     };
 
     Thread.sleep(16*1024);

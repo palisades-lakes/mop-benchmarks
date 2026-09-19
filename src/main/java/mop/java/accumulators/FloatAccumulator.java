@@ -1,12 +1,10 @@
 package mop.java.accumulators;
 
-import mop.java.accumulators.Accumulator;
-
 /** Naive sum of <code>double</code> values with float
  * accumulator (for testing).
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2019-04-21
+ * @version 2026-09-19
  */
 public final class FloatAccumulator
 
@@ -26,7 +24,7 @@ implements Accumulator<FloatAccumulator> {
   public final double doubleValue () { return _sum; }
 
   @Override
-  public final Object value () { return Float.valueOf(_sum); }
+  public final Object value () { return _sum; }
 
   @Override
   public final FloatAccumulator clear () { _sum = 0.0F; return this; }

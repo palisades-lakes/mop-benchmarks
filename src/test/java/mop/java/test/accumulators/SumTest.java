@@ -1,9 +1,8 @@
 package mop.java.test.accumulators;
 
-import mop.java.accumulators.EFloatAccumulator;
-import org.junit.jupiter.api.Test;
-
+import mop.java.accumulators.BigFloatAccumulator;
 import mop.java.benchmarks.accumulate.Common;
+import org.junit.jupiter.api.Test;
 
 //----------------------------------------------------------------
 /** Test summation algorithms.
@@ -13,7 +12,7 @@ import mop.java.benchmarks.accumulate.Common;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2019-08-08
+ * @version 2026-09-19
  */
 
 public final class SumTest {
@@ -50,7 +49,7 @@ public final class SumTest {
     Common.sumTests(
       Common.generators(DIM),
       Common.makeAccumulators(Common.accumulators()),
-      EFloatAccumulator.make());
+      BigFloatAccumulator.make());
     //Debug.DEBUG=false;
   }
 
@@ -63,7 +62,7 @@ public final class SumTest {
     Common.l2DistanceTests(
       Common.generators(DIM),
       Common.makeAccumulators(Common.accumulators()),
-      EFloatAccumulator.make());
+      BigFloatAccumulator.make());
     //Debug.DEBUG=false;
   }
 
@@ -76,7 +75,7 @@ public final class SumTest {
     Common.l1DistanceTests(
       Common.generators(DIM),
       Common.makeAccumulators(Common.accumulators()),
-      EFloatAccumulator.make());
+      BigFloatAccumulator.make());
     //Debug.DEBUG=false;
   }
 
@@ -89,7 +88,7 @@ public final class SumTest {
     Common.dotTests(
       Common.generators(DIM),
       Common.makeAccumulators(Common.accumulators()),
-      EFloatAccumulator.make());
+      BigFloatAccumulator.make());
     //Debug.DEBUG=false;
   }
 
@@ -103,7 +102,7 @@ public final class SumTest {
     Common.l2Tests(
       Common.generators(DIM),
       Common.makeAccumulators(Common.accumulators()),
-      EFloatAccumulator.make());
+      BigFloatAccumulator.make());
     //Debug.DEBUG=false;
   }
 

@@ -13,7 +13,7 @@ import org.openjdk.jmh.infra.Blackhole;
  * Benchmark operations on <code>double[]</code>.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-05-05
+ * @version 2026-09-19
  */
 
 //
@@ -45,18 +45,15 @@ public abstract class Base {
   @Param({
 
     "mop.java.accumulators.BigDecimalAccumulator",
-    "mop.java.accumulators.BigFractionAccumulator",
     "mop.java.accumulators.BigFloatAccumulator",
     "mop.java.accumulators.DistilledAccumulator",
     "mop.java.accumulators.DoubleAccumulator",
     "mop.java.accumulators.DoubleFmaAccumulator",
-    "mop.java.accumulators.EFloatAccumulator",
-    "mop.java.accumulators.ERationalAccumulator",
+    "mop.java.accumulators.BigFloatAccumulator",
     "mop.java.accumulators.FloatAccumulator",
     "mop.java.accumulators.FloatFmaAccumulator",
     "mop.java.accumulators.KahanAccumulator",
     "mop.java.accumulators.KahanFmaAccumulator",
-    "mop.java.accumulators.RatioAccumulator",
     "mop.java.accumulators.RationalFloatAccumulator",
     "mop.java.accumulators.ZhuHayesAccumulator",
     "mop.java.accumulators.ZhuHayesBranch",
@@ -111,7 +108,7 @@ public abstract class Base {
   @Setup(Level.Trial)
   public final void trialSetup () {
     gen = Generators.make(generator, dim);
-    //exact = EFloatAccumulator.make();
+    //exact = BigFloatAccumulator.make();
     exact = BigFloatAccumulator.make();
     assert exact.isExact();
     acc = Common.makeAccumulator(accumulator);

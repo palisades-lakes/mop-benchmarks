@@ -1,11 +1,10 @@
 package mop.java.test.accumulators;
 
-import java.util.List;
-
-import mop.java.accumulators.EFloatAccumulator;
+import mop.java.accumulators.BigFloatAccumulator;
+import mop.java.benchmarks.accumulate.Common;
 import org.junit.jupiter.api.Test;
 
-import mop.java.benchmarks.accumulate.Common;
+import java.util.List;
 
 //----------------------------------------------------------------
 /** Test summation algorithms.
@@ -15,7 +14,7 @@ import mop.java.benchmarks.accumulate.Common;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2019-10-07
+ * @version 2026-09-19
  */
 
 public final class RationalFloatAccumulatorTest {
@@ -34,15 +33,15 @@ public final class RationalFloatAccumulatorTest {
     Common.l2Tests(
       Common.generators(DIM),
       Common.makeAccumulators(accumulators),
-      EFloatAccumulator.make());
+      BigFloatAccumulator.make());
     Common.sumTests(
       Common.generators(DIM),
       Common.makeAccumulators(accumulators),
-      EFloatAccumulator.make());
+      BigFloatAccumulator.make());
     Common.dotTests(
       Common.generators(DIM),
       Common.makeAccumulators(accumulators),
-      EFloatAccumulator.make());
+      BigFloatAccumulator.make());
     //Debug.DEBUG=false;
   }
 

@@ -1,17 +1,15 @@
 package mop.java.prng;
 
-import java.math.BigInteger;
-import java.util.List;
-import java.util.Map;
-import java.util.function.IntFunction;
-
-import org.apache.commons.math3.fraction.BigFraction;
+import mop.java.numbers.Doubles;
 import org.apache.commons.rng.UniformRandomProvider;
 import org.apache.commons.rng.sampling.CollectionSampler;
 import org.apache.commons.rng.sampling.distribution.ContinuousSampler;
 import org.apache.commons.rng.sampling.distribution.ContinuousUniformSampler;
 
-import mop.java.numbers.Doubles;
+import java.math.BigInteger;
+import java.util.List;
+import java.util.Map;
+import java.util.function.IntFunction;
 
 /** Generators of primitives or Objects as zero-arity 'functions'
  * that return different values on each call.
@@ -360,59 +358,6 @@ public final class Generators {
         final BigInteger[] z = new BigInteger[nints];
         for (int i=0;i<nints;i++) {
           z[i] = (BigInteger) g.next(); }
-        return z; } }; }
-
-  //--------------------------------------------------------------
-  // TODO: move this into BigFractions, then into test code,
-  // until BigFraction passes reasonable tests, like round trip
-  // invariance double -> BigFraction -> double
-  // TODO: options?
-  // TODO: using a DoubleSampler: those are (?) the most likely
-  // values to see, but could do something to extend the
-  // range to values not representable as double.
-  // TODO: move all BigFraction dependent code into tests,
-  // until it starts passing simple
-  // double -> BigFraction -> double round trip tests,
-  // correct rounding to nearest double, etc.
-
-  /** Intended primarily for testing. Sample a random double
-   * (see {@link Doubles#finiteGenerator})
-   * and convert to <code>BigFraction</code>
-   * with high probability probability;
-   * otherwise return one of a set of edge case values
-   * (eg <code>BigFraction.ZERO</code>,
-   * with equal probability.
-   */
-
-  public static final Generator
-  bigFractionGenerator (final UniformRandomProvider urp) {
-    final double dp = 0.9;
-    return new Generator () {
-      private final ContinuousSampler choose =
-        new ContinuousUniformSampler(urp,0.0,1.0);
-      private final Generator fdg = Doubles.finiteGenerator(urp);
-      private final CollectionSampler edgeCases =
-        new CollectionSampler(
-          urp,
-          List.of(
-            BigFraction.ZERO,
-            BigFraction.ONE,
-            BigFraction.MINUS_ONE));
-      @Override
-      public Object next () {
-        final boolean edge = choose.sample() > dp;
-        if (edge) { return edgeCases.sample(); }
-        return new BigFraction(fdg.nextDouble()); } }; }
-
-  public static final Generator
-  bigFractionGenerator (final int n,
-                        final UniformRandomProvider urp) {
-    return new Generator () {
-      final Generator g = bigFractionGenerator(urp);
-      @Override
-      public final Object next () {
-        final BigFraction[] z = new BigFraction[n];
-        for (int i=0;i<n;i++) { z[i] = (BigFraction) g.next(); }
         return z; } }; }
 
   //--------------------------------------------------------------
