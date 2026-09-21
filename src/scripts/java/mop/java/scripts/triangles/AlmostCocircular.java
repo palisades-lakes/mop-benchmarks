@@ -5,7 +5,7 @@ import com.carrotsearch.hppc.ObjectIntMap;
 import com.carrotsearch.hppc.procedures.ObjectIntProcedure;
 import mop.java.geometry.Generators;
 import mop.java.geometry.triangle.Triangle2D;
-import mop.java.geometry.triangle.TriangleVector2D;
+import mop.java.geometry.triangle.TriangleVector2DLazy;
 import mop.java.numbers.Doubles;
 import mop.java.prng.Generator;
 import mop.java.prng.PRNG;
@@ -106,7 +106,7 @@ public final class AlmostCocircular {
     for (int i=0;i<ncircles;i++) {
       final Circle circle = (Circle) circleGenerator.next();
       final Triangle2D ti =
-        TriangleVector2D.of(
+        TriangleVector2DLazy.of(
           circle.project((Vector2D) pointGenerator.next()),
           circle.project((Vector2D) pointGenerator.next()),
           circle.project((Vector2D) pointGenerator.next()));

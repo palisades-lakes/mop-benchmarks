@@ -447,7 +447,7 @@ public final class BigFloat implements Ringlike<BigFloat> {
   //--------------------------------------------------------------
 
   public static final BigFloat
-  crossProduct (final BigFloat x0,
+  wedge (final BigFloat x0,
                 final BigFloat y0,
                 final BigFloat x1,
                 final BigFloat y1) {

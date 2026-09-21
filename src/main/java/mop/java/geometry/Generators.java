@@ -3,7 +3,7 @@ package mop.java.geometry;
 import mop.java.geometry.tetrahedron.Tetrahedron3D;
 import mop.java.geometry.tetrahedron.TetrahedronVector3D;
 import mop.java.geometry.triangle.Triangle2D;
-import mop.java.geometry.triangle.TriangleVector2D;
+import mop.java.geometry.triangle.TriangleVector2DLazy;
 import mop.java.prng.Generator;
 import mop.java.prng.GeneratorBase;
 import org.apache.commons.geometry.euclidean.threed.Vector3D;
@@ -18,7 +18,7 @@ import java.util.function.Function;
  * <br>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-01
+ * @version 2026-09-21
  */
 
 public final class Generators {
@@ -132,7 +132,7 @@ public final class Generators {
         final Vector2D p0 = (Vector2D) vectorGenerator.next();
         final Vector2D p1 = (Vector2D) vectorGenerator.next();
         final Vector2D p2 = (Vector2D) vectorGenerator.next();
-        return TriangleVector2D.of(p0,p1,p2); } }; }
+        return TriangleVector2DLazy.of(p0, p1, p2); } }; }
 
   public static final Generator
   triangleGenerator (final int n,
@@ -197,7 +197,7 @@ public final class Generators {
         final double a = doubleGenerator.nextDouble();
         //final Vector2D p2 = p0.multiply(a).add(1.0-a,p1);
         final Vector2D p2 = fmaAffine(a,p0,p1);
-        return TriangleVector2D.of(p0,p1,p2); } }; }
+        return TriangleVector2DLazy.of(p0, p1, p2); } }; }
 
   public static final Generator
   colinearTriangleGenerator (final int n,

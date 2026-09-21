@@ -4,7 +4,7 @@ import com.carrotsearch.hppc.ObjectIntHashMap;
 import com.carrotsearch.hppc.ObjectIntMap;
 import com.carrotsearch.hppc.procedures.ObjectIntProcedure;
 import mop.java.geometry.triangle.Triangle2D;
-import mop.java.geometry.triangle.TriangleVector2D;
+import mop.java.geometry.triangle.TriangleVector2DLazy;
 import org.apache.commons.geometry.euclidean.twod.Vector2D;
 
 import java.util.List;
@@ -48,7 +48,7 @@ public final class KettnerOrientation {
       for (int j=0;j<n;j++) {
         final double pyj = py + j*uy;
         final Vector2D pij = Vector2D.of(pxi, pyj);
-        final Triangle2D tij = TriangleVector2D.of(pij, q, r);
+        final Triangle2D tij = TriangleVector2DLazy.of(pij, q, r);
         checkOrientations(tij,successes); } }
     return n*n; }
 

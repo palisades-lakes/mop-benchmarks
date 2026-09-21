@@ -3,9 +3,9 @@ package mop.java.scripts.triangles;
 import mop.java.geometry.Generators;
 import mop.java.geometry.triangle.*;
 import mop.java.numbers.BigFloat;
+import mop.java.numbers.Doubles;
 import mop.java.numbers.RelaxedInterval;
 import mop.java.numbers.RoundingInterval;
-import mop.java.numbers.Doubles;
 import mop.java.prng.Generator;
 import mop.java.prng.GeneratorBase;
 import mop.java.prng.PRNG;
@@ -57,7 +57,7 @@ public final class ColinearTrials {
         //final Vector2D p2 = p0.multiply(a).add(1.0-a,p1);
         //final Vector2D p2 = fmaAffine(a,p0,p1);
         final Vector2D p2 = bfAffine(a,p0,p1);
-        return TriangleVector2D.of(p0,p1,p2); } }; }
+        return TriangleVector2DLazy.of(p0, p1, p2); } }; }
 
 //--------------------------------------------------------------
 

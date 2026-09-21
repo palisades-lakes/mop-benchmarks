@@ -2,7 +2,7 @@ package mop.java.test.geometry.triangles;
 
 import mop.java.geometry.Generators;
 import mop.java.geometry.triangle.Triangle2D;
-import mop.java.geometry.triangle.TriangleVector2D;
+import mop.java.geometry.triangle.TriangleVector2DLazy;
 import mop.java.numbers.Doubles;
 import mop.java.prng.Generator;
 import mop.java.prng.PRNG;
@@ -26,7 +26,7 @@ public final class SignedAreaTest extends TriangleTest {
   //--------------------------------------------------------------
 
   private static final void reverseSignedArea (final Triangle2D t0) {
-    final Triangle2D t1 = TriangleVector2D.of(t0.getP0(),t0.getP2(),t0.getP1());
+    final Triangle2D t1 = TriangleVector2DLazy.of(t0.getP0(), t0.getP2(), t0.getP1());
     final Triangle2D plus = Triangle2D.truth(t0);
     final double aplus = plus.twiceSignedArea();
     final Triangle2D minus = Triangle2D.truth(t1);
@@ -65,16 +65,16 @@ public final class SignedAreaTest extends TriangleTest {
     final Vector2D p2 = Vector2D.of( -1.0, 1.0);
     final Vector2D p3 = Vector2D.of( -1.0, -1.0);
 
-    signedArea(TriangleVector2D.of(p0, p1, p2));
+    signedArea(TriangleVector2DLazy.of(p0, p1, p2));
     // reverse
-    signedArea(TriangleVector2D.of(p1, p0, p2));
+    signedArea(TriangleVector2DLazy.of(p1, p0, p2));
     // 1 pt singular
-    signedArea(TriangleVector2D.of(p0, p0, p0));
+    signedArea(TriangleVector2DLazy.of(p0, p0, p0));
     // 2 pt line segment
-    signedArea(TriangleVector2D.of(p0, p2, p0));
-    signedArea(TriangleVector2D.of(p0, p0, p2));
+    signedArea(TriangleVector2DLazy.of(p0, p2, p0));
+    signedArea(TriangleVector2DLazy.of(p0, p0, p2));
     // Co-linear triangle
-    signedArea(TriangleVector2D.of(p0, p1, p3));
+    signedArea(TriangleVector2DLazy.of(p0, p1, p3));
   }
 
   //--------------------------------------------------------------
@@ -91,13 +91,13 @@ public final class SignedAreaTest extends TriangleTest {
 //    System.out.println("p2=" + Triangle2D.toHexString(p2));
 //    System.out.println("p3=" + Triangle2D.toHexString(p3));
 
-    final Triangle2D t013 = TriangleVector2D.of(p0, p1, p3);
+    final Triangle2D t013 = TriangleVector2DLazy.of(p0, p1, p3);
 //    final Triangle2D bf013 = BigFloatTriangle2D.from(t013);
 //    System.out.println("bf013=" + bf013);
 //    System.out.println(Double.toHexString(bf013.twiceSignedArea()));
     signedArea(t013);
 
-    final Triangle2D t023 = TriangleVector2D.of(p0, p2, p3);
+    final Triangle2D t023 = TriangleVector2DLazy.of(p0, p2, p3);
 //    final Triangle2D bf023 = BigFloatTriangle2D.from(t023);
 //    System.out.println("bf023=" + bf023);
 //    System.out.println(Double.toHexString(bf023.twiceSignedArea()));

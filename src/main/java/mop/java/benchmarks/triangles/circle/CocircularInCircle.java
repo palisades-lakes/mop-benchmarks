@@ -3,7 +3,7 @@ package mop.java.benchmarks.triangles.circle;
 import mop.java.benchmarks.triangles.Defaults;
 import mop.java.geometry.Generators;
 import mop.java.geometry.triangle.Triangle2D;
-import mop.java.geometry.triangle.TriangleVector2D;
+import mop.java.geometry.triangle.TriangleVector2DLazy;
 import mop.java.numbers.Doubles;
 import mop.java.prng.Generator;
 import mop.java.prng.PRNG;
@@ -16,7 +16,7 @@ import org.openjdk.jmh.annotations.Setup;
  * mvn -q install && jmh mop.java.benchmarks.triangles.circle.CocircularInCircle
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-19
+ * @version 2026-09-21
  */
 
 public class CocircularInCircle extends Base {
@@ -61,7 +61,7 @@ public class CocircularInCircle extends Base {
     for (int i=0;i<nTriangles;i++) {
       final Circle circle = (Circle) circleGenerator.next();
       final Triangle2D ti =
-        TriangleVector2D.of(
+        TriangleVector2DLazy.of(
           project(circle,(Vector2D) pointGenerator.next()),
           project(circle,(Vector2D) pointGenerator.next()),
           project(circle,(Vector2D) pointGenerator.next()));

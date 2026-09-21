@@ -1,10 +1,10 @@
 package mop.java.test.geometry.triangles;
 
 import mop.java.geometry.Generators;
-import mop.java.geometry.triangle.TriangleVector2D;
-import mop.java.geometry.triangle.shewchuk.Adapt;
 import mop.java.geometry.triangle.Triangle2D;
+import mop.java.geometry.triangle.TriangleVector2DLazy;
 import mop.java.geometry.triangle.macro.AdaptMacro;
+import mop.java.geometry.triangle.shewchuk.Adapt;
 import mop.java.numbers.Doubles;
 import mop.java.prng.Generator;
 import mop.java.prng.PRNG;
@@ -78,14 +78,14 @@ public final class InCircleTest extends TriangleTest {
     final Vector2D p3 =  Vector2D.of( -1.0, -1.0);
     final Vector2D p4 =  Vector2D.of( 1.0, -1.0);
 
-    final Triangle2D t = TriangleVector2D.of(p1,p2,p3);
+    final Triangle2D t = TriangleVector2DLazy.of(p1, p2, p3);
     inCircle(t, p0);
     inCircle(t, p4);
     inCircle(t, p1);
     // Not working for InCircleCC
     // TODO: decide on the right answer for singular cases.
-    // inCircle(TriangleVector2D.of(p1, p1, p1), p4);
-    // inCircle(TriangleVector2D.of(p1, p2, p1), p4);
+    // inCircle(TriangleVector2DLazy.of(p1, p1, p1), p4);
+    // inCircle(TriangleVector2DLazy.of(p1, p2, p1), p4);
   }
   //--------------------------------------------------------------
 

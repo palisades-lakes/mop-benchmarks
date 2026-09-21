@@ -2,7 +2,7 @@ package mop.java.test.geometry.triangles;
 
 import mop.java.geometry.Generators;
 import mop.java.geometry.triangle.Triangle2D;
-import mop.java.geometry.triangle.TriangleVector2D;
+import mop.java.geometry.triangle.TriangleVector2DLazy;
 import mop.java.numbers.Doubles;
 import mop.java.prng.Generator;
 import mop.java.prng.PRNG;
@@ -62,16 +62,16 @@ public final class OrientationTest extends TriangleTest {
     final Vector2D p2 = Vector2D.of( -1.0, 1.0);
     final Vector2D p3 = Vector2D.of( -1.0, -1.0);
 
-    checkOrientation(TriangleVector2D.of(p0, p1, p2));
+    checkOrientation(TriangleVector2DLazy.of(p0, p1, p2));
     // reverse
-    checkOrientation(TriangleVector2D.of(p1, p0, p2));
+    checkOrientation(TriangleVector2DLazy.of(p1, p0, p2));
     // 1 pt singular
-    checkOrientation(TriangleVector2D.of(p0, p0, p0));
+    checkOrientation(TriangleVector2DLazy.of(p0, p0, p0));
     // 2 pt line segment
-    checkOrientation(TriangleVector2D.of(p0, p2, p0));
-    checkOrientation(TriangleVector2D.of(p0, p0, p2));
+    checkOrientation(TriangleVector2DLazy.of(p0, p2, p0));
+    checkOrientation(TriangleVector2DLazy.of(p0, p0, p2));
     // Co-linear triangle
-    checkOrientation(TriangleVector2D.of(p0, p1, p3));
+    checkOrientation(TriangleVector2DLazy.of(p0, p1, p3));
   }
 
   //--------------------------------------------------------------
@@ -88,13 +88,13 @@ public final class OrientationTest extends TriangleTest {
 //    System.out.println("p2=" + Triangle2D.toHexString(p2));
 //    System.out.println("p3=" + Triangle2D.toHexString(p3));
 
-    final Triangle2D t013 = TriangleVector2D.of(p0, p1, p3);
+    final Triangle2D t013 = TriangleVector2DLazy.of(p0, p1, p3);
 //    final Triangle2D bf013 = BigFloatTriangle2D.from(t013);
 //    System.out.println("bf013=" + bf013);
 //    System.out.println(Double.toHexString(bf013.orientation()));
     checkOrientation(t013);
 
-    final Triangle2D t023 = TriangleVector2D.of(p0, p2, p3);
+    final Triangle2D t023 = TriangleVector2DLazy.of(p0, p2, p3);
 //    final Triangle2D bf023 = BigFloatTriangle2D.from(t023);
 //    System.out.println("bf023=" + bf023);
 //    System.out.println(Double.toHexString(bf023.orientation()));
@@ -125,7 +125,7 @@ public final class OrientationTest extends TriangleTest {
       for (int j=0;j<n;j++) {
         final double pyj = py + j*uy;
         final Vector2D pij = Vector2D.of(pxi, pyj);
-        final Triangle2D t = TriangleVector2D.of(pij, q, r);
+        final Triangle2D t = TriangleVector2DLazy.of(pij, q, r);
         checkOrientation(t); } } }
 
   @Test

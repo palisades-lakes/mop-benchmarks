@@ -5,10 +5,10 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
 /** Minimal triangle with Vector2D vertices, caching reusable values.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-09-17
+ * @version 2026-09-21
  */
 
-public final class TriangleVector2D extends Triangle2D {
+public final class TriangleVector2DLazy extends Triangle2D {
 
   // cache vector result of translating p0 to origin,
   // and related quantities
@@ -36,7 +36,7 @@ public final class TriangleVector2D extends Triangle2D {
     return _v20Norm2; }
 
   /** AKA wedge product, cross product (in 3D), ... */
-  private static final double blade (final Vector2D v0,
+  private static final double wedge (final Vector2D v0,
                                         final Vector2D v1) {
     // TODO: more accurate version via fma?
     return (v0.getX()*v1.getY()) - (v0.getY()*v1.getX()); }
@@ -44,7 +44,7 @@ public final class TriangleVector2D extends Triangle2D {
   private double _V20xV10 = Double.NaN;
   private final double getV20xV10 () {
     // TODO: what if computed corss product is NaN?
-    if (Double.isNaN(_V20xV10)) { _V20xV10 = blade(getV20(),getV10()); }
+    if (Double.isNaN(_V20xV10)) { _V20xV10 = wedge(getV20(),getV10()); }
     return _V20xV10; }
 
   //--------------------------------------------------------------------
@@ -71,9 +71,9 @@ public final class TriangleVector2D extends Triangle2D {
 
     final Vector2D vp0 = p.subtract(getP0());
 
-    final double bxp = blade(getV10(),vp0);
+    final double bxp = wedge(getV10(),vp0);
     final double bxc = getV20xV10();
-    final double pxc = blade(vp0,getV20());
+    final double pxc = wedge(vp0,getV20());
 
     final double p2 = vp0.normSq();
     final double b2 = getV10Norm2();
@@ -85,15 +85,15 @@ public final class TriangleVector2D extends Triangle2D {
   // construction
   //--------------------------------------------------------------------
 
-  private TriangleVector2D (final Vector2D a,
-                            final Vector2D b,
-                            final Vector2D c)  {
+  private TriangleVector2DLazy (final Vector2D a,
+                                final Vector2D b,
+                                final Vector2D c)  {
     super(a,b,c); }
 
   public static final Triangle2D of (final Vector2D a,
                                      final Vector2D b,
                                      final Vector2D c) {
-    return new TriangleVector2D(a, b, c); }
+    return new TriangleVector2DLazy(a, b, c); }
 
   /** Convert other triangle classes. */
 

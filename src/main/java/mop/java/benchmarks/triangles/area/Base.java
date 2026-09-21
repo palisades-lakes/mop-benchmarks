@@ -30,7 +30,7 @@ public abstract class Base {
 //    "Exact",
 //    "Fast",
 //    "Slow",
-//    "TriangleVector2D",
+//    "TriangleVector2DLazy",
 //    "EagerTriangle2D",
 //    "LazyTriangle2D",
 //    "DoubleTriangle2D",

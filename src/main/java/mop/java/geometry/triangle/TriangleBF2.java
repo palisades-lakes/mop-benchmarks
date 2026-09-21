@@ -1,5 +1,6 @@
 package mop.java.geometry.triangle;
 
+import mop.java.geometry.euclidean.VectorBF2;
 import mop.java.numbers.BigFloat;
 import org.apache.commons.geometry.euclidean.twod.Vector2D;
 
@@ -10,53 +11,36 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
  * @version 2026-09-21
  */
 
-public final class BigFloatTriangle2D extends Triangle2D {
+public final class TriangleBF2 extends Triangle2D {
 
-  // TODO: BigFloat vectors
   // cache vector result of translating p0 to origin,
   // and related quantities
 
-  private BigFloat _x10;
-  private final BigFloat getX10 () {
-    if (null == _x10) {
-      _x10 = BigFloat.dif(getP1().getX(),getP0().getX()); }
-    return _x10; }
-
-  private BigFloat _y10;
-  private final BigFloat getY10 () {
-    if (null == _y10) {
-      _y10 = BigFloat.dif(getP1().getY(),getP0().getY()); }
-    return _y10; }
+  private VectorBF2 _v10;
+  private final VectorBF2 getV10 () {
+    if (null == _v10) {
+      _v10 = VectorBF2.dif(getP1(),getP0()); }
+    return _v10; }
 
   private BigFloat _v10Norm2;
   private final BigFloat getV10Norm2 () {
-    if (null==_v10Norm2) {
-      _v10Norm2 = BigFloat.l2norm2(getX10(),getY10()); }
+    if (null==_v10Norm2) { _v10Norm2 = getV10().l2norm2(); }
     return _v10Norm2; }
 
-  private BigFloat _x20;
-  private final BigFloat getX20 () {
-    if (null == _x20) {
-      _x20 = BigFloat.dif(getP2().getX(),getP0().getX()); }
-    return _x20; }
-
-  private BigFloat _y20;
-  private final BigFloat getY20 () {
-    if (null == _y20) {
-      _y20 = BigFloat.dif(getP2().getY(),getP0().getY()); }
-    return _y20; }
+  private VectorBF2 _v20;
+  private final VectorBF2 getV20 () {
+    if (null == _v20) {
+      _v20 = VectorBF2.dif(getP2(),getP0()); }
+    return _v20; }
 
   private BigFloat _v20Norm2;
   private final BigFloat getV20Norm2 () {
-    if (null==_v20Norm2) {
-      _v20Norm2 = BigFloat.l2norm2(getX20(),getY20()); }
+    if (null==_v20Norm2) { _v20Norm2 = getV20().l2norm2(); }
     return _v20Norm2; }
 
   private BigFloat _V20xV10;
   public final BigFloat getV20xV10 () {
-    if (null==_V20xV10) {
-      _V20xV10 = BigFloat.wedge(getX20(), getY20(),
-                                getX10(), getY10()); }
+    if (null==_V20xV10) { _V20xV10 = getV20().wedge(getV10()); }
     return _V20xV10; }
 
   //--------------------------------------------------------------------
@@ -85,15 +69,13 @@ public final class BigFloatTriangle2D extends Triangle2D {
 
   public final BigFloat inCircleDistanceBF (final Vector2D p) {
 
-    // TODO: BigFloatVector operations
-    final BigFloat xp0 = BigFloat.dif(p.getX(),getP0().getX());
-    final BigFloat yp0 = BigFloat.dif(p.getY(),getP0().getY());
+    final VectorBF2 p0 = VectorBF2.dif(p,getP0());
 
-    final BigFloat bxp = BigFloat.wedge(getX10(), getY10(), xp0, yp0);
+    final BigFloat bxp = getV10().wedge(p0);
     final BigFloat bxc = getV20xV10();
-    final BigFloat pxc = BigFloat.wedge(xp0, yp0, getX20(), getY20());
+    final BigFloat pxc = p0.wedge(getV20());
 
-    final BigFloat p2 = BigFloat.l2norm2(xp0,yp0);
+    final BigFloat p2 = p0.l2norm2();
     final BigFloat b2 = getV10Norm2();
     final BigFloat c2 = getV20Norm2();
 
@@ -108,14 +90,13 @@ public final class BigFloatTriangle2D extends Triangle2D {
   public final double inCircle (final Vector2D p) {
 
     // TODO: BigFloatVector operations
-    final BigFloat xp0 = BigFloat.dif(p.getX(),getP0().getX());
-    final BigFloat yp0 = BigFloat.dif(p.getY(),getP0().getY());
+    final VectorBF2 p0 = VectorBF2.dif(p,getP0());
 
-    final BigFloat bxp = BigFloat.wedge(getX10(), getY10(), xp0, yp0);
+    final BigFloat bxp = getV10().wedge(p0);
     final BigFloat bxc = getV20xV10();
-    final BigFloat pxc = BigFloat.wedge(xp0, yp0, getX20(), getY20());
+    final BigFloat pxc = p0.wedge(getV20());
 
-    final BigFloat p2 = BigFloat.l2norm2(xp0,yp0);
+    final BigFloat p2 = p0.l2norm2();
     final BigFloat b2 = getV10Norm2();
     final BigFloat c2 = getV20Norm2();
 
@@ -130,15 +111,15 @@ public final class BigFloatTriangle2D extends Triangle2D {
   // construction
   //--------------------------------------------------------------------
 
-  private BigFloatTriangle2D (final Vector2D a,
-                              final Vector2D b,
-                              final Vector2D c)  {
+  private TriangleBF2 (final Vector2D a,
+                       final Vector2D b,
+                       final Vector2D c)  {
     super(a,b,c); }
 
   public static final Triangle2D of (final Vector2D a,
                                      final Vector2D b,
                                      final Vector2D c) {
-    return new BigFloatTriangle2D(a, b, c); }
+    return new TriangleBF2(a, b, c); }
 
   /** Convert other triangle classes. */
 

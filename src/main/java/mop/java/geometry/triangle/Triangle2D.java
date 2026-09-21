@@ -9,10 +9,10 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
 
 import java.util.List;
 
-/** Triangles "embedded" in Vector2D.
+/** Triangles "embedded" in <code>R<sup>2</sup></code>>.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-09-09
+ * @version 2026-09-21
  */
 
 public abstract class Triangle2D {
@@ -20,9 +20,12 @@ public abstract class Triangle2D {
   private final Vector2D p0;
   private final Vector2D p1;
   private final Vector2D p2;
+  public final Vector2D getP0 () { return p0; }
+  public final Vector2D getP1 () { return p1; }
+  public final Vector2D getP2 () { return p2; }
 
   public static final List<Triangle2D> makeTriangles (final Triangle2D t) {
-    final Triangle2D triangleV2D = TriangleVector2D.from(t);
+    final Triangle2D triangleV2D = TriangleVector2DLazy.from(t);
     final Triangle2D triangleV2DE = TriangleVector2DEager.from(t);
     final Triangle2D lazyTriangle = LazyTriangle2D.from(t);
     final Triangle2D eagerTriangle = EagerTriangle2D.from(t);
@@ -31,6 +34,8 @@ public abstract class Triangle2D {
     final Triangle2D roundingIntervalTriangle = RoundingIntervalTriangle2D.from(t);
     final Triangle2D shewchukIntervalTriangle = ShewchukIntervalTriangle2D.from(t);
     final Triangle2D bigFloat = BigFloatTriangle2D.from(t);
+    final Triangle2D bf2 = TriangleBF2.from(t);
+    final Triangle2D d2eager = TriangleD2Eager.from(t);
     final Triangle2D rebf = ReBfTriangle2D.from(t);
     final Triangle2D robf = RoBfTriangle2D.from(t);
     final Triangle2D shbf = ShBFTriangle2D.from(t);
@@ -56,7 +61,7 @@ public abstract class Triangle2D {
       rationalFloat,
       doubleTriangle, doubleIntervalTriangle, roundingIntervalTriangle,
       shewchukIntervalTriangle,
-      bigFloat,
+      bigFloat, bf2, d2eager,
       rebf,robf,shbf,
       // JTS
       ddFast,ddNormalized,ddSlow,doubleNonRobust,inCircleNormalized,
@@ -78,7 +83,7 @@ public abstract class Triangle2D {
                                                   final String dest) {
     // TODO: lookup method object rather than switch (String)
     return switch (dest) {
-      case "TriangleVector2D" -> TriangleVector2D.from(t);
+      case "TriangleVector2DLazy" -> TriangleVector2DLazy.from(t);
       case "TriangleVector2DEager" -> TriangleVector2DEager.from(t);
       case "LazyTriangle2D" -> LazyTriangle2D.from(t);
       case "EagerTriangle2D" -> EagerTriangle2D.from(t);
@@ -87,6 +92,8 @@ public abstract class Triangle2D {
       case "RoundingIntervalTriangle2D" -> RoundingIntervalTriangle2D.from(t);
       case "ShewchukIntervalTriangle2D" -> ShewchukIntervalTriangle2D.from(t);
       case "BigFloatTriangle2D" ->  BigFloatTriangle2D.from(t);
+      case "TriangleBF2" ->  TriangleBF2.from(t);
+      case "TriangleD2Eager" ->  TriangleD2Eager.from(t);
       case "ReBfTriangle2D" ->  ReBfTriangle2D.from(t);
       case "RoBfTriangle2D" ->  RoBfTriangle2D.from(t);
       case "ShBFTriangle2D" ->  ShBFTriangle2D.from(t);
@@ -115,17 +122,6 @@ public abstract class Triangle2D {
     for (int i=0; i<t.length; i++) {
       t[i] = convertTriangle(t[i],dest); }
     return t;}
-
-  public final Vector2D getP0 () { return p0; }
-  public final Vector2D getP1 () { return p1; }
-  public final Vector2D getP2 () { return p2; }
-
-//  public final Vector2D getP (final int i) {
-//    return switch (i) {
-//      case 0 -> p0;
-//      case 1 -> p1;
-//      case 2 -> p2;
-//      default -> throw new IndexOutOfBoundsException(); }; }
 
   //--------------------------------------------------------------------
   // Object methods

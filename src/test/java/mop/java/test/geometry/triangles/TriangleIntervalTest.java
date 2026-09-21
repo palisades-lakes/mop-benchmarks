@@ -1,17 +1,11 @@
 package mop.java.test.geometry.triangles;
 
 import mop.java.geometry.Generators;
-import mop.java.geometry.triangle.BigFloatTriangle2D;
-import mop.java.geometry.triangle.RelaxedIntervalTriangle2D;
-import mop.java.geometry.triangle.DoubleTriangle2D;
-import mop.java.geometry.triangle.RoundingIntervalTriangle2D;
-import mop.java.geometry.triangle.ShewchukIntervalTriangle2D;
-import mop.java.geometry.triangle.Triangle2D;
-import mop.java.geometry.triangle.TriangleVector2D;
+import mop.java.geometry.triangle.*;
 import mop.java.numbers.BigFloat;
+import mop.java.numbers.Doubles;
 import mop.java.numbers.RelaxedInterval;
 import mop.java.numbers.RoundingInterval;
-import mop.java.numbers.Doubles;
 import mop.java.prng.Generator;
 import mop.java.prng.PRNG;
 import org.apache.commons.geometry.euclidean.twod.Vector2D;
@@ -171,7 +165,7 @@ public final class TriangleIntervalTest {
     final Vector2D p3 =  Vector2D.of( -1.0, -1.0);
     final Vector2D p4 =  Vector2D.of( 1.0, -1.0);
 
-    final Triangle2D t = TriangleVector2D.of(p1,p2,p3);
+    final Triangle2D t = TriangleVector2DLazy.of(p1, p2, p3);
     inCircle(t, p0);
     coCircular(t, p4);
     coCircular(t, p1); }
@@ -210,7 +204,7 @@ public final class TriangleIntervalTest {
     for (int i=0;i<ncircles;i++) {
       final Circle circle = (Circle) circleGenerator.next();
       final Triangle2D ti =
-        TriangleVector2D.of(
+        TriangleVector2DLazy.of(
           boundaryPt((Vector2D) pointGenerator.next(), circle),
           boundaryPt((Vector2D) pointGenerator.next(), circle),
           boundaryPt((Vector2D) pointGenerator.next(), circle));
@@ -365,8 +359,8 @@ public final class TriangleIntervalTest {
 
     final int ntriangles = 1023;
     for (int i=0;i<ntriangles;i++) {
-      final TriangleVector2D ti =
-        (TriangleVector2D) triangleGenerator.next();
+      final TriangleVector2DLazy ti =
+        (TriangleVector2DLazy) triangleGenerator.next();
 
       colinearSignedArea(ti); } }
 
