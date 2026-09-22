@@ -1,13 +1,13 @@
 package mop.java.geometry.triangle;
 
+import mop.java.geometry.euclidean.VectorD2;
 import mop.java.numbers.RoundingInterval;
-import org.apache.commons.geometry.euclidean.twod.Vector2D;
 
 /** Computed error in <code>double</code> calculations
  * using <code>RoundingInterval</code>.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-09-12
+ * @version 2026-09-21
  */
 
 public final class RoundingIntervalTriangle2D extends Triangle2D {
@@ -83,7 +83,7 @@ public final class RoundingIntervalTriangle2D extends Triangle2D {
 
   public final boolean inCircleIntervals () { return true; }
 
-  public final RoundingInterval inCircleInterval (final Vector2D p) {
+  public final RoundingInterval inCircleInterval (final VectorD2 p) {
 
     final RoundingInterval
       xp0 = RoundingInterval.dif(p.getX(), getP0().getX());
@@ -102,10 +102,10 @@ public final class RoundingIntervalTriangle2D extends Triangle2D {
 
     return RoundingInterval.dot(p2, b2, c2, bxc, pxc, bxp); }
 
-  public final double inCircleDistance (final Vector2D p) {
+  public final double inCircleDistance (final VectorD2 p) {
     return inCircleInterval(p).doubleValue(); }
 
-  public final double inCircle (final Vector2D p) {
+  public final double inCircle (final VectorD2 p) {
     final RoundingInterval icd = inCircleInterval(p);
     // TODO: non-finite intervals
     //if (! icd.isFinite()) { return icd.doubleValue(); }
@@ -134,14 +134,14 @@ public final class RoundingIntervalTriangle2D extends Triangle2D {
   // construction
   //--------------------------------------------------------------------
 
-  private RoundingIntervalTriangle2D (final Vector2D a,
-                                      final Vector2D b,
-                                      final Vector2D c)  {
+  private RoundingIntervalTriangle2D (final VectorD2 a,
+                                      final VectorD2 b,
+                                      final VectorD2 c)  {
     super(a,b,c); }
 
-  public static final Triangle2D of (final Vector2D a,
-                                     final Vector2D b,
-                                     final Vector2D c) {
+  public static final Triangle2D of (final VectorD2 a,
+                                     final VectorD2 b,
+                                     final VectorD2 c) {
     return new RoundingIntervalTriangle2D(a, b, c); }
 
   /** Convert other triangle classes. */

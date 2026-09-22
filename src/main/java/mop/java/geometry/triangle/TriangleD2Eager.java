@@ -1,9 +1,8 @@
 package mop.java.geometry.triangle;
 
 import mop.java.geometry.euclidean.VectorD2;
-import org.apache.commons.geometry.euclidean.twod.Vector2D;
 
-/** Triangle with Vector2D vertices, precomputing reusable values.
+/** Triangle with VectorD2 vertices, precomputing reusable values.
  *
  * @author palisades dot lakes at gmail dot com,
  * @version 2026-09-21
@@ -49,9 +48,9 @@ public final class TriangleD2Eager extends Triangle2D {
 
   public final boolean inCircleDistanceExact () { return false; }
 
-  public final double inCircleDistance (final Vector2D p) {
+  public final double inCircleDistance (final VectorD2 p) {
 
-    final VectorD2 vp0 = VectorD2.dif(p,getP0());
+    final VectorD2 vp0 = p.subtract(getP0());
 
     final double bxp = getV10().wedge(vp0);
     final double bxc = getV20xV10();
@@ -67,19 +66,19 @@ public final class TriangleD2Eager extends Triangle2D {
   // construction
   //--------------------------------------------------------------------
 
-  private TriangleD2Eager (final Vector2D a,
-                           final Vector2D b,
-                           final Vector2D c)  {
+  private TriangleD2Eager (final VectorD2 a,
+                           final VectorD2 b,
+                           final VectorD2 c)  {
     super(a,b,c);
-    _v10 = VectorD2.dif(getP1(),getP0());
+    _v10 = getP1().subtract(getP0());
     _v10Norm2 = getV10().l2norm2();
-    _v20 = VectorD2.dif(getP2(),getP0());
+    _v20 = getP2().subtract(getP0());
     _v20Norm2 = getV20().l2norm2();
     _V20xV10 = getV20().wedge(getV10()); }
 
-  public static final Triangle2D of (final Vector2D a,
-                                     final Vector2D b,
-                                     final Vector2D c) {
+  public static final Triangle2D of (final VectorD2 a,
+                                     final VectorD2 b,
+                                     final VectorD2 c) {
     return new TriangleD2Eager(a, b, c); }
 
   /** Convert other triangle classes. */

@@ -26,7 +26,7 @@ public class ColinearOrientation extends Orientation {
     triangleGenerator =
       Generators.colinearTriangleGenerator(
         nTriangles,
-        Generators.vector2dGenerator(
+        Generators.vectorD2Generator(
           Doubles.laplaceGenerator(
             PRNG.well44497b("seeds/Well44497b-2019-01-07.txt"),
             0.0, 1.0)),

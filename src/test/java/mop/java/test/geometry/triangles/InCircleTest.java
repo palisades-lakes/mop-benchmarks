@@ -1,14 +1,14 @@
 package mop.java.test.geometry.triangles;
 
 import mop.java.geometry.Generators;
+import mop.java.geometry.euclidean.VectorD2;
 import mop.java.geometry.triangle.Triangle2D;
-import mop.java.geometry.triangle.TriangleVector2DLazy;
+import mop.java.geometry.triangle.TriangleD2Lazy;
 import mop.java.geometry.triangle.macro.AdaptMacro;
 import mop.java.geometry.triangle.shewchuk.Adapt;
 import mop.java.numbers.Doubles;
 import mop.java.prng.Generator;
 import mop.java.prng.PRNG;
-import org.apache.commons.geometry.euclidean.twod.Vector2D;
 import org.apache.commons.rng.UniformRandomProvider;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -34,7 +34,7 @@ public final class InCircleTest extends TriangleTest {
    */
 
   private static final void adaptTest (final Triangle2D t,
-                                       final Vector2D p) {
+                                       final VectorD2 p) {
     final Triangle2D gold = AdaptMacro.from(t);
     final Triangle2D tt = Adapt.from(t);
     final double trueInc = gold.inCircleDistance(p);
@@ -47,7 +47,7 @@ public final class InCircleTest extends TriangleTest {
   //--------------------------------------------------------------
 
   private static final void inCircle (final Triangle2D t,
-                                      final Vector2D p) {
+                                      final VectorD2 p) {
     adaptTest(t,p);
     final Triangle2D gold = Triangle2D.truth(t);
     final double trueInc = gold.inCircleDistance(p);
@@ -72,20 +72,20 @@ public final class InCircleTest extends TriangleTest {
 
   @Test
   public final void simpleTest () {
-    final Vector2D p0 =  Vector2D.of( 0.0, 0.0);
-    final Vector2D p1 =  Vector2D.of( 1.0, 1.0);
-    final Vector2D p2 =  Vector2D.of( -1.0, 1.0);
-    final Vector2D p3 =  Vector2D.of( -1.0, -1.0);
-    final Vector2D p4 =  Vector2D.of( 1.0, -1.0);
+    final VectorD2 p0 =  new VectorD2( 0.0, 0.0);
+    final VectorD2 p1 =  new VectorD2( 1.0, 1.0);
+    final VectorD2 p2 =  new VectorD2( -1.0, 1.0);
+    final VectorD2 p3 =  new VectorD2( -1.0, -1.0);
+    final VectorD2 p4 =  new VectorD2( 1.0, -1.0);
 
-    final Triangle2D t = TriangleVector2DLazy.of(p1, p2, p3);
+    final Triangle2D t = TriangleD2Lazy.of(p1, p2, p3);
     inCircle(t, p0);
     inCircle(t, p4);
     inCircle(t, p1);
     // Not working for InCircleCC
     // TODO: decide on the right answer for singular cases.
-    // inCircle(TriangleVector2DLazy.of(p1, p1, p1), p4);
-    // inCircle(TriangleVector2DLazy.of(p1, p2, p1), p4);
+    // inCircle(TriangleD2Lazy.of(p1, p1, p1), p4);
+    // inCircle(TriangleD2Lazy.of(p1, p2, p1), p4);
   }
   //--------------------------------------------------------------
 
@@ -97,15 +97,15 @@ public final class InCircleTest extends TriangleTest {
       PRNG.well44497b("seeds/Well44497b-2019-01-07.txt");
     final Generator tGenerator =
       Generators.triangleGenerator(
-        n, Generators.vector2dGenerator(
+        n, Generators.vectorD2Generator(
           Doubles.laplaceGenerator(urp0, 0.0, 1.0)));
     final Triangle2D[] t = (Triangle2D[]) tGenerator.next();
     final UniformRandomProvider urp1 =
       PRNG.well44497b("seeds/Well44497b-2019-01-09.txt");
     final Generator pGenerator =
-      Generators.vector2dGenerator(
+      Generators.vectorD2Generator(
         n, Doubles.laplaceGenerator(urp1, 0.0, 1.0));
-    final Vector2D[] p = (Vector2D[]) pGenerator.next();
+    final VectorD2[] p = (VectorD2[]) pGenerator.next();
     for (int i = 0; i < m; i++) {
       final Triangle2D ti = t[i];
       for (int j=0;j<n;j++) {

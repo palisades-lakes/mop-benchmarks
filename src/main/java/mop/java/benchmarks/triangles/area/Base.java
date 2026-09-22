@@ -30,13 +30,12 @@ public abstract class Base {
 //    "Exact",
 //    "Fast",
 //    "Slow",
-//    "TriangleVector2DLazy",
+//    "TriangleD2Lazy",
 //    "EagerTriangle2D",
-//    "LazyTriangle2D",
+//    "TriangleD2",
 //    "DoubleTriangle2D",
 //    "RoundingIntervalTriangle2D",
 //    "RoBfTriangle2D",
-    "BigFloatTriangle2D",
 //    "RationalFloatTriangle2D",
 //    "DDFast",
 //    "DDNormalized",
@@ -80,7 +79,7 @@ public abstract class Base {
     triangleGenerator =
       Generators.triangleGenerator(
         nTriangles,
-        Generators.vector2dGenerator(
+        Generators.vectorD2Generator(
           Doubles.laplaceGenerator(
             PRNG.well44497b("seeds/Well44497b-2019-01-07.txt"),
             0.0, 1.0))); }

@@ -1,11 +1,11 @@
 package mop.java.benchmarks.triangles.circle;
 
 import mop.java.geometry.Generators;
+import mop.java.geometry.euclidean.VectorD2;
 import mop.java.geometry.triangle.Triangle2D;
 import mop.java.numbers.Doubles;
 import mop.java.prng.Generator;
 import mop.java.prng.PRNG;
-import org.apache.commons.geometry.euclidean.twod.Vector2D;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
 
@@ -22,7 +22,8 @@ public abstract class Base {
 
   Generator pointGenerator;
   Generator triangleGenerator;
-  Generator circleGenerator;
+  Generator centerGenerator;
+  Generator radiusGenerator;
 
   @Param({
 //    "Adapt",
@@ -32,13 +33,8 @@ public abstract class Base {
 //    "Slow",
     "TriangleBF2",
     "TriangleD2Eager",
-    "BigFloatTriangle2D",
-    //"TriangleVector2DLazy",
-    "TriangleVector2DEager",
-    "EagerTriangle2D",
-//    "LazyTriangle2D",
-//    "DoubleTriangle2D",
-//    "RelaxedIntervalTriangle2D",
+    "TriangleD2Lazy",
+//      "RelaxedIntervalTriangle2D",
 //    "RoundingIntervalTriangle2D",
 //    "ShewchukIntervalTriangle2D",
 //    "ReBfTriangle2D",
@@ -73,7 +69,7 @@ public abstract class Base {
   int nPoints;
 
   /** multiple points per triangle. */
-  Vector2D[][] points;
+  VectorD2[][] points;
 
   /** count signs */
 
@@ -84,7 +80,7 @@ public abstract class Base {
    */
 
   public abstract double operation (final Triangle2D t,
-                                    final Vector2D p);
+                                    final VectorD2 p);
 
   //--------------------------------------------------------------
   /** Re-initialize the prngs with the same seeds for each
@@ -93,7 +89,7 @@ public abstract class Base {
   @Setup(Level.Trial)
   public void trialSetup () {
     pointGenerator =
-      Generators.vector2dGenerator(
+      Generators.vectorD2Generator(
         nTriangles,
         nPoints,
         Doubles.laplaceGenerator(
@@ -102,7 +98,7 @@ public abstract class Base {
     triangleGenerator =
       Generators.triangleGenerator(
         nTriangles,
-        Generators.vector2dGenerator(
+        Generators.vectorD2Generator(
           Doubles.laplaceGenerator(
             PRNG.well44497b("seeds/Well44497b-2019-01-07.txt"),
             0.0, 1.0))); }
@@ -111,9 +107,9 @@ public abstract class Base {
 
   @Setup(Level.Invocation)
   public void invocationSetup () {
-    points = (Vector2D[][]) pointGenerator.next();
+    points = (VectorD2[][]) pointGenerator.next();
     triangles = Triangle2D.convertTriangles(
-      (Triangle2D[]) triangleGenerator.next(),className);
+      (Triangle2D[]) triangleGenerator.next(), className);
     value = new int[3]; }
 
 //  @TearDown(Level.Invocation)
@@ -127,7 +123,7 @@ public abstract class Base {
     for (int i=0;i<nTriangles;i++) {
       final Triangle2D ti = triangles[i];
       for (int j=0;j<nPoints;j++) {
-        final Vector2D pij = points[i][j];
+        final VectorD2 pij = points[i][j];
         final double sign = operation(ti, pij);
         if (0.0 > sign) { value[0]++; }
         else if (0.0 == sign) { value[1]++; }

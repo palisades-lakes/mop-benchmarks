@@ -4,13 +4,12 @@ import com.carrotsearch.hppc.ObjectIntHashMap;
 import com.carrotsearch.hppc.ObjectIntMap;
 import com.carrotsearch.hppc.procedures.ObjectIntProcedure;
 import mop.java.geometry.Generators;
+import mop.java.geometry.euclidean.VectorD2;
 import mop.java.geometry.triangle.Triangle2D;
-import mop.java.geometry.triangle.TriangleVector2DLazy;
+import mop.java.geometry.triangle.TriangleD2Lazy;
 import mop.java.numbers.Doubles;
 import mop.java.prng.Generator;
 import mop.java.prng.PRNG;
-import org.apache.commons.geometry.euclidean.twod.Vector2D;
-import org.apache.commons.geometry.euclidean.twod.shape.Circle;
 
 import java.util.List;
 
@@ -21,7 +20,7 @@ import static mop.java.geometry.triangle.Triangle2D.truth;
  * mvn clean install && j src/scripts/java/mop/java/scripts/triangles/Cocircular.java
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-11
+ * @version 2026-09-21
  */
 
 public final class CoCircular {
@@ -30,7 +29,7 @@ public final class CoCircular {
 
   private static final void
   checkInCircle (final Triangle2D t0,
-                 final Vector2D p,
+                 final VectorD2 p,
                  final ObjectIntMap<Class> successes,
                  final ObjectIntMap<Class> zeros) {
     final List<Triangle2D> triangles = makeTriangles(t0);
@@ -48,13 +47,6 @@ public final class CoCircular {
 
   //--------------------------------------------------------------
 
-  private static final Vector2D boundaryPt (final Vector2D v,
-                                            final Circle circle) {
-    final Vector2D c = circle.getCenter();
-    final double r = circle.getRadius();
-    return v.subtract(c).withNorm(r).add(c); }
-
-  //--------------------------------------------------------------
 
   public static final int
   coCircular (final ObjectIntMap<Class> successes,
@@ -63,30 +55,29 @@ public final class CoCircular {
     final int ncircles = 1023;
     final int npts = 1023;
 
-    final Generator centerGenerator = Generators.vector2dGenerator(
+    final Generator centerGenerator = Generators.vectorD2Generator(
       Doubles.laplaceGenerator(
         PRNG.well44497b("seeds/Well44497b-2019-01-07.txt"),
         0.0, 1.0));
     final Generator radiusGenerator = Doubles.exponentialGenerator(
       PRNG.well44497b("seeds/Well44497b-2019-01-09.txt"),
       1.0);
-    final Generator circleGenerator =
-      Generators.circleGenerator(centerGenerator,radiusGenerator);
-    final Generator pointGenerator = Generators.vector2dGenerator(
+    final Generator pointGenerator = Generators.vectorD2Generator(
       Doubles.laplaceGenerator(
         PRNG.well44497b("seeds/Well44497b-2019-01-11.txt"),
         0.0, 1.0));
     int ntrys = 0;
     for (int i=0;i<ncircles;i++) {
-      final Circle circle = (Circle) circleGenerator.next();
+      final VectorD2 c = (VectorD2) centerGenerator.next();
+      final double r = radiusGenerator.nextDouble();
       final Triangle2D ti =
-        TriangleVector2DLazy.of(
-          boundaryPt((Vector2D) pointGenerator.next(), circle),
-          boundaryPt((Vector2D) pointGenerator.next(), circle),
-          boundaryPt((Vector2D) pointGenerator.next(), circle));
+        TriangleD2Lazy.of(
+          ((VectorD2) pointGenerator.next()).project(c,r),
+          ((VectorD2) pointGenerator.next()).project(c,r),
+          ((VectorD2) pointGenerator.next()).project(c,r));
       for (int j=0;j<npts;j++) {
-        final Vector2D pij =
-          boundaryPt((Vector2D) pointGenerator.next(), circle);
+        final VectorD2 pij =
+          ((VectorD2) pointGenerator.next()).project(c,r);
         checkInCircle(ti,pij,successes,zeros);
         ntrys++; } }
 

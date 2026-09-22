@@ -1,12 +1,12 @@
 package mop.java.geometry.triangle.jts;
 
+import mop.java.geometry.euclidean.VectorD2;
 import mop.java.geometry.triangle.Triangle2D;
-import org.apache.commons.geometry.euclidean.twod.Vector2D;
 
 /** From org.locationtech.jts.triangulate.quadedge.TrianglePredicate
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-07-27
+ * @version 2026-09-21
  */
 
 @SuppressWarnings("unused")
@@ -16,9 +16,9 @@ public final class InCircleCC extends Triangle2D {
   // TODO: from Fast, make consistent with inCircle strategy
 
   public final double twiceSignedArea () {
-    final Vector2D pa = getP0();
-    final Vector2D pb = getP1();
-    final Vector2D pc = getP2();
+    final VectorD2 pa = getP0();
+    final VectorD2 pb = getP1();
+    final VectorD2 pc = getP2();
 
     final double acx = pa.getX() - pc.getX();
     final double bcx = pb.getX() - pc.getX();
@@ -62,9 +62,9 @@ public final class InCircleCC extends Triangle2D {
    * to the origin to improve the accuracy of computation. (See <i>Lecture Notes
    * on Geometric Robustness</i>, Jonathan Richard Shewchuk, 1999).
    */
-  private static final Vector2D circumcentre (final Vector2D a,
-                                              final Vector2D b,
-                                              final Vector2D c) {
+  private static final VectorD2 circumcentre (final VectorD2 a,
+                                              final VectorD2 b,
+                                              final VectorD2 c) {
     final double cx = c.getX();
     final double cy = c.getY();
     final double ax = a.getX() - cx;
@@ -86,7 +86,7 @@ public final class InCircleCC extends Triangle2D {
         return a; }
       // else triangle is a line segment, center is pt at infinity
       // TODO: immutable singleton?
-      return Vector2D.of(Double.POSITIVE_INFINITY,
+      return new VectorD2(Double.POSITIVE_INFINITY,
                          Double.POSITIVE_INFINITY); }
     final double numx = det(ay,
                             ax * ax + ay * ay, by,
@@ -98,7 +98,7 @@ public final class InCircleCC extends Triangle2D {
     final double ccx = cx - numx / denom;
     final double ccy = cy + numy / denom;
 
-    return Vector2D.of(ccx, ccy); }
+    return new VectorD2(ccx, ccy); }
 
   /**
    * Computes the length of the vector (x,y).
@@ -122,7 +122,7 @@ public final class InCircleCC extends Triangle2D {
    * @param c a point
    * @return the 2-dimensional Euclidean distance between the locations
    */
-  private static double distance (final Vector2D a, final Vector2D c) {
+  private static double distance (final VectorD2 a, final VectorD2 c) {
     double dx = a.getX() - c.getX();
     double dy = a.getY() - c.getY();
     return hypot(dx, dy);
@@ -133,8 +133,8 @@ public final class InCircleCC extends Triangle2D {
   //--------------------------------------------------------------------
   /** TrianglePredicate.isInCircleNonRobust.
    */
-  public final double inCircleDistance (final Vector2D p) {
-    final Vector2D cc = circumcentre(getP0(),getP1(),getP2());
+  public final double inCircleDistance (final VectorD2 p) {
+    final VectorD2 cc = circumcentre(getP0(),getP1(),getP2());
     // sign reversed from JTS for consistency with other predicates
     // TODO: could we use squared distance?
     return distance(getP0(), cc) - distance(p, cc);
@@ -144,14 +144,14 @@ public final class InCircleCC extends Triangle2D {
   // construction
   //--------------------------------------------------------------------
 
-  private InCircleCC (final Vector2D a,
-                      final Vector2D b,
-                      final Vector2D c)  {
+  private InCircleCC (final VectorD2 a,
+                      final VectorD2 b,
+                      final VectorD2 c)  {
     super(a,b,c); }
 
-  public static final Triangle2D of (final Vector2D a,
-                                     final Vector2D b,
-                                     final Vector2D c) {
+  public static final Triangle2D of (final VectorD2 a,
+                                     final VectorD2 b,
+                                     final VectorD2 c) {
     return new InCircleCC(a,b,c); }
 
   /** Convert other triangle classes. */

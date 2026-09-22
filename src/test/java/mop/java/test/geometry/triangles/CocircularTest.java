@@ -1,14 +1,13 @@
 package mop.java.test.geometry.triangles;
 
 import mop.java.geometry.Generators;
+import mop.java.geometry.euclidean.VectorD2;
 import mop.java.geometry.triangle.*;
 import mop.java.numbers.BigFloat;
 import mop.java.numbers.DoubleInterval;
 import mop.java.numbers.Doubles;
 import mop.java.prng.Generator;
 import mop.java.prng.PRNG;
-import org.apache.commons.geometry.euclidean.twod.Vector2D;
-import org.apache.commons.geometry.euclidean.twod.shape.Circle;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -22,7 +21,7 @@ import java.util.List;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-13
+ * @version 2026-09-21
  */
 
 public final class CocircularTest extends TriangleTest {
@@ -30,7 +29,8 @@ public final class CocircularTest extends TriangleTest {
   //--------------------------------------------------------------
 
   public static final List<Triangle2D> makeIntervalTriangles (final Triangle2D t) {
-    final Triangle2D relaxedIntervalTriangle = RelaxedIntervalTriangle2D.from(t);
+    final Triangle2D
+      relaxedIntervalTriangle = RelaxedIntervalTriangle2D.from(t);
     final Triangle2D roundingIntervalTriangle = RoundingIntervalTriangle2D.from(t);
     final Triangle2D shewchukIntervalTriangle = ShewchukIntervalTriangle2D.from(t);
     return List.of(
@@ -39,9 +39,9 @@ public final class CocircularTest extends TriangleTest {
       shewchukIntervalTriangle); }
 
   private static final void inCircle (final Triangle2D t,
-                                      final Vector2D p) {
-    final BigFloatTriangle2D gold =
-      (BigFloatTriangle2D) Triangle2D.truth(t);
+                                      final VectorD2 p) {
+    final TriangleBF2 gold =
+      (TriangleBF2) Triangle2D.truth(t);
     final BigFloat bf = gold.inCircleDistanceBF(p);
     final List<Triangle2D> triangles = makeIntervalTriangles(t);
     for (final Triangle2D ti :triangles) {
@@ -65,12 +65,6 @@ public final class CocircularTest extends TriangleTest {
 
   //--------------------------------------------------------------
 
-  private static final Vector2D project (final Circle c,
-                                         final Vector2D p) {
-    return c.project(p); }
-
-  //--------------------------------------------------------------
-
   @Test
   public final void cocircularTest () {
     final double cMu = 1.0;
@@ -78,16 +72,14 @@ public final class CocircularTest extends TriangleTest {
     final double rLambda = 1.0;
     final double pMu = 0.0;
     final double pSigma = 3.0;
-    final Generator centerGenerator = Generators.vector2dGenerator(
+    final Generator centerGenerator = Generators.vectorD2Generator(
       Doubles.laplaceGenerator(
         PRNG.well44497b("seeds/Well44497b-2019-01-07.txt"),
         cMu, cSigma));
     final Generator radiusGenerator = Doubles.exponentialGenerator(
       PRNG.well44497b("seeds/Well44497b-2019-01-09.txt"),
       rLambda);
-    final Generator circleGenerator =
-      Generators.circleGenerator(centerGenerator,radiusGenerator);
-    final Generator pointGenerator = Generators.vector2dGenerator(
+    final Generator pointGenerator = Generators.vectorD2Generator(
       Doubles.laplaceGenerator(
         PRNG.well44497b("seeds/Well44497b-2019-01-11.txt"),
         pMu, pSigma));
@@ -95,14 +87,15 @@ public final class CocircularTest extends TriangleTest {
     final int ntriangles = 63;
     final int npoints = 63;
     for (int i=0;i<ntriangles;i++) {
-      final Circle c = (Circle) circleGenerator.next();
-      final Vector2D p0 = project(c,(Vector2D) pointGenerator.next());
-      final Vector2D p1 = project(c,(Vector2D) pointGenerator.next());
-      final Vector2D p2 = project(c,(Vector2D) pointGenerator.next());
-      final BigFloatTriangle2D t =
-        (BigFloatTriangle2D) BigFloatTriangle2D.of(p0,p1,p2);
+      final VectorD2 c = (VectorD2) centerGenerator.next();
+      final double r = radiusGenerator.nextDouble();
+      final VectorD2 p0 = ((VectorD2) pointGenerator.next()).project(c,r);
+      final VectorD2 p1 = ((VectorD2) pointGenerator.next()).project(c,r);
+      final VectorD2 p2 = ((VectorD2) pointGenerator.next()).project(c,r);
+      final TriangleBF2 t =
+        (TriangleBF2) TriangleBF2.of(p0,p1,p2);
       for (int j=0;j<npoints;j++) {
-        final Vector2D p = project(c,(Vector2D) pointGenerator.next());
+        final VectorD2 p = ((VectorD2) pointGenerator.next()).project(c,r);
         inCircle(t,p); } } }
 
   //--------------------------------------------------------------

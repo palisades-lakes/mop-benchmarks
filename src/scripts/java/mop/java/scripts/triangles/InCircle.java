@@ -2,12 +2,12 @@ package mop.java.scripts.triangles;
 
 import mop.java.accumulators.ZhuHayesAccumulator;
 import mop.java.geometry.Generators;
+import mop.java.geometry.euclidean.VectorD2;
 import mop.java.geometry.triangle.RoundingIntervalTriangle2D;
 import mop.java.geometry.triangle.Triangle2D;
 import mop.java.numbers.Doubles;
 import mop.java.prng.Generator;
 import mop.java.prng.PRNG;
-import org.apache.commons.geometry.euclidean.twod.Vector2D;
 
 /** <pre>
  * mvn clean install && jy src/scripts/java/mop/java/scripts/triangles/InCircle.java
@@ -22,21 +22,21 @@ public final class InCircle {
   public static final void main (final String[] args) {
 
     final Generator pointGenerator =
-      Generators.vector2dGenerator(
+      Generators.vectorD2Generator(
         8192,
         Doubles.laplaceGenerator(
           PRNG.well44497b("seeds/Well44497b-2019-01-05.txt"),
           0.0, 1.0));
-    final Vector2D[] points = (Vector2D[]) pointGenerator.next();
+    final VectorD2[] points = (VectorD2[]) pointGenerator.next();
 
     final Generator triangleGenerator =
       Generators.triangleGenerator(
         8192,
         //ExactCache::from,
-        //BigFloatTriangle2D::from,
+        //TriangleBF2::from,
         RoundingIntervalTriangle2D::from,
         //RoBfTriangle2D::from,
-        Generators.vector2dGenerator(
+        Generators.vectorD2Generator(
           Doubles.laplaceGenerator(
             PRNG.well44497b("seeds/Well44497b-2019-01-07.txt"),
             0.0, 1.0)));
@@ -53,7 +53,7 @@ public final class InCircle {
     for (int i=0; i<nreps; i++) {
       int k=0;
       for (final Triangle2D t : triangles) {
-        for (final Vector2D p : points) {
+        for (final VectorD2 p : points) {
           d[k++] = t.inCircleDistance(p); } }
 
       final ZhuHayesAccumulator zh = ZhuHayesAccumulator.make();

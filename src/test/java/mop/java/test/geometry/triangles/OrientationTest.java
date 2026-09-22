@@ -1,12 +1,12 @@
 package mop.java.test.geometry.triangles;
 
 import mop.java.geometry.Generators;
+import mop.java.geometry.euclidean.VectorD2;
 import mop.java.geometry.triangle.Triangle2D;
-import mop.java.geometry.triangle.TriangleVector2DLazy;
+import mop.java.geometry.triangle.TriangleD2Lazy;
 import mop.java.numbers.Doubles;
 import mop.java.prng.Generator;
 import mop.java.prng.PRNG;
-import org.apache.commons.geometry.euclidean.twod.Vector2D;
 import org.apache.commons.rng.UniformRandomProvider;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -57,45 +57,45 @@ public final class OrientationTest extends TriangleTest {
 
   @Test
   public final void testOrientation () {
-    final Vector2D p0 = Vector2D.of( 0.0, 0.0);
-    final Vector2D p1 = Vector2D.of( 1.0, 1.0);
-    final Vector2D p2 = Vector2D.of( -1.0, 1.0);
-    final Vector2D p3 = Vector2D.of( -1.0, -1.0);
+    final VectorD2 p0 = new VectorD2( 0.0, 0.0);
+    final VectorD2 p1 = new VectorD2( 1.0, 1.0);
+    final VectorD2 p2 = new VectorD2( -1.0, 1.0);
+    final VectorD2 p3 = new VectorD2( -1.0, -1.0);
 
-    checkOrientation(TriangleVector2DLazy.of(p0, p1, p2));
+    checkOrientation(TriangleD2Lazy.of(p0, p1, p2));
     // reverse
-    checkOrientation(TriangleVector2DLazy.of(p1, p0, p2));
+    checkOrientation(TriangleD2Lazy.of(p1, p0, p2));
     // 1 pt singular
-    checkOrientation(TriangleVector2DLazy.of(p0, p0, p0));
+    checkOrientation(TriangleD2Lazy.of(p0, p0, p0));
     // 2 pt line segment
-    checkOrientation(TriangleVector2DLazy.of(p0, p2, p0));
-    checkOrientation(TriangleVector2DLazy.of(p0, p0, p2));
+    checkOrientation(TriangleD2Lazy.of(p0, p2, p0));
+    checkOrientation(TriangleD2Lazy.of(p0, p0, p2));
     // Co-linear triangle
-    checkOrientation(TriangleVector2DLazy.of(p0, p1, p3));
+    checkOrientation(TriangleD2Lazy.of(p0, p1, p3));
   }
 
   //--------------------------------------------------------------
 
   private static  final void epsilonOrientation (final double a) {
     // see https://groups.csail.mit.edu/graphics/classes/6.838/S98/meetings/m12/pred/m12.html
-    final Vector2D p0 = Vector2D.of( a, 0.0);
-    final Vector2D p1 = Vector2D.of( Math.nextUp(a), 0x1.0p10);
-    final Vector2D p2 = Vector2D.of( Math.nextDown(a), 0x1.0p10);
-    final Vector2D p3 = Vector2D.of( a, 1.0);
+    final VectorD2 p0 = new VectorD2( a, 0.0);
+    final VectorD2 p1 = new VectorD2( Math.nextUp(a), 0x1.0p10);
+    final VectorD2 p2 = new VectorD2( Math.nextDown(a), 0x1.0p10);
+    final VectorD2 p3 = new VectorD2( a, 1.0);
 
 //    System.out.println("p0=" + Triangle2D.toHexString(p0));
 //    System.out.println("p1=" + Triangle2D.toHexString(p1));
 //    System.out.println("p2=" + Triangle2D.toHexString(p2));
 //    System.out.println("p3=" + Triangle2D.toHexString(p3));
 
-    final Triangle2D t013 = TriangleVector2DLazy.of(p0, p1, p3);
-//    final Triangle2D bf013 = BigFloatTriangle2D.from(t013);
+    final Triangle2D t013 = TriangleD2Lazy.of(p0, p1, p3);
+//    final Triangle2D bf013 = TriangleBF2.from(t013);
 //    System.out.println("bf013=" + bf013);
 //    System.out.println(Double.toHexString(bf013.orientation()));
     checkOrientation(t013);
 
-    final Triangle2D t023 = TriangleVector2DLazy.of(p0, p2, p3);
-//    final Triangle2D bf023 = BigFloatTriangle2D.from(t023);
+    final Triangle2D t023 = TriangleD2Lazy.of(p0, p2, p3);
+//    final Triangle2D bf023 = TriangleBF2.from(t023);
 //    System.out.println("bf023=" + bf023);
 //    System.out.println(Double.toHexString(bf023.orientation()));
     checkOrientation(t023);
@@ -112,9 +112,9 @@ public final class OrientationTest extends TriangleTest {
   // see https://inria.hal.science/inria-00344310v1/document
   // fig 2
 
-  public final void checkKettnerOrientation (final Vector2D p,
-                                             final Vector2D q,
-                                             final Vector2D r) {
+  public final void checkKettnerOrientation (final VectorD2 p,
+                                             final VectorD2 q,
+                                             final VectorD2 r) {
     double px = p.getX();
     double py = p.getY();
     final double ux = 0x1.0p-53; //Math.ulp(px);
@@ -124,26 +124,26 @@ public final class OrientationTest extends TriangleTest {
       final double pxi = px + i*ux;
       for (int j=0;j<n;j++) {
         final double pyj = py + j*uy;
-        final Vector2D pij = Vector2D.of(pxi, pyj);
-        final Triangle2D t = TriangleVector2DLazy.of(pij, q, r);
+        final VectorD2 pij = new VectorD2(pxi, pyj);
+        final Triangle2D t = TriangleD2Lazy.of(pij, q, r);
         checkOrientation(t); } } }
 
   @Test
   public final void testKettnerOrientation () {
     checkKettnerOrientation(
-      Vector2D.of(0.5,0.5),
-      Vector2D.of( 12, 12),
-      Vector2D.of( 24, 24));
+      new VectorD2(0.5,0.5),
+      new VectorD2( 12, 12),
+      new VectorD2( 24, 24));
 
     checkKettnerOrientation(
-      Vector2D.of(0.50000000000002531,0.5000000000000171),
-      Vector2D.of( 17.300000000000001,17.300000000000001),
-      Vector2D.of( 24.00000000000005, 24.0000000000000517765));
+      new VectorD2(0.50000000000002531,0.5000000000000171),
+      new VectorD2( 17.300000000000001,17.300000000000001),
+      new VectorD2( 24.00000000000005, 24.0000000000000517765));
 
     checkKettnerOrientation(
-      Vector2D.of(0.5,0.5),
-      Vector2D.of( 8.8000000000000007, 8.8000000000000007),
-      Vector2D.of( 12.1, 12.1));
+      new VectorD2(0.5,0.5),
+      new VectorD2( 8.8000000000000007, 8.8000000000000007),
+      new VectorD2( 12.1, 12.1));
   }
 
   //--------------------------------------------------------------
@@ -156,7 +156,7 @@ public final class OrientationTest extends TriangleTest {
     final Generator laplaceGenerator =
       Doubles.laplaceGenerator(urp, 0.0, 1.0);
     final Generator vGenerator =
-      Generators.vector2dGenerator(laplaceGenerator);
+      Generators.vectorD2Generator(laplaceGenerator);
     final Generator tGenerator = Generators.triangleGenerator(n,vGenerator);
     final Triangle2D[] t = (Triangle2D[]) tGenerator.next();
     for (int i = 0; i < n; i++) {  checkOrientation(t[i]); } }

@@ -1,7 +1,7 @@
 package mop.java.geometry.triangle;
 
+import mop.java.geometry.euclidean.VectorD2;
 import mop.java.numbers.RelaxedInterval;
-import org.apache.commons.geometry.euclidean.twod.Vector2D;
 
 /** Same calculations as <code>DoubleTriangle2D</code>,
  * converted to intervals using error bounds in
@@ -15,7 +15,7 @@ import org.apache.commons.geometry.euclidean.twod.Vector2D;
  *  </a>
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-09-11
+ * @version 2026-09-21
  */
 
 public final class ShewchukIntervalTriangle2D extends Triangle2D {
@@ -80,7 +80,7 @@ public final class ShewchukIntervalTriangle2D extends Triangle2D {
 
   public final boolean inCircleDistanceExact () { return false; }
 
-  public final double inCircleDistance (final Vector2D p) {
+  public final double inCircleDistance (final VectorD2 p) {
 
     final double xp0 = p.getX() - getP0().getX();
     final double yp0 = p.getY() - getP0().getY();
@@ -95,7 +95,7 @@ public final class ShewchukIntervalTriangle2D extends Triangle2D {
 
     return dot(p2,b2,c2,bxc,pxc,bxp); }
 
-  public final double inCircleBound (final Vector2D p) {
+  public final double inCircleBound (final VectorD2 p) {
 
     final double xp0 = p.getX() - getP0().getX();
     final double yp0 = p.getY() - getP0().getY();
@@ -112,7 +112,7 @@ public final class ShewchukIntervalTriangle2D extends Triangle2D {
 
   public final boolean inCircleIntervals () { return true; }
 
-  public final RelaxedInterval inCircleInterval (final Vector2D p) {
+  public final RelaxedInterval inCircleInterval (final VectorD2 p) {
     final double z = inCircleDistance(p);
     // TODO: already nonnegative?
     final double e = Math.abs(inCircleBound(p));
@@ -124,9 +124,9 @@ public final class ShewchukIntervalTriangle2D extends Triangle2D {
 
   private static final double EPSILON = 0x1.0p-53;
 
-  private ShewchukIntervalTriangle2D (final Vector2D a,
-                                      final Vector2D b,
-                                      final Vector2D c)  {
+  private ShewchukIntervalTriangle2D (final VectorD2 a,
+                                      final VectorD2 b,
+                                      final VectorD2 c)  {
     super(a,b,c);
 
     final double ax = a.getX();
@@ -147,9 +147,9 @@ public final class ShewchukIntervalTriangle2D extends Triangle2D {
         (Math.abs(_x20*_y10) + Math.abs(_y20*_x10));
   }
 
-  public static final Triangle2D of (final Vector2D a,
-                                     final Vector2D b,
-                                     final Vector2D c) {
+  public static final Triangle2D of (final VectorD2 a,
+                                     final VectorD2 b,
+                                     final VectorD2 c) {
     return new ShewchukIntervalTriangle2D(a, b, c); }
 
   /** Convert other triangle classes. */

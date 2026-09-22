@@ -1,8 +1,8 @@
 package mop.java.geometry.triangle;
 
 import mop.java.geometry.euclidean.VectorBF2;
+import mop.java.geometry.euclidean.VectorD2;
 import mop.java.numbers.BigFloat;
-import org.apache.commons.geometry.euclidean.twod.Vector2D;
 
 /** Standard calculations implemented in BigFloat.
  * Should be exact, up to BigFloat resolution.
@@ -67,7 +67,7 @@ public final class TriangleBF2 extends Triangle2D {
 
   public final boolean inCircleDistanceExact () { return true; }
 
-  public final BigFloat inCircleDistanceBF (final Vector2D p) {
+  public final BigFloat inCircleDistanceBF (final VectorD2 p) {
 
     final VectorBF2 p0 = VectorBF2.dif(p,getP0());
 
@@ -82,12 +82,12 @@ public final class TriangleBF2 extends Triangle2D {
     // TODO: reverse crossProducts
     return BigFloat.dot(p2,b2,c2,bxc,pxc,bxp); }
 
-  public final double inCircleDistance (final Vector2D p) {
+  public final double inCircleDistance (final VectorD2 p) {
     return inCircleDistanceBF(p).doubleValue(); }
 
   //--------------------------------------------------------------------
 
-  public final double inCircle (final Vector2D p) {
+  public final double inCircle (final VectorD2 p) {
 
     // TODO: BigFloatVector operations
     final VectorBF2 p0 = VectorBF2.dif(p,getP0());
@@ -111,14 +111,14 @@ public final class TriangleBF2 extends Triangle2D {
   // construction
   //--------------------------------------------------------------------
 
-  private TriangleBF2 (final Vector2D a,
-                       final Vector2D b,
-                       final Vector2D c)  {
+  private TriangleBF2 (final VectorD2 a,
+                       final VectorD2 b,
+                       final VectorD2 c)  {
     super(a,b,c); }
 
-  public static final Triangle2D of (final Vector2D a,
-                                     final Vector2D b,
-                                     final Vector2D c) {
+  public static final Triangle2D of (final VectorD2 a,
+                                     final VectorD2 b,
+                                     final VectorD2 c) {
     return new TriangleBF2(a, b, c); }
 
   /** Convert other triangle classes. */

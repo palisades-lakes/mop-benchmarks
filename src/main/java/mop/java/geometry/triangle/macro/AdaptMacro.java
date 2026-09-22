@@ -7,8 +7,8 @@ package mop.java.geometry.triangle.macro;
 // split into Expansion manipulation and fast, slow, exact, adaptive
 // algorithm classes
 
+import mop.java.geometry.euclidean.VectorD2;
 import mop.java.geometry.triangle.Triangle2D;
-import org.apache.commons.geometry.euclidean.twod.Vector2D;
 
 import static mop.java.geometry.Expansion.*;
 
@@ -31,9 +31,9 @@ public final class AdaptMacro extends Triangle2D {
   private static final double ccwerrboundC =
     (9.0 + 64.0 * EPSILON) * EPSILON * EPSILON;
 
-  public static final double twiceSignedArea (final Vector2D pa,
-                                              final Vector2D pb,
-                                              final Vector2D pc,
+  public static final double twiceSignedArea (final VectorD2 pa,
+                                              final VectorD2 pb,
+                                              final VectorD2 pc,
                                               final double detsum) {
     double acx, acy, bcx, bcy;
     double acxtail, acytail, bcxtail, bcytail;
@@ -339,13 +339,13 @@ public final class AdaptMacro extends Triangle2D {
   private static final double iccerrboundB =
     (4.0 + 48.0 * EPSILON) * EPSILON;
 
-  public final double inCircleDistance (final Vector2D p) {
+  public final double inCircleDistance (final VectorD2 p) {
     return DefaultMacro.of(getP0(),getP1(),getP2()).inCircleDistance(p); }
 
-  public static final double inCircle (final Vector2D pa,
-                                       final Vector2D pb,
-                                       final Vector2D pc,
-                                       final Vector2D pd,
+  public static final double inCircle (final VectorD2 pa,
+                                       final VectorD2 pb,
+                                       final VectorD2 pc,
+                                       final VectorD2 pd,
                                        final double permanent) {
     double adx, bdx, cdx, ady, bdy, cdy;
     double det, errbound;
@@ -1814,14 +1814,14 @@ public final class AdaptMacro extends Triangle2D {
   // construction
   //--------------------------------------------------------------------
 
-  private AdaptMacro (final Vector2D a,
-                      final Vector2D b,
-                      final Vector2D c)  {
+  private AdaptMacro (final VectorD2 a,
+                      final VectorD2 b,
+                      final VectorD2 c)  {
     super(a,b,c); }
 
-  public static final Triangle2D of (final Vector2D a,
-                                     final Vector2D b,
-                                     final Vector2D c) {
+  public static final Triangle2D of (final VectorD2 a,
+                                     final VectorD2 b,
+                                     final VectorD2 c) {
     return new AdaptMacro(a, b, c); }
 
   /** Convert other triangle classes. */

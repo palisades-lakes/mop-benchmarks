@@ -6,10 +6,10 @@ package mop.java.geometry.triangle.shewchuk;
 // split into Expansion manipulation and fast, slow, exact, adaptive
 // algorithm classes
 
+import mop.java.geometry.euclidean.VectorD2;
 import mop.java.geometry.triangle.Triangle2D;
 import mop.java.numbers.Hilo;
 import mop.java.numbers.XDouble;
-import org.apache.commons.geometry.euclidean.twod.Vector2D;
 
 /** Adaptive 'exact' tests. Robust.
  * 'Exact' seems to mean boolean predicate, that is, the sign of the
@@ -49,10 +49,10 @@ public final class Adapt extends Triangle2D {
              .add(axtbc.multiply(2*adx))
              .add(cc.multiply(adxtail).multiply(bdy)); }
 
-  private static final double inCircle (final Vector2D pa,
-                                        final Vector2D pb,
-                                        final Vector2D pc,
-                                        final Vector2D pd,
+  private static final double inCircle (final VectorD2 pa,
+                                        final VectorD2 pb,
+                                        final VectorD2 pc,
+                                        final VectorD2 pd,
                                         final double permanent) {
     // TODO: should this be Hilo.twoDiff? see calls to twoDiffTail below
     // TODO: convert to vector ops.
@@ -302,10 +302,10 @@ public final class Adapt extends Triangle2D {
 
   //--------------------------------------------------------------------
 
-  public final double inCircleDistance (final Vector2D pd) {
-    final Vector2D pa = getP0();
-    final Vector2D pb = getP1();
-    final Vector2D pc = getP2();
+  public final double inCircleDistance (final VectorD2 pd) {
+    final VectorD2 pa = getP0();
+    final VectorD2 pb = getP1();
+    final VectorD2 pc = getP2();
     final double adx = pa.getX() - pd.getX();
     final double ady = pa.getY() - pd.getY();
     final double alift = (adx * adx) + (ady * ady);
@@ -353,13 +353,13 @@ public final class Adapt extends Triangle2D {
   private static final double ccwerrboundC =
     (9.0 + 64.0 * EPSILON) * EPSILON * EPSILON;
 
-  private static final double twiceSignedArea (final Vector2D pa,
-                                               final Vector2D pb,
-                                               final Vector2D pc,
+  private static final double twiceSignedArea (final VectorD2 pa,
+                                               final VectorD2 pb,
+                                               final VectorD2 pc,
                                                final double detsum) {
     // TODO: difference vectors cached in Triangle object
-    final Vector2D ac = pa.subtract(pc);
-    final Vector2D bc = pb.subtract(pc);
+    final VectorD2 ac = pa.subtract(pc);
+    final VectorD2 bc = pb.subtract(pc);
     final double acx = ac.getX();
     final double acy = ac.getY();
     final double bcx = bc.getX();
@@ -405,13 +405,13 @@ public final class Adapt extends Triangle2D {
     (3.0 + 16.0 * EPSILON) * EPSILON;
 
   public final double twiceSignedArea () {
-    final Vector2D pa = getP0();
-    final Vector2D pb = getP1();
-    final Vector2D pc = getP2();
+    final VectorD2 pa = getP0();
+    final VectorD2 pb = getP1();
+    final VectorD2 pc = getP2();
 
     // TODO: difference vectors cached in Triangle object
-    final Vector2D ac = pa.subtract(pc);
-    final Vector2D bc = pb.subtract(pc);
+    final VectorD2 ac = pa.subtract(pc);
+    final VectorD2 bc = pb.subtract(pc);
 
     final double detleft = ac.getX() * bc.getY();
     final double detright = ac.getY() * bc.getX();
@@ -436,14 +436,14 @@ public final class Adapt extends Triangle2D {
   // construction
   //--------------------------------------------------------------------
 
-  private Adapt (final Vector2D a,
-                 final Vector2D b,
-                 final Vector2D c)  {
+  private Adapt (final VectorD2 a,
+                 final VectorD2 b,
+                 final VectorD2 c)  {
     super(a,b,c); }
 
-  public static final Triangle2D of (final Vector2D a,
-                                     final Vector2D b,
-                                     final Vector2D c) {
+  public static final Triangle2D of (final VectorD2 a,
+                                     final VectorD2 b,
+                                     final VectorD2 c) {
     return new Adapt(a, b, c); }
 
   /** Convert other triangle classes. */

@@ -1,24 +1,22 @@
 package mop.java.geometry.triangle;
 
-import org.apache.commons.geometry.euclidean.twod.Vector2D;
+import mop.java.geometry.euclidean.VectorD2;
 
-/** Minimal triangle with Vector2D vertices, nothing cached.
- * <b>
- * From org.locationtech.jts.triangulate.quadedge.TrianglePredicate
+/** Minimal triangle with VectorD2 vertices, nothing cached.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-09-17
+ * @version 2026-09-21
  */
 
-public final class LazyTriangle2D extends Triangle2D {
+public final class TriangleD2 extends Triangle2D {
 
   //--------------------------------------------------------------------
 
-  private static double triArea (final Vector2D a,
-                                 final Vector2D b,
-                                 final Vector2D c) {
+  private static double triArea (final VectorD2 a,
+                                 final VectorD2 b,
+                                 final VectorD2 c) {
     // TODO: cache difference vectors
-    return b.subtract(a).signedArea(c.subtract(a)); }
+    return b.subtract(a).wedge(c.subtract(a)); }
 
   //--------------------------------------------------------------------
   // orient2d
@@ -35,29 +33,29 @@ public final class LazyTriangle2D extends Triangle2D {
   // TODO: permute area calls to use cached differences?
 
   @Override
-  public final double inCircleDistance (final Vector2D p) {
-    // TODO: cache normSq?
-    final Vector2D a = getP0();
-    final Vector2D b = getP1();
-    final Vector2D c = getP2();
+  public final double inCircleDistance (final VectorD2 p) {
+    // TODO: cache l2norm2?
+    final VectorD2 a = getP0();
+    final VectorD2 b = getP1();
+    final VectorD2 c = getP2();
 
     return
-      a.normSq()*triArea(b,c,p) - b.normSq()*triArea(a,c,p)
-        + c.normSq()*triArea(a,b,p) - p.normSq()*triArea(a,b,c); }
+      a.l2norm2()*triArea(b,c,p) - b.l2norm2()*triArea(a,c,p)
+        + c.l2norm2()*triArea(a,b,p) - p.l2norm2()*triArea(a,b,c); }
 
   //--------------------------------------------------------------------
   // construction
   //--------------------------------------------------------------------
 
-  private LazyTriangle2D (final Vector2D a,
-                          final Vector2D b,
-                          final Vector2D c)  {
+  private TriangleD2 (final VectorD2 a,
+                      final VectorD2 b,
+                      final VectorD2 c)  {
     super(a,b,c); }
 
-  public static final Triangle2D of (final Vector2D a,
-                                     final Vector2D b,
-                                     final Vector2D c) {
-    return new LazyTriangle2D(a, b, c); }
+  public static final Triangle2D of (final VectorD2 a,
+                                     final VectorD2 b,
+                                     final VectorD2 c) {
+    return new TriangleD2(a, b, c); }
 
   /** Convert other triangle classes. */
 

@@ -6,8 +6,8 @@ package mop.java.geometry.triangle.macro;
 // split into Expansion manipulation and fast, slow, exact, adaptive
 // algorithm classes
 
+import mop.java.geometry.euclidean.VectorD2;
 import mop.java.geometry.triangle.Triangle2D;
-import org.apache.commons.geometry.euclidean.twod.Vector2D;
 
 /**
  *
@@ -23,9 +23,9 @@ public final class FastMacro extends Triangle2D {
   //--------------------------------------------------------------------
 
   public final double twiceSignedArea () {
-    final Vector2D pa = getP0();
-    final Vector2D pb = getP1();
-    final Vector2D pc = getP2();
+    final VectorD2 pa = getP0();
+    final VectorD2 pb = getP1();
+    final VectorD2 pc = getP2();
     final double acx = pa.getX() - pc.getX();
     final double bcx = pb.getX() - pc.getX();
     final double acy = pa.getY() - pc.getY();
@@ -36,10 +36,10 @@ public final class FastMacro extends Triangle2D {
   // inCircle
   //--------------------------------------------------------------------
 
-  public final double inCircleDistance (final Vector2D p) {
-    final Vector2D pa = getP0();
-    final Vector2D pb = getP1();
-    final Vector2D pc = getP2();
+  public final double inCircleDistance (final VectorD2 p) {
+    final VectorD2 pa = getP0();
+    final VectorD2 pb = getP1();
+    final VectorD2 pc = getP2();
     double adx, ady, bdx, bdy, cdx, cdy;
     double abdet, bcdet, cadet;
     double alift, blift, clift;
@@ -64,14 +64,14 @@ public final class FastMacro extends Triangle2D {
   // construction
   //--------------------------------------------------------------------
 
-  private FastMacro (final Vector2D a,
-                     final Vector2D b,
-                     final Vector2D c)  {
+  private FastMacro (final VectorD2 a,
+                     final VectorD2 b,
+                     final VectorD2 c)  {
     super(a,b,c); }
 
-  public static final Triangle2D of (final Vector2D a,
-                                     final Vector2D b,
-                                     final Vector2D c) {
+  public static final Triangle2D of (final VectorD2 a,
+                                     final VectorD2 b,
+                                     final VectorD2 c) {
     return new FastMacro(a, b, c); }
 
   /** Convert other triangle classes. */

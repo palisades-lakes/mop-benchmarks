@@ -1,12 +1,12 @@
 package mop.java.geometry.triangle.jts;
 
+import mop.java.geometry.euclidean.VectorD2;
 import mop.java.geometry.triangle.Triangle2D;
-import org.apache.commons.geometry.euclidean.twod.Vector2D;
 
 /** From org.locationtech.jts.triangulate.quadedge.TrianglePredicate
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-07-27
+ * @version 2026-09-21
  */
 
 public final class DoubleNonRobust extends Triangle2D {
@@ -20,9 +20,9 @@ public final class DoubleNonRobust extends Triangle2D {
    * @param b a vertex of the triangle
    * @param c a vertex of the triangle
    */
-  private static double triArea (final Vector2D a,
-                                 final Vector2D b,
-                                 final Vector2D c) {
+  private static double triArea (final VectorD2 a,
+                                 final VectorD2 b,
+                                 final VectorD2 c) {
     // TODO: cache difference vectors
     return
       (b.getX() - a.getX()) * (c.getY() - a.getY())
@@ -42,16 +42,16 @@ public final class DoubleNonRobust extends Triangle2D {
   //--------------------------------------------------------------------
   /** TrianglePredicate.isInCircleNonRobust.
    */
-  public final double inCircleDistance (final Vector2D p) {
-    final Vector2D pa = getP0();
-    final Vector2D pb = getP1();
-    final Vector2D pc = getP2();
+  public final double inCircleDistance (final VectorD2 p) {
+    final VectorD2 pa = getP0();
+    final VectorD2 pb = getP1();
+    final VectorD2 pc = getP2();
 
     return
-      (pa.normSq()*triArea(pb,pc,p))
-        - pb.normSq()*triArea(pa,pc,p)
-        + pc.normSq()*triArea(pa,pb,p)
-        - p.normSq()*triArea(pa,pb,pc); }
+      (pa.l2norm2()*triArea(pb,pc,p))
+        - pb.l2norm2()*triArea(pa,pc,p)
+        + pc.l2norm2()*triArea(pa,pb,p)
+        - p.l2norm2()*triArea(pa,pb,pc); }
 //  return
 //    (pa.getX()*pa.getX() + pa.getY()*pa.getY())*triArea(pb,pc,p)
 //      - (pb.getX()*pb.getX() + pb.getY()*pb.getY())*triArea(pa,pc,p)
@@ -62,14 +62,14 @@ public final class DoubleNonRobust extends Triangle2D {
   // construction
   //--------------------------------------------------------------------
 
-  private DoubleNonRobust (final Vector2D a,
-                           final Vector2D b,
-                           final Vector2D c)  {
+  private DoubleNonRobust (final VectorD2 a,
+                           final VectorD2 b,
+                           final VectorD2 c)  {
     super(a,b,c); }
 
-  public static final Triangle2D of (final Vector2D a,
-                                     final Vector2D b,
-                                     final Vector2D c) {
+  public static final Triangle2D of (final VectorD2 a,
+                                     final VectorD2 b,
+                                     final VectorD2 c) {
     return new DoubleNonRobust(a,b,c); }
 
   /** Convert other triangle classes. */

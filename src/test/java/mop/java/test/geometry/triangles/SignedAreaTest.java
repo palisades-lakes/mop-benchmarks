@@ -1,12 +1,12 @@
 package mop.java.test.geometry.triangles;
 
 import mop.java.geometry.Generators;
+import mop.java.geometry.euclidean.VectorD2;
 import mop.java.geometry.triangle.Triangle2D;
-import mop.java.geometry.triangle.TriangleVector2DLazy;
+import mop.java.geometry.triangle.TriangleD2Lazy;
 import mop.java.numbers.Doubles;
 import mop.java.prng.Generator;
 import mop.java.prng.PRNG;
-import org.apache.commons.geometry.euclidean.twod.Vector2D;
 import org.apache.commons.rng.UniformRandomProvider;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -26,7 +26,8 @@ public final class SignedAreaTest extends TriangleTest {
   //--------------------------------------------------------------
 
   private static final void reverseSignedArea (final Triangle2D t0) {
-    final Triangle2D t1 = TriangleVector2DLazy.of(t0.getP0(), t0.getP2(), t0.getP1());
+    final Triangle2D
+      t1 = TriangleD2Lazy.of(t0.getP0(), t0.getP2(), t0.getP1());
     final Triangle2D plus = Triangle2D.truth(t0);
     final double aplus = plus.twiceSignedArea();
     final Triangle2D minus = Triangle2D.truth(t1);
@@ -60,45 +61,45 @@ public final class SignedAreaTest extends TriangleTest {
 
   @Test
   public final void testSignedArea () {
-    final Vector2D p0 = Vector2D.of( 0.0, 0.0);
-    final Vector2D p1 = Vector2D.of( 1.0, 1.0);
-    final Vector2D p2 = Vector2D.of( -1.0, 1.0);
-    final Vector2D p3 = Vector2D.of( -1.0, -1.0);
+    final VectorD2 p0 = new VectorD2( 0.0, 0.0);
+    final VectorD2 p1 = new VectorD2( 1.0, 1.0);
+    final VectorD2 p2 = new VectorD2( -1.0, 1.0);
+    final VectorD2 p3 = new VectorD2( -1.0, -1.0);
 
-    signedArea(TriangleVector2DLazy.of(p0, p1, p2));
+    signedArea(TriangleD2Lazy.of(p0, p1, p2));
     // reverse
-    signedArea(TriangleVector2DLazy.of(p1, p0, p2));
+    signedArea(TriangleD2Lazy.of(p1, p0, p2));
     // 1 pt singular
-    signedArea(TriangleVector2DLazy.of(p0, p0, p0));
+    signedArea(TriangleD2Lazy.of(p0, p0, p0));
     // 2 pt line segment
-    signedArea(TriangleVector2DLazy.of(p0, p2, p0));
-    signedArea(TriangleVector2DLazy.of(p0, p0, p2));
+    signedArea(TriangleD2Lazy.of(p0, p2, p0));
+    signedArea(TriangleD2Lazy.of(p0, p0, p2));
     // Co-linear triangle
-    signedArea(TriangleVector2DLazy.of(p0, p1, p3));
+    signedArea(TriangleD2Lazy.of(p0, p1, p3));
   }
 
   //--------------------------------------------------------------
 
   private static  final void epsilonSignedArea (final double a) {
     // see https://groups.csail.mit.edu/graphics/classes/6.838/S98/meetings/m12/pred/m12.html
-    final Vector2D p0 = Vector2D.of( a, 0.0);
-    final Vector2D p1 = Vector2D.of( Math.nextUp(a), 0x1.0p10);
-    final Vector2D p2 = Vector2D.of( Math.nextDown(a), 0x1.0p10);
-    final Vector2D p3 = Vector2D.of( a, 1.0);
+    final VectorD2 p0 = new VectorD2( a, 0.0);
+    final VectorD2 p1 = new VectorD2( Math.nextUp(a), 0x1.0p10);
+    final VectorD2 p2 = new VectorD2( Math.nextDown(a), 0x1.0p10);
+    final VectorD2 p3 = new VectorD2( a, 1.0);
 
 //    System.out.println("p0=" + Triangle2D.toHexString(p0));
 //    System.out.println("p1=" + Triangle2D.toHexString(p1));
 //    System.out.println("p2=" + Triangle2D.toHexString(p2));
 //    System.out.println("p3=" + Triangle2D.toHexString(p3));
 
-    final Triangle2D t013 = TriangleVector2DLazy.of(p0, p1, p3);
-//    final Triangle2D bf013 = BigFloatTriangle2D.from(t013);
+    final Triangle2D t013 = TriangleD2Lazy.of(p0, p1, p3);
+//    final Triangle2D bf013 = TriangleBF2.from(t013);
 //    System.out.println("bf013=" + bf013);
 //    System.out.println(Double.toHexString(bf013.twiceSignedArea()));
     signedArea(t013);
 
-    final Triangle2D t023 = TriangleVector2DLazy.of(p0, p2, p3);
-//    final Triangle2D bf023 = BigFloatTriangle2D.from(t023);
+    final Triangle2D t023 = TriangleD2Lazy.of(p0, p2, p3);
+//    final Triangle2D bf023 = TriangleBF2.from(t023);
 //    System.out.println("bf023=" + bf023);
 //    System.out.println(Double.toHexString(bf023.twiceSignedArea()));
     signedArea(t023);
@@ -122,7 +123,7 @@ public final class SignedAreaTest extends TriangleTest {
     final Generator laplaceGenerator =
       Doubles.laplaceGenerator(urp, 0.0, 1.0);
     final Generator vGenerator =
-      Generators.vector2dGenerator(laplaceGenerator);
+      Generators.vectorD2Generator(laplaceGenerator);
     final Generator tGenerator = Generators.triangleGenerator(n,vGenerator);
     final Triangle2D[] t = (Triangle2D[]) tGenerator.next();
     for (int i = 0; i < n; i++) {  signedArea(t[i]); } }

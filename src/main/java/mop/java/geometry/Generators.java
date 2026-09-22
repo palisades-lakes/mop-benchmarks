@@ -1,15 +1,13 @@
 package mop.java.geometry;
 
+import mop.java.geometry.euclidean.VectorD2;
 import mop.java.geometry.tetrahedron.Tetrahedron3D;
 import mop.java.geometry.tetrahedron.TetrahedronVector3D;
 import mop.java.geometry.triangle.Triangle2D;
-import mop.java.geometry.triangle.TriangleVector2DLazy;
+import mop.java.geometry.triangle.TriangleD2;
 import mop.java.prng.Generator;
 import mop.java.prng.GeneratorBase;
 import org.apache.commons.geometry.euclidean.threed.Vector3D;
-import org.apache.commons.geometry.euclidean.twod.Vector2D;
-import org.apache.commons.geometry.euclidean.twod.shape.Circle;
-import org.apache.commons.numbers.core.Precision;
 
 import java.util.function.Function;
 
@@ -27,7 +25,7 @@ public final class Generators {
   // TODO:
   // Constructors for:
   // <ol>
-  // <li> org.apache.commons.geometry.euclidean.twod.Vector2D
+  // <li> mop.java.geometry.euclidean.VectorD2;
   // <li> org.apache.commons.geometry.euclidean.twod.Segment
   // <li> 2d Triangle general
   // <li> 2d Triangle approx co-linear
@@ -56,70 +54,44 @@ public final class Generators {
   //                     final double sigma)
   //--------------------------------------------------------------
   //  public static final Function<double[], Object>
-  //    vector2D = Vector2D::of;
+  //    vector2D = VectorD2::of;
 
   public static final Generator
-  vector2dGenerator (final Generator doubleGenerator) {
+  vectorD2Generator (final Generator doubleGenerator) {
     // TODO: named local class rather than anonymous with name?
-    return new GeneratorBase("vector2dGenerator") {
+    return new GeneratorBase("vectorD2Generator") {
       @Override
       public final Object next () {
         final double x = doubleGenerator.nextDouble();
         final double y = doubleGenerator.nextDouble();
-        return Vector2D.of(x, y); } }; }
+        return new VectorD2(x, y); } }; }
 
   public static final Generator
-  vector2dGenerator (final int n,
+  vectorD2Generator (final int n,
                      final Generator doubleGenerator) {
-    return new GeneratorBase("vector2dGenerator[" + n + "]") {
-      final Generator vGenerator = vector2dGenerator(doubleGenerator);
+    return new GeneratorBase("vectorD2Generator[" + n + "]") {
+      final Generator vGenerator = vectorD2Generator(doubleGenerator);
       @Override
       public final Object next () {
-        final Vector2D[] p =  new Vector2D[n];
+        final VectorD2[] p =  new VectorD2[n];
         for (int i = 0; i < n; i++) {
-          p[i] = (Vector2D) vGenerator.next(); }
+          p[i] = (VectorD2) vGenerator.next(); }
         return p; } }; }
 
   public static final Generator
-  vector2dGenerator (final int m,
+  vectorD2Generator (final int m,
                      final int n,
                      final Generator doubleGenerator) {
     return new GeneratorBase(
-      "vector2dGenerator[" + m + "," +n + "]") {
-      final Generator vGenerator = vector2dGenerator(doubleGenerator);
+      "vectorD2Generator[" + m + "," +n + "]") {
+      final Generator vGenerator = vectorD2Generator(doubleGenerator);
       @Override
       public final Object next () {
-        final Vector2D[][] p =  new Vector2D[m][n];
+        final VectorD2[][] p =  new VectorD2[m][n];
         for (int i = 0; i < m; i++) {
           for (int j=0;j<n;j++) {
-            p[i][j] = (Vector2D) vGenerator.next(); } }
+            p[i][j] = (VectorD2) vGenerator.next(); } }
         return p; } }; }
-
-  //--------------------------------------------------------------
-
-  public static final Generator
-  circleGenerator (final Generator centerGenerator,
-                   final Generator radiusGenerator) {
-    // TODO: named local class rather than anonymous with name?
-    return new GeneratorBase("circleGenerator") {
-      @Override
-      public final Object next () {
-        final Vector2D center = (Vector2D) centerGenerator.next();
-        final double radius = radiusGenerator.nextDouble();
-        final Precision.DoubleEquivalence precision =
-          Precision.doubleEquivalenceOfEpsilon(0.0);
-        return Circle.from(center,radius,precision); } }; }
-
-//  public static final Generator
-//  circleGenerator (final int n,
-//                     final Generator circleGenerator) {
-//    return new GeneratorBase("circleGenerator[" + n + "]") {
-//      @Override
-//      public final Object next () {
-//        final Circle[] p =  new Circle[n];
-//        for (int i = 0; i < n; i++) {
-//          p[i] = (Circle) circleGenerator.next(); }
-//        return p; } }; }
 
   //--------------------------------------------------------------
 
@@ -129,10 +101,10 @@ public final class Generators {
     return new GeneratorBase("triangleGenerator") {
       @Override
       public final Object next () {
-        final Vector2D p0 = (Vector2D) vectorGenerator.next();
-        final Vector2D p1 = (Vector2D) vectorGenerator.next();
-        final Vector2D p2 = (Vector2D) vectorGenerator.next();
-        return TriangleVector2DLazy.of(p0, p1, p2); } }; }
+        final VectorD2 p0 = (VectorD2) vectorGenerator.next();
+        final VectorD2 p1 = (VectorD2) vectorGenerator.next();
+        final VectorD2 p2 = (VectorD2) vectorGenerator.next();
+        return TriangleD2.of(p0, p1, p2); } }; }
 
   public static final Generator
   triangleGenerator (final int n,
@@ -147,7 +119,7 @@ public final class Generators {
         return p; } }; }
 
   public static final Generator
-  triangleGenerator (final Function<Triangle2D,Triangle2D> converter,
+  triangleGenerator (final Function<Triangle2D, Triangle2D> converter,
                      Generator vectorGenerator) {
     final Generator tGenerator = triangleGenerator(vectorGenerator);
     return new GeneratorBase(converter + " * triangleGenerator") {
@@ -157,7 +129,7 @@ public final class Generators {
 
   public static final Generator
   triangleGenerator (final int n,
-                     final Function<Triangle2D,Triangle2D> converter,
+                     final Function<Triangle2D, Triangle2D> converter,
                      final Generator vectorGenerator) {
     return new GeneratorBase(
       converter + " * triangleGenerator[" + n + "]") {
@@ -172,16 +144,16 @@ public final class Generators {
 
   //--------------------------------------------------------------
 
-  private static final Vector2D fmaAffine (final double a,
-                                           final Vector2D p0,
-                                           final Vector2D p1) {
+  private static final VectorD2 fmaAffine (final double a,
+                                           final VectorD2 p0,
+                                           final VectorD2 p1) {
     final double x1 = p1.getX();
     final double y1 = p1.getY();
     final double dx = p0.getX() - x1;
     final double dy = p0.getY() - y1;
     final double x2 = Math.fma(a,dx,x1);
     final double y2 = Math.fma(a,dy,y1);
-    return Vector2D.of(x2,y2); }
+    return new VectorD2(x2,y2); }
 
   //--------------------------------------------------------------
 
@@ -192,12 +164,12 @@ public final class Generators {
     return new GeneratorBase("colinearTriangleGenerator") {
       @Override
       public final Object next () {
-        final Vector2D p0 = (Vector2D) vectorGenerator.next();
-        final Vector2D p1 = (Vector2D) vectorGenerator.next();
+        final VectorD2 p0 = (VectorD2) vectorGenerator.next();
+        final VectorD2 p1 = (VectorD2) vectorGenerator.next();
         final double a = doubleGenerator.nextDouble();
-        //final Vector2D p2 = p0.multiply(a).add(1.0-a,p1);
-        final Vector2D p2 = fmaAffine(a,p0,p1);
-        return TriangleVector2DLazy.of(p0, p1, p2); } }; }
+        //final VectorD2 p2 = p0.multiply(a).add(1.0-a,p1);
+        final VectorD2 p2 = fmaAffine(a,p0,p1);
+        return TriangleD2.of(p0, p1, p2); } }; }
 
   public static final Generator
   colinearTriangleGenerator (final int n,

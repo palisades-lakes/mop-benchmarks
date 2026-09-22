@@ -2,7 +2,7 @@ package mop.java.numbers;
 
 import com.carrotsearch.hppc.DoubleArrayList;
 import com.carrotsearch.hppc.procedures.DoubleProcedure;
-import org.apache.commons.geometry.euclidean.twod.Vector2D;
+import mop.java.geometry.euclidean.VectorD2;
 
 /** Major difference from predicates.c is attempt to handle
  * non-finite values, under- and over-flow, etc.
@@ -931,7 +931,7 @@ public final class XDouble
                                        final double y) {
     return sum(Hilo.square(x), Hilo.square(y)); }
 
-  public static final XDouble l2norm2 (final Vector2D v) {
+  public static final XDouble l2norm2 (final VectorD2 v) {
     return l2norm2(v.getX(), v.getY()); }
 
   public static final XDouble crossProduct (final double x0,
@@ -942,8 +942,8 @@ public final class XDouble
     final Hilo x1y0 = Hilo.product(x1,y0);
     return subtract(x0y1, x1y0); }
 
-  public static final XDouble crossProduct (final Vector2D a,
-                                            final Vector2D b) {
+  public static final XDouble crossProduct (final VectorD2 a,
+                                            final VectorD2 b) {
     // TODO: next breaks Exact.inCircle!?
 //    return crossProduct(a[0],a[1],b[0],b[1]); }
     final XDouble axby = product(a.getX(), b.getY());

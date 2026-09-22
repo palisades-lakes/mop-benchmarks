@@ -1,9 +1,9 @@
 package mop.java.geometry.triangle.shewchuk;
 
+import mop.java.geometry.euclidean.VectorD2;
 import mop.java.geometry.triangle.Triangle2D;
 import mop.java.numbers.Hilo;
 import mop.java.numbers.XDouble;
-import org.apache.commons.geometry.euclidean.twod.Vector2D;
 
 /** Exact tests.  Robust.
  * Precompute triangle properties used by inCircle.
@@ -44,9 +44,9 @@ public final class ExactCache extends Triangle2D {
 
   public final double twiceSignedArea () {
 
-    final Vector2D a = getP0();
-    final Vector2D b = getP1();
-    final Vector2D c = getP2();
+    final VectorD2 a = getP0();
+    final VectorD2 b = getP1();
+    final VectorD2 c = getP2();
 
     // TODO: XDouble.crossProduct
     final Hilo axby = Hilo.product(a.getX(),b.getY());
@@ -67,7 +67,7 @@ public final class ExactCache extends Triangle2D {
 
   //--------------------------------------------------------------------
 
-  private static final XDouble det (final Vector2D a,
+  private static final XDouble det (final VectorD2 a,
                                     final boolean subtractFlag,
                                     final XDouble bc,
                                     final XDouble cd,
@@ -86,10 +86,10 @@ public final class ExactCache extends Triangle2D {
 
   public final boolean inCircleDistanceExact () { return true; }
 
-  public final double inCircleDistance (final Vector2D p) {
-    final Vector2D a = getP0();
-    final Vector2D b = getP1();
-    final Vector2D c = getP2();
+  public final double inCircleDistance (final VectorD2 p) {
+    final VectorD2 a = getP0();
+    final VectorD2 b = getP1();
+    final VectorD2 c = getP2();
 
     final XDouble axb = getAxB();
     final XDouble bxc = getBxC();
@@ -112,14 +112,14 @@ public final class ExactCache extends Triangle2D {
   // construction
   //--------------------------------------------------------------------
 
-  private ExactCache (final Vector2D a,
-                      final Vector2D b,
-                      final Vector2D c)  {
+  private ExactCache (final VectorD2 a,
+                      final VectorD2 b,
+                      final VectorD2 c)  {
     super(a,b,c); }
 
-  public static final Triangle2D of (final Vector2D a,
-                                     final Vector2D b,
-                                     final Vector2D c) {
+  public static final Triangle2D of (final VectorD2 a,
+                                     final VectorD2 b,
+                                     final VectorD2 c) {
     return new ExactCache(a, b, c); }
 
   /** Convert other triangle classes. */

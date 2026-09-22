@@ -1,15 +1,17 @@
 package mop.java.scripts.triangles;
 
 import mop.java.geometry.Generators;
-import mop.java.geometry.triangle.*;
+import mop.java.geometry.euclidean.VectorD2;
+import mop.java.geometry.triangle.RelaxedIntervalTriangle2D;
+import mop.java.geometry.triangle.RoundingIntervalTriangle2D;
+import mop.java.geometry.triangle.ShewchukIntervalTriangle2D;
+import mop.java.geometry.triangle.TriangleBF2;
 import mop.java.numbers.BigFloat;
+import mop.java.numbers.Doubles;
 import mop.java.numbers.RelaxedInterval;
 import mop.java.numbers.RoundingInterval;
-import mop.java.numbers.Doubles;
 import mop.java.prng.Generator;
 import mop.java.prng.PRNG;
-import org.apache.commons.geometry.euclidean.twod.Vector2D;
-import org.apache.commons.geometry.euclidean.twod.shape.Circle;
 
 /** TODO: worth creating 'exact' cocircular points represented
  *    by: <code>center, radius, angle</code>?
@@ -17,19 +19,13 @@ import org.apache.commons.geometry.euclidean.twod.shape.Circle;
  * mvn -q clean install && j src/scripts/java/mop/java/scripts/triangles/CocircularTrials.java
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-14
+ * @version 2026-09-21
  */
 
 public final class CocircularTrials {
 
   //--------------------------------------------------------------
 
-  /** Project <code>p</code> onto (the boundary of) <code>c</code>. */
-  private static final Vector2D project (final Circle c,
-                                         final Vector2D p) {
-    return c.project(p); }
-
-//--------------------------------------------------------------
 
   public static final void
   cocircularTrials () {
@@ -39,16 +35,14 @@ public final class CocircularTrials {
     final double rLambda = 1.0;
     final double pMu = 0.0;
     final double pSigma = 3.0;
-    final Generator centerGenerator = Generators.vector2dGenerator(
+    final Generator centerGenerator = Generators.vectorD2Generator(
       Doubles.laplaceGenerator(
         PRNG.well44497b("seeds/Well44497b-2019-01-07.txt"),
         cMu, cSigma));
     final Generator radiusGenerator = Doubles.exponentialGenerator(
       PRNG.well44497b("seeds/Well44497b-2019-01-09.txt"),
       rLambda);
-    final Generator circleGenerator =
-      Generators.circleGenerator(centerGenerator,radiusGenerator);
-    final Generator pointGenerator = Generators.vector2dGenerator(
+    final Generator pointGenerator = Generators.vectorD2Generator(
       Doubles.laplaceGenerator(
         PRNG.well44497b("seeds/Well44497b-2019-01-11.txt"),
         pMu, pSigma));
@@ -68,15 +62,16 @@ public final class CocircularTrials {
     int nsibf = 0;
     int nsibfd = 0;
     for (int i=0;i<ntriangles;i++) {
-      final Circle c = (Circle) circleGenerator.next();
-      final Vector2D p0 = project(c,(Vector2D) pointGenerator.next());
-      final Vector2D p1 = project(c,(Vector2D) pointGenerator.next());
-      final Vector2D p2 = project(c,(Vector2D) pointGenerator.next());
-      final BigFloatTriangle2D t =
-        (BigFloatTriangle2D) BigFloatTriangle2D.of(p0,p1,p2);
+      final VectorD2 c = (VectorD2) centerGenerator.next();
+      final double r = radiusGenerator.nextDouble();
+      final VectorD2 p0 = ((VectorD2) pointGenerator.next()).project(c,r);
+      final VectorD2 p1 = ((VectorD2) pointGenerator.next()).project(c,r);
+      final VectorD2 p2 = ((VectorD2) pointGenerator.next()).project(c,r);
+      final TriangleBF2 t =
+        (TriangleBF2) TriangleBF2.of(p0,p1,p2);
       for (int j=0;j<npoints;j++) {
         ntrys++;
-        final Vector2D p = project(c,(Vector2D) pointGenerator.next());
+        final VectorD2 p = ((VectorD2) pointGenerator.next()).project(c,r);
         final BigFloat bf = t.inCircleDistanceBF(p);
         final double bfd = bf.doubleValue();
         if (bf.isZero()) { nexact++; }

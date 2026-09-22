@@ -1,6 +1,7 @@
 package mop.java.scripts.triangles;
 
 import mop.java.geometry.Generators;
+import mop.java.geometry.euclidean.VectorD2;
 import mop.java.geometry.triangle.*;
 import mop.java.numbers.BigFloat;
 import mop.java.numbers.Doubles;
@@ -9,7 +10,6 @@ import mop.java.numbers.RoundingInterval;
 import mop.java.prng.Generator;
 import mop.java.prng.GeneratorBase;
 import mop.java.prng.PRNG;
-import org.apache.commons.geometry.euclidean.twod.Vector2D;
 
 /** TODO: worth creating 'exact' colinear points represented
  *    by implied affine combination: <code>a,p0,p1</code>?
@@ -24,25 +24,25 @@ public final class ColinearTrials {
 
   //--------------------------------------------------------------
 
-//  private static final Vector2D fmaAffine (final double a,
-//                                           final Vector2D p0,
-//                                           final Vector2D p1) {
+//  private static final VectorD2 fmaAffine (final double a,
+//                                           final VectorD2 p0,
+//                                           final VectorD2 p1) {
 //    final double x1 = p1.getX();
 //    final double y1 = p1.getY();
 //    final double dx = p0.getX() - x1;
 //    final double dy = p0.getY() - y1;
 //    final double x2 = Math.fma(a,dx,x1);
 //    final double y2 = Math.fma(a,dy,y1);
-//    return Vector2D.of(x2,y2); }
+//    return new VectorD2(x2,y2); }
 
-  private static final Vector2D bfAffine (final double a,
-                                           final Vector2D p0,
-                                           final Vector2D p1) {
+  private static final VectorD2 bfAffine (final double a,
+                                           final VectorD2 p0,
+                                           final VectorD2 p1) {
     final BigFloat dx = BigFloat.sum(p0.getX(),-p1.getX());
     final BigFloat dy = BigFloat.sum(p0.getY(),-p1.getY());
     final BigFloat x2 = BigFloat.axpy(a,dx,p1.getX());
     final BigFloat y2 = BigFloat.axpy(a,dy,p1.getY());
-    return Vector2D.of(x2.doubleValue(),y2.doubleValue()); }
+    return new VectorD2(x2.doubleValue(),y2.doubleValue()); }
 
   private static final Generator
   colinearTriangleGenerator (final Generator vectorGenerator,
@@ -51,13 +51,13 @@ public final class ColinearTrials {
     return new GeneratorBase("colinearTriangleGenerator") {
       @Override
       public final Object next () {
-        final Vector2D p0 = (Vector2D) vectorGenerator.next();
-        final Vector2D p1 = (Vector2D) vectorGenerator.next();
+        final VectorD2 p0 = (VectorD2) vectorGenerator.next();
+        final VectorD2 p1 = (VectorD2) vectorGenerator.next();
         final double a = doubleGenerator.nextDouble();
-        //final Vector2D p2 = p0.multiply(a).add(1.0-a,p1);
-        //final Vector2D p2 = fmaAffine(a,p0,p1);
-        final Vector2D p2 = bfAffine(a,p0,p1);
-        return TriangleVector2DLazy.of(p0, p1, p2); } }; }
+        //final VectorD2 p2 = p0.multiply(a).add(1.0-a,p1);
+        //final VectorD2 p2 = fmaAffine(a,p0,p1);
+        final VectorD2 p2 = bfAffine(a,p0,p1);
+        return TriangleD2Lazy.of(p0, p1, p2); } }; }
 
 //--------------------------------------------------------------
 
@@ -70,7 +70,7 @@ public final class ColinearTrials {
     final double aSigma = 3.0;
     final Generator colinearGenerator =
       colinearTriangleGenerator(
-        Generators.vector2dGenerator(
+        Generators.vectorD2Generator(
           Doubles.laplaceGenerator(
             PRNG.well44497b("seeds/Well44497b-2019-01-07.txt"),
             pMu, pSigma)),
@@ -91,9 +91,9 @@ public final class ColinearTrials {
     int nsibf = 0;
     int nsibfd = 0;
     for (int i=0;i<ntriangles;i++) {
-      final BigFloatTriangle2D t =
-        (BigFloatTriangle2D)
-          BigFloatTriangle2D.from(
+      final TriangleBF2 t =
+        (TriangleBF2)
+          TriangleBF2.from(
             (Triangle2D) colinearGenerator.next());
       final BigFloat bf = t.getV20xV10();
       final double bfd = bf.doubleValue();

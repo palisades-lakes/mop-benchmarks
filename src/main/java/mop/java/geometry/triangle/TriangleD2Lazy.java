@@ -1,43 +1,43 @@
 package mop.java.geometry.triangle;
 
-import org.apache.commons.geometry.euclidean.twod.Vector2D;
+import mop.java.geometry.euclidean.VectorD2;
 
-/** Minimal triangle with Vector2D vertices, caching reusable values.
+/** Minimal triangle with VectorD2 vertices, caching reusable values.
  *
  * @author palisades dot lakes at gmail dot com,
  * @version 2026-09-21
  */
 
-public final class TriangleVector2DLazy extends Triangle2D {
+public final class TriangleD2Lazy extends Triangle2D {
 
   // cache vector result of translating p0 to origin,
   // and related quantities
 
-  private Vector2D _v10;
-  private final Vector2D getV10 () {
+  private VectorD2 _v10;
+  private final VectorD2 getV10 () {
     if (null == _v10) { _v10 = getP1().subtract(getP0()); }
     return _v10; }
 
   private double _v10Norm2 = Double.NaN;
   private final double getV10Norm2 () {
     // TODO: what if computed norm is NaN?
-    if (Double.isNaN(_v10Norm2)) { _v10Norm2 = getV10().normSq(); }
+    if (Double.isNaN(_v10Norm2)) { _v10Norm2 = getV10().l2norm2(); }
     return _v10Norm2; }
 
-  private Vector2D _v20;
-  private final Vector2D getV20 () {
+  private VectorD2 _v20;
+  private final VectorD2 getV20 () {
     if (null == _v20) { _v20 = getP2().subtract(getP0()); }
     return _v20; }
 
   private double _v20Norm2 = Double.NaN;
   private final double getV20Norm2 () {
     // TODO: what if computed norm is NaN?
-    if (Double.isNaN(_v20Norm2)) { _v20Norm2 = getV20().normSq(); }
+    if (Double.isNaN(_v20Norm2)) { _v20Norm2 = getV20().l2norm2(); }
     return _v20Norm2; }
 
   /** AKA wedge product, cross product (in 3D), ... */
-  private static final double wedge (final Vector2D v0,
-                                        final Vector2D v1) {
+  private static final double wedge (final VectorD2 v0,
+                                        final VectorD2 v1) {
     // TODO: more accurate version via fma?
     return (v0.getX()*v1.getY()) - (v0.getY()*v1.getX()); }
 
@@ -67,15 +67,15 @@ public final class TriangleVector2DLazy extends Triangle2D {
 
   public final boolean inCircleDistanceExact () { return false; }
 
-  public final double inCircleDistance (final Vector2D p) {
+  public final double inCircleDistance (final VectorD2 p) {
 
-    final Vector2D vp0 = p.subtract(getP0());
+    final VectorD2 vp0 = p.subtract(getP0());
 
     final double bxp = wedge(getV10(),vp0);
     final double bxc = getV20xV10();
     final double pxc = wedge(vp0,getV20());
 
-    final double p2 = vp0.normSq();
+    final double p2 = vp0.l2norm2();
     final double b2 = getV10Norm2();
     final double c2 = getV20Norm2();
 
@@ -85,15 +85,15 @@ public final class TriangleVector2DLazy extends Triangle2D {
   // construction
   //--------------------------------------------------------------------
 
-  private TriangleVector2DLazy (final Vector2D a,
-                                final Vector2D b,
-                                final Vector2D c)  {
+  private TriangleD2Lazy (final VectorD2 a,
+                          final VectorD2 b,
+                          final VectorD2 c)  {
     super(a,b,c); }
 
-  public static final Triangle2D of (final Vector2D a,
-                                     final Vector2D b,
-                                     final Vector2D c) {
-    return new TriangleVector2DLazy(a, b, c); }
+  public static final Triangle2D of (final VectorD2 a,
+                                     final VectorD2 b,
+                                     final VectorD2 c) {
+    return new TriangleD2Lazy(a, b, c); }
 
   /** Convert other triangle classes. */
 

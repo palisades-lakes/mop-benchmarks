@@ -1,7 +1,7 @@
 package mop.java.geometry.triangle;
 
+import mop.java.geometry.euclidean.VectorD2;
 import mop.java.numbers.RationalFloat;
-import org.apache.commons.geometry.euclidean.twod.Vector2D;
 
 /** Standard calculations implemented in RationalFloat.
  * Should be exact, up to RationalFloat resolution.
@@ -24,9 +24,9 @@ public final class RationalFloatTriangle2D extends Triangle2D {
   // TODO: RationalFloatVector, RationalFloatTriangle...
 
   public final double twiceSignedArea () {
-    final Vector2D pa = getP0();
-    final Vector2D pb = getP1();
-    final Vector2D pc = getP2();
+    final VectorD2 pa = getP0();
+    final VectorD2 pb = getP1();
+    final VectorD2 pc = getP2();
     final RationalFloat ax = RationalFloat.valueOf(pa.getX());
     final RationalFloat ay = RationalFloat.valueOf(pa.getY());
     final RationalFloat bx = RationalFloat.valueOf(pb.getX());
@@ -46,10 +46,10 @@ public final class RationalFloatTriangle2D extends Triangle2D {
 
   public final boolean inCircleDistanceExact () { return true; }
 
-  public final double inCircleDistance (final Vector2D p) {
-    final Vector2D pa = getP0();
-    final Vector2D pb = getP1();
-    final Vector2D pc = getP2();
+  public final double inCircleDistance (final VectorD2 p) {
+    final VectorD2 pa = getP0();
+    final VectorD2 pb = getP1();
+    final VectorD2 pc = getP2();
     final RationalFloat ax = RationalFloat.valueOf(pa.getX());
     final RationalFloat ay = RationalFloat.valueOf(pa.getY());
     final RationalFloat bx = RationalFloat.valueOf(pb.getX());
@@ -81,14 +81,14 @@ public final class RationalFloatTriangle2D extends Triangle2D {
   // construction
   //--------------------------------------------------------------------
 
-  private RationalFloatTriangle2D (final Vector2D a,
-                              final Vector2D b,
-                              final Vector2D c)  {
+  private RationalFloatTriangle2D (final VectorD2 a,
+                              final VectorD2 b,
+                              final VectorD2 c)  {
     super(a,b,c); }
 
-  public static final Triangle2D of (final Vector2D a,
-                                     final Vector2D b,
-                                     final Vector2D c) {
+  public static final Triangle2D of (final VectorD2 a,
+                                     final VectorD2 b,
+                                     final VectorD2 c) {
     return new RationalFloatTriangle2D(a,b,c); }
 
   /** Convert other triangle classes. */

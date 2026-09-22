@@ -7,9 +7,9 @@ package mop.java.geometry.triangle.macro;
 // algorithm classes
 
 import com.carrotsearch.hppc.DoubleArrayList;
+import mop.java.geometry.euclidean.VectorD2;
 import mop.java.geometry.triangle.Triangle2D;
 import mop.java.numbers.XDouble;
-import org.apache.commons.geometry.euclidean.twod.Vector2D;
 
 import static mop.java.geometry.Expansion.*;
 
@@ -28,9 +28,9 @@ public final class ExactMacro extends Triangle2D {
   public final boolean signedAreaExact () { return true; }
 
   public final double twiceSignedArea () {
-    final Vector2D pa = getP0();
-    final Vector2D pb = getP1();
-    final Vector2D pc = getP2();
+    final VectorD2 pa = getP0();
+    final VectorD2 pb = getP1();
+    final VectorD2 pc = getP2();
 
     double axby1, axcy1, bxcy1, bxay1, cxay1, cxby1;
     double axby0, axcy0, bxcy0, bxay0, cxay0, cxby0;
@@ -141,10 +141,10 @@ public final class ExactMacro extends Triangle2D {
 
   public final boolean inCircleDistanceExact () { return true; }
 
-  public final double inCircleDistance (final Vector2D pd) {
-    final Vector2D pa = getP0();
-    final Vector2D pb = getP1();
-    final Vector2D pc = getP2();
+  public final double inCircleDistance (final VectorD2 pd) {
+    final VectorD2 pa = getP0();
+    final VectorD2 pb = getP1();
+    final VectorD2 pc = getP2();
 
     double axby1, bxcy1, cxdy1, dxay1, axcy1, bxdy1;
     double bxay1, cxby1, dxcy1, axdy1, cxay1, dxby1;
@@ -367,14 +367,14 @@ public final class ExactMacro extends Triangle2D {
   // construction
   //--------------------------------------------------------------------
 
-  private ExactMacro (final Vector2D a,
-                      final Vector2D b,
-                      final Vector2D c)  {
+  private ExactMacro (final VectorD2 a,
+                      final VectorD2 b,
+                      final VectorD2 c)  {
     super(a,b,c); }
 
-  public static final Triangle2D of (final Vector2D a,
-                                     final Vector2D b,
-                                     final Vector2D c) {
+  public static final Triangle2D of (final VectorD2 a,
+                                     final VectorD2 b,
+                                     final VectorD2 c) {
     return new ExactMacro(a, b, c); }
 
   /** Convert other triangle classes. */

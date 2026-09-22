@@ -1,35 +1,27 @@
 package mop.java.scripts.triangles;
 
 import mop.java.geometry.Generators;
+import mop.java.geometry.euclidean.VectorD2;
 import mop.java.geometry.triangle.RoundingIntervalTriangle2D;
-import mop.java.numbers.RoundingInterval;
 import mop.java.numbers.Doubles;
+import mop.java.numbers.RoundingInterval;
 import mop.java.prng.Generator;
 import mop.java.prng.PRNG;
-import org.apache.commons.geometry.euclidean.twod.Vector2D;
-import org.apache.commons.geometry.euclidean.twod.shape.Circle;
 
 /** Profile triangle classes over 'cocircular' examples.
  * <pre>
  * mvn -q clean install && jy src/scripts/java/mop/java/scripts/triangles/CocircularProfile.java
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-15
+ * @version 2026-09-21
  */
 
 public final class CocircularProfile {
 
   //--------------------------------------------------------------
-
-  /** Project <code>p</code> onto (the boundary of) <code>c</code>. */
-  private static final Vector2D project (final Circle c,
-                                         final Vector2D p) {
-    return c.project(p); }
-
-  //--------------------------------------------------------------
   // each row contains npoints 'cocircular' points
 
-  public static final Vector2D[][]
+  public static final VectorD2[][]
   cocircularPoints (final int ncircles,
                     final int npoints) {
 
@@ -39,24 +31,23 @@ public final class CocircularProfile {
     final double pMu = 0.0;
     final double pSigma = 3.0;
 
-    final Generator centerGenerator = Generators.vector2dGenerator(
+    final Generator centerGenerator = Generators.vectorD2Generator(
       Doubles.laplaceGenerator(
         PRNG.well44497b("seeds/Well44497b-2019-01-07.txt"),
         cMu, cSigma));
     final Generator radiusGenerator = Doubles.exponentialGenerator(
       PRNG.well44497b("seeds/Well44497b-2019-01-09.txt"),
       rLambda);
-    final Generator circleGenerator =
-      Generators.circleGenerator(centerGenerator,radiusGenerator);
-    final Generator pointGenerator = Generators.vector2dGenerator(
+    final Generator pointGenerator = Generators.vectorD2Generator(
       Doubles.laplaceGenerator(
         PRNG.well44497b("seeds/Well44497b-2019-01-11.txt"),
         pMu, pSigma));
-    final Vector2D[][] points = new Vector2D[ncircles][npoints];
+    final VectorD2[][] points = new VectorD2[ncircles][npoints];
     for (int i=0;i<ncircles;i++) {
-      final Circle c = (Circle) circleGenerator.next();
+      final VectorD2 c = (VectorD2) centerGenerator.next();
+      final double r = radiusGenerator.nextDouble();
       for (int j=0;j<npoints;j++) {
-        points[i][j] =  project(c,(Vector2D) pointGenerator.next()); } }
+        points[i][j] = ((VectorD2) pointGenerator.next()).project(c,r); } }
 
     System.out.println("ncircles,npoints= " + ncircles + ", " + npoints);
     System.out.println("cMu,cSigma= " + Double.toHexString(cMu) +
@@ -77,11 +68,11 @@ public final class CocircularProfile {
     final int npoints = 4096;
     int ntrys = 0;
     int ndit = 0;
-    final Vector2D[][] points = cocircularPoints(ncircles, npoints);
+    final VectorD2[][] points = cocircularPoints(ncircles, npoints);
     System.gc();
     System.gc();
     for (int i=0; i<ncircles; i++) {
-      final Vector2D[] p = points[i];
+      final VectorD2[] p = points[i];
       for (int j=0;j<npoints-3;j++) {
         final RoundingIntervalTriangle2D dit =
           (RoundingIntervalTriangle2D)

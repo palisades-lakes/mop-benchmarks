@@ -1,22 +1,22 @@
 package mop.java.geometry.triangle.jts;
 
+import mop.java.geometry.euclidean.VectorD2;
 import mop.java.geometry.triangle.Triangle2D;
-import org.apache.commons.geometry.euclidean.twod.Vector2D;
 import org.locationtech.jts.math.DD;
 
 /** From org.locationtech.jts.triangulate.quadedge.TrianglePredicate
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-08-18
+ * @version 2026-09-21
  */
 
 public final class DDFast extends Triangle2D {
 
 //--------------------------------------------------------------------
 
-  public static DD triAreaDDFast (final Vector2D a,
-                                  final Vector2D b,
-                                  final Vector2D c) {
+  public static DD triAreaDDFast (final VectorD2 a,
+                                  final VectorD2 b,
+                                  final VectorD2 c) {
 
     DD t1 = DD.valueOf(b.getX()).selfSubtract(a.getX())
               .selfMultiply(
@@ -39,10 +39,10 @@ public final class DDFast extends Triangle2D {
   /** TrianglePredicate.isInCircleNonRobust.
    */
   @Override
-  public final double inCircleDistance (final Vector2D p) {
-    final Vector2D pa = getP0();
-    final Vector2D pb = getP1();
-    final Vector2D pc = getP2();
+  public final double inCircleDistance (final VectorD2 p) {
+    final VectorD2 pa = getP0();
+    final VectorD2 pb = getP1();
+    final VectorD2 pc = getP2();
     DD aTerm = (DD.sqr(pa.getX()).selfAdd(DD.sqr(pa.getY())))
       .selfMultiply(triAreaDDFast(pb, pc, p));
     DD bTerm = (DD.sqr(pb.getX()).selfAdd(DD.sqr(pb.getY())))
@@ -59,14 +59,14 @@ public final class DDFast extends Triangle2D {
   // construction
   //--------------------------------------------------------------------
 
-  private DDFast (final Vector2D a,
-                  final Vector2D b,
-                  final Vector2D c)  {
+  private DDFast (final VectorD2 a,
+                  final VectorD2 b,
+                  final VectorD2 c)  {
     super(a,b,c); }
 
-  public static final Triangle2D of (final Vector2D a,
-                                     final Vector2D b,
-                                     final Vector2D c) {
+  public static final Triangle2D of (final VectorD2 a,
+                                     final VectorD2 b,
+                                     final VectorD2 c) {
     return new DDFast(a,b,c); }
 
   /** Convert other triangle classes. */

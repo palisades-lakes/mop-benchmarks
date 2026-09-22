@@ -127,7 +127,7 @@ public final class Generators {
       @Override
       public final int nextInt () {
         // TODO: fix infinite loop?
-        for (;;) {
+        for ( ; ; ) {
           final int x = urp.nextInt();
           if (x != 0) { return Math.abs(x); } } }
       @Override
@@ -183,7 +183,7 @@ public final class Generators {
       @Override
       public final long nextLong () {
         // TODO: fix infinite loop?
-        for (;;) {
+        for ( ; ; ) {
           final long x = urp.nextLong();
           if (x != 0L) { return Math.abs(x); } } }
       @Override

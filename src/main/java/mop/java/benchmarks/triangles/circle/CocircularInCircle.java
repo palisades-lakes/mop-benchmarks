@@ -2,13 +2,11 @@ package mop.java.benchmarks.triangles.circle;
 
 import mop.java.benchmarks.triangles.Defaults;
 import mop.java.geometry.Generators;
+import mop.java.geometry.euclidean.VectorD2;
 import mop.java.geometry.triangle.Triangle2D;
-import mop.java.geometry.triangle.TriangleVector2DLazy;
+import mop.java.geometry.triangle.TriangleD2Lazy;
 import mop.java.numbers.Doubles;
-import mop.java.prng.Generator;
 import mop.java.prng.PRNG;
-import org.apache.commons.geometry.euclidean.twod.Vector2D;
-import org.apache.commons.geometry.euclidean.twod.shape.Circle;
 import org.openjdk.jmh.annotations.Level;
 import org.openjdk.jmh.annotations.Setup;
 
@@ -33,41 +31,35 @@ public class CocircularInCircle extends Base {
     final double rLambda = 1.0;
     final double pMu = 0.0;
     final double pSigma = 3.0;
-    final Generator centerGenerator = Generators.vector2dGenerator(
+    centerGenerator = Generators.vectorD2Generator(
       Doubles.laplaceGenerator(
         PRNG.well44497b("seeds/Well44497b-2019-01-07.txt"),
         cMu, cSigma));
-    final Generator radiusGenerator = Doubles.exponentialGenerator(
+    radiusGenerator = Doubles.exponentialGenerator(
       PRNG.well44497b("seeds/Well44497b-2019-01-09.txt"),
       rLambda);
-    circleGenerator =
-      Generators.circleGenerator(centerGenerator,radiusGenerator);
-    pointGenerator = Generators.vector2dGenerator(
+    pointGenerator = Generators.vectorD2Generator(
       Doubles.laplaceGenerator(
         PRNG.well44497b("seeds/Well44497b-2019-01-11.txt"),
         pMu, pSigma)); }
 
     //--------------------------------------------------------------
 
-  /** Project <code>p</code> onto (the boundary of) <code>c</code>. */
-  private static final Vector2D project (final Circle c,
-                                         final Vector2D p) {
-    return c.project(p); }
-
   @Setup(Level.Invocation)
   public final void invocationSetup () {
     triangles = new Triangle2D[nTriangles];
-    points = new Vector2D[nTriangles][nPoints];
+    points = new VectorD2[nTriangles][nPoints];
     for (int i=0;i<nTriangles;i++) {
-      final Circle circle = (Circle) circleGenerator.next();
+      final VectorD2 c = (VectorD2) centerGenerator.next();
+      final double r = radiusGenerator.nextDouble();
       final Triangle2D ti =
-        TriangleVector2DLazy.of(
-          project(circle,(Vector2D) pointGenerator.next()),
-          project(circle,(Vector2D) pointGenerator.next()),
-          project(circle,(Vector2D) pointGenerator.next()));
+        TriangleD2Lazy.of(
+          ((VectorD2) pointGenerator.next()).project(c,r),
+          ((VectorD2) pointGenerator.next()).project(c,r),
+          ((VectorD2) pointGenerator.next()).project(c,r));
       triangles[i] = Triangle2D.convertTriangle(ti, className);
       for (int j=0;j<nPoints; j++) {
-        points[i][j] = project(circle,(Vector2D) pointGenerator.next()); } }
+        points[i][j] = ((VectorD2) pointGenerator.next()).project(c,r); } }
     value = new int[3];
     System.gc(); }
 
@@ -75,7 +67,7 @@ public class CocircularInCircle extends Base {
 
   @Override
   public final double operation (final Triangle2D t,
-                                 final Vector2D p) {
+                                 final VectorD2 p) {
     return t.inCircle(p); }
 
   //--------------------------------------------------------------

@@ -1,11 +1,10 @@
 package mop.java.accumulators;
 
-import static mop.java.numbers.Doubles.biasedExponent;
+import mop.java.numbers.Doubles;
 
 import java.util.Arrays;
 
-import mop.java.accumulators.Accumulator;
-import mop.java.numbers.Doubles;
+import static mop.java.numbers.Doubles.biasedExponent;
 
 //----------------------------------------------------------------
 /** Fast exact online summation. Basic idea is to use a separate
@@ -134,7 +133,7 @@ implements Accumulator<ZhuHayesBranch> {
       if (! Double.isFinite(s)) { return s; }
       x[ii] = errTwo; }
     // Step 3
-    for(;;) {
+    for( ; ; ) {
       // Step 3(1)
       int count = 0; // slices are indexed from 0
       double st = 0.0;
@@ -288,7 +287,7 @@ implements Accumulator<ZhuHayesBranch> {
 
   @Override
   public final Object value () {
-    return Double.valueOf(doubleValue()); }
+    return doubleValue(); }
 
   @Override
   public final double doubleValue () {

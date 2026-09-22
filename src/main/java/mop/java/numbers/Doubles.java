@@ -1,23 +1,5 @@
 package mop.java.numbers;
 
-import java.util.Arrays;
-import java.util.Map;
-import java.util.function.BiPredicate;
-import java.util.function.BinaryOperator;
-import java.util.function.Supplier;
-import java.util.function.UnaryOperator;
-
-import org.apache.commons.rng.UniformRandomProvider;
-import org.apache.commons.rng.sampling.ArraySampler;
-import org.apache.commons.rng.sampling.distribution.AhrensDieterExponentialSampler;
-import org.apache.commons.rng.sampling.distribution.ContinuousSampler;
-import org.apache.commons.rng.sampling.distribution.ContinuousUniformSampler;
-import org.apache.commons.rng.sampling.distribution.DiscreteSampler;
-import org.apache.commons.rng.sampling.distribution.DiscreteUniformSampler;
-import org.apache.commons.rng.sampling.distribution.GaussianSampler;
-import org.apache.commons.rng.sampling.distribution.NormalizedGaussianSampler;
-import org.apache.commons.rng.sampling.distribution.ZigguratNormalizedGaussianSampler;
-
 import mop.java.accumulators.Accumulator;
 import mop.java.accumulators.BigFloatAccumulator;
 import mop.java.algebra.OneSetOneOperation;
@@ -26,6 +8,16 @@ import mop.java.algebra.Set;
 import mop.java.prng.Generator;
 import mop.java.prng.GeneratorBase;
 import mop.java.prng.PRNG;
+import org.apache.commons.rng.UniformRandomProvider;
+import org.apache.commons.rng.sampling.ArraySampler;
+import org.apache.commons.rng.sampling.distribution.*;
+
+import java.util.Arrays;
+import java.util.Map;
+import java.util.function.BiPredicate;
+import java.util.function.BinaryOperator;
+import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 
 /** Utilities for <code>double</code>, <code>double[]</code>.
  *
@@ -807,7 +799,7 @@ public final class Doubles implements Set {
       @Override
       public final double nextDouble () {
         // TODO: fix infinite loop
-        for (;;) {
+        for ( ; ; ) {
           final double x = d.nextDouble();
           if ((Double.isFinite(x)) && (! isNormal(x))) {
             return x; } } }
@@ -843,7 +835,7 @@ public final class Doubles implements Set {
       @Override
       public final double nextDouble () {
         // TODO: fix infinite loop
-        for (;;) {
+        for ( ; ; ) {
           final double x = d.nextDouble();
           if (Double.isFinite(x) && isNormal(x)) {
             return x; } } }
@@ -876,7 +868,7 @@ public final class Doubles implements Set {
       @Override
       public final double nextDouble () {
         // TODO: fix infinite loop
-        for (;;) {
+        for ( ; ; ) {
           final double x = d.nextDouble();
           if (Double.isFinite(x)) { return x; } } }
       @Override

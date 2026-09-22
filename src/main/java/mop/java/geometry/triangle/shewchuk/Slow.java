@@ -1,9 +1,9 @@
 package mop.java.geometry.triangle.shewchuk;
 
+import mop.java.geometry.euclidean.VectorD2;
 import mop.java.geometry.triangle.Triangle2D;
 import mop.java.numbers.Hilo;
 import mop.java.numbers.XDouble;
-import org.apache.commons.geometry.euclidean.twod.Vector2D;
 
 /** More exact tests.  Robust.
  *
@@ -22,9 +22,9 @@ public final class Slow extends Triangle2D {
   // TODO: XDoubleVector, XDoubleTriangle...
 
   public final double twiceSignedArea () {
-    final Vector2D pa = getP0();
-    final Vector2D pb = getP1();
-    final Vector2D pc = getP2();
+    final VectorD2 pa = getP0();
+    final VectorD2 pb = getP1();
+    final VectorD2 pc = getP2();
 
     final Hilo ax = Hilo.subtract(pa.getX(), pc.getX());
     final Hilo ay = Hilo.subtract(pa.getY(), pc.getY());
@@ -70,10 +70,10 @@ public final class Slow extends Triangle2D {
    * <code>pa,pb,pc</code>, negative means outside.
    */
 
-  public final double inCircleDistance (final Vector2D p) {
-    final Vector2D pa = getP0();
-    final Vector2D pb = getP1();
-    final Vector2D pc = getP2();
+  public final double inCircleDistance (final VectorD2 p) {
+    final VectorD2 pa = getP0();
+    final VectorD2 pb = getP1();
+    final VectorD2 pc = getP2();
 
     final Hilo ax = Hilo.subtract(pa.getX(), p.getX());
     final Hilo ay = Hilo.subtract(pa.getY(), p.getY());
@@ -90,14 +90,14 @@ public final class Slow extends Triangle2D {
   // construction
   //--------------------------------------------------------------------
 
-  private Slow (final Vector2D a,
-                final Vector2D b,
-                final Vector2D c)  {
+  private Slow (final VectorD2 a,
+                final VectorD2 b,
+                final VectorD2 c)  {
     super(a,b,c); }
 
-  public static final Triangle2D of (final Vector2D a,
-                                     final Vector2D b,
-                                     final Vector2D c) {
+  public static final Triangle2D of (final VectorD2 a,
+                                     final VectorD2 b,
+                                     final VectorD2 c) {
     return new Slow(a,b,c); }
 
   /** Convert other triangle classes. */

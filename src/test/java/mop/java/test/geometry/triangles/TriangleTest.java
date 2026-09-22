@@ -1,7 +1,7 @@
 package mop.java.test.geometry.triangles;
 
+import mop.java.geometry.euclidean.VectorD2;
 import mop.java.geometry.triangle.Triangle2D;
-import org.apache.commons.geometry.euclidean.twod.Vector2D;
 
 import java.util.List;
 
@@ -19,10 +19,10 @@ public abstract class TriangleTest {
 //                                        final double check,
 //                                        final Triangle2D gold,
 //                                        final Triangle2D pred,
-//                                        final Vector2D p0,
-//                                        final Vector2D p1,
-//                                        final Vector2D p2,
-//                                        final Vector2D p3) {
+//                                        final VectorD2 p0,
+//                                        final VectorD2 p1,
+//                                        final VectorD2 p2,
+//                                        final VectorD2 p3) {
 //    final String msg = "\ninCircle(" +
 //      p0 + "," + p1 + "," + p2 + "," + p3 + ")" +
 //      "\ngold=" + gold + " -> " + Double.toHexString(truth) +
@@ -37,7 +37,7 @@ public abstract class TriangleTest {
                                          final Triangle2D gold,
                                          final Triangle2D pred,
                                          final List<Triangle2D> triangles,
-                                         final Vector2D p) {
+                                         final VectorD2 p) {
     final StringBuilder msg = new StringBuilder(
       "\n\n" + name +
         "\ngold=" + gold + " -> " + Double.toHexString(truth) +

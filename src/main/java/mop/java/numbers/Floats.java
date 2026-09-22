@@ -1,9 +1,12 @@
 package mop.java.numbers;
 
-import static java.lang.Float.MAX_EXPONENT;
-import static java.lang.Float.MIN_EXPONENT;
-import static java.lang.Float.floatToIntBits;
-import static java.lang.Float.floatToRawIntBits;
+import mop.java.algebra.OneSetOneOperation;
+import mop.java.algebra.OneSetTwoOperations;
+import mop.java.algebra.Set;
+import mop.java.prng.Generator;
+import mop.java.prng.GeneratorBase;
+import org.apache.commons.rng.UniformRandomProvider;
+import org.apache.commons.rng.sampling.distribution.*;
 
 import java.math.BigInteger;
 import java.util.Map;
@@ -12,26 +15,12 @@ import java.util.function.BinaryOperator;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
-import org.apache.commons.rng.UniformRandomProvider;
-import org.apache.commons.rng.sampling.distribution.AhrensDieterExponentialSampler;
-import org.apache.commons.rng.sampling.distribution.ContinuousSampler;
-import org.apache.commons.rng.sampling.distribution.ContinuousUniformSampler;
-import org.apache.commons.rng.sampling.distribution.DiscreteSampler;
-import org.apache.commons.rng.sampling.distribution.DiscreteUniformSampler;
-import org.apache.commons.rng.sampling.distribution.GaussianSampler;
-import org.apache.commons.rng.sampling.distribution.NormalizedGaussianSampler;
-import org.apache.commons.rng.sampling.distribution.ZigguratNormalizedGaussianSampler;
-
-import mop.java.algebra.OneSetOneOperation;
-import mop.java.algebra.OneSetTwoOperations;
-import mop.java.algebra.Set;
-import mop.java.prng.Generator;
-import mop.java.prng.GeneratorBase;
+import static java.lang.Float.*;
 
 /** Utilities for <code>float</code>, <code>float[]</code>.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-08-21
+ * @version 2026-09-21
  */
 
 @SuppressWarnings("unused")
@@ -709,7 +698,7 @@ public final class Floats implements Set {
       @Override
       public final float nextFloat () {
         // TODO: fix infinite loop
-        for (;;) {
+        for ( ; ; ) {
           final float x = d.nextFloat();
           if ((Float.isFinite(x)) && (! isNormal(x))) {
             return x; } } }
@@ -745,7 +734,7 @@ public final class Floats implements Set {
       @Override
       public final float nextFloat () {
         // TODO: fix infinite loop
-        for (;;) {
+        for ( ; ; ) {
           final float x = d.nextFloat();
           if (Float.isFinite(x) && isNormal(x)) { return x; } } }
       @Override
@@ -776,7 +765,7 @@ public final class Floats implements Set {
       @Override
       public final float nextFloat () {
         // TODO: fix infinite loop
-        for (;;) {
+        for ( ; ; ) {
           final float x = d.nextFloat();
           if (Float.isFinite(x)) { return x; } } }
       @Override

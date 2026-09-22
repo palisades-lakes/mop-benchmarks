@@ -1,8 +1,6 @@
 package mop.java.accumulators;
 
 import com.carrotsearch.hppc.DoubleArrayList;
-
-import mop.java.accumulators.Accumulator;
 import mop.java.numbers.Doubles;
 
 //----------------------------------------------------------------
@@ -131,7 +129,7 @@ implements Accumulator<IFastAccumulator> {
       if (! Double.isFinite(s)) { return s; }
       x[ii] = errTwo; }
     // Step 3
-    for(;;) {
+    for( ; ; ) {
       // Step 3(1)
       int count = 0; // slices are indexed from 0
       double st = 0.0;
@@ -219,7 +217,7 @@ implements Accumulator<IFastAccumulator> {
 
   @Override
   public final Object value () {
-    return Double.valueOf(doubleValue()); }
+    return doubleValue(); }
 
   @Override
   public final double doubleValue () {

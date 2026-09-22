@@ -20,6 +20,8 @@ public interface VectorR2<C> {
 
   public VectorR2<C> subtract (final VectorR2<C> v);
 
+  public VectorR2<C> scale (final C a);
+
   public C l2norm2 ();
 
   /** AKA wedge product, cross product (in 3D), ... */

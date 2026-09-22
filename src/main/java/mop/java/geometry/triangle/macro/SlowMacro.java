@@ -7,13 +7,11 @@ package mop.java.geometry.triangle.macro;
 // algorithm classes
 
 import com.carrotsearch.hppc.DoubleArrayList;
+import mop.java.geometry.euclidean.VectorD2;
 import mop.java.geometry.triangle.Triangle2D;
 import mop.java.numbers.XDouble;
-import org.apache.commons.geometry.euclidean.twod.Vector2D;
 
-import static mop.java.geometry.Expansion.SPLITTER;
-import static mop.java.geometry.Expansion.scale_expansion_zeroelim;
-import static mop.java.geometry.Expansion.fast_expansion_sum_zeroelim;
+import static mop.java.geometry.Expansion.*;
 
 /**
  * More exact tests.  Robust.
@@ -31,10 +29,10 @@ public final class SlowMacro extends Triangle2D {
 
   // from macro expanded C code:
 
-  public final double inCircleDistance (final Vector2D pd) {
-    final Vector2D pa = getP0();
-    final Vector2D pb = getP1();
-    final Vector2D pc = getP2();
+  public final double inCircleDistance (final VectorD2 pd) {
+    final VectorD2 pa = getP0();
+    final VectorD2 pb = getP1();
+    final VectorD2 pc = getP2();
 
     double adx, bdx, cdx, ady, bdy, cdy;
     double adxtail, bdxtail, cdxtail; double adytail, bdytail, cdytail;
@@ -475,9 +473,9 @@ public final class SlowMacro extends Triangle2D {
 
   // TODO: seems to return 2xsigned area
   public final double twiceSignedArea () {
-    final Vector2D pa = getP0();
-    final Vector2D pb = getP1();
-    final Vector2D pc = getP2();
+    final VectorD2 pa = getP0();
+    final VectorD2 pb = getP1();
+    final VectorD2 pc = getP2();
 
     double acx, acy, bcx, bcy; double acxtail, acytail;
     double bcxtail, bcytail; double negate, negatetail;
@@ -608,14 +606,14 @@ public final class SlowMacro extends Triangle2D {
   // construction
   //--------------------------------------------------------------------
 
-  private SlowMacro (final Vector2D a,
-                final Vector2D b,
-                final Vector2D c)  {
+  private SlowMacro (final VectorD2 a,
+                final VectorD2 b,
+                final VectorD2 c)  {
     super(a,b,c); }
 
-  public static final Triangle2D of (final Vector2D a,
-                                     final Vector2D b,
-                                     final Vector2D c) {
+  public static final Triangle2D of (final VectorD2 a,
+                                     final VectorD2 b,
+                                     final VectorD2 c) {
     return new SlowMacro(a, b, c); }
 
   /** Convert other triangle classes. */
