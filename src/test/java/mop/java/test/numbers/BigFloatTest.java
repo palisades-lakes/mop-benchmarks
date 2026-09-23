@@ -21,7 +21,7 @@ import static java.lang.Double.*;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-08-29
+ * @version 2026-09-22
  */
 
 public final class BigFloatTest {
@@ -110,8 +110,10 @@ public final class BigFloatTest {
         Assertions.assertFalse(nan.opGT(n));
 
         if (p.isZero() && n.isZero()) {
-          Assertions.assertTrue(p.opEQ(n));
-          Assertions.assertTrue(n.opEQ(p)); }
+          Assertions.assertTrue(
+            p.opEQ(n), "\np= " + p + "\nn= " + n);
+          Assertions.assertTrue(
+            n.opEQ(p), "\nn= " + n + "\np= " + p); }
         else {
           Assertions.assertTrue(p.opGT(n));
           Assertions.assertFalse(n.opGT(p)); }

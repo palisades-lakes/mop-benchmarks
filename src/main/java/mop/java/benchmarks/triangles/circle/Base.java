@@ -12,7 +12,7 @@ import org.openjdk.jmh.infra.Blackhole;
 /** Benchmark triangle operations.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-21
+ * @version 2026-09-22
  */
 
 @State(Scope.Thread)
@@ -26,31 +26,30 @@ public abstract class Base {
   Generator radiusGenerator;
 
   @Param({
-//    "Adapt",
-//    "ExactCache",
-//    "Exact",
-//    "Fast",
-//    "Slow",
     "TriangleBF2",
     "TriangleD2Eager",
     "TriangleD2Lazy",
-//      "RelaxedIntervalTriangle2D",
-//    "RoundingIntervalTriangle2D",
-//    "ShewchukIntervalTriangle2D",
-//    "ReBfTriangle2D",
-//    "RoBfTriangle2D",
-//    "ShBFTriangle2D",
-//    "RationalFloatTriangle2D",
-//    "DDFast",
-//    "DDNormalized",
-//    "DDSlow",
-//    "InCircleNormalized",
-//    "DoubleNonRobust",
-//    "AdaptMacro",
-//    "DefaultMacro",
-//    "ExactMacro",
-//    "FastMacro",
-//    "SlowMacro",
+    "RelaxedIntervalTriangle2D",
+    "RoundingIntervalTriangle2D",
+    "ShewchukIntervalTriangle2D",
+    "ReBfTriangle2D",
+    "RoBfTriangle2D",
+    "ShBFTriangle2D",
+    "RationalFloatTriangle2D",
+    "Adapt",
+    "Exact",
+    "Fast",
+    "Slow",
+    "DDFast",
+    "DDNormalized",
+    "DDSlow",
+    "InCircleNormalized",
+    "DoubleNonRobust",
+    "AdaptMacro",
+    "DefaultMacro",
+    "ExactMacro",
+    "FastMacro",
+    "SlowMacro",
   })
   String className;
 
