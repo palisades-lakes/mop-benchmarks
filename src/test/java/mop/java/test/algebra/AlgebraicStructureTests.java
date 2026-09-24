@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * mvn -Dtest=mop.java.test.algebra.AlgebraicStructureTests test
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-08-25
+ * @version 2026-09-24
  */
 
 
@@ -51,12 +51,6 @@ public final class AlgebraicStructureTests {
   public final void tests () {
 
     //Debug.DEBUG=false;
-    structureTests(XDoubles.ADDITION_MONOID,TRYS);
-    structureTests(XDoubles.FLOATING_POINT_SPACE,TRYS);
-
-    //structureTests(Hilos.ADDITIVE_MAGMA,TRYS);
-    //structureTests(Hilos.MULTIPLICATIVE_MAGMA,TRYS);
-//    structureTests(Hilos.FLOATING_POINT,TRYS);
 
     structureTests(Naturals.ADDITION_MONOID,2*TRYS);
     structureTests(Naturals.MULTIPLICATIVE_MAGMA,TRYS);

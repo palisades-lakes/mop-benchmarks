@@ -5,7 +5,6 @@ import mop.java.Classes;
 import mop.java.algebra.Set;
 import mop.java.algebra.Sets;
 import mop.java.numbers.BigFloats;
-import mop.java.numbers.Hilos;
 import mop.java.numbers.RationalFloats;
 import mop.java.numbers.Rationals;
 import mop.java.prng.PRNG;
@@ -23,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * mvn -q -Dtest=xfp/java/test/algebra/SetTests test > Sets.txt
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-05-21
+ * @version 2026-09-24
  */
 
 public final class SetTests {
@@ -84,10 +83,6 @@ public final class SetTests {
   @SuppressWarnings({ "static-method" })
   @Test
   public final void BigFloats () { SetTests.tests(BigFloats.get()); }
-
-  @SuppressWarnings({ "static-method" })
-  @Test
-  public final void Hilos () { SetTests.tests(Hilos.get()); }
 
   @SuppressWarnings({ "static-method" })
   @Test

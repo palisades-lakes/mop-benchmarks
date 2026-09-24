@@ -21,7 +21,7 @@ import java.util.List;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-21
+ * @version 2026-09-24
  */
 
 public final class CocircularTest extends TriangleTest {

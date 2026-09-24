@@ -1,22 +1,21 @@
 package mop.java.numbers;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.List;
-
-import org.apache.commons.rng.UniformRandomProvider;
-import org.apache.commons.rng.sampling.CollectionSampler;
-
 import mop.java.Exceptions;
 import mop.java.algebra.Set;
 import mop.java.prng.Generator;
 import mop.java.prng.GeneratorBase;
 import mop.java.prng.Generators;
+import org.apache.commons.rng.UniformRandomProvider;
+import org.apache.commons.rng.sampling.CollectionSampler;
+
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.List;
 
 /** Utilities for Object and primitive numbers.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-05-21
+ * @version 2026-09-24
  */
 @SuppressWarnings({"unchecked","unused"})
 public final class Numbers implements Set {
@@ -83,10 +82,6 @@ public final class Numbers implements Set {
   // Useful for passing as a Function method reference
 
   public static final double doubleValue (final Object x) {
-    if (x instanceof Hilo) {
-      return ((Hilo) x).doubleValue(); }
-    if (x instanceof XDouble) {
-      return ((XDouble) x).doubleValue(); }
     if (x instanceof BigFloat) {
       return ((BigFloat) x).doubleValue(); }
     if (x instanceof RationalFloat) {
@@ -98,10 +93,6 @@ public final class Numbers implements Set {
     throw Exceptions.unsupportedOperation(x,"doubleValue",x); }
 
   public static float floatValue (final Object x) {
-    if (x instanceof Hilo) {
-      return ((Hilo) x).floatValue(); }
-    if (x instanceof XDouble) {
-      return ((XDouble) x).floatValue(); }
     if (x instanceof BigFloat) {
       return ((BigFloat) x).floatValue(); }
     if (x instanceof RationalFloat) {

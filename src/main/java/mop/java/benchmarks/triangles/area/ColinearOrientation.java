@@ -9,13 +9,13 @@ import org.openjdk.jmh.annotations.Level;
 import org.openjdk.jmh.annotations.Setup;
 
 /** <pre>
- * mvn clean install && java -cp target\benchmarks.jar mop.java.benchmarks.triangles.area.ColinearOrientation
+ * mvn -q install && jmh mop.java.benchmarks.triangles.area.ColinearOrientation
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-01
+ * @version 2026-09-23
  */
 
-public class ColinearOrientation extends Orientation {
+public class ColinearOrientation extends RandomOrientation {
 
   //--------------------------------------------------------------
   /** Re-initialize the prngs with the same seeds for each

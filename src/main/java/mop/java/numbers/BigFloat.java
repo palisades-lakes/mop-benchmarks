@@ -31,7 +31,7 @@ import java.util.Objects;
  * <code>(nonNegative()?1:-1) * significand() * 2^exponent()</code>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-22
+ * @version 2026-09-24
  */
 
 @SuppressWarnings("unused")

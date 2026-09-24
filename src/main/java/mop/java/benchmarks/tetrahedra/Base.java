@@ -5,15 +5,6 @@ import mop.java.geometry.tetrahedron.BigFloatTetrahedron3D;
 import mop.java.geometry.tetrahedron.RationalFloatTetrahedron3D;
 import mop.java.geometry.tetrahedron.Tetrahedron3D;
 import mop.java.geometry.tetrahedron.TetrahedronVector3D;
-import mop.java.geometry.tetrahedron.macro.AdaptMacro;
-import mop.java.geometry.tetrahedron.macro.DefaultMacro;
-import mop.java.geometry.tetrahedron.macro.ExactMacro;
-import mop.java.geometry.tetrahedron.macro.FastMacro;
-import mop.java.geometry.tetrahedron.macro.SlowMacro;
-import mop.java.geometry.tetrahedron.shewchuk.Adapt;
-import mop.java.geometry.tetrahedron.shewchuk.Exact;
-import mop.java.geometry.tetrahedron.shewchuk.Fast;
-import mop.java.geometry.tetrahedron.shewchuk.Slow;
 import mop.java.numbers.Doubles;
 import mop.java.prng.Generator;
 import mop.java.prng.PRNG;
@@ -24,7 +15,7 @@ import org.openjdk.jmh.infra.Blackhole;
 /** Benchmark tetrahedra operations.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-07-29
+ * @version 2026-09-24
  */
 
 @State(Scope.Thread)
@@ -46,15 +37,6 @@ public abstract class Base {
       case "TetrahedronVector3D" -> TetrahedronVector3D.from(t);
       case "BigFloatTetrahedron3D" ->  BigFloatTetrahedron3D.from(t);
       case "RationalFloatTetrahedron3D" ->  RationalFloatTetrahedron3D.from(t);
-      case "Adapt" ->  Adapt.from(t);
-      case "Exact" ->  Exact.from(t);
-      case "Fast" ->  Fast.from(t);
-      case "Slow" ->  Slow.from(t);
-      case "AdaptMacro" ->  AdaptMacro.from(t);
-      case "DefaultMacro" ->  DefaultMacro.from(t);
-      case "ExactMacro" ->  ExactMacro.from(t);
-      case "FastMacro" ->  FastMacro.from(t);
-      case "SlowMacro" ->  SlowMacro.from(t);
       default -> throw new UnsupportedOperationException(); }; }
 
   public static final Tetrahedron3D[]
@@ -67,16 +49,7 @@ public abstract class Base {
   @Param({
     //"TetrahedronVector3D",
     "BigFloatTetrahedron3D",
-//    "RationalFloatTetrahedron3D",
-    "Adapt",
-//    "Exact",
-//    "Fast",
-//    "Slow",
-    "AdaptMacro",
-//    "DefaultMacro",
-//    "ExactMacro",
-//    "FastMacro",
-//    "SlowMacro",
+    "RationalFloatTetrahedron3D",
   })
   String className;
 

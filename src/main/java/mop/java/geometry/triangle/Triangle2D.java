@@ -2,8 +2,6 @@ package mop.java.geometry.triangle;
 
 import mop.java.geometry.euclidean.VectorD2;
 import mop.java.geometry.triangle.jts.*;
-import mop.java.geometry.triangle.macro.*;
-import mop.java.geometry.triangle.shewchuk.*;
 import mop.java.numbers.DoubleInterval;
 import mop.java.numbers.RoundingInterval;
 
@@ -12,7 +10,7 @@ import java.util.List;
 /** Triangles "embedded" in <code>R<sup>2</sup></code>>.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-09-21
+ * @version 2026-09-24
  */
 
 public abstract class Triangle2D {
@@ -41,16 +39,6 @@ public abstract class Triangle2D {
     final Triangle2D ddSlow = DDSlow.from(t);
     final Triangle2D doubleNonRobust = DoubleNonRobust.from(t);
     final Triangle2D inCircleNormalized = InCircleNormalized.from(t);
-    final Triangle2D adapt = Adapt.from(t);
-    final Triangle2D exact = Exact.from(t);
-    final Triangle2D exactCache = ExactCache.from(t);
-    final Triangle2D fast = Fast.from(t);
-    final Triangle2D slow = Slow.from(t);
-    final Triangle2D adaptMacro = AdaptMacro.from(t);
-    final Triangle2D defaultMacro = DefaultMacro.from(t);
-    final Triangle2D exactMacro = ExactMacro.from(t);
-    final Triangle2D fastMacro = FastMacro.from(t);
-    final Triangle2D slowMacro = SlowMacro.from(t);
     return List.of(
       // mine
       d2eager, d2lazy,
@@ -60,14 +48,7 @@ public abstract class Triangle2D {
       bf2,
       rebf,robf,shbf,
       // JTS
-      ddFast,ddNormalized,ddSlow,doubleNonRobust,inCircleNormalized,
-      // Shewchuk predicates.c
-      adapt,
-      exact, exactCache
-      ,
-      fast ,slow,
-      exactMacro, adaptMacro, defaultMacro, fastMacro, slowMacro
-                  ); }
+      ddFast,ddNormalized,ddSlow,doubleNonRobust,inCircleNormalized); }
 
   /** ground truth predicate. */
   public static final Triangle2D truth (final Triangle2D t) {
@@ -95,16 +76,6 @@ public abstract class Triangle2D {
 //    case "InCircleCC" ->  InCircleCC.from(t);
       case "DoubleNonRobust" ->  DoubleNonRobust.from(t);
       case "InCircleNormalized" ->  InCircleNormalized.from(t);
-      case "Adapt" ->  Adapt.from(t);
-      case "Exact" ->  Exact.from(t);
-      case "ExactCache" ->  ExactCache.from(t);
-      case "Fast" ->  Fast.from(t);
-      case "Slow" ->  Slow.from(t);
-      case "AdaptMacro" ->  AdaptMacro.from(t);
-      case "DefaultMacro" ->  DefaultMacro.from(t);
-      case "ExactMacro" ->  ExactMacro.from(t);
-      case "FastMacro" ->  FastMacro.from(t);
-      case "SlowMacro" ->  SlowMacro.from(t);
       default -> throw new UnsupportedOperationException(); }; }
 
   public static final Triangle2D[]

@@ -12,7 +12,7 @@ import org.openjdk.jmh.infra.Blackhole;
 /** Benchmark triangle operations.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-22
+ * @version 2026-09-24
  */
 
 @State(Scope.Thread)
@@ -45,12 +45,7 @@ public abstract class Base {
     "DDSlow",
     "InCircleNormalized",
     "DoubleNonRobust",
-    "AdaptMacro",
-    "DefaultMacro",
-    "ExactMacro",
-    "FastMacro",
-    "SlowMacro",
-  })
+    })
   String className;
 
   //--------------------------------------------------------------

@@ -10,7 +10,7 @@ import mop.java.prng.Generator;
 import mop.java.prng.PRNG;
 
 /** <pre>
- * mvn clean install && jy src/scripts/java/mop/java/scripts/triangles/InCircle.java
+ * mvn clean install && jy src/scripts/java/mop/java/scripts/triangles/RandomInCircle.java
  * </pre>
  * @author palisades dot lakes at gmail dot com
  * @version 2026-09-11

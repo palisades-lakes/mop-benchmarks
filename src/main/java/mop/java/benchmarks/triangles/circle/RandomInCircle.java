@@ -5,13 +5,13 @@ import mop.java.geometry.euclidean.VectorD2;
 import mop.java.geometry.triangle.Triangle2D;
 
 /** <pre>
- * mvn clean install && jmh mop.java.benchmarks.triangles.circle.InCircle
+ * mvn clean install && jmh mop.java.benchmarks.triangles.circle.RandomInCircle
  * </pre>
  * @author palisades dot lakes at gmail dot com
  * @version 2026-09-01
  */
 
-public class InCircle extends Base {
+public class RandomInCircle extends Base {
 
   @Override
   public final double operation (final Triangle2D t,
@@ -20,4 +20,4 @@ public class InCircle extends Base {
 
   @SuppressWarnings("unused")
   public static final void main (final String[] args)  {
-    Defaults.run("InCircle"); } }
+    Defaults.run("RandomInCircle"); } }

@@ -8,8 +8,6 @@ import mop.java.prng.PRNG;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
 
-import java.util.Arrays;
-
 /** Benchmark triangle operations.
  *
  * @author palisades dot lakes at gmail dot com
@@ -25,28 +23,30 @@ public abstract class Base {
   Generator triangleGenerator;
 
   @Param({
-    //  "Adapt",
-//    "ExactCache",
-//    "Exact",
-//    "Fast",
-//    "Slow",
-//    "TriangleD2Lazy",
-//    "EagerTriangle2D",
-//    "TriangleD2",
-//    "DoubleTriangle2D",
-//    "RoundingIntervalTriangle2D",
-//    "RoBfTriangle2D",
-//    "RationalFloatTriangle2D",
-//    "DDFast",
-//    "DDNormalized",
-//    "DDSlow",
-//    "InCircleNormalized",
-//    "DoubleNonRobust",
-//    "AdaptMacro",
-//    "DefaultMacro",
-//    "ExactMacro",
-//    "FastMacro",
-//    "SlowMacro",
+    "TriangleBF2",
+    "TriangleD2Eager",
+    "TriangleD2Lazy",
+    "RelaxedIntervalTriangle2D",
+    "RoundingIntervalTriangle2D",
+    "ShewchukIntervalTriangle2D",
+    "ReBfTriangle2D",
+    "RoBfTriangle2D",
+    "ShBFTriangle2D",
+    "RationalFloatTriangle2D",
+    "Adapt",
+    "Exact",
+    "Fast",
+    "Slow",
+    "DDFast",
+    "DDNormalized",
+    "DDSlow",
+    "InCircleNormalized",
+    "DoubleNonRobust",
+    "AdaptMacro",
+    "DefaultMacro",
+    "ExactMacro",
+    "FastMacro",
+    "SlowMacro",
   })
   String className;
 
@@ -90,9 +90,9 @@ public abstract class Base {
       (Triangle2D[]) triangleGenerator.next(), className);
     value = new int[3]; }
 
-  @TearDown(Level.Invocation)
-  public final void invocationTeardown () {
-    System.out.println(Arrays.toString(value)); }
+//  @TearDown(Level.Invocation)
+//  public final void invocationTeardown () {
+//    System.out.println(Arrays.toString(value)); }
 
   @Benchmark
   public final Object bench (final Blackhole blackhole) {

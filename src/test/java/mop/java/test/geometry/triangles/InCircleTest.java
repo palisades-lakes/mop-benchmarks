@@ -4,8 +4,6 @@ import mop.java.geometry.Generators;
 import mop.java.geometry.euclidean.VectorD2;
 import mop.java.geometry.triangle.Triangle2D;
 import mop.java.geometry.triangle.TriangleD2Lazy;
-import mop.java.geometry.triangle.macro.AdaptMacro;
-import mop.java.geometry.triangle.shewchuk.Adapt;
 import mop.java.numbers.Doubles;
 import mop.java.prng.Generator;
 import mop.java.prng.PRNG;
@@ -22,33 +20,16 @@ import java.util.List;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-12
+ * @version 2026-09-24
  */
 
 public final class InCircleTest extends TriangleTest {
 
 
   //--------------------------------------------------------------
-  /** Compare exact value from cleaned up Adapt and
-   * brutal macro-expanded AdaptMacro.
-   */
-
-  private static final void adaptTest (final Triangle2D t,
-                                       final VectorD2 p) {
-    final Triangle2D gold = AdaptMacro.from(t);
-    final Triangle2D tt = Adapt.from(t);
-    final double trueInc = gold.inCircleDistance(p);
-    final double inc = tt.inCircleDistance(p);
-    // with delta=0.0 handles +0 vs -0 'correctly'
-    Assertions.assertEquals(
-      trueInc, inc, 0.0,
-      failureMsg("inCircle",trueInc,inc,gold,tt,null,p)); }
-
-  //--------------------------------------------------------------
 
   private static final void inCircle (final Triangle2D t,
                                       final VectorD2 p) {
-    adaptTest(t,p);
     final Triangle2D gold = Triangle2D.truth(t);
     final double trueInc = gold.inCircleDistance(p);
     final List<Triangle2D> triangles = Triangle2D.makeTriangles(t);
@@ -109,7 +90,6 @@ public final class InCircleTest extends TriangleTest {
     for (int i = 0; i < m; i++) {
       final Triangle2D ti = t[i];
       for (int j=0;j<n;j++) {
-        adaptTest(ti,p[j]);
         inCircle(ti,p[j]); } } }
 
   //--------------------------------------------------------------
