@@ -33,21 +33,12 @@ public abstract class Base {
     "RoBfTriangle2D",
     "ShBFTriangle2D",
     "RationalFloatTriangle2D",
-    "Adapt",
-    "Exact",
-    "Fast",
-    "Slow",
     "DDFast",
     "DDNormalized",
     "DDSlow",
     "InCircleNormalized",
     "DoubleNonRobust",
-    "AdaptMacro",
-    "DefaultMacro",
-    "ExactMacro",
-    "FastMacro",
-    "SlowMacro",
-  })
+    })
   String className;
 
   //--------------------------------------------------------------
