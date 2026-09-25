@@ -10,23 +10,33 @@ import org.junit.jupiter.api.Test;
 
 import java.util.function.BinaryOperator;
 
-import static java.lang.Double.*;
-
 //----------------------------------------------------------------
-/**
- * Test desired properties of BigFloat.
+/** Test desired properties of BigFloat.
  * <p>
  * <pre>
  * mvn -q -Dtest=mop.java.test.numbers.BigFloatTest test > BFT.txt
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-22
+ * @version 2026-09-24
  */
 
 public final class BigFloatTest {
 
   private static final int TRYS = 33;
+
+  @Test
+  public final void l2norm2Test () {
+    final Generator g =
+      BigFloats.fromBigIntegerGenerator(
+        PRNG.well44497b("seeds/Well44497b-2019-01-05.txt"));
+    for (int i = 0; i < TRYS; i++) {
+      final BigFloat x = (BigFloat) g.next();
+      final BigFloat y = (BigFloat) g.next();
+      final BigFloat l20 = BigFloat.l2norm2(x, y);
+      final BigFloat l21 = x.square().add(y.square());
+      Assertions.assertEquals(l20,l21); } }
+
 
   private static final BinaryOperator dist =
     (q0, q1) -> ((BigFloat) q0).subtract((BigFloat) q1).abs();
@@ -41,9 +51,9 @@ public final class BigFloatTest {
     Assertions.assertTrue(pos.isFinite());
     final BigFloat neg = BigFloat.valueOf(-Math.abs(g.nextDouble()));
     Assertions.assertTrue(neg.isFinite());
-    final BigFloat nan = BigFloat.valueOf(NaN);
-    final BigFloat pinf = BigFloat.valueOf(POSITIVE_INFINITY);
-    final BigFloat ninf = BigFloat.valueOf(NEGATIVE_INFINITY);
+    final BigFloat nan = BigFloat.valueOf(Double.NaN);
+    final BigFloat pinf = BigFloat.valueOf(Double.POSITIVE_INFINITY);
+    final BigFloat ninf = BigFloat.valueOf(Double.NEGATIVE_INFINITY);
     final BigFloat pzero = BigFloat.POSITIVE_ZERO;
     final BigFloat nzero = BigFloat.NEGATIVE_ZERO;
     Assertions.assertEquals(pzero, nzero);
@@ -173,18 +183,6 @@ public final class BigFloatTest {
       final BigFloat xx = x.multiply(x);
       Assertions.assertEquals(x2, xx); } }
 
-  @Test
-  public final void l2norm2Test () {
-    final Generator g =
-      BigFloats.fromBigIntegerGenerator(
-        PRNG.well44497b("seeds/Well44497b-2019-01-05.txt"));
-    for (int i = 0; i < TRYS; i++) {
-      final BigFloat x = (BigFloat) g.next();
-      final BigFloat y = (BigFloat) g.next();
-      final BigFloat l20 = BigFloat.l2norm2(x, y);
-      final BigFloat l21 = x.square().add(y.square());
-      Assertions.assertEquals(l20,l21); } }
-
   private static final String sumFailureMsg (final String name,
                                              final double z0,
                                              final double z1,
@@ -194,22 +192,22 @@ public final class BigFloatTest {
                                              final BigFloat s1) {
     return
       "\n" + name +
-        "\nz0=" + toHexString(z0) +
+        "\nz0=" + Double.toHexString(z0) +
         "\nnonnegative(z0)= " + Doubles.nonNegative(z0) +
         "\nsignificand(z0)= " + Doubles.significand(z0) +
         "\nexponent(z0)= " + Doubles.exponent(z0) +
         "\nb0=" + b0.toHexString() +
-        " (" + toHexString(b0.doubleValue()) + ")" +
-        "\nz1=" + toHexString(z1) +
+        " (" + Double.toHexString(b0.doubleValue()) + ")" +
+        "\nz1=" + Double.toHexString(z1) +
         "\nnonnegative(z1)= " + Doubles.nonNegative(z1) +
         "\nsignificand(z1)= " + Doubles.significand(z1) +
         "\nexponent(z1)= " + Doubles.exponent(z1) +
         "\nb1=" + b1.toHexString() +
-        " (" + toHexString(b1.doubleValue()) + ")" +
+        " (" + Double.toHexString(b1.doubleValue()) + ")" +
         "\ns0=" + s0.toHexString() +
-        " (" + toHexString(s0.doubleValue()) + ")" +
+        " (" + Double.toHexString(s0.doubleValue()) + ")" +
         "\ns1=" + s1.toHexString() +
-        " (" + toHexString(s1.doubleValue()) + ")";
+        " (" + Double.toHexString(s1.doubleValue()) + ")";
   }
 
   @Test

@@ -3,8 +3,8 @@ package mop.java.scripts.triangles;
 import mop.java.accumulators.ZhuHayesAccumulator;
 import mop.java.geometry.Generators;
 import mop.java.geometry.euclidean.VectorD2;
-import mop.java.geometry.triangle.RoundingIntervalTriangle2D;
 import mop.java.geometry.triangle.Triangle2D;
+import mop.java.geometry.triangle.TriangleBF2;
 import mop.java.numbers.Doubles;
 import mop.java.prng.Generator;
 import mop.java.prng.PRNG;
@@ -33,8 +33,8 @@ public final class InCircle {
       Generators.triangleGenerator(
         8192,
         //ExactCache::from,
-        //TriangleBF2::from,
-        RoundingIntervalTriangle2D::from,
+        TriangleBF2::from,
+        //RoundingIntervalTriangle2D::from,
         //RoBfTriangle2D::from,
         Generators.vectorD2Generator(
           Doubles.laplaceGenerator(

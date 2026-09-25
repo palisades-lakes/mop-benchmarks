@@ -5,10 +5,9 @@ import mop.java.Exceptions;
 import java.math.BigInteger;
 import java.util.Objects;
 
-import static mop.java.numbers.Numbers.hiBit;
-
 /** Representing a rational number as a sign times a ratio of
- * {@link BoundedNatural} numbers times 2 to a <code>int</code> exponent.
+ * {@link BoundedNatural} numbers times 2
+ * to a <code>int</code> exponent.
  * <br>
  * The idea is that most data will start as <code>double</code>;
  * extracting the resulting powers of 2 from the numerator and
@@ -16,7 +15,7 @@ import static mop.java.numbers.Numbers.hiBit;
  * arithmetic on them faster.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-08-21
+ * @version 2026-09-24
  */
 
 
@@ -762,7 +761,7 @@ implements Ringlike<RationalFloat> {
     else {
       final int q5 = q4 + 1;
       // handle carry if needed after round up
-      final boolean carry = (hiBit(q5) > Floats.SIGNIFICAND_BITS);
+      final boolean carry = (Numbers.hiBit(q5) > Floats.SIGNIFICAND_BITS);
       q = carry ? q5 >>> 1 : q5;
     e = (sub ? (carry ? e4 : e4 - 1) : (carry ? e4 + 1 : e4)); }
     return Floats.makeFloat(!p0,e,q); }
@@ -833,7 +832,7 @@ implements Ringlike<RationalFloat> {
     else {
       final long q5 = q4+1;
       // handle carry if needed after round up
-      final boolean carry = (hiBit(q5) > Doubles.SIGNIFICAND_BITS);
+      final boolean carry = (Numbers.hiBit(q5) > Doubles.SIGNIFICAND_BITS);
       q = (carry ? q5 >>> 1 : q5);
       e = (sub ? (carry ? e4 : e4 - 1) : (carry ? e4 + 1 : e4)); }
     return Doubles.makeDouble(neg,q,e); }

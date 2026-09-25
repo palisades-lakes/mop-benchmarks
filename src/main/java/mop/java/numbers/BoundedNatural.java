@@ -60,12 +60,12 @@ import static mop.java.numbers.Numbers.*;
  * when the operation result exceeds the bound.
  *  <br>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-05
+ * @version 2026-09-24
  */
 
 //
 public final class BoundedNatural
-implements Ringlike<BoundedNatural> {
+  implements Ringlike<BoundedNatural> {
 
   //--------------------------------------------------------------
   // fields
@@ -847,14 +847,17 @@ implements Ringlike<BoundedNatural> {
   @Override
   public final BoundedNatural square () {
     if (isZero()) { return zero(); }
-    if (isOne()) { return one(); }
+    //if (isOne()) { return one(); }
     final int n = hiInt();
+    final BoundedNatural tmp;
     if (n < KARATSUBA_SQUARE_THRESHOLD) {
-      return NaturalMultiply.squareSimple(this); }
-    if (n < TOOM_COOK_SQUARE_THRESHOLD) {
-      return NaturalMultiply.squareKaratsuba(this); }
+      tmp = NaturalMultiply.squareSimple(this); }
+    else if (n < TOOM_COOK_SQUARE_THRESHOLD) {
+      tmp = NaturalMultiply.squareKaratsuba(this); }
     // For a discussion of overflow detection see multiply()
-    return NaturalMultiply.squareToomCook3(this); }
+    else {
+      tmp =  NaturalMultiply.squareToomCook3(this); }
+    return tmp; }
 
   //--------------------------------------------------------------
   // multiply
@@ -894,10 +897,10 @@ implements Ringlike<BoundedNatural> {
       return NaturalDivide.divideAndRemainder(this, v.word(0)); }
 
     final int[][] qr =
-        KnuthDivision.divideAndRemainder(words(), v.words());
-      return new BoundedNatural[] {
-        BoundedNatural.unsafe(qr[0]),
-        BoundedNatural.unsafe(qr[1]), }; }
+      KnuthDivision.divideAndRemainder(words(), v.words());
+    return new BoundedNatural[] {
+      BoundedNatural.unsafe(qr[0]),
+      BoundedNatural.unsafe(qr[1]), }; }
 
 
   public final BoundedNatural[]
@@ -968,20 +971,20 @@ implements Ringlike<BoundedNatural> {
 
   @Override
   public final BoundedNatural[] reduce (final BoundedNatural d0) {
-      //assert isValid();
-      //assert d.isValid();
-      final int shift = Math.min(loBit(),d0.loBit());
-      final BoundedNatural n = ((shift != 0) ? shiftDown(shift) : this);
-      final BoundedNatural d = ((shift != 0) ? d0.shiftDown(shift) : d0);
-      if (n.equals(d)) { return new BoundedNatural[] { one(),one(),}; }
-      if (d.isOne()) { return new BoundedNatural[] { n,one(), }; }
-      if (n.isOne()) { return new BoundedNatural[] { one(),d, }; }
-      final BoundedNatural g = NaturalGCD.gcd(n,d);
-      if (g.compareTo(n.one()) > 0) {
-        final BoundedNatural ng = n.divide(g);
-        final BoundedNatural dg = d.divide(g);
-        return new BoundedNatural[] {ng,dg,}; }
-      return new BoundedNatural[] {n,d,}; }
+    //assert isValid();
+    //assert d.isValid();
+    final int shift = Math.min(loBit(),d0.loBit());
+    final BoundedNatural n = ((shift != 0) ? shiftDown(shift) : this);
+    final BoundedNatural d = ((shift != 0) ? d0.shiftDown(shift) : d0);
+    if (n.equals(d)) { return new BoundedNatural[] { one(),one(),}; }
+    if (d.isOne()) { return new BoundedNatural[] { n,one(), }; }
+    if (n.isOne()) { return new BoundedNatural[] { one(),d, }; }
+    final BoundedNatural g = NaturalGCD.gcd(n,d);
+    if (g.compareTo(n.one()) > 0) {
+      final BoundedNatural ng = n.divide(g);
+      final BoundedNatural dg = d.divide(g);
+      return new BoundedNatural[] {ng,dg,}; }
+    return new BoundedNatural[] {n,d,}; }
 
   //--------------------------------------------------------------
   // Uints
@@ -1085,14 +1088,14 @@ implements Ringlike<BoundedNatural> {
   //--------------------------------------------------------------
 
   public static final Generator generator (final UniformRandomProvider urp,
-                                            final int nwords) {
+                                           final int nwords) {
     final Generator g =  Generators.intGenerator(nwords,urp);
     return new GeneratorBase ("BoundedNaturalGenerator") {
       // TODO: choose within a range, rather than number of ints
       @Override
       public Object next () {
         // TODO: make this uniform over non-negative values
-        return BoundedNatural.unsafe((int[]) g.next()); } }; }
+        return BoundedNatural.make((int[]) g.next()); } }; }
 
   //--------------------------------------------------------------
   // construction
@@ -1120,13 +1123,13 @@ implements Ringlike<BoundedNatural> {
     return new BoundedNatural(Arrays.copyOf(words,end)); }
 
   //--------------------------------------------------------------
-//  /** If there are leading zeros, return a copy without them.
-//   *  If none, return <code>this</code>.
-//   */
-//  public final BoundedNatural compress () {
-//    final int hi = NaturalInts.hiInt(words());
-//    if (words().length == hi) { return this; }
-//    return new BoundedNatural(Arrays.copyOf(words(),hi)); }
+  /** If there are leading zeros, return a copy without them.
+   *  If none, return <code>this</code>.
+   */
+  public final BoundedNatural compress () {
+    final int hi = NaturalInts.hiInt(words());
+    if (words().length == hi) { return this; }
+    return new BoundedNatural(Arrays.copyOf(words(),hi)); }
 
   //--------------------------------------------------------------
   /** From a big endian {@code byte[]}, as produced by

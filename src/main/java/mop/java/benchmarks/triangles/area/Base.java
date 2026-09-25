@@ -11,7 +11,7 @@ import org.openjdk.jmh.infra.Blackhole;
 /** Benchmark triangle operations.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-09
+ * @version 2026-09-24
  */
 
 @State(Scope.Thread)
@@ -79,7 +79,8 @@ public abstract class Base {
   public void invocationSetup () {
     triangles = Triangle2D.convertTriangles(
       (Triangle2D[]) triangleGenerator.next(), className);
-    value = new int[3]; }
+    value = new int[3];
+    System.gc();}
 
 //  @TearDown(Level.Invocation)
 //  public final void invocationTeardown () {

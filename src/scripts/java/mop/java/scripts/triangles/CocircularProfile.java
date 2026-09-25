@@ -2,18 +2,18 @@ package mop.java.scripts.triangles;
 
 import mop.java.geometry.Generators;
 import mop.java.geometry.euclidean.VectorD2;
-import mop.java.geometry.triangle.RoundingIntervalTriangle2D;
+import mop.java.geometry.triangle.TriangleBF2;
+import mop.java.numbers.BigFloat;
 import mop.java.numbers.Doubles;
-import mop.java.numbers.RoundingInterval;
 import mop.java.prng.Generator;
 import mop.java.prng.PRNG;
 
 /** Profile triangle classes over 'cocircular' examples.
  * <pre>
- * mvn -q clean install && jy src/scripts/java/mop/java/scripts/triangles/CocircularProfile.java
+ * mvn -q install && jy src/scripts/java/mop/java/scripts/triangles/CocircularProfile.java
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-21
+ * @version 2026-09-24
  */
 
 public final class CocircularProfile {
@@ -61,29 +61,52 @@ public final class CocircularProfile {
 
   //--------------------------------------------------------------
 
+//  public static final void
+//  cocircularTrials () {
+//
+//    final int ncircles = 4096;
+//    final int npoints = 4096;
+//    int ntrys = 0;
+//    int ndit = 0;
+//    final VectorD2[][] points = cocircularPoints(ncircles, npoints);
+//    System.gc();
+//    System.gc();
+//    for (int i=0; i<ncircles; i++) {
+//      final VectorD2[] p = points[i];
+//      for (int j=0;j<npoints-3;j++) {
+//        final RoundingIntervalTriangle2D dit =
+//          (RoundingIntervalTriangle2D)
+//            RoundingIntervalTriangle2D.of(p[j], p[j+1], p[j+2]);
+//        for (int k=j+3; k<npoints; k++) {
+//          ntrys++;
+//          final RoundingInterval di = dit.inCircleInterval(p[k]);
+//          if (di.containsZero()) { ndit++; } } } }
+//    System.out.println(
+//      "Rounding Interval cocircular= " + ndit + "/" + ntrys +
+//        " = " + ((double) ndit) / ntrys); }
+
   public static final void
   cocircularTrials () {
 
     final int ncircles = 4096;
     final int npoints = 4096;
     int ntrys = 0;
-    int ndit = 0;
+    int nzero = 0;
     final VectorD2[][] points = cocircularPoints(ncircles, npoints);
     System.gc();
     System.gc();
     for (int i=0; i<ncircles; i++) {
       final VectorD2[] p = points[i];
       for (int j=0;j<npoints-3;j++) {
-        final RoundingIntervalTriangle2D dit =
-          (RoundingIntervalTriangle2D)
-            RoundingIntervalTriangle2D.of(p[j], p[j+1], p[j+2]);
+        final TriangleBF2 t =
+          (TriangleBF2) TriangleBF2.of(p[j], p[j+1], p[j+2]);
         for (int k=j+3; k<npoints; k++) {
           ntrys++;
-          final RoundingInterval di = dit.inCircleInterval(p[k]);
-          if (di.containsZero()) { ndit++; } } } }
+          final BigFloat d = t.inCircleDistanceBF(p[k]);
+          if (d.isZero()) { nzero++; } } } }
     System.out.println(
-      "Rounding Interval cocircular= " + ndit + "/" + ntrys +
-        " = " + ((double) ndit) / ntrys); }
+      "BigFloat cocircular= " + nzero + "/" + ntrys +
+        " = " + ((double) nzero) / ntrys); }
 
   //--------------------------------------------------------------------
 
