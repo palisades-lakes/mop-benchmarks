@@ -20,7 +20,7 @@ import static java.lang.Float.*;
 /** Utilities for <code>float</code>, <code>float[]</code>.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-21
+ * @version 2026-09-26
  */
 
 @SuppressWarnings("unused")

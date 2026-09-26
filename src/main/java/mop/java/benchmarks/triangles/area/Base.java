@@ -11,7 +11,7 @@ import org.openjdk.jmh.infra.Blackhole;
 /** Benchmark triangle operations.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-25
+ * @version 2026-09-26
  */
 
 @State(Scope.Thread)
@@ -23,13 +23,14 @@ public abstract class Base {
   Generator triangleGenerator;
 
   @Param({
-    "TriangleBF2",
-    "TriangleBF2X",
-//    "TriangleD2Eager",
+    "TriangleD2Eager",
+    "ShewchukIntervalTriangle2D",
+//    "ShewchukVectorTriangle2D",
+//    "TriangleBF2",
+//    "TriangleBF2X",
 //    "TriangleD2Lazy",
 //    "RelaxedIntervalTriangle2D",
 //    "RoundingIntervalTriangle2D",
-//    "ShewchukIntervalTriangle2D",
 //    "ReBfTriangle2D",
 //    "RoBfTriangle2D",
 //    "ShBFTriangle2D",
@@ -44,7 +45,7 @@ public abstract class Base {
 
   //--------------------------------------------------------------
   @Param({
-    "262144",
+    "524288",
   })
   int nTriangles;
 
@@ -81,7 +82,9 @@ public abstract class Base {
     triangles = Triangle2D.convertTriangles(
       (Triangle2D[]) triangleGenerator.next(), className);
     value = new int[3];
-    System.gc(); }
+    System.gc();
+    System.gc();
+  }
 
 //  @TearDown(Level.Invocation)
 //  public final void invocationTeardown () {

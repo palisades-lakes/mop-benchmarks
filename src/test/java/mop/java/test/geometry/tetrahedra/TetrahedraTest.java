@@ -12,7 +12,7 @@ import java.util.List;
 /** Common code for 3D geometry predicate tests.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-24
+ * @version 202-09-26
  */
 
 public class TetrahedraTest {

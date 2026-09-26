@@ -16,10 +16,10 @@ import mop.java.prng.PRNG;
 /** TODO: worth creating 'exact' cocircular points represented
  *    by: <code>center, radius, angle</code>?
  * <pre>
- * mvn -q clean install && j src/scripts/java/mop/java/scripts/triangles/CocircularTrials.java
+ * mvn -q install && j src/scripts/java/mop/java/scripts/triangles/CocircularTrials.java
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-21
+ * @version 2026-09-26
  */
 
 public final class CocircularTrials {
@@ -67,8 +67,7 @@ public final class CocircularTrials {
       final VectorD2 p0 = ((VectorD2) pointGenerator.next()).project(c,r);
       final VectorD2 p1 = ((VectorD2) pointGenerator.next()).project(c,r);
       final VectorD2 p2 = ((VectorD2) pointGenerator.next()).project(c,r);
-      final TriangleBF2 t =
-        (TriangleBF2) TriangleBF2.of(p0,p1,p2);
+      final TriangleBF2 t = (TriangleBF2) TriangleBF2.of(p0,p1,p2);
       for (int j=0;j<npoints;j++) {
         ntrys++;
         final VectorD2 p = ((VectorD2) pointGenerator.next()).project(c,r);

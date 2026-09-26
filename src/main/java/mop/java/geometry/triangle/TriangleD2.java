@@ -5,10 +5,10 @@ import mop.java.geometry.euclidean.VectorD2;
 /** Minimal triangle with VectorD2 vertices, nothing cached.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-09-21
+ * @version 2026-09-26
  */
 
-public final class TriangleD2 extends Triangle2D {
+public final class TriangleD2 extends AbstractTriangle2D {
 
   //--------------------------------------------------------------------
 
@@ -53,8 +53,8 @@ public final class TriangleD2 extends Triangle2D {
     super(a,b,c); }
 
   public static final Triangle2D of (final VectorD2 a,
-                                     final VectorD2 b,
-                                     final VectorD2 c) {
+                                             final VectorD2 b,
+                                             final VectorD2 c) {
     return new TriangleD2(a, b, c); }
 
   /** Convert other triangle classes. */

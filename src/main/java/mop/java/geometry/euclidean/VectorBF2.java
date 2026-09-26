@@ -5,7 +5,7 @@ import mop.java.numbers.BigFloat;
 /** Subset of <code>R<sup>2</sup></code>, with <code>BigFloat</code>.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-25
+ * @version 202-09-26
  */
 
 public final record VectorBF2 (BigFloat x, BigFloat y)
@@ -39,6 +39,9 @@ public final record VectorBF2 (BigFloat x, BigFloat y)
   public final BigFloat wedge (final VectorR2<BigFloat> v) {
     return BigFloat.wedge(x, y, v.getX(), v.getY()); }
 
+  @Override
+  public final String toHexString () {
+    return "(" + x.toHexString() + "," + y.toHexString() + ")"; }
 
   //-------------------------------------------------------------------
 } // end class

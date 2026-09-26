@@ -10,53 +10,54 @@ import java.util.List;
 /** Triangles "embedded" in <code>R<sup>2</sup></code>>.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-09-25
+ * @version 2026-09-26
  */
 
-public abstract class Triangle2D {
+public interface Triangle2D {
 
-  private final VectorD2 p0;
-  private final VectorD2 p1;
-  private final VectorD2 p2;
-  public final VectorD2 getP0 () { return p0; }
-  public final VectorD2 getP1 () { return p1; }
-  public final VectorD2 getP2 () { return p2; }
+  public VectorD2 getP0 ();
+  public VectorD2 getP1 ();
+  public VectorD2 getP2 ();
 
-  public static final List<Triangle2D> makeTriangles (final Triangle2D t) {
+  public static List<Triangle2D> makeTriangles (final Triangle2D t) {
     final Triangle2D
       doubleIntervalTriangle = RelaxedIntervalTriangle2D.from(t);
     final Triangle2D roundingIntervalTriangle = RoundingIntervalTriangle2D.from(t);
     final Triangle2D shewchukIntervalTriangle = ShewchukIntervalTriangle2D.from(t);
+    final Triangle2D
+      shewchukVectorTriangle = ShewchukVectorTriangle2D.from(t);
     final Triangle2D bf2 = TriangleBF2.from(t);
     final Triangle2D d2eager = TriangleD2Eager.from(t);
     final Triangle2D d2lazy = TriangleD2Lazy.from(t);
     final Triangle2D rebf = ReBfTriangle2D.from(t);
     final Triangle2D robf = RoBfTriangle2D.from(t);
     final Triangle2D shbf = ShBFTriangle2D.from(t);
-    final Triangle2D rationalFloat = RationalFloatTriangle2D.from(t);
+    final Triangle2D
+      rationalFloat = RationalFloatTriangle2D.from(t);
     final Triangle2D ddFast = DDFast.from(t);
     final Triangle2D ddNormalized = DDNormalized.from(t);
     final Triangle2D ddSlow = DDSlow.from(t);
     final Triangle2D doubleNonRobust = DoubleNonRobust.from(t);
-    final Triangle2D inCircleNormalized = InCircleNormalized.from(t);
+    final Triangle2D
+      inCircleNormalized = InCircleNormalized.from(t);
     return List.of(
       // mine
       d2eager, d2lazy,
       rationalFloat,
       doubleIntervalTriangle, roundingIntervalTriangle,
-      shewchukIntervalTriangle,
+      shewchukIntervalTriangle, shewchukVectorTriangle,
       bf2,
       rebf,robf,shbf,
       // JTS
       ddFast,ddNormalized,ddSlow,doubleNonRobust,inCircleNormalized); }
 
   /** ground truth predicate. */
-  public static final Triangle2D truth (final Triangle2D t) {
+  public static Triangle2D truth (final Triangle2D t) {
     return TriangleBF2.from(t); }
 
-  /** conversions from any Triangle2D to other Triangle classes. */
+  /** conversions from any AbstractTriangle2D to other Triangle classes. */
 
-  public static final Triangle2D convertTriangle (final Triangle2D t,
+  public static Triangle2D convertTriangle (final Triangle2D t,
                                                   final String dest) {
     // TODO: lookup method object rather than switch (String)
     return switch (dest) {
@@ -64,6 +65,7 @@ public abstract class Triangle2D {
       case "RelaxedIntervalTriangle2D" -> RelaxedIntervalTriangle2D.from(t);
       case "RoundingIntervalTriangle2D" -> RoundingIntervalTriangle2D.from(t);
       case "ShewchukIntervalTriangle2D" -> ShewchukIntervalTriangle2D.from(t);
+      case "ShewchukVectorTriangle2D" -> ShewchukVectorTriangle2D.from(t);
       case "TriangleBF2" ->  TriangleBF2.from(t);
       case "TriangleBF2X" ->  TriangleBF2X.from(t);
       case "TriangleD2Eager" ->  TriangleD2Eager.from(t);
@@ -79,7 +81,7 @@ public abstract class Triangle2D {
       case "InCircleNormalized" ->  InCircleNormalized.from(t);
       default -> throw new UnsupportedOperationException(); }; }
 
-  public static final Triangle2D[]
+  public static Triangle2D[]
   convertTriangles (final Triangle2D[] t,
                     final String dest) {
     for (int i=0; i<t.length; i++) {
@@ -89,28 +91,21 @@ public abstract class Triangle2D {
   //--------------------------------------------------------------------
   // Object methods
   //--------------------------------------------------------------------
-  // TODO: hashcode, equals
 
-  public static final String toHexString (final VectorD2 p) {
-    return "(" +
-      Double.toHexString(p.getX()) + "," +
-      Double.toHexString(p.getY()) + ")"; }
-
-  public final String toHexString () {
+  public default String toHexString () {
     return getClass().getSimpleName() + "[" +
-      toHexString(p0) + ", " +
-      toHexString(p1) + ", " +
-      toHexString(p2) + "]"; }
+      getP0().toHexString() + ", " +
+      getP1().toHexString() + ", " +
+      getP2().toHexString() + "]"; }
 
-  public String toString () { return toHexString(); }
-  public String description () { return toString(); }
+  public default String description () { return toString(); }
 
   //--------------------------------------------------------------------
   // TODO: an estimate of accuracy for each operation would be better.
   /** Is this algorithm exact (to the resolution expansions)
    * or approximate?
    */
-  public boolean signedAreaExact() { return false; }
+  public default boolean signedAreaExact() { return false; }
 
   //--------------------------------------------------------------------
   /** Return a positive value if the points pa, pb, and pc occur in
@@ -120,18 +115,19 @@ public abstract class Triangle2D {
    * the three points.
    */
 
-  public double twiceSignedArea () {
+  public default double twiceSignedArea () {
     throw new UnsupportedOperationException(
       getClass().getSimpleName()); }
 
-  public Object twiceSignedAreaInterval () {
+  public default Object twiceSignedAreaInterval () {
     return Double.toHexString(twiceSignedArea()); }
 
   //--------------------------------------------------------------------
   /** Not clear exactly what I want here. For now, indicate whether
    * all Kettner orientation tests should pass.
    */
-  public boolean isOrientationRobust () { return signedAreaExact(); }
+  public default boolean isOrientationRobust () {
+    return signedAreaExact(); }
 
   //--------------------------------------------------------------------
   /** Return +1.0 if the points pa, pb, and pc occur in
@@ -144,7 +140,7 @@ public abstract class Triangle2D {
    * from that, rather than forcing a round to <code>double</code>.
    */
 
-  public double orientation () {
+  public default double orientation () {
     // NOTE: Double.compare() doesn't handle +-0.0 correctly.
     final double a = twiceSignedArea();
     if (! Double.isFinite(a)) { return a; }
@@ -154,7 +150,7 @@ public abstract class Triangle2D {
 
   //--------------------------------------------------------------------
 
-  public boolean inCircleDistanceExact () { return false; }
+  public default boolean inCircleDistanceExact () { return false; }
 
   /** Return a positive value if the point pd lies inside the circle
    * passing through p0, p1, and p2; a negative value if it lies
@@ -176,14 +172,14 @@ public abstract class Triangle2D {
    * input points are cocircular or nearly so.
    */
 
-  public double inCircleDistance (final VectorD2 p) {
+  public default double inCircleDistance (final VectorD2 p) {
     throw new UnsupportedOperationException(getClass().getSimpleName()); }
 
-  public DoubleInterval inCircleInterval (final VectorD2 p) {
+  public default DoubleInterval inCircleInterval (final VectorD2 p) {
     final double d = inCircleDistance(p);
     return new RoundingInterval(d,d); }
 
-  public boolean inCircleIntervals () { return false; }
+  public default boolean inCircleIntervals () { return false; }
 
   //--------------------------------------------------------------------
 
@@ -193,23 +189,13 @@ public abstract class Triangle2D {
    * outside, on, or inside the circumcircle.
    */
 
-  public double inCircle (final VectorD2 p) {
+  public default double inCircle (final VectorD2 p) {
     // TODO: what to do with NaN?
     final double a = inCircleDistance(p);
     if (Double.isNaN(a)) { return Double.NaN; }
     if (0.0 < a) { return 1.0; }
     if (0.0 > a) { return -1.0; }
     return 0.0; }
-
-  //--------------------------------------------------------------------
-  // construction
-  //--------------------------------------------------------------------
-
-  public Triangle2D (final VectorD2 a,
-                     final VectorD2 b,
-                     final VectorD2 c) {
-    super();
-    this.p0 = a; this.p1 = b; this.p2 = c; }
 
   //-------------------------------------------------------------------
 } // end class

@@ -8,10 +8,10 @@ import mop.java.numbers.BigFloatX;
  * Should be exact, up to BigFloatX resolution.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-09-25
+ * @version 202-09-26
  */
 
-public final class TriangleBF2X extends Triangle2D {
+public final class TriangleBF2X extends AbstractTriangle2D {
 
   // cache vector result of translating p0 to origin,
   // and related quantities
@@ -126,8 +126,8 @@ public final class TriangleBF2X extends Triangle2D {
     super(a,b,c); }
 
   public static final Triangle2D of (final VectorD2 a,
-                                     final VectorD2 b,
-                                     final VectorD2 c) {
+                                             final VectorD2 b,
+                                             final VectorD2 c) {
     return new TriangleBF2X(a, b, c); }
 
   /** Convert other triangle classes. */

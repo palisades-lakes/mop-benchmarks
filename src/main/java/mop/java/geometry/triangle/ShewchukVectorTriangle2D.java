@@ -3,7 +3,7 @@ package mop.java.geometry.triangle;
 import mop.java.geometry.euclidean.VectorD2;
 import mop.java.numbers.RelaxedInterval;
 
-/** Same calculations as <code>DoubleTriangle2D</code>,
+/** Same calculations as <code>TriangleD2Eager</code>,
  * converted to intervals using error bounds in
  *  <a href="https://www.cs.cmu.edu/~quake/robust.html">
  * "Adaptive Precision Floating-Point Arithmetic
@@ -18,24 +18,21 @@ import mop.java.numbers.RelaxedInterval;
  * @version 2026-09-26
  */
 
-public final class ShewchukIntervalTriangle2D
-  extends AbstractTriangle2D {
+public final class ShewchukVectorTriangle2D extends AbstractTriangle2D {
 
-  // cache vector result of translating p0 to origin,
+  // precomputed vector result of translating p0 to origin,
   // and related quantities
 
-  private final double _x10;
-  private final double _y10;
+  private final VectorD2 _v10;
+  private final VectorD2 getV10 () { return _v10; }
+
   private final double _v10Norm2;
-  private final double getX10 () { return _x10; }
-  private final double getY10 () { return _y10; }
   private final double getV10Norm2 () { return _v10Norm2; }
 
-  private final double _x20;
-  private final double _y20;
+  private final VectorD2 _v20;
+  private final VectorD2 getV20 () { return _v20; }
+
   private final double _v20Norm2;
-  private final double getX20 () {  return _x20; }
-  private final double getY20 () {  return _y20; }
   private final double getV20Norm2 () { return _v20Norm2; }
 
   private final double _V20xV10;
@@ -48,7 +45,7 @@ public final class ShewchukIntervalTriangle2D
 
   public final boolean signedAreaExact () { return false; }
 
-  public final double twiceSignedArea () { return -_V20xV10; }
+  public final double twiceSignedArea () { return -getV20xV10(); }
 
   public final RelaxedInterval twiceSignedAreaInterval () {
    //    return RelaxedInterval.plusOrMinus(twiceSignedArea(),areaBound()); }
@@ -56,18 +53,7 @@ public final class ShewchukIntervalTriangle2D
   final double ae = Math.abs(areaBound());
     return new RelaxedInterval(twiceSignedArea()-ae, twiceSignedArea()+ae); }
 
-
 //--------------------------------------------------------------------
-
-  private static final double crossProduct (final double x0,
-                                            final double y0,
-                                            final double x1,
-                                            final double y1) {
-    return x0*y1 - x1*y0; }
-
-  private static final double l2norm2 (final double x,
-                                       final double y) {
-    return x*x + y*y; }
 
   private static final double dot (final double x0,
                                    final double y0,
@@ -83,33 +69,40 @@ public final class ShewchukIntervalTriangle2D
 
   public final double inCircleDistance (final VectorD2 p) {
 
-    final double xp0 = p.getX() - getP0().getX();
-    final double yp0 = p.getY() - getP0().getY();
+    final VectorD2 vp0 = p.subtract(getP0());
 
-    final double bxp = crossProduct(getX10(),getY10(),xp0,yp0);
+    final double bxp = getV10().wedge(vp0);
     final double bxc = getV20xV10();
-    final double pxc = crossProduct(xp0,yp0,getX20(),getY20());
+    final double pxc = vp0.wedge(getV20());
 
-    final double p2 = l2norm2(xp0,yp0);
+    final double p2 = vp0.l2norm2();
     final double b2 = getV10Norm2();
     final double c2 = getV20Norm2();
 
     return dot(p2,b2,c2,bxc,pxc,bxp); }
 
+  private static final double EPSILON = 0x1.0p-53;
+  private static final double AREA_FACTOR =
+    16 * 8 * (EPSILON * (3.0 + 16.0 * EPSILON));
+  private static final double INCIRCLE_FACTOR =
+    (10.0 + 96.0 * EPSILON) * EPSILON;
+
   public final double inCircleBound (final VectorD2 p) {
 
-    final double xp0 = p.getX() - getP0().getX();
-    final double yp0 = p.getY() - getP0().getY();
+    final VectorD2 p0 = p.subtract(getP0());
 
-    final double p2 = l2norm2(xp0,yp0);
+    final double p2 = p0.l2norm2();
     final double b2 = getV10Norm2();
     final double c2 = getV20Norm2();
 
-    final double factor = (10.0 + 96.0 * EPSILON) * EPSILON;
-    return factor *
-      ((p2 * (Math.abs(_x20*_y10) + Math.abs(_y20*_x10))) +
-        (b2 * (Math.abs(xp0*_y20) + Math.abs(yp0*_x20))) +
-        (c2 * (Math.abs(_x10*yp0) + Math.abs(_y10*xp0)))); }
+    final double xy21 = Math.abs(getV10().x() * getV20().y());
+    final double xy12 = Math.abs(getV20().x() * getV10().y());
+    final double xyp2 = Math.abs(p0.x() * getV20().y());
+    final double xy2p = Math.abs(getV20().x() * p0.y());
+    final double xy1p = Math.abs(getV10().x() * p0.y());
+    final double xyp1 = Math.abs(p0.x() * getV10().y());
+    return INCIRCLE_FACTOR *
+      ((p2 * (xy21+xy12)) + (b2 * (xyp2+xy2p)) + (c2 * (xy1p+xyp1))); }
 
   public final boolean inCircleIntervals () { return true; }
 
@@ -123,35 +116,23 @@ public final class ShewchukIntervalTriangle2D
   // construction
   //--------------------------------------------------------------------
 
-  private static final double EPSILON = 0x1.0p-53;
-
-  private ShewchukIntervalTriangle2D (final VectorD2 a,
-                                      final VectorD2 b,
-                                      final VectorD2 c)  {
+  private ShewchukVectorTriangle2D (final VectorD2 a,
+                                    final VectorD2 b,
+                                    final VectorD2 c)  {
     super(a,b,c);
-
-    final double ax = a.getX();
-    final double ay = a.getY();
-
-    _x10 = b.getX() - ax;
-    _y10 = b.getY() - ay;
-    _v10Norm2 = l2norm2(_x10,_y10);
-
-    _x20 = c.getX() - ax;
-    _y20 = c.getY() - ay;
-    _v20Norm2 = l2norm2(_x20,_y20);
-
-    _V20xV10 = crossProduct(_x20, _y20, _x10, _y10);
-
-    _areaBound =
-      16 * 8 * (EPSILON * (3.0 + 16.0 * EPSILON)) *
-        (Math.abs(_x20*_y10) + Math.abs(_y20*_x10));
-  }
+    _v10 = getP1().subtract(getP0());
+    _v10Norm2 = getV10().l2norm2();
+    _v20 = getP2().subtract(getP0());
+    _v20Norm2 = getV20().l2norm2();
+    _V20xV10 = getV20().wedge(getV10());
+    final double xy21 = Math.abs(getV10().x() * getV20().y());
+    final double xy12 = Math.abs(getV20().x() * getV10().y());
+    _areaBound = AREA_FACTOR * (xy21 + xy12); }
 
   public static final Triangle2D of (final VectorD2 a,
                                              final VectorD2 b,
                                              final VectorD2 c) {
-    return new ShewchukIntervalTriangle2D(a, b, c); }
+    return new ShewchukVectorTriangle2D(a, b, c); }
 
   /** Convert other triangle classes. */
 

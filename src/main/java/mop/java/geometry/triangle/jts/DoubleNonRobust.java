@@ -1,15 +1,16 @@
 package mop.java.geometry.triangle.jts;
 
 import mop.java.geometry.euclidean.VectorD2;
+import mop.java.geometry.triangle.AbstractTriangle2D;
 import mop.java.geometry.triangle.Triangle2D;
 
 /** From org.locationtech.jts.triangulate.quadedge.TrianglePredicate
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-09-21
+ * @version 2026-09-26
  */
 
-public final class DoubleNonRobust extends Triangle2D {
+public final class DoubleNonRobust extends AbstractTriangle2D {
 
   //--------------------------------------------------------------------
   /** TrianglePredicate.triArea

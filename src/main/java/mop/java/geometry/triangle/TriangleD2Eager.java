@@ -5,34 +5,28 @@ import mop.java.geometry.euclidean.VectorD2;
 /** Triangle with VectorD2 vertices, precomputing reusable values.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-09-21
+ * @version 2026-09-26
  */
 
-public final class TriangleD2Eager extends Triangle2D {
-
-  // precomputed vector result of translating p0 to origin,
-  // and related quantities
-
-  private final VectorD2 _v10;
-  private final VectorD2 getV10 () { return _v10; }
-
-  private final double _v10Norm2;
-  private final double getV10Norm2 () { return _v10Norm2; }
-
-  private final VectorD2 _v20;
-  private final VectorD2 getV20 () { return _v20; }
-
-  private final double _v20Norm2;
-  private final double getV20Norm2 () { return _v20Norm2; }
-
-  private final double _V20xV10;
-  private final double getV20xV10 () { return _V20xV10; }
+public final record TriangleD2Eager (VectorD2 p0,
+                                     // precomputed vector result
+                                     // of translating vertices to origin,
+                                     // and related quantities
+                                     VectorD2 v10,
+                                     VectorD2 v20,
+                                     double v10Norm2,
+                                     double v20Norm2,
+                                     double v20Xv10)
+  implements Triangle2D {
+  public final VectorD2 getP0 () { return p0; }
+  public final VectorD2 getP1 () { return null; }
+  public final VectorD2 getP2 () { return null; }
 
   //--------------------------------------------------------------------
 
   public final boolean signedAreaExact () { return false; }
 
-  public final double twiceSignedArea () { return -getV20xV10(); }
+  public final double twiceSignedArea () { return -v20Xv10; }
 
   //--------------------------------------------------------------------
 
@@ -50,36 +44,23 @@ public final class TriangleD2Eager extends Triangle2D {
 
   public final double inCircleDistance (final VectorD2 p) {
 
-    final VectorD2 vp0 = p.subtract(getP0());
+    final VectorD2 vp0 = p.subtract(p0);
 
-    final double bxp = getV10().wedge(vp0);
-    final double bxc = getV20xV10();
-    final double pxc = vp0.wedge(getV20());
-
-    final double p2 = vp0.l2norm2();
-    final double b2 = getV10Norm2();
-    final double c2 = getV20Norm2();
-
-    return dot(p2,b2,c2,bxc,pxc,bxp); }
+    return dot(vp0.dL2norm2(), v10Norm2, v20Norm2,
+               v20Xv10, vp0.wedge(v20), v10.wedge(vp0)); }
 
   //--------------------------------------------------------------------
   // construction
   //--------------------------------------------------------------------
 
-  private TriangleD2Eager (final VectorD2 a,
-                           final VectorD2 b,
-                           final VectorD2 c)  {
-    super(a,b,c);
-    _v10 = getP1().subtract(getP0());
-    _v10Norm2 = getV10().l2norm2();
-    _v20 = getP2().subtract(getP0());
-    _v20Norm2 = getV20().l2norm2();
-    _V20xV10 = getV20().wedge(getV10()); }
-
-  public static final Triangle2D of (final VectorD2 a,
-                                     final VectorD2 b,
-                                     final VectorD2 c) {
-    return new TriangleD2Eager(a, b, c); }
+  public static final Triangle2D of (final VectorD2 p0,
+                                     final VectorD2 p1,
+                                     final VectorD2 p2) {
+    final VectorD2 v10 = p1.subtract(p0);
+    final VectorD2 v20 = p2.subtract(p0);
+    return new TriangleD2Eager(
+      p0, v10, v20,
+      v10.dL2norm2(), v20.dL2norm2(), v20.wedge(v10)); }
 
   /** Convert other triangle classes. */
 

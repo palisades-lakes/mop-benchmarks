@@ -7,10 +7,11 @@ import mop.java.numbers.RoundingInterval;
  * using <code>RoundingInterval</code>.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-09-21
+ * @version 2026-09-26
  */
 
-public final class RoundingIntervalTriangle2D extends Triangle2D {
+public final class RoundingIntervalTriangle2D
+  extends AbstractTriangle2D {
 
   // TODO: RoundingInterval vectors
   // cache vector result of translating p0 to origin,
@@ -118,7 +119,7 @@ public final class RoundingIntervalTriangle2D extends Triangle2D {
   public final String description () {
     return
       toHexString() +
-      "\nv10: [" + getX10()  + ", " + getY10() + "]"  +
+        "\nv10: [" + getX10()  + ", " + getY10() + "]"  +
         "\n|v10|^2: " + getV10Norm2() +
         "\nv20: [" + getX20()  + ", " + getY20() + "]" +
         "\n|v20|^2: " + getV20Norm2() +

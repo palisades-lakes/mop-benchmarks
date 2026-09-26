@@ -13,7 +13,7 @@ import java.util.List;
  * mvn clean install && j src/scripts/java/mop/java/scripts/triangles/KettnerOrientation.java
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-09
+ * @version 202-09-26
  */
 
 public final class KettnerOrientation {

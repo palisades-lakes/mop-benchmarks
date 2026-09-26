@@ -7,7 +7,7 @@ import mop.java.geometry.triangle.Triangle2D;
  * mvn -q install && jmh mop.java.benchmarks.triangles.area.SignedArea
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-25
+ * @version 2026-09-26
  */
 
 public class SignedArea extends Base {
@@ -16,5 +16,5 @@ public class SignedArea extends Base {
   public final double operation (final Triangle2D t) {
     return t.twiceSignedArea(); }
 
-  public static final void main (final String[] args)  {
+  public static final void main (final String[] ignore)  {
     Defaults.run("SignedArea"); } }

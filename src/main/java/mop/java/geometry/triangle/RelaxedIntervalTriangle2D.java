@@ -7,10 +7,11 @@ import mop.java.numbers.RelaxedInterval;
  * using <code>RelaxedInterval</code>.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-09-21
+ * @version 2026-09-26
  */
 
-public final class RelaxedIntervalTriangle2D extends Triangle2D {
+public final class RelaxedIntervalTriangle2D
+  extends AbstractTriangle2D {
 
   // TODO: RelaxedInterval vectors
   // cache vector result of translating p0 to origin,
@@ -55,7 +56,7 @@ public final class RelaxedIntervalTriangle2D extends Triangle2D {
   public final RelaxedInterval getV20xV10 () {
     if (null==_V20xV10) {
       _V20xV10 = RelaxedInterval.crossProduct(getX20(), getY20(),
-                                             getX10(), getY10()); }
+                                              getX10(), getY10()); }
     return _V20xV10; }
 
   //--------------------------------------------------------------------
@@ -119,7 +120,7 @@ public final class RelaxedIntervalTriangle2D extends Triangle2D {
   public final String description () {
     return
       toHexString() +
-      "\nv10: [" + getX10()  + ", " + getY10() + "]"  +
+        "\nv10: [" + getX10()  + ", " + getY10() + "]"  +
         "\n|v10|^2: " + getV10Norm2() +
         "\nv20: [" + getX20()  + ", " + getY20() + "]" +
         "\n|v20|^2: " + getV20Norm2() +
@@ -134,8 +135,8 @@ public final class RelaxedIntervalTriangle2D extends Triangle2D {
   //--------------------------------------------------------------------
 
   private RelaxedIntervalTriangle2D (final VectorD2 a,
-                                    final VectorD2 b,
-                                    final VectorD2 c)  {
+                                     final VectorD2 b,
+                                     final VectorD2 c)  {
     super(a,b,c); }
 
   public static final Triangle2D of (final VectorD2 a,

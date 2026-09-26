@@ -21,7 +21,7 @@ import java.util.List;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-24
+ * @version 202-09-26
  */
 
 public final class CocircularTest extends TriangleTest {
@@ -33,10 +33,13 @@ public final class CocircularTest extends TriangleTest {
       relaxedIntervalTriangle = RelaxedIntervalTriangle2D.from(t);
     final Triangle2D roundingIntervalTriangle = RoundingIntervalTriangle2D.from(t);
     final Triangle2D shewchukIntervalTriangle = ShewchukIntervalTriangle2D.from(t);
+    final Triangle2D shewchukVectorTriangle = ShewchukVectorTriangle2D.from(t);
     return List.of(
       relaxedIntervalTriangle,
       roundingIntervalTriangle,
-      shewchukIntervalTriangle); }
+      shewchukIntervalTriangle,
+      shewchukVectorTriangle); }
+
 
   private static final void inCircle (final Triangle2D t,
                                       final VectorD2 p) {

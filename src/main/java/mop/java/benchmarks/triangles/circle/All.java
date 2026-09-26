@@ -8,7 +8,7 @@ import mop.java.geometry.triangle.Triangle2D;
  * mvn clean install && jmh mop.java.benchmarks.triangles.circle.RandomInCircle
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-25
+ * @version 202-09-26
  */
 
 public class All extends Base {

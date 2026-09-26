@@ -19,8 +19,9 @@ set THRUPUT=-server -XX:+UseParallelGC -XX:+UseFMA -Xbatch
 ::set XMX=-Xms48g -Xmx48g -Xmn16g
 ::set XMX=-Xms31g -Xmx31g -Xmn12g
 ::set XMX=-Xms8g -Xmx8g -Xmn3g
+set XMX=
+
 :: see https://docs.oracle.com/en/java/javase/26/docs/specs/man/java.html
-set XMX=-Xms48g -Xmx48g
 
 ::set PROF=
 set PROF=-agentpath:"C:\Program Files\YourKit Java Profiler 2026.9.146\bin\windows-x86-64\yjpagent.dll=_no_java_version_check"

@@ -5,10 +5,10 @@ import mop.java.geometry.euclidean.VectorD2;
 /** Minimal triangle with VectorD2 vertices, caching reusable values.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-09-21
+ * @version 2026-09-26
  */
 
-public final class TriangleD2Lazy extends Triangle2D {
+public final class TriangleD2Lazy extends AbstractTriangle2D {
 
   // cache vector result of translating p0 to origin,
   // and related quantities
@@ -91,8 +91,8 @@ public final class TriangleD2Lazy extends Triangle2D {
     super(a,b,c); }
 
   public static final Triangle2D of (final VectorD2 a,
-                                     final VectorD2 b,
-                                     final VectorD2 c) {
+                                             final VectorD2 b,
+                                             final VectorD2 c) {
     return new TriangleD2Lazy(a, b, c); }
 
   /** Convert other triangle classes. */

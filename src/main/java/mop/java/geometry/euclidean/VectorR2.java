@@ -5,7 +5,7 @@ package mop.java.geometry.euclidean;
  * that are more precise than <code>double/Double</code>.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-21
+ * @version 2026-09-26
  */
 
 public interface VectorR2<C> {
@@ -26,6 +26,8 @@ public interface VectorR2<C> {
 
   /** AKA wedge product, cross product (in 3D), ... */
   public C wedge (final VectorR2<C> v);
+
+  public String toHexString ();
 
   //-------------------------------------------------------------------
 } // end class

@@ -9,7 +9,7 @@ import java.util.List;
 /** Common code for 2D geometry predicate tests.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-09
+ * @version 202-09-26
  */
 
 public abstract class TriangleTest {

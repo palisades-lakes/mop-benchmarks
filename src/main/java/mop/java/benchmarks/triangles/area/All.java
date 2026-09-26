@@ -6,7 +6,7 @@ import mop.java.benchmarks.triangles.Defaults;
  * mvn -q install && jmh mop.java.benchmarks.triangles.area.SignedArea
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-25
+ * @version 202-09-26
  */
 
 public class All extends Base {

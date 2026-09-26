@@ -8,10 +8,10 @@ import mop.java.numbers.RoundingInterval;
  * <code>BigFloatTriangle</code>
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-09-21
+ * @version 2026-09-26
  */
 
-public final class RoBfTriangle2D extends Triangle2D {
+public final class RoBfTriangle2D extends AbstractTriangle2D {
 
   // Wrap an instance of RoundingIntervalTriangle2D, so that this gets
   // any performance improvements without having to repeat the edits
@@ -69,8 +69,8 @@ public final class RoBfTriangle2D extends Triangle2D {
       (RoundingIntervalTriangle2D) RoundingIntervalTriangle2D.of(a, b, c); }
 
   public static final Triangle2D of (final VectorD2 a,
-                                     final VectorD2 b,
-                                     final VectorD2 c) {
+                                             final VectorD2 b,
+                                             final VectorD2 c) {
     return new RoBfTriangle2D(a, b, c); }
 
   /** Convert other triangle classes. */

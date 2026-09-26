@@ -1,16 +1,17 @@
 package mop.java.geometry.triangle.jts;
 
 import mop.java.geometry.euclidean.VectorD2;
+import mop.java.geometry.triangle.AbstractTriangle2D;
 import mop.java.geometry.triangle.Triangle2D;
 import org.locationtech.jts.math.DD;
 
 /** From org.locationtech.jts.triangulate.quadedge.TrianglePredicate
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-09-21
+ * @version 2026-09-26
  */
 
-public final class DDNormalized extends Triangle2D {
+public final class DDNormalized extends AbstractTriangle2D {
 
   // TODO: cache DD subtract during construction
 
@@ -59,8 +60,8 @@ public final class DDNormalized extends Triangle2D {
     super(a,b,c); }
 
   public static final Triangle2D of (final VectorD2 a,
-                                     final VectorD2 b,
-                                     final VectorD2 c) {
+                                             final VectorD2 b,
+                                             final VectorD2 c) {
     return new DDNormalized(a,b,c); }
 
   /** Convert other triangle classes. */

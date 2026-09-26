@@ -13,14 +13,11 @@ import mop.java.prng.PRNG;
 
 import java.util.List;
 
-import static mop.java.geometry.triangle.Triangle2D.makeTriangles;
-import static mop.java.geometry.triangle.Triangle2D.truth;
-
 /** <pre>
  * mvn clean install && j src/scripts/java/mop/java/scripts/triangles/AlmostCocircular.java
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-21
+ * @version 2026-09-26
  */
 
 public final class AlmostCocircular {
@@ -31,8 +28,8 @@ public final class AlmostCocircular {
   checkInCircle (final Triangle2D t0,
                  final VectorD2 p,
                  final ObjectIntMap<Class> successes) {
-    final List<Triangle2D> triangles = makeTriangles(t0);
-    final Triangle2D gold = truth(t0);
+    final List<Triangle2D> triangles = Triangle2D.makeTriangles(t0);
+    final Triangle2D gold = Triangle2D.truth(t0);
     final double trueInCircle = gold.inCircle(p);
     for (final Triangle2D t : triangles) {
       final Class c = t.getClass();

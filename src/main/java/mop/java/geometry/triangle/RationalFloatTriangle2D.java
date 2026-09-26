@@ -7,10 +7,10 @@ import mop.java.numbers.RationalFloat;
  * Should be exact, up to RationalFloat resolution.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-08-18
+ * @version 202-09-26
  */
 
-public final class RationalFloatTriangle2D extends Triangle2D {
+public final class RationalFloatTriangle2D extends AbstractTriangle2D {
 
   //--------------------------------------------------------------------
 
@@ -87,8 +87,8 @@ public final class RationalFloatTriangle2D extends Triangle2D {
     super(a,b,c); }
 
   public static final Triangle2D of (final VectorD2 a,
-                                     final VectorD2 b,
-                                     final VectorD2 c) {
+                                             final VectorD2 b,
+                                             final VectorD2 c) {
     return new RationalFloatTriangle2D(a,b,c); }
 
   /** Convert other triangle classes. */

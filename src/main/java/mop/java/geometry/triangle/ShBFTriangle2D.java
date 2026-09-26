@@ -8,10 +8,10 @@ import mop.java.numbers.RelaxedInterval;
  * <code>BigFloatTriangle</code>
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-09-21
+ * @version 2026-09-26
  */
 
-public final class ShBFTriangle2D extends Triangle2D {
+public final class ShBFTriangle2D extends AbstractTriangle2D {
 
   // Wrap an instance of ShewchukIntervalTriangle2D, so that this gets
   // any performance improvements without having to repeat the edits
@@ -70,8 +70,8 @@ public final class ShBFTriangle2D extends Triangle2D {
         ShewchukIntervalTriangle2D.of(a, b, c); }
 
   public static final Triangle2D of (final VectorD2 a,
-                                     final VectorD2 b,
-                                     final VectorD2 c) {
+                                             final VectorD2 b,
+                                             final VectorD2 c) {
     return new ShBFTriangle2D(a, b, c); }
 
   /** Convert other triangle classes. */

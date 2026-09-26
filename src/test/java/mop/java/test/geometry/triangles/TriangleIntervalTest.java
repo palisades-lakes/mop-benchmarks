@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-21
+ * @version 2026-09-26
  */
 
 public final class TriangleIntervalTest {
@@ -49,6 +49,10 @@ public final class TriangleIntervalTest {
       (ShewchukIntervalTriangle2D) ShewchukIntervalTriangle2D.from(t);
     final RelaxedInterval sitd = sit.inCircleInterval(p);
 
+    final ShewchukVectorTriangle2D svt =
+      (ShewchukVectorTriangle2D) ShewchukVectorTriangle2D.from(t);
+    final RelaxedInterval svtd = svt.inCircleInterval(p);
+
     final Triangle2D dt = TriangleD2Eager.from(t);
     final double dtd = dt.inCircleDistance(p);
 
@@ -61,6 +65,21 @@ public final class TriangleIntervalTest {
         sitd + "=\n" +
         Double.toHexString(sit.inCircleDistance(p)) + " +/- " +
         Double.toHexString(sit.inCircleBound(p)) + "\n" +
+        "\ndoes not contain:\n" +
+        "\nRounding:\n" +
+        ritd + "\n" +
+        "\nBF distance:\n" +
+        bftbf + "\n" +
+        Double.toHexString(bftd) + "\n\n");
+
+    Assertions.assertTrue(
+      svtd.contains(ritd),
+      "\n\n" + t + "\n" +
+        "\n" + p + "\n" +
+        "\nShewchuk:\n" +
+        svtd + "=\n" +
+        Double.toHexString(svt.inCircleDistance(p)) + " +/- " +
+        Double.toHexString(svt.inCircleBound(p)) + "\n" +
         "\ndoes not contain:\n" +
         "\nRounding:\n" +
         ritd + "\n" +
@@ -230,6 +249,10 @@ public final class TriangleIntervalTest {
       (ShewchukIntervalTriangle2D) ShewchukIntervalTriangle2D.from(t);
     final RelaxedInterval sitd = sit.twiceSignedAreaInterval();
 
+    final ShewchukIntervalTriangle2D svt =
+      (ShewchukIntervalTriangle2D) ShewchukIntervalTriangle2D.from(t);
+    final RelaxedInterval svtd = svt.twiceSignedAreaInterval();
+
     // Shewchuk should be a looser error bound than interval arithmetic!
     Assertions.assertTrue(
       sitd.contains(ditd),
@@ -264,6 +287,38 @@ public final class TriangleIntervalTest {
         Double.toHexString(bftd));
 
     Assertions.assertTrue(
+      svtd.contains(ditd),
+      "\nShewchuk:\n" +
+        svtd + "=\n" +
+        Double.toHexString(svt.twiceSignedArea()) + " +/- " +
+        Double.toHexString(svt.areaBound()) + "\n" +
+        "\ndoes not contain:\n" +
+        "\nDouble:\n" +
+        ditd + "\n" +
+        "\nBF area:\n" + bft.getV20xV10().negate().reduce() + "\n" +
+        Double.toHexString(
+          bft.getV20xV10().negate().reduce().doubleValue()) + "\n\n");
+
+    Assertions.assertTrue(
+      svtd.contains(ritd),
+      "\nShewchuk:\n" +
+        svtd + "=\n" +
+        Double.toHexString(svt.twiceSignedArea()) + " +/- " +
+        Double.toHexString(svt.areaBound()) + "\n" +
+        "\ndoes not contain:\n" +
+        "\nRounding:\n" +
+        ritd + "\n" +
+        "\nBF area:\n" + bft.getV20xV10().negate().reduce() + "\n" +
+        Double.toHexString(
+          bft.getV20xV10().negate().reduce().doubleValue()) + "\n\n");
+
+    Assertions.assertTrue(
+      svtd.contains(bftd),
+      svtd +
+        "\ndoes not contain TriangleBF2:\n" +
+        Double.toHexString(bftd));
+
+    Assertions.assertTrue(
       ritd.contains(bftd),
       "\n" + rit + "\n" +
         ritd + "\n" +
@@ -294,6 +349,12 @@ public final class TriangleIntervalTest {
         Double.toHexString(dtd));
 
     Assertions.assertTrue(
+      svtd.contains(dtd),
+      svtd +
+        "\ndoes not contain TriangleD2Eager:\n" +
+        Double.toHexString(dtd));
+
+    Assertions.assertTrue(
       ditd.contains(dtd),
       ditd +
         "\ndoes not contain TriangleD2Eager:\n" +
@@ -303,6 +364,12 @@ public final class TriangleIntervalTest {
     Assertions.assertTrue(
       sitd.contains(dtd),
       sitd +
+        "\ndoes not contain TriangleD2Eager:\n" +
+        Double.toHexString(dtd));
+
+    Assertions.assertTrue(
+      svtd.contains(dtd),
+      svtd +
         "\ndoes not contain TriangleD2Eager:\n" +
         Double.toHexString(dtd));
 
@@ -349,7 +416,8 @@ public final class TriangleIntervalTest {
 
     final int ntriangles = 1023;
     for (int i=0;i<ntriangles;i++) {
-      final Triangle2D ti = (Triangle2D) triangleGenerator.next();
+      final Triangle2D
+        ti = (Triangle2D) triangleGenerator.next();
       colinearSignedArea(ti); } }
 
   //--------------------------------------------------------------

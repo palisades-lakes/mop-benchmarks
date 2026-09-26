@@ -12,7 +12,7 @@ import org.openjdk.jmh.infra.Blackhole;
 /** Benchmark triangle operations.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-25
+ * @version 2026-09-26
  */
 
 @State(Scope.Thread)

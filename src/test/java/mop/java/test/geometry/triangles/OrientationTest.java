@@ -18,7 +18,7 @@ import java.util.List;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-09
+ * @version 202-09-26
  */
 
 public final class OrientationTest extends TriangleTest {
