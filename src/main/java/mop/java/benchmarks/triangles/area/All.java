@@ -1,7 +1,6 @@
 package mop.java.benchmarks.triangles.area;
 
 import mop.java.benchmarks.triangles.Defaults;
-import mop.java.geometry.triangle.Triangle2D;
 
 /** <pre>
  * mvn -q install && jmh mop.java.benchmarks.triangles.area.SignedArea
@@ -10,11 +9,9 @@ import mop.java.geometry.triangle.Triangle2D;
  * @version 2026-09-25
  */
 
-public class SignedArea extends Base {
+public class All extends Base {
 
-  @Override
-  public final double operation (final Triangle2D t) {
-    return t.twiceSignedArea(); }
-
-  public static final void main (final String[] args)  {
+  public static final void main (final String[] ignore)  {
+    Defaults.run("ColinearOrientation");
+    Defaults.run("RandomOrientation");
     Defaults.run("SignedArea"); } }

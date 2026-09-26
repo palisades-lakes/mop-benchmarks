@@ -12,7 +12,7 @@ import org.openjdk.jmh.infra.Blackhole;
 /** Benchmark triangle operations.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-24
+ * @version 2026-09-25
  */
 
 @State(Scope.Thread)
@@ -27,14 +27,15 @@ public abstract class Base {
 
   @Param({
     "TriangleBF2",
-    "TriangleD2Eager",
+    "TriangleBF2X",
+//    "TriangleD2Eager",
 //    "TriangleD2Lazy",
 //    "RelaxedIntervalTriangle2D",
 //    "RoundingIntervalTriangle2D",
 //    "ShewchukIntervalTriangle2D",
 //    "ReBfTriangle2D",
 //    "RoBfTriangle2D",
-    "ShBFTriangle2D",
+//    "ShBFTriangle2D",
 //    "RationalFloatTriangle2D",
 //    "DDFast",
 //    "DDNormalized",

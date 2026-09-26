@@ -10,7 +10,7 @@ import java.util.List;
 /** Triangles "embedded" in <code>R<sup>2</sup></code>>.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-09-24
+ * @version 2026-09-25
  */
 
 public abstract class Triangle2D {
@@ -65,6 +65,7 @@ public abstract class Triangle2D {
       case "RoundingIntervalTriangle2D" -> RoundingIntervalTriangle2D.from(t);
       case "ShewchukIntervalTriangle2D" -> ShewchukIntervalTriangle2D.from(t);
       case "TriangleBF2" ->  TriangleBF2.from(t);
+      case "TriangleBF2X" ->  TriangleBF2X.from(t);
       case "TriangleD2Eager" ->  TriangleD2Eager.from(t);
       case "ReBfTriangle2D" ->  ReBfTriangle2D.from(t);
       case "RoBfTriangle2D" ->  RoBfTriangle2D.from(t);

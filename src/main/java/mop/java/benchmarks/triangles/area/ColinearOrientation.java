@@ -12,10 +12,10 @@ import org.openjdk.jmh.annotations.Setup;
  * mvn -q install && jmh mop.java.benchmarks.triangles.area.ColinearOrientation
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-24
+ * @version 2026-09-25
  */
 
-public class ColinearOrientation extends RandomOrientation {
+public class ColinearOrientation extends Base {
 
   //--------------------------------------------------------------
   /** Re-initialize the prngs with the same seeds for each
@@ -39,12 +39,11 @@ public class ColinearOrientation extends RandomOrientation {
     triangles = Triangle2D.convertTriangles(
       (Triangle2D[]) triangleGenerator.next(), className);
     value = new int[3];
-    System.gc();}
+    System.gc(); }
 
   //--------------------------------------------------------------
 
-  @SuppressWarnings("unused")
-  public static final void main (final String[] args)  {
+  public static final void main (final String[] ignore)  {
     Defaults.run("ColinearOrientation"); }
 
 //--------------------------------------------------------------

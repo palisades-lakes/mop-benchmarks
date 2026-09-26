@@ -5,10 +5,10 @@ import mop.java.numbers.BigFloat;
 /** Subset of <code>R<sup>2</sup></code>, with <code>BigFloat</code>.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-21
+ * @version 2026-09-25
  */
 
-public final record VectorBF2(BigFloat x, BigFloat y)
+public final record VectorBF2 (BigFloat x, BigFloat y)
   implements VectorR2<BigFloat> {
 
   public final BigFloat getX () { return x; }

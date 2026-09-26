@@ -12,7 +12,7 @@ set TRACE=
 :: see https://docs.oracle.com/en/java/javase/26/docs/specs/man/java.html
 ::set THRUPUT=-server -XX:+UseParallelGC -XX:+UseLargePages -XX:+UseFMA
 :: Large Pages requires special permissions
-set THRUPUT=-server -XX:+UseParallelGC -XX:+UseFMA
+set THRUPUT=-server -XX:+UseParallelGC -XX:+UseFMA -Xbatch
 ::set THRUPUT=-server -Xbatch -XX:+UseFMA -XX:+UseCompactObjectHeaders
 ::set THRUPUT=-server -Xbatch
 
@@ -20,7 +20,7 @@ set THRUPUT=-server -XX:+UseParallelGC -XX:+UseFMA
 ::set XMX=-Xms31g -Xmx31g -Xmn12g
 ::set XMX=-Xms8g -Xmx8g -Xmn3g
 :: see https://docs.oracle.com/en/java/javase/26/docs/specs/man/java.html
-set XMX=-Xmn10g  -Xms26g -Xmx26g
+set XMX=-Xms48g -Xmx48g
 
 ::set PROF=
 set PROF=-agentpath:"C:\Program Files\YourKit Java Profiler 2026.9.146\bin\windows-x86-64\yjpagent.dll=_no_java_version_check"
