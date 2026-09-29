@@ -40,17 +40,20 @@ public final class BigFloat implements Ringlike<BigFloat> {
   //--------------------------------------------------------------
   // instance fields and methods
   //--------------------------------------------------------------
-  // TODO: can't be both NaN and infinite. Better way to capture that?
 
-  private final boolean _isNaN;
-  public final boolean isNaN () { return _isNaN; }
+  private final Classification _classification;
+  private final Classification classification () {
+    return _classification; }
 
-  private final boolean _isInfinite;
+  public final boolean isNaN () {
+    return Classification.NAN == classification(); }
+
   /** Positive or negative infinity if <code>true</code>. */
-  public final boolean isInfinite () { return _isInfinite; }
+  public final boolean isInfinite () {
+    return Classification.INFINITE == classification(); }
 
   public final boolean isFinite () {
-    return ! (isNaN() || isInfinite()); }
+    return Classification.FINITE == classification(); }
 
   private final boolean _nonNegative;
   public final boolean nonNegative () { return _nonNegative; }
@@ -118,22 +121,28 @@ public final class BigFloat implements Ringlike<BigFloat> {
 
   @Override
   public final BigFloat negate () {
-    if (isFinite()) {
+    switch (classification()) {
+      case Classification.FINITE :
       // positive and negative zeros!
-      return valueOf(! nonNegative(),significand(),exponent()); }
-    if (isNaN()) { return this; }
+        return valueOf(! nonNegative(),significand(),exponent());
+      case Classification.NAN :
+        return this;
+      case Classification.INFINITE :
     // TODO: is saving a few new instances worth this?
     if (isPositiveInfinity()) { return NEGATIVE_INFINITY; }
-    if (isNegativeInfinity()) { return POSITIVE_INFINITY; }
-    throw new UnsupportedOperationException("shouldn't get here"); }
+        if (isNegativeInfinity()) { return POSITIVE_INFINITY; } }
+    throw new UnsupportedOperationException(); }
 
   @Override
   public final BigFloat abs () {
-    if (isFinite()) {
-      if (nonNegative()) { return this; }
-      return valueOf(true,significand(),exponent()); }
-    if (isNaN()) { return this; }
-    throw new UnsupportedOperationException("shouldn't get here"); }
+    return switch (classification()) {
+      case Classification.FINITE -> {
+        if (nonNegative()) { yield this; }
+        yield valueOf(true, significand(), exponent()); }
+      case Classification.NAN -> this;
+      case Classification.INFINITE -> POSITIVE_INFINITY;
+    };
+  }
 
   //--------------------------------------------------------------
   // assuming args correspond to finite numbers
@@ -1032,41 +1041,18 @@ public final class BigFloat implements Ringlike<BigFloat> {
     if (isZero() && (q == 0.0)) { return false; } // regardless of +/- zero
     return 0 < compareTo(q);  }
 
-//  public final boolean opEQ (final double q) {
-//    if (isNaN() || Double.isNaN(q)) { return false; }
-//    if (isZero()) { return 0.0==q; } // regardless of +/- zero
-//    // TODO: mark when reduced
-//    final BigFloat r0 = reduce();
-//    return (r0.significand().equals(Doubles.significand(q)))
-//      && (r0.nonNegative() == Doubles.nonNegative(q))
-//      && (r0.exponent() == Doubles.exponent(q)); }
-//
-//  public final boolean opGT (final double q) {
-//    if (isNaN() || Double.isNaN(q)) { return false; }
-//    if (isZero()) { return 0.0>q; } // regardless of +/- zero
-//    if (nonNegative() && (! Doubles.nonNegative(q))) { return true; }
-//    if ((! nonNegative()) &&  Doubles.nonNegative(q)) { return false; }
-//    // same signs
-//    // TODO: cache reduced flag?
-//    final BigFloat r0 = reduce();
-//    if (r0.nonNegative()) { // both positive
-//      if (r0.exponent() > Doubles.exponent(q)) { return true; }
-//      if (r0.exponent() < Doubles.exponent(q)) { return false; }
-//      return (r0.significand().compareTo(Doubles.significand(q)) > 0); }
-//    // else both negative
-//    if (r0.exponent() < Doubles.exponent(q)) { return true; }
-//    if (r0.exponent() > Doubles.exponent(q)) { return false; }
-//    return (r0.significand().compareTo(Doubles.significand(q)) < 0); }
-
   // TODO: optimize?
+  @SuppressWarnings("unused")
   public final boolean opGE (final double q) {
     if (isNaN() || Double.isNaN(q)) { return false; }
     return  opEQ(q) || opGT(q); }
 
+  @SuppressWarnings("unused")
   public final boolean opLT (final double q) {
     if (isNaN() || Double.isNaN(q)) { return false; }
     return ! opGE(q); }
 
+  @SuppressWarnings("unused")
   public final boolean opLE (final double q) {
     if (isNaN() || Double.isNaN(q)) { return false; }
     return ! opGT(q); }
@@ -1196,16 +1182,11 @@ public final class BigFloat implements Ringlike<BigFloat> {
   // construction
   //--------------------------------------------------------------
 
-  private BigFloat (final boolean nan,
-                    final boolean infinite,
+  private BigFloat (final Classification classification,
                     final boolean p,
                     final BoundedNatural t,
                     final int e) {
-    // TODO: NAN, INFINITE, FINITE enum
-    //  rather than 2 booleans?
-    assert ! (nan && infinite);
-    _isNaN = nan;
-    _isInfinite = infinite;
+    _classification = classification;
     _nonNegative = p;
     _significand = t;
     _exponent = e; }
@@ -1213,13 +1194,13 @@ public final class BigFloat implements Ringlike<BigFloat> {
   private static final BigFloat makeFinite (final boolean p,
                                             final BoundedNatural t,
                                             final int e) {
-    return new BigFloat(false,false,p,t,e); }
+    return new BigFloat(Classification.FINITE, p, t, e); }
 
   private static final BigFloat makeNaN () {
-    return new BigFloat(true,false,true,null,0); }
+    return new BigFloat(Classification.NAN, true, null, 0); }
 
   private static final BigFloat makeInfinity (final boolean p) {
-    return new BigFloat(false,true,p,null,0); }
+    return new BigFloat(Classification.INFINITE, p, null, 0); }
 
   //--------------------------------------------------------------
 

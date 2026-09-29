@@ -157,7 +157,7 @@ public interface TriangleR2 {
       case "TriangleD2BF2" -> TriangleD2BF2.from(t);
       case "TriangleBF2" ->  TriangleBF2.from(t);
       case "TriangleBF2X" ->  TriangleBF2X.from(t);
-      case "RationalFloatTriangle2D" ->  RationalFloatTriangle2D.from(t);
+      case "TriangleRF2" ->  TriangleRF2.from(t);
       default -> throw new UnsupportedOperationException(); }; }
 
   public static TriangleR2[]
@@ -170,13 +170,17 @@ public interface TriangleR2 {
   //-------------------------------------------------------------------
 
   public static List<TriangleR2> makeTriangles (final TriangleR2 t) {
-    final TriangleR2 d2 = TriangleD2.from(t);
-    final TriangleR2 d2eager = TriangleD2Eager.from(t);
-    final TriangleR2 d2lazy = TriangleD2Lazy.from(t);
+//    final TriangleR2 d2 = TriangleD2.from(t);
+//    final TriangleR2 d2eager = TriangleD2Eager.from(t);
+//    final TriangleR2 d2lazy = TriangleD2Lazy.from(t);
     final TriangleR2 bf2 = TriangleBF2.from(t);
-    final TriangleR2 rf2 = RationalFloatTriangle2D.from(t);
-    final TriangleR2 d2bf2 = TriangleD2BF2.from(t);
-    return List.of(d2, d2eager, d2lazy, bf2, rf2,d2bf2); }
+    final TriangleR2 rf2 = TriangleRF2.from(t);
+//    final TriangleR2 d2bf2 = TriangleD2BF2.from(t);
+    return List.of(
+      //d2, d2eager, d2lazy,
+      bf2, rf2
+      // ,d2bf2
+      ); }
 
   //-------------------------------------------------------------------
 } // end class

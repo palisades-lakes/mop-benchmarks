@@ -25,8 +25,8 @@ public final record VectorBF2 (BigFloat x, BigFloat y)
 
   public static final VectorBF2 dif (final VectorD2 v0,
                                      final VectorD2 v1) {
-    return new VectorBF2(BigFloat.dif(v0.getX(),v1.getX()),
-                         BigFloat.dif(v0.getY(),v1.getY())); }
+    return new VectorBF2(BigFloat.dif(v0.x(),v1.x()),
+                         BigFloat.dif(v0.y(),v1.y())); }
 
   @Override
   public VectorBF2 scale (final BigFloat a) {

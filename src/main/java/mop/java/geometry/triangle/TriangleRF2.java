@@ -1,17 +1,17 @@
 package mop.java.geometry.triangle;
 
-import mop.java.geometry.euclidean.VectorBF2;
 import mop.java.geometry.euclidean.VectorD2;
-import mop.java.numbers.BigFloat;
+import mop.java.geometry.euclidean.VectorRF2;
+import mop.java.numbers.RationalFloat;
 
-/** Standard calculations implemented in BigFloat.
- * Should be exact, with <code>double</code> inputs.
+/** Standard calculations implemented in RationalFloat.
+ * Should be exact, up to RationalFloat resolution.
  *
  * @author palisades dot lakes at gmail dot com,
  * @version 202-09-29
  */
 
-public final class TriangleBF2 implements TriangleR2 {
+public final class TriangleRF2 implements TriangleR2 {
 
   // TODO: only need p0
   private final VectorD2 p0;
@@ -28,34 +28,35 @@ public final class TriangleBF2 implements TriangleR2 {
   // cache vector result of translating p0 to origin,
   // and related quantities
 
-  private VectorBF2 _v10;
-  public final VectorBF2 getV10 () {
+  private VectorRF2 _v10;
+  public final VectorRF2 getV10 () {
     if (null == _v10) {
-      _v10 = VectorBF2.dif(getP1(),getP0()); }
+      _v10 = VectorRF2.dif(getP1(),getP0()); }
     return _v10; }
 
-  private BigFloat _v10Norm2;
-  public final BigFloat getV10Norm2 () {
+  private RationalFloat _v10Norm2;
+  public final RationalFloat getV10Norm2 () {
     if (null==_v10Norm2) { _v10Norm2 = getV10().l2norm2(); }
     return _v10Norm2; }
 
-  private VectorBF2 _v20;
-  public final VectorBF2 getV20 () {
+  private VectorRF2 _v20;
+  public final VectorRF2 getV20 () {
     if (null == _v20) {
-      _v20 = VectorBF2.dif(getP2(),getP0()); }
+      _v20 = VectorRF2.dif(getP2(),getP0()); }
     return _v20; }
 
-  private BigFloat _v20Norm2;
-  public final BigFloat getV20Norm2 () {
+  private RationalFloat _v20Norm2;
+  public final RationalFloat getV20Norm2 () {
     if (null==_v20Norm2) { _v20Norm2 = getV20().l2norm2(); }
     return _v20Norm2; }
 
-  private BigFloat _v20Xv10;
-  public final BigFloat getV20xV10 () {
+  private RationalFloat _v20Xv10;
+  public final RationalFloat getV20xV10 () {
     if (null== _v20Xv10) { _v20Xv10 = getV20().wedge(getV10()); }
     return _v20Xv10; }
 
   /** force cache calculation when profiling */
+  @SuppressWarnings("unused")
   public final void clearCaches () {
     _v10 = null;
     _v10Norm2 = null;
@@ -65,8 +66,10 @@ public final class TriangleBF2 implements TriangleR2 {
 
   //--------------------------------------------------------------------
 
+  @Override
   public final boolean signedAreaExact () { return true; }
 
+  @Override
   public final double twiceSignedArea () {
     return -(getV20xV10().doubleValue()); }
 
@@ -87,35 +90,35 @@ public final class TriangleBF2 implements TriangleR2 {
 
   public final boolean inCircleDistanceExact () { return true; }
 
-  public final BigFloat inCircleDistanceBF (final VectorD2 p) {
+  public final RationalFloat inCircleDistanceRF (final VectorD2 p) {
 
-    final VectorBF2 p0 = VectorBF2.dif(p,getP0());
+    final VectorRF2 p0 = VectorRF2.dif(p, getP0());
 
-    final BigFloat bxp = getV10().wedge(p0);
-    final BigFloat bxc = getV20xV10();
-    final BigFloat pxc = p0.wedge(getV20());
+    final RationalFloat bxp = getV10().wedge(p0);
+    final RationalFloat bxc = getV20xV10();
+    final RationalFloat pxc = p0.wedge(getV20());
 
-    final BigFloat p2 = p0.l2norm2();
-    final BigFloat b2 = getV10Norm2();
-    final BigFloat c2 = getV20Norm2();
+    final RationalFloat p2 = p0.l2norm2();
+    final RationalFloat b2 = getV10Norm2();
+    final RationalFloat c2 = getV20Norm2();
 
     // TODO: reverse crossProducts
-    return BigFloat.dot(p2,b2,c2,bxc,pxc,bxp); }
+    return RationalFloat.dot(p2,b2,c2,bxc,pxc,bxp); }
 
   public final double inCircleDistance (final VectorD2 p) {
-    return inCircleDistanceBF(p).doubleValue(); }
+    return inCircleDistanceRF(p).doubleValue(); }
 
   //--------------------------------------------------------------------
 
   public final double inCircle (final VectorD2 p) {
 
-    final BigFloat icd = inCircleDistanceBF(p);
+    final RationalFloat icd = inCircleDistanceRF(p);
     if (! icd.isFinite()) { return icd.doubleValue(); }
     if (icd.isZero()) { return 0.0; }
     if (icd.nonNegative()) { return 1.0; }
     return -1.0; }
 
-//--------------------------------------------------------------------
+  //--------------------------------------------------------------------
 
   public final String toString () {
     return toHexString() +
@@ -130,7 +133,7 @@ public final class TriangleBF2 implements TriangleR2 {
   // construction
   //--------------------------------------------------------------------
 
-  private TriangleBF2 (final VectorD2 a,
+  private TriangleRF2 (final VectorD2 a,
                        final VectorD2 b,
                        final VectorD2 c)  {
     super();
@@ -139,7 +142,7 @@ public final class TriangleBF2 implements TriangleR2 {
   public static final TriangleR2 of (final VectorD2 a,
                                      final VectorD2 b,
                                      final VectorD2 c) {
-    return new TriangleBF2(a, b, c); }
+    return new TriangleRF2(a, b, c); }
 
   /** Convert other triangle classes. */
 

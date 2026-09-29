@@ -4,7 +4,6 @@ import mop.java.Exceptions;
 import java.util.Objects;
 
 //----------------------------------------------------------------------
-
 /** A sign times a {@link BoundedNatural} significand times 2 to a
  * <code>int</code> exponent.
  * <br>
@@ -43,7 +42,6 @@ public final class BigFloatX implements Ringlike<BigFloatX> {
   //--------------------------------------------------------------
   // TODO: can't be both NaN and infinite. Better way to capture that?
 
-  private enum Classification { FINITE, INFINITE, NAN }
   private final Classification _classification;
   private final Classification classification () {
     return _classification; }

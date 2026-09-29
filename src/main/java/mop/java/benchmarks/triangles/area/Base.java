@@ -27,7 +27,7 @@ public abstract class Base {
 //    "TriangleBF2",
 //    "TriangleBF2X",
 //    "TriangleD2Lazy",
-//    "RationalFloatTriangle2D",
+//    "TriangleRF2",
     })
   String className;
 

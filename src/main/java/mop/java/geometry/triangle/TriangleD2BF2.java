@@ -41,6 +41,10 @@ public final class TriangleD2BF2 implements TriangleR2 {
     if (inCircleRobust(p)) { return getTriangleD2().inCircleDistance(p); }
     return getTriangleBF2().inCircleDistance(p); }
 
+//--------------------------------------------------------------------
+
+  public final String toString () { return toHexString(); }
+
   //--------------------------------------------------------------------
   // construction
   //--------------------------------------------------------------------
