@@ -5,7 +5,7 @@ import mop.java.geometry.euclidean.VectorD2;
 /** Triangle with VectorD2 vertices, precomputing reusable values.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-09-26
+ * @version 2026-09-27
  */
 
 public final record TriangleD2Eager (VectorD2 p0,
@@ -18,14 +18,20 @@ public final record TriangleD2Eager (VectorD2 p0,
                                      double v20Norm2,
                                      double v20Xv10)
   implements Triangle2D {
+
+  @Override
   public final VectorD2 getP0 () { return p0; }
+  @Override
   public final VectorD2 getP1 () { return null; }
+  @Override
   public final VectorD2 getP2 () { return null; }
 
   //--------------------------------------------------------------------
 
+  @Override
   public final boolean signedAreaExact () { return false; }
 
+  @Override
   public final double twiceSignedArea () { return -v20Xv10; }
 
   //--------------------------------------------------------------------
@@ -40,8 +46,10 @@ public final record TriangleD2Eager (VectorD2 p0,
 
   //--------------------------------------------------------------------
 
+  @Override
   public final boolean inCircleDistanceExact () { return false; }
 
+  @Override
   public final double inCircleDistance (final VectorD2 p) {
 
     final VectorD2 vp0 = p.subtract(p0);

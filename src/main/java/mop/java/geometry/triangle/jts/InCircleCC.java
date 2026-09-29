@@ -1,8 +1,8 @@
 package mop.java.geometry.triangle.jts;
 
 import mop.java.geometry.euclidean.VectorD2;
-import mop.java.geometry.triangle.AbstractTriangle2D;
 import mop.java.geometry.triangle.Triangle2D;
+import mop.java.geometry.triangle.TriangleD2;
 
 /** From org.locationtech.jts.triangulate.quadedge.TrianglePredicate
  *
@@ -11,7 +11,7 @@ import mop.java.geometry.triangle.Triangle2D;
  */
 
 @SuppressWarnings("unused")
-public final class InCircleCC extends AbstractTriangle2D {
+public final class InCircleCC extends TriangleD2 {
 
   //--------------------------------------------------------------------
   // TODO: from Fast, make consistent with inCircle strategy

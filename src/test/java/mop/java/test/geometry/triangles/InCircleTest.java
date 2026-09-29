@@ -20,7 +20,7 @@ import java.util.List;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 202-09-26
+ * @version 202-09-29
  */
 
 public final class InCircleTest extends TriangleTest {
@@ -39,10 +39,6 @@ public final class InCircleTest extends TriangleTest {
         // with delta=0.0 handles +0 vs -0 'correctly'
         Assertions.assertEquals(
           trueInc, inc, 0.0,
-          failureMsg("inCircle",trueInc,inc,gold,ti,triangles,p)); }
-      else if (ti.inCircleIntervals()) {
-        Assertions.assertTrue(
-          ti.inCircleInterval(p).contains(trueInc),
           failureMsg("inCircle",trueInc,inc,gold,ti,triangles,p)); }
       else {
         Assertions.assertEquals(

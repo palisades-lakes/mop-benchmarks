@@ -1,17 +1,17 @@
 package mop.java.geometry.triangle.jts;
 
 import mop.java.geometry.euclidean.VectorD2;
-import mop.java.geometry.triangle.AbstractTriangle2D;
 import mop.java.geometry.triangle.Triangle2D;
+import mop.java.geometry.triangle.TriangleD2;
 import org.locationtech.jts.math.DD;
 
 /** From org.locationtech.jts.triangulate.quadedge.TrianglePredicate
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-09-26
+ * @version 2026-09-27
  */
 
-public final class DDFast extends AbstractTriangle2D {
+public final class DDFast extends TriangleD2 {
 
 //--------------------------------------------------------------------
 

@@ -1,8 +1,8 @@
 package mop.java.geometry.triangle.jts;
 
 import mop.java.geometry.euclidean.VectorD2;
-import mop.java.geometry.triangle.AbstractTriangle2D;
 import mop.java.geometry.triangle.Triangle2D;
+import mop.java.geometry.triangle.TriangleD2;
 import org.locationtech.jts.math.DD;
 
 /** From org.locationtech.jts.triangulate.quadedge.TrianglePredicate
@@ -11,7 +11,7 @@ import org.locationtech.jts.math.DD;
  * @version 2026-09-26
  */
 
-public final class DDSlow extends AbstractTriangle2D {
+public final class DDSlow extends TriangleD2 {
 
 //--------------------------------------------------------------------
 

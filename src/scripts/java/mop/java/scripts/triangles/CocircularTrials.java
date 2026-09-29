@@ -2,14 +2,9 @@ package mop.java.scripts.triangles;
 
 import mop.java.geometry.Generators;
 import mop.java.geometry.euclidean.VectorD2;
-import mop.java.geometry.triangle.RelaxedIntervalTriangle2D;
-import mop.java.geometry.triangle.RoundingIntervalTriangle2D;
-import mop.java.geometry.triangle.ShewchukIntervalTriangle2D;
 import mop.java.geometry.triangle.TriangleBF2;
 import mop.java.numbers.BigFloat;
 import mop.java.numbers.Doubles;
-import mop.java.numbers.RelaxedInterval;
-import mop.java.numbers.RoundingInterval;
 import mop.java.prng.Generator;
 import mop.java.prng.PRNG;
 
@@ -19,7 +14,7 @@ import mop.java.prng.PRNG;
  * mvn -q install && j src/scripts/java/mop/java/scripts/triangles/CocircularTrials.java
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-26
+ * @version 2026-09-29
  */
 
 public final class CocircularTrials {
@@ -52,15 +47,6 @@ public final class CocircularTrials {
     int ntrys  = 0;
     int nexact = 0;
     int nround = 0;
-    int nret = 0;
-    int nrebf = 0;
-    int nrebfd = 0;
-    int nrot = 0;
-    int nrobf = 0;
-    int nrobfd = 0;
-    int nsit = 0;
-    int nsibf = 0;
-    int nsibfd = 0;
     for (int i=0;i<ntriangles;i++) {
       final VectorD2 c = (VectorD2) centerGenerator.next();
       final double r = radiusGenerator.nextDouble();
@@ -75,24 +61,6 @@ public final class CocircularTrials {
         final double bfd = bf.doubleValue();
         if (bf.isZero()) { nexact++; }
         if (0.0 == bfd) { nround++; }
-        final RoundingIntervalTriangle2D rot =
-          (RoundingIntervalTriangle2D) RoundingIntervalTriangle2D.from(t);
-        final RoundingInterval ro = rot.inCircleInterval(p);
-        if (ro.containsZero()) { nrot++; }
-        if (ro.contains(bf)) { nrobf++; }
-        if (ro.contains(bfd)) { nrobfd++; }
-        final RelaxedIntervalTriangle2D ret =
-          (RelaxedIntervalTriangle2D) RelaxedIntervalTriangle2D.from(t);
-        final RelaxedInterval re = ret.inCircleInterval(p);
-        if (re.containsZero()) { nret++; }
-        if (re.contains(bf)) { nrebf++; }
-        if (re.contains(bfd)) { nrebfd++; }
-        final ShewchukIntervalTriangle2D sit =
-          (ShewchukIntervalTriangle2D) ShewchukIntervalTriangle2D.from(t);
-        final RelaxedInterval si = sit.inCircleInterval(p);
-        if (si.containsZero()) { nsit++; }
-        if (si.contains(bf)) { nsibf++; }
-        if (si.contains(bfd)) { nsibfd++; }
       } }
     System.out.println("ntriangles,npoints= " + ntriangles + ", " + npoints);
     System.out.println("cMu,cSigma= " + Double.toHexString(cMu) +
@@ -106,34 +74,7 @@ public final class CocircularTrials {
     System.out.println(
       "Round bfd cocircular= " + nround + "/" + ntrys +
         " = " + ((double) nround)/ntrys);
-    System.out.println(
-      "Relaxed Interval cocircular= " + nret + "/" + ntrys +
-        " = " + ((double) nret)/ntrys);
-    System.out.println(
-      "Relaxed Interval contains bf = " + nrebf + "/" + ntrys +
-        " = " + ((double) nrebf)/ntrys);
-    System.out.println(
-      "Relaxed Interval contains bfd= " + nrebfd + "/" + ntrys +
-        " = " + ((double) nrebfd)/ntrys);
-    System.out.println(
-      "Rounding interval cocircular= " + nrot + "/" + ntrys +
-        " = " + ((double) nrot)/ntrys);
-    System.out.println(
-      "Rounding interval contains bf = " + nrobf + "/" + ntrys +
-        " = " + ((double) nrobf)/ntrys);
-    System.out.println(
-      "Rounding interval contains bfd= " + nrobfd + "/" + ntrys +
-        " = " + ((double) nrobfd)/ntrys);
-    System.out.println(
-      "Shewchuk interval cocircular= " + nsit + "/" + ntrys +
-        " = " + ((double) nsit)/ntrys);
-    System.out.println(
-      "Shewchuk interval contains bf=  " + nsibf + "/" + ntrys +
-        " = " + ((double) nsibf)/ntrys);
-    System.out.println(
-      "Shewchuk interval contains bfd= " + nsibfd + "/" + ntrys +
-        " = " + ((double) nsibfd)/ntrys);
-  }
+    }
 
   //--------------------------------------------------------------------
 

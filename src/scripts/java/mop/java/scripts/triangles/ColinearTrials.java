@@ -2,11 +2,11 @@ package mop.java.scripts.triangles;
 
 import mop.java.geometry.Generators;
 import mop.java.geometry.euclidean.VectorD2;
-import mop.java.geometry.triangle.*;
+import mop.java.geometry.triangle.Triangle2D;
+import mop.java.geometry.triangle.TriangleBF2;
+import mop.java.geometry.triangle.TriangleD2Lazy;
 import mop.java.numbers.BigFloat;
 import mop.java.numbers.Doubles;
-import mop.java.numbers.RelaxedInterval;
-import mop.java.numbers.RoundingInterval;
 import mop.java.prng.Generator;
 import mop.java.prng.GeneratorBase;
 import mop.java.prng.PRNG;
@@ -17,7 +17,7 @@ import mop.java.prng.PRNG;
  * mvn -q clean install && j src/scripts/java/mop/java/scripts/triangles/ColinearTrials.java
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 202-09-26
+ * @version 202-09-27
  */
 
 public final class ColinearTrials {
@@ -81,15 +81,6 @@ public final class ColinearTrials {
     final int ntriangles = 1023*1023;
     int nexact = 0;
     int nround = 0;
-    int ndit = 0;
-    int ndibf = 0;
-    int ndibfd = 0;
-    int nrit = 0;
-    int nribf = 0;
-    int nribfd = 0;
-    int nsit = 0;
-    int nsibf = 0;
-    int nsibfd = 0;
     for (int i=0;i<ntriangles;i++) {
       final TriangleBF2 t =
         (TriangleBF2)
@@ -99,24 +90,6 @@ public final class ColinearTrials {
       final double bfd = bf.doubleValue();
       if (t.getV20xV10().isZero()) { nexact++; }
       if (0.0 == bfd) { nround++; }
-      final RelaxedIntervalTriangle2D dit =
-        (RelaxedIntervalTriangle2D) RelaxedIntervalTriangle2D.from(t);
-      final RelaxedInterval di = dit.getV20xV10();
-      if (di.containsZero()) { ndit++; }
-      if (di.contains(bf)) { ndibf++; }
-      if (di.contains(bfd)) { ndibfd++; }
-      final RoundingIntervalTriangle2D rit =
-        (RoundingIntervalTriangle2D) RoundingIntervalTriangle2D.from(t);
-      final RoundingInterval ri = rit.getV20xV10();
-      if (ri.containsZero()) { nrit++; }
-      if (ri.contains(bf)) { nribf++; }
-      if (ri.contains(bfd)) { nribfd++; }
-      final ShewchukIntervalTriangle2D sit =
-        (ShewchukIntervalTriangle2D) ShewchukIntervalTriangle2D.from(t);
-      final RelaxedInterval si = sit.twiceSignedAreaInterval();
-      if (si.containsZero()) { nsit++; }
-      if (si.contains(bf)) { nsibf++; }
-      if (si.contains(bfd)) { nsibfd++; }
     }
     System.out.println("pMu,pSigma= " + Double.toHexString(pMu) +
                          ", " + Double.toHexString(pSigma));
@@ -128,33 +101,6 @@ public final class ColinearTrials {
     System.out.println(
       "Round colinear= " + nround + "/" + ntriangles +
         " = " + ((double) nround)/ntriangles);
-    System.out.println(
-      "Round interval colinear= " + nrit + "/" + ntriangles +
-        " = " + ((double) nrit)/ntriangles);
-    System.out.println(
-      "Round interval contains bf= " + nribf + "/" + ntriangles +
-        " = " + ((double) nribf)/ntriangles);
-    System.out.println(
-      "Round interval contains bfd= " + nribfd + "/" + ntriangles +
-        " = " + ((double) nribfd)/ntriangles);
-    System.out.println(
-      "Relaxed Interval colinear= " + ndit + "/" + ntriangles +
-        " = " + ((double) ndit)/ntriangles);
-    System.out.println(
-      "Relaxed Interval contains bf= " + ndibf + "/" + ntriangles +
-        " = " + ((double) ndibf)/ntriangles);
-    System.out.println(
-      "Relaxed Interval contains bfd= " + ndibfd + "/" + ntriangles +
-        " = " + ((double) ndibfd)/ntriangles);
-    System.out.println(
-      "Shewchuk interval colinear= " + nsit + "/" + ntriangles +
-        " = " + ((double) nsit)/ntriangles);
-    System.out.println(
-      "Shewchuk interval contains bf= = " + nsibf + "/" + ntriangles +
-        " = " + ((double) nsibf)/ntriangles);
-    System.out.println(
-      "Shewchuk interval contains bfd= = " + nsibfd + "/" + ntriangles +
-        " = " + ((double) nsibfd)/ntriangles);
   }
 
   //--------------------------------------------------------------------
@@ -167,7 +113,8 @@ public final class ColinearTrials {
   // disable construction
   //--------------------------------------------------------------------
 
-  private ColinearTrials () { throw new UnsupportedOperationException(); }
+  private ColinearTrials () {
+    throw new UnsupportedOperationException(); }
 
   //-------------------------------------------------------------------
 } // end class

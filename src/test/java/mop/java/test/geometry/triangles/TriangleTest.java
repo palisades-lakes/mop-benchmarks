@@ -9,7 +9,7 @@ import java.util.List;
 /** Common code for 2D geometry predicate tests.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 202-09-26
+ * @version 202-09-29
  */
 
 public abstract class TriangleTest {
@@ -48,8 +48,7 @@ public abstract class TriangleTest {
       for (final Triangle2D t : triangles) {
         msg.append("\n\n").append(t.description()).append(" ->\n");
         if (null!=p) {
-          msg.append(p).append(" \n");
-          msg.append(t.inCircleInterval(p)); }
+          msg.append(p).append(" \n"); }
         else {
           msg.append(t.twiceSignedAreaInterval()); }}}
     return msg + "\n"; }

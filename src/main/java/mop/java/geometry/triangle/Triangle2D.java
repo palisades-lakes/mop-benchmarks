@@ -2,109 +2,32 @@ package mop.java.geometry.triangle;
 
 import mop.java.geometry.euclidean.VectorD2;
 import mop.java.geometry.triangle.jts.*;
-import mop.java.numbers.DoubleInterval;
-import mop.java.numbers.RoundingInterval;
 
 import java.util.List;
 
 /** Triangles "embedded" in <code>R<sup>2</sup></code>>.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-09-26
+ * @version 2026-09-29
  */
 
 public interface Triangle2D {
 
+  // TODO: replace with simplex and embedding map
+  //  only cache the points if actually used
   public VectorD2 getP0 ();
   public VectorD2 getP1 ();
   public VectorD2 getP2 ();
 
-  public static List<Triangle2D> makeTriangles (final Triangle2D t) {
-    final Triangle2D
-      doubleIntervalTriangle = RelaxedIntervalTriangle2D.from(t);
-    final Triangle2D roundingIntervalTriangle = RoundingIntervalTriangle2D.from(t);
-    final Triangle2D shewchukIntervalTriangle = ShewchukIntervalTriangle2D.from(t);
-    final Triangle2D
-      shewchukVectorTriangle = ShewchukVectorTriangle2D.from(t);
-    final Triangle2D bf2 = TriangleBF2.from(t);
-    final Triangle2D d2eager = TriangleD2Eager.from(t);
-    final Triangle2D d2lazy = TriangleD2Lazy.from(t);
-    final Triangle2D rebf = ReBfTriangle2D.from(t);
-    final Triangle2D robf = RoBfTriangle2D.from(t);
-    final Triangle2D shbf = ShBFTriangle2D.from(t);
-    final Triangle2D
-      rationalFloat = RationalFloatTriangle2D.from(t);
-    final Triangle2D ddFast = DDFast.from(t);
-    final Triangle2D ddNormalized = DDNormalized.from(t);
-    final Triangle2D ddSlow = DDSlow.from(t);
-    final Triangle2D doubleNonRobust = DoubleNonRobust.from(t);
-    final Triangle2D
-      inCircleNormalized = InCircleNormalized.from(t);
-    return List.of(
-      // mine
-      d2eager, d2lazy,
-      rationalFloat,
-      doubleIntervalTriangle, roundingIntervalTriangle,
-      shewchukIntervalTriangle, shewchukVectorTriangle,
-      bf2,
-      rebf,robf,shbf,
-      // JTS
-      ddFast,ddNormalized,ddSlow,doubleNonRobust,inCircleNormalized); }
-
-  /** ground truth predicate. */
-  public static Triangle2D truth (final Triangle2D t) {
-    return TriangleBF2.from(t); }
-
-  /** conversions from any AbstractTriangle2D to other Triangle classes. */
-
-  public static Triangle2D convertTriangle (final Triangle2D t,
-                                                  final String dest) {
-    // TODO: lookup method object rather than switch (String)
-    return switch (dest) {
-      case "TriangleD2Lazy" -> TriangleD2Lazy.from(t);
-      case "RelaxedIntervalTriangle2D" -> RelaxedIntervalTriangle2D.from(t);
-      case "RoundingIntervalTriangle2D" -> RoundingIntervalTriangle2D.from(t);
-      case "ShewchukIntervalTriangle2D" -> ShewchukIntervalTriangle2D.from(t);
-      case "ShewchukVectorTriangle2D" -> ShewchukVectorTriangle2D.from(t);
-      case "TriangleBF2" ->  TriangleBF2.from(t);
-      case "TriangleBF2X" ->  TriangleBF2X.from(t);
-      case "TriangleD2Eager" ->  TriangleD2Eager.from(t);
-      case "ReBfTriangle2D" ->  ReBfTriangle2D.from(t);
-      case "RoBfTriangle2D" ->  RoBfTriangle2D.from(t);
-      case "ShBFTriangle2D" ->  ShBFTriangle2D.from(t);
-      case "RationalFloatTriangle2D" ->  RationalFloatTriangle2D.from(t);
-      case "DDFast" ->  DDFast.from(t);
-      case "DDNormalized" ->  DDNormalized.from(t);
-      case "DDSlow" ->  DDSlow.from(t);
-//    case "InCircleCC" ->  InCircleCC.from(t);
-      case "DoubleNonRobust" ->  DoubleNonRobust.from(t);
-      case "InCircleNormalized" ->  InCircleNormalized.from(t);
-      default -> throw new UnsupportedOperationException(); }; }
-
-  public static Triangle2D[]
-  convertTriangles (final Triangle2D[] t,
-                    final String dest) {
-    for (int i=0; i<t.length; i++) {
-      t[i] = convertTriangle(t[i],dest); }
-    return t;}
-
   //--------------------------------------------------------------------
-  // Object methods
+  // orientation and related methods
   //--------------------------------------------------------------------
 
-  public default String toHexString () {
-    return getClass().getSimpleName() + "[" +
-      getP0().toHexString() + ", " +
-      getP1().toHexString() + ", " +
-      getP2().toHexString() + "]"; }
-
-  public default String description () { return toString(); }
-
-  //--------------------------------------------------------------------
   // TODO: an estimate of accuracy for each operation would be better.
   /** Is this algorithm exact (to the resolution expansions)
    * or approximate?
    */
+
   public default boolean signedAreaExact() { return false; }
 
   //--------------------------------------------------------------------
@@ -149,6 +72,8 @@ public interface Triangle2D {
     return 0; }
 
   //--------------------------------------------------------------------
+  // inCircle and related methods
+  //--------------------------------------------------------------------
 
   public default boolean inCircleDistanceExact () { return false; }
 
@@ -175,12 +100,6 @@ public interface Triangle2D {
   public default double inCircleDistance (final VectorD2 p) {
     throw new UnsupportedOperationException(getClass().getSimpleName()); }
 
-  public default DoubleInterval inCircleInterval (final VectorD2 p) {
-    final double d = inCircleDistance(p);
-    return new RoundingInterval(d,d); }
-
-  public default boolean inCircleIntervals () { return false; }
-
   //--------------------------------------------------------------------
 
 //  public boolean inCircleRobust () { return inCircleDistanceExact(); }
@@ -196,6 +115,74 @@ public interface Triangle2D {
     if (0.0 < a) { return 1.0; }
     if (0.0 > a) { return -1.0; }
     return 0.0; }
+
+  //--------------------------------------------------------------------
+  // debugging utilities
+  //--------------------------------------------------------------------
+
+  public default String toHexString () {
+    return getClass().getSimpleName() + "[" +
+      getP0().toHexString() + ", " +
+      getP1().toHexString() + ", " +
+      getP2().toHexString() + "]"; }
+
+  public default String description () { return toString(); }
+
+  //--------------------------------------------------------------------
+  // construction related
+  //--------------------------------------------------------------------
+  /** ground truth predicate. */
+  public static Triangle2D truth (final Triangle2D t) {
+    return TriangleBF2.from(t); }
+
+  /** conversions from any TriangleD2 to other Triangle classes. */
+
+  public static Triangle2D convertTriangle (final Triangle2D t,
+                                            final String dest) {
+    // TODO: lookup method object rather than switch (String)
+    return switch (dest) {
+      case "TriangleD2" ->  TriangleD2.from(t);
+      case "TriangleD2Eager" ->  TriangleD2Eager.from(t);
+      case "TriangleD2Lazy" -> TriangleD2Lazy.from(t);
+      case "TriangleBF2" ->  TriangleBF2.from(t);
+      case "TriangleBF2X" ->  TriangleBF2X.from(t);
+      case "RationalFloatTriangle2D" ->  RationalFloatTriangle2D.from(t);
+      case "DDFast" ->  DDFast.from(t);
+      case "DDNormalized" ->  DDNormalized.from(t);
+      case "DDSlow" ->  DDSlow.from(t);
+//    case "InCircleCC" ->  InCircleCC.from(t);
+      case "DoubleNonRobust" ->  DoubleNonRobust.from(t);
+      case "InCircleNormalized" ->  InCircleNormalized.from(t);
+      default -> throw new UnsupportedOperationException(); }; }
+
+  public static Triangle2D[]
+  convertTriangles (final Triangle2D[] t,
+                    final String dest) {
+    for (int i=0; i<t.length; i++) {
+      t[i] = convertTriangle(t[i],dest); }
+    return t;}
+
+  //-------------------------------------------------------------------
+
+  public static List<Triangle2D> makeTriangles (final Triangle2D t) {
+    final Triangle2D bf2 = TriangleBF2.from(t);
+    final Triangle2D d2eager = TriangleD2Eager.from(t);
+    final Triangle2D d2lazy = TriangleD2Lazy.from(t);
+    final Triangle2D
+      rationalFloat = RationalFloatTriangle2D.from(t);
+    final Triangle2D ddFast = DDFast.from(t);
+    final Triangle2D ddNormalized = DDNormalized.from(t);
+    final Triangle2D ddSlow = DDSlow.from(t);
+    final Triangle2D doubleNonRobust = DoubleNonRobust.from(t);
+    final Triangle2D
+      inCircleNormalized = InCircleNormalized.from(t);
+    return List.of(
+      // mine
+      d2eager, d2lazy,
+      rationalFloat,
+      bf2,
+      // JTS
+      ddFast,ddNormalized,ddSlow,doubleNonRobust,inCircleNormalized); }
 
   //-------------------------------------------------------------------
 } // end class

@@ -5,7 +5,7 @@ package mop.java.geometry.euclidean;
  * that are more precise than <code>double/Double</code>.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-26
+ * @version 2026-09-27
  */
 
 public final record VectorD2 (double x, double y)

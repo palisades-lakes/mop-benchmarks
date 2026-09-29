@@ -8,33 +8,45 @@ import mop.java.numbers.BigFloatX;
  * Should be exact, up to BigFloatX resolution.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 202-09-26
+ * @version 202-09-27
  */
 
-public final class TriangleBF2X extends AbstractTriangle2D {
+public final class TriangleBF2X implements Triangle2D {
+
+  // TODO: only need p0
+  private final VectorD2 p0;
+  private final VectorD2 p1;
+  private final VectorD2 p2;
+
+  @Override
+  public final VectorD2 getP0 () { return p0; }
+  @Override
+  public final VectorD2 getP1 () { return p1; }
+  @Override
+  public final VectorD2 getP2 () { return p2; }
 
   // cache vector result of translating p0 to origin,
   // and related quantities
 
   private VectorBF2X _v10;
-  private final VectorBF2X getV10 () {
+  public final VectorBF2X getV10 () {
     if (null == _v10) {
       _v10 = VectorBF2X.dif(getP1(),getP0()); }
     return _v10; }
 
   private BigFloatX _v10Norm2;
-  private final BigFloatX getV10Norm2 () {
+  public final BigFloatX getV10Norm2 () {
     if (null==_v10Norm2) { _v10Norm2 = getV10().l2norm2(); }
     return _v10Norm2; }
 
   private VectorBF2X _v20;
-  private final VectorBF2X getV20 () {
+  public final VectorBF2X getV20 () {
     if (null == _v20) {
       _v20 = VectorBF2X.dif(getP2(),getP0()); }
     return _v20; }
 
   private BigFloatX _v20Norm2;
-  private final BigFloatX getV20Norm2 () {
+  public final BigFloatX getV20Norm2 () {
     if (null==_v20Norm2) { _v20Norm2 = getV20().l2norm2(); }
     return _v20Norm2; }
 
@@ -123,7 +135,8 @@ public final class TriangleBF2X extends AbstractTriangle2D {
   private TriangleBF2X (final VectorD2 a,
                         final VectorD2 b,
                         final VectorD2 c)  {
-    super(a,b,c); }
+    super();
+    this.p0 = a; this.p1 = b; this.p2 = c; }
 
   public static final Triangle2D of (final VectorD2 a,
                                              final VectorD2 b,

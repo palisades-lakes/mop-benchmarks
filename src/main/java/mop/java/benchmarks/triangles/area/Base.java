@@ -24,16 +24,9 @@ public abstract class Base {
 
   @Param({
     "TriangleD2Eager",
-    "ShewchukIntervalTriangle2D",
-//    "ShewchukVectorTriangle2D",
 //    "TriangleBF2",
 //    "TriangleBF2X",
 //    "TriangleD2Lazy",
-//    "RelaxedIntervalTriangle2D",
-//    "RoundingIntervalTriangle2D",
-//    "ReBfTriangle2D",
-//    "RoBfTriangle2D",
-//    "ShBFTriangle2D",
 //    "RationalFloatTriangle2D",
 //    "DDFast",
 //    "DDNormalized",
