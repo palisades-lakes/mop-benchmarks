@@ -2,9 +2,9 @@ package mop.java.scripts.triangles;
 
 import mop.java.geometry.Generators;
 import mop.java.geometry.euclidean.VectorD2;
-import mop.java.geometry.triangle.Triangle2D;
 import mop.java.geometry.triangle.TriangleBF2;
 import mop.java.geometry.triangle.TriangleD2Lazy;
+import mop.java.geometry.triangle.TriangleR2;
 import mop.java.numbers.BigFloat;
 import mop.java.numbers.Doubles;
 import mop.java.prng.Generator;
@@ -85,7 +85,7 @@ public final class ColinearTrials {
       final TriangleBF2 t =
         (TriangleBF2)
           TriangleBF2.from(
-            (Triangle2D) colinearGenerator.next());
+            (TriangleR2) colinearGenerator.next());
       final BigFloat bf = t.getV20xV10();
       final double bfd = bf.doubleValue();
       if (t.getV20xV10().isZero()) { nexact++; }

@@ -91,14 +91,14 @@ public class TriangleD2Lazy extends TriangleD2 {
                          final VectorD2 c)  {
     super(a,b,c); }
 
-  public static Triangle2D of (final VectorD2 a,
-                                     final VectorD2 b,
-                                     final VectorD2 c) {
+  public static TriangleR2 of (final VectorD2 a,
+                               final VectorD2 b,
+                               final VectorD2 c) {
     return new TriangleD2Lazy(a, b, c); }
 
   /** Convert other triangle classes. */
 
-  public static Triangle2D from (final Triangle2D t) {
+  public static TriangleR2 from (final TriangleR2 t) {
     return of(t.getP0(), t.getP1(), t.getP2()); }
 
   //-------------------------------------------------------------------

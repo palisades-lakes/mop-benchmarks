@@ -1,7 +1,7 @@
 package mop.java.test.geometry.triangles;
 
 import mop.java.geometry.euclidean.VectorD2;
-import mop.java.geometry.triangle.Triangle2D;
+import mop.java.geometry.triangle.TriangleR2;
 
 import java.util.List;
 
@@ -17,8 +17,8 @@ public abstract class TriangleTest {
   //--------------------------------------------------------------
 //  private static final String debugMsg (final double truth,
 //                                        final double check,
-//                                        final Triangle2D gold,
-//                                        final Triangle2D pred,
+//                                        final TriangleR2 gold,
+//                                        final TriangleR2 pred,
 //                                        final VectorD2 p0,
 //                                        final VectorD2 p1,
 //                                        final VectorD2 p2,
@@ -34,9 +34,9 @@ public abstract class TriangleTest {
   public static final String failureMsg (final String name,
                                          final double truth,
                                          final double check,
-                                         final Triangle2D gold,
-                                         final Triangle2D pred,
-                                         final List<Triangle2D> triangles,
+                                         final TriangleR2 gold,
+                                         final TriangleR2 pred,
+                                         final List<TriangleR2> triangles,
                                          final VectorD2 p) {
     final StringBuilder msg = new StringBuilder(
       "\n\n" + name +
@@ -45,7 +45,7 @@ public abstract class TriangleTest {
     msg.append("\ndiff=").append(Double.toHexString(truth-check));
     msg.append("\nulp=").append(Double.toHexString(Math.ulp(truth)));
     if (null != triangles) {
-      for (final Triangle2D t : triangles) {
+      for (final TriangleR2 t : triangles) {
         msg.append("\n\n").append(t.description()).append(" ->\n");
         if (null!=p) {
           msg.append(p).append(" \n"); }

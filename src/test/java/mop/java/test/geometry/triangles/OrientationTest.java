@@ -2,8 +2,8 @@ package mop.java.test.geometry.triangles;
 
 import mop.java.geometry.Generators;
 import mop.java.geometry.euclidean.VectorD2;
-import mop.java.geometry.triangle.Triangle2D;
 import mop.java.geometry.triangle.TriangleD2Lazy;
+import mop.java.geometry.triangle.TriangleR2;
 import mop.java.numbers.Doubles;
 import mop.java.prng.Generator;
 import mop.java.prng.PRNG;
@@ -26,26 +26,26 @@ public final class OrientationTest extends TriangleTest {
   public static final String orientationMsg (final String name,
                                              final double truth,
                                              final double check,
-                                             final Triangle2D gold,
-                                             final Triangle2D pred,
-                                             final List<Triangle2D> triangles) {
+                                             final TriangleR2 gold,
+                                             final TriangleR2 pred,
+                                             final List<TriangleR2> triangles) {
     final StringBuilder msg = new StringBuilder(
       "\n" + name +
         "\ngold=" + gold + " -> " + Double.toHexString(truth) +
         "\npred=" + pred + " -> " + Double.toHexString(check));
     if (null != triangles) {
-      for (final Triangle2D t : triangles) {
+      for (final TriangleR2 t : triangles) {
         msg.append("\n").append(t).append(" ->\n");
         msg.append(Double.toHexString(t.orientation())); } }
     return msg + "\n"; }
 
   //--------------------------------------------------------------
 
-  private static final void checkOrientation (final Triangle2D t0) {
-    final List<Triangle2D> triangles = Triangle2D.makeTriangles(t0);
-    final Triangle2D gold = Triangle2D.truth(t0);
+  private static final void checkOrientation (final TriangleR2 t0) {
+    final List<TriangleR2> triangles = TriangleR2.makeTriangles(t0);
+    final TriangleR2 gold = TriangleR2.truth(t0);
     final double trueOrientation = gold.orientation();
-    for (final Triangle2D t : triangles) {
+    for (final TriangleR2 t : triangles) {
       final double orientation = t.orientation();
       if (t.isOrientationRobust()) {
       Assertions.assertEquals(
@@ -83,19 +83,19 @@ public final class OrientationTest extends TriangleTest {
     final VectorD2 p2 = new VectorD2( Math.nextDown(a), 0x1.0p10);
     final VectorD2 p3 = new VectorD2( a, 1.0);
 
-//    System.out.println("p0=" + Triangle2D.toHexString(p0));
-//    System.out.println("p1=" + Triangle2D.toHexString(p1));
-//    System.out.println("p2=" + Triangle2D.toHexString(p2));
-//    System.out.println("p3=" + Triangle2D.toHexString(p3));
+//    System.out.println("p0=" + TriangleR2.toHexString(p0));
+//    System.out.println("p1=" + TriangleR2.toHexString(p1));
+//    System.out.println("p2=" + TriangleR2.toHexString(p2));
+//    System.out.println("p3=" + TriangleR2.toHexString(p3));
 
-    final Triangle2D t013 = TriangleD2Lazy.of(p0, p1, p3);
-//    final Triangle2D bf013 = TriangleBF2.from(t013);
+    final TriangleR2 t013 = TriangleD2Lazy.of(p0, p1, p3);
+//    final TriangleR2 bf013 = TriangleBF2.from(t013);
 //    System.out.println("bf013=" + bf013);
 //    System.out.println(Double.toHexString(bf013.orientation()));
     checkOrientation(t013);
 
-    final Triangle2D t023 = TriangleD2Lazy.of(p0, p2, p3);
-//    final Triangle2D bf023 = TriangleBF2.from(t023);
+    final TriangleR2 t023 = TriangleD2Lazy.of(p0, p2, p3);
+//    final TriangleR2 bf023 = TriangleBF2.from(t023);
 //    System.out.println("bf023=" + bf023);
 //    System.out.println(Double.toHexString(bf023.orientation()));
     checkOrientation(t023);
@@ -125,7 +125,7 @@ public final class OrientationTest extends TriangleTest {
       for (int j=0;j<n;j++) {
         final double pyj = py + j*uy;
         final VectorD2 pij = new VectorD2(pxi, pyj);
-        final Triangle2D t = TriangleD2Lazy.of(pij, q, r);
+        final TriangleR2 t = TriangleD2Lazy.of(pij, q, r);
         checkOrientation(t); } } }
 
   @Test
@@ -158,7 +158,7 @@ public final class OrientationTest extends TriangleTest {
     final Generator vGenerator =
       Generators.vectorD2Generator(laplaceGenerator);
     final Generator tGenerator = Generators.triangleGenerator(n,vGenerator);
-    final Triangle2D[] t = (Triangle2D[]) tGenerator.next();
+    final TriangleR2[] t = (TriangleR2[]) tGenerator.next();
     for (int i = 0; i < n; i++) {  checkOrientation(t[i]); } }
 
   //--------------------------------------------------------------

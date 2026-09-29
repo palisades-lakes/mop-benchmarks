@@ -1,7 +1,7 @@
 package mop.java.scripts.triangles;
 
 import mop.java.geometry.Generators;
-import mop.java.geometry.triangle.Triangle2D;
+import mop.java.geometry.triangle.TriangleR2;
 import mop.java.numbers.Doubles;
 import mop.java.prng.Generator;
 import mop.java.prng.PRNG;
@@ -19,7 +19,7 @@ public final class SignedAreaProfile {
   //--------------------------------------------------------------
   // each row contains npoints 'cocircular' points
 
-  public static final Triangle2D[]
+  public static final TriangleR2[]
   triangles (final int nTriangles) {
 
     final double pMu = 0.0;
@@ -33,9 +33,9 @@ public final class SignedAreaProfile {
             PRNG.well44497b("seeds/Well44497b-2019-01-07.txt"),
             pMu, pSigma)));
 
-    final Triangle2D[] t =
-      Triangle2D.convertTriangles(
-        (Triangle2D[]) triangleGenerator.next(),
+    final TriangleR2[] t =
+      TriangleR2.convertTriangles(
+        (TriangleR2[]) triangleGenerator.next(),
       "TriangleD2Eager");
     System.gc();
     System.gc();
@@ -53,7 +53,7 @@ public final class SignedAreaProfile {
 
     final int ntrys = 524288;
     final int nTriangles = 524288;
-    final Triangle2D[] t = triangles(nTriangles);
+    final TriangleR2[] t = triangles(nTriangles);
     System.gc();
     System.gc();
     int nzero=0;

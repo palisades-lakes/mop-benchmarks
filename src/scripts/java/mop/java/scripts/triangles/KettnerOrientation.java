@@ -4,8 +4,8 @@ import com.carrotsearch.hppc.ObjectIntHashMap;
 import com.carrotsearch.hppc.ObjectIntMap;
 import com.carrotsearch.hppc.procedures.ObjectIntProcedure;
 import mop.java.geometry.euclidean.VectorD2;
-import mop.java.geometry.triangle.Triangle2D;
 import mop.java.geometry.triangle.TriangleD2Lazy;
+import mop.java.geometry.triangle.TriangleR2;
 
 import java.util.List;
 
@@ -19,12 +19,12 @@ import java.util.List;
 public final class KettnerOrientation {
 
   private static final void
-  checkOrientations (final Triangle2D t0,
+  checkOrientations (final TriangleR2 t0,
                      final ObjectIntMap<Class> successes) {
-    final List<Triangle2D> triangles = Triangle2D.makeTriangles(t0);
-    final Triangle2D gold = Triangle2D.truth(t0);
+    final List<TriangleR2> triangles = TriangleR2.makeTriangles(t0);
+    final TriangleR2 gold = TriangleR2.truth(t0);
     final double trueOrientation = gold.orientation();
-    for (final Triangle2D t : triangles) {
+    for (final TriangleR2 t : triangles) {
       final Class c = t.getClass();
       if (t.orientation() == trueOrientation) {
         successes.addTo(c,1); } } }
@@ -48,7 +48,7 @@ public final class KettnerOrientation {
       for (int j=0;j<n;j++) {
         final double pyj = py + j*uy;
         final VectorD2 pij = new VectorD2(pxi, pyj);
-        final Triangle2D tij = TriangleD2Lazy.of(pij, q, r);
+        final TriangleR2 tij = TriangleD2Lazy.of(pij, q, r);
         checkOrientations(tij,successes); } }
     return n*n; }
 

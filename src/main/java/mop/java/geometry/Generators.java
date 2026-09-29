@@ -3,8 +3,8 @@ package mop.java.geometry;
 import mop.java.geometry.euclidean.VectorD2;
 import mop.java.geometry.tetrahedron.Tetrahedron3D;
 import mop.java.geometry.tetrahedron.TetrahedronVector3D;
-import mop.java.geometry.triangle.Triangle2D;
 import mop.java.geometry.triangle.TriangleD2;
+import mop.java.geometry.triangle.TriangleR2;
 import mop.java.prng.Generator;
 import mop.java.prng.GeneratorBase;
 import org.apache.commons.geometry.euclidean.threed.Vector3D;
@@ -113,23 +113,23 @@ public final class Generators {
       final Generator tGenerator = triangleGenerator(vectorGenerator);
       @Override
       public final Object next () {
-        final Triangle2D[] p =  new Triangle2D[n];
+        final TriangleR2[] p =  new TriangleR2[n];
         for (int i = 0; i < n; i++) {
-          p[i] = (Triangle2D) tGenerator.next(); }
+          p[i] = (TriangleR2) tGenerator.next(); }
         return p; } }; }
 
   public static final Generator
-  triangleGenerator (final Function<Triangle2D, Triangle2D> converter,
+  triangleGenerator (final Function<TriangleR2, TriangleR2> converter,
                      Generator vectorGenerator) {
     final Generator tGenerator = triangleGenerator(vectorGenerator);
     return new GeneratorBase(converter + " * triangleGenerator") {
       @Override
       public final Object next () {
-        return converter.apply((Triangle2D) tGenerator.next()); } }; }
+        return converter.apply((TriangleR2) tGenerator.next()); } }; }
 
   public static final Generator
   triangleGenerator (final int n,
-                     final Function<Triangle2D, Triangle2D> converter,
+                     final Function<TriangleR2, TriangleR2> converter,
                      final Generator vectorGenerator) {
     return new GeneratorBase(
       converter + " * triangleGenerator[" + n + "]") {
@@ -137,9 +137,9 @@ public final class Generators {
         triangleGenerator(converter, vectorGenerator);
       @Override
       public final Object next () {
-        final Triangle2D[] p =  new Triangle2D[n];
+        final TriangleR2[] p =  new TriangleR2[n];
         for (int i = 0; i < n; i++) {
-          p[i] = (Triangle2D) tGenerator.next(); }
+          p[i] = (TriangleR2) tGenerator.next(); }
         return p; } }; }
 
   //--------------------------------------------------------------
@@ -180,9 +180,9 @@ public final class Generators {
         colinearTriangleGenerator(vectorGenerator,doubleGenerator);
       @Override
       public final Object next () {
-        final Triangle2D[] p =  new Triangle2D[n];
+        final TriangleR2[] p =  new TriangleR2[n];
         for (int i = 0; i < n; i++) {
-          p[i] = (Triangle2D) tGenerator.next(); }
+          p[i] = (TriangleR2) tGenerator.next(); }
         return p; } }; }
 
   //--------------------------------------------------------------

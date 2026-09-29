@@ -8,7 +8,7 @@ import mop.java.geometry.euclidean.VectorD2;
  * @version 2026-09-27
  */
 
-public class TriangleD2 implements Triangle2D {
+public class TriangleD2 implements TriangleR2 {
 
   private final VectorD2 p0;
   private final VectorD2 p1;
@@ -120,14 +120,14 @@ public class TriangleD2 implements Triangle2D {
     super();
     this.p0 = a; this.p1 = b; this.p2 = c; }
 
-  public static Triangle2D of (final VectorD2 a,
+  public static TriangleR2 of (final VectorD2 a,
                                final VectorD2 b,
                                final VectorD2 c) {
     return new TriangleD2(a, b, c); }
 
   /** Convert other triangle classes. */
 
-  public static Triangle2D from (final Triangle2D t) {
+  public static TriangleR2 from (final TriangleR2 t) {
     return of(t.getP0(), t.getP1(), t.getP2()); }
 
 //-------------------------------------------------------------------

@@ -1,7 +1,6 @@
 package mop.java.geometry.triangle;
 
 import mop.java.geometry.euclidean.VectorD2;
-import mop.java.geometry.triangle.jts.*;
 
 import java.util.List;
 
@@ -11,7 +10,7 @@ import java.util.List;
  * @version 2026-09-29
  */
 
-public interface Triangle2D {
+public interface TriangleR2 {
 
   // TODO: replace with simplex and embedding map
   //  only cache the points if actually used
@@ -132,12 +131,12 @@ public interface Triangle2D {
   // construction related
   //--------------------------------------------------------------------
   /** ground truth predicate. */
-  public static Triangle2D truth (final Triangle2D t) {
+  public static TriangleR2 truth (final TriangleR2 t) {
     return TriangleBF2.from(t); }
 
   /** conversions from any TriangleD2 to other Triangle classes. */
 
-  public static Triangle2D convertTriangle (final Triangle2D t,
+  public static TriangleR2 convertTriangle (final TriangleR2 t,
                                             final String dest) {
     // TODO: lookup method object rather than switch (String)
     return switch (dest) {
@@ -147,16 +146,10 @@ public interface Triangle2D {
       case "TriangleBF2" ->  TriangleBF2.from(t);
       case "TriangleBF2X" ->  TriangleBF2X.from(t);
       case "RationalFloatTriangle2D" ->  RationalFloatTriangle2D.from(t);
-      case "DDFast" ->  DDFast.from(t);
-      case "DDNormalized" ->  DDNormalized.from(t);
-      case "DDSlow" ->  DDSlow.from(t);
-//    case "InCircleCC" ->  InCircleCC.from(t);
-      case "DoubleNonRobust" ->  DoubleNonRobust.from(t);
-      case "InCircleNormalized" ->  InCircleNormalized.from(t);
       default -> throw new UnsupportedOperationException(); }; }
 
-  public static Triangle2D[]
-  convertTriangles (final Triangle2D[] t,
+  public static TriangleR2[]
+  convertTriangles (final TriangleR2[] t,
                     final String dest) {
     for (int i=0; i<t.length; i++) {
       t[i] = convertTriangle(t[i],dest); }
@@ -164,25 +157,17 @@ public interface Triangle2D {
 
   //-------------------------------------------------------------------
 
-  public static List<Triangle2D> makeTriangles (final Triangle2D t) {
-    final Triangle2D bf2 = TriangleBF2.from(t);
-    final Triangle2D d2eager = TriangleD2Eager.from(t);
-    final Triangle2D d2lazy = TriangleD2Lazy.from(t);
-    final Triangle2D
+  public static List<TriangleR2> makeTriangles (final TriangleR2 t) {
+    final TriangleR2 bf2 = TriangleBF2.from(t);
+    final TriangleR2 d2eager = TriangleD2Eager.from(t);
+    final TriangleR2 d2lazy = TriangleD2Lazy.from(t);
+    final TriangleR2
       rationalFloat = RationalFloatTriangle2D.from(t);
-    final Triangle2D ddFast = DDFast.from(t);
-    final Triangle2D ddNormalized = DDNormalized.from(t);
-    final Triangle2D ddSlow = DDSlow.from(t);
-    final Triangle2D doubleNonRobust = DoubleNonRobust.from(t);
-    final Triangle2D
-      inCircleNormalized = InCircleNormalized.from(t);
     return List.of(
       // mine
       d2eager, d2lazy,
       rationalFloat,
-      bf2,
-      // JTS
-      ddFast,ddNormalized,ddSlow,doubleNonRobust,inCircleNormalized); }
+      bf2); }
 
   //-------------------------------------------------------------------
 } // end class

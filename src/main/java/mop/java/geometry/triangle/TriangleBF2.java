@@ -11,7 +11,7 @@ import mop.java.numbers.BigFloat;
  * @version 202-09-27
  */
 
-public final class TriangleBF2 implements Triangle2D {
+public final class TriangleBF2 implements TriangleR2 {
 
   // TODO: only need p0
   private final VectorD2 p0;
@@ -137,14 +137,14 @@ public final class TriangleBF2 implements Triangle2D {
     super();
     this.p0 = a; this.p1 = b; this.p2 = c; }
 
-  public static final Triangle2D of (final VectorD2 a,
-                                             final VectorD2 b,
-                                             final VectorD2 c) {
+  public static final TriangleR2 of (final VectorD2 a,
+                                     final VectorD2 b,
+                                     final VectorD2 c) {
     return new TriangleBF2(a, b, c); }
 
   /** Convert other triangle classes. */
 
-  public static final Triangle2D from (final Triangle2D t) {
+  public static final TriangleR2 from (final TriangleR2 t) {
     return of(t.getP0(), t.getP1(), t.getP2()); }
 
   //-------------------------------------------------------------------

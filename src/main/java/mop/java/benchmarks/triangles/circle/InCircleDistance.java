@@ -2,7 +2,7 @@ package mop.java.benchmarks.triangles.circle;
 
 import mop.java.benchmarks.triangles.Defaults;
 import mop.java.geometry.euclidean.VectorD2;
-import mop.java.geometry.triangle.Triangle2D;
+import mop.java.geometry.triangle.TriangleR2;
 
 /** <pre>
  * mvn -q install && jmh mop.java.benchmarks.triangles.circle.InCircleDistance
@@ -14,7 +14,7 @@ import mop.java.geometry.triangle.Triangle2D;
 public class InCircleDistance extends Base {
 
   @Override
-  public final double operation (final Triangle2D t,
+  public final double operation (final TriangleR2 t,
                                  final VectorD2 p) {
     return t.inCircleDistance(p); }
 

@@ -2,7 +2,7 @@ package mop.java.benchmarks.triangles.area;
 
 import mop.java.benchmarks.triangles.Defaults;
 import mop.java.geometry.Generators;
-import mop.java.geometry.triangle.Triangle2D;
+import mop.java.geometry.triangle.TriangleR2;
 import mop.java.numbers.Doubles;
 import mop.java.prng.PRNG;
 import org.openjdk.jmh.annotations.Level;
@@ -36,8 +36,8 @@ public class ColinearOrientation extends Base {
 
   @Setup(Level.Invocation)
   public void invocationSetup () {
-    triangles = Triangle2D.convertTriangles(
-      (Triangle2D[]) triangleGenerator.next(), className);
+    triangles = TriangleR2.convertTriangles(
+      (TriangleR2[]) triangleGenerator.next(), className);
     value = new int[3];
     System.gc(); }
 

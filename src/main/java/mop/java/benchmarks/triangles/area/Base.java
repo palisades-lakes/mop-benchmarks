@@ -1,7 +1,7 @@
 package mop.java.benchmarks.triangles.area;
 
 import mop.java.geometry.Generators;
-import mop.java.geometry.triangle.Triangle2D;
+import mop.java.geometry.triangle.TriangleR2;
 import mop.java.numbers.Doubles;
 import mop.java.prng.Generator;
 import mop.java.prng.PRNG;
@@ -11,7 +11,7 @@ import org.openjdk.jmh.infra.Blackhole;
 /** Benchmark triangle operations.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-26
+ * @version 2026-09-29
  */
 
 @State(Scope.Thread)
@@ -28,11 +28,6 @@ public abstract class Base {
 //    "TriangleBF2X",
 //    "TriangleD2Lazy",
 //    "RationalFloatTriangle2D",
-//    "DDFast",
-//    "DDNormalized",
-//    "DDSlow",
-//    "InCircleNormalized",
-//    "DoubleNonRobust",
     })
   String className;
 
@@ -43,7 +38,7 @@ public abstract class Base {
   int nTriangles;
 
   /** convert to test class on each invocation. */
-  Triangle2D[] triangles;
+  TriangleR2[] triangles;
 
   /** count signs */
 
@@ -53,7 +48,7 @@ public abstract class Base {
   /** This is what is timed.
    */
 
-  public double operation (final Triangle2D t) {
+  public double operation (final TriangleR2 t) {
     return t.orientation(); }
 
   //--------------------------------------------------------------
@@ -72,8 +67,8 @@ public abstract class Base {
 
   @Setup(Level.Invocation)
   public void invocationSetup () {
-    triangles = Triangle2D.convertTriangles(
-      (Triangle2D[]) triangleGenerator.next(), className);
+    triangles = TriangleR2.convertTriangles(
+      (TriangleR2[]) triangleGenerator.next(), className);
     value = new int[3];
     System.gc();
     System.gc();
@@ -85,7 +80,7 @@ public abstract class Base {
 
   @Benchmark
   public final Object bench (final Blackhole blackhole) {
-    for (final Triangle2D triangle : triangles) {
+    for (final TriangleR2 triangle : triangles) {
       final double sign = operation(triangle);
       if (0.0 > sign) { value[0]++; }
       else if (0.0 == sign) { value[1]++; }

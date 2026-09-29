@@ -5,8 +5,8 @@ import com.carrotsearch.hppc.ObjectIntMap;
 import com.carrotsearch.hppc.procedures.ObjectIntProcedure;
 import mop.java.geometry.Generators;
 import mop.java.geometry.euclidean.VectorD2;
-import mop.java.geometry.triangle.Triangle2D;
 import mop.java.geometry.triangle.TriangleD2Lazy;
+import mop.java.geometry.triangle.TriangleR2;
 import mop.java.numbers.Doubles;
 import mop.java.prng.Generator;
 import mop.java.prng.PRNG;
@@ -25,13 +25,13 @@ public final class AlmostCocircular {
   //--------------------------------------------------------------
 
   private static final void
-  checkInCircle (final Triangle2D t0,
+  checkInCircle (final TriangleR2 t0,
                  final VectorD2 p,
                  final ObjectIntMap<Class> successes) {
-    final List<Triangle2D> triangles = Triangle2D.makeTriangles(t0);
-    final Triangle2D gold = Triangle2D.truth(t0);
+    final List<TriangleR2> triangles = TriangleR2.makeTriangles(t0);
+    final TriangleR2 gold = TriangleR2.truth(t0);
     final double trueInCircle = gold.inCircle(p);
-    for (final Triangle2D t : triangles) {
+    for (final TriangleR2 t : triangles) {
       final Class c = t.getClass();
       if (t.inCircle(p) == trueInCircle) {
         successes.addTo(c,1); } } }
@@ -41,7 +41,7 @@ public final class AlmostCocircular {
   // fig 2
 
   public static final int
-  checkInCircles (final Triangle2D t,
+  checkInCircles (final TriangleR2 t,
                   final VectorD2 p,
                   final ObjectIntMap<Class> successes) {
     int ntrys = 0;
@@ -100,7 +100,7 @@ public final class AlmostCocircular {
     for (int i=0;i<ncircles;i++) {
       final VectorD2 c = (VectorD2) centerGenerator.next();
       final double r = radiusGenerator.nextDouble();
-      final Triangle2D ti =
+      final TriangleR2 ti =
         TriangleD2Lazy.of(
           ((VectorD2) pointGenerator.next()).project(c,r),
           ((VectorD2) pointGenerator.next()).project(c,r),

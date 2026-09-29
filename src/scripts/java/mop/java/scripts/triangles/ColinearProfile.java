@@ -2,9 +2,9 @@ package mop.java.scripts.triangles;
 
 import mop.java.geometry.Generators;
 import mop.java.geometry.euclidean.VectorD2;
-import mop.java.geometry.triangle.Triangle2D;
 import mop.java.geometry.triangle.TriangleBF2;
 import mop.java.geometry.triangle.TriangleD2Lazy;
+import mop.java.geometry.triangle.TriangleR2;
 import mop.java.numbers.BigFloat;
 import mop.java.numbers.Doubles;
 import mop.java.prng.Generator;
@@ -70,7 +70,7 @@ public final class ColinearProfile {
     for (int i=0;i<ntriangles;i++) {
       triangles[i] =
         (TriangleBF2)
-          TriangleBF2.from((Triangle2D) colinearGenerator.next()); }
+          TriangleBF2.from((TriangleR2) colinearGenerator.next()); }
 
     System.gc();
     System.gc();

@@ -15,13 +15,13 @@ public final class CocircularTest extends TriangleTest {
   //--------------------------------------------------------------
 // TODO: check error bound, instead of interval
 
-//  private static final void inCircle (final Triangle2D t,
+//  private static final void inCircle (final TriangleR2 t,
 //                                      final VectorD2 p) {
 //    final TriangleBF2 gold =
-//      (TriangleBF2) Triangle2D.truth(t);
+//      (TriangleBF2) TriangleR2.truth(t);
 //    final BigFloat bf = gold.inCircleDistanceBF(p);
-//    final List<Triangle2D> triangles = makeIntervalTriangles(t);
-//    for (final Triangle2D ti :triangles) {
+//    final List<TriangleR2> triangles = makeIntervalTriangles(t);
+//    for (final TriangleR2 ti :triangles) {
 //      Assertions.assertTrue(ti.inCircleIntervals());
 //      final DoubleInterval interval = ti.inCircleInterval(p);
 //      Assertions.assertTrue(

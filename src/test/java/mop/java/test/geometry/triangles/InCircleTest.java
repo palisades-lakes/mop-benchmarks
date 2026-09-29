@@ -2,8 +2,8 @@ package mop.java.test.geometry.triangles;
 
 import mop.java.geometry.Generators;
 import mop.java.geometry.euclidean.VectorD2;
-import mop.java.geometry.triangle.Triangle2D;
 import mop.java.geometry.triangle.TriangleD2Lazy;
+import mop.java.geometry.triangle.TriangleR2;
 import mop.java.numbers.Doubles;
 import mop.java.prng.Generator;
 import mop.java.prng.PRNG;
@@ -28,12 +28,12 @@ public final class InCircleTest extends TriangleTest {
 
   //--------------------------------------------------------------
 
-  private static final void inCircle (final Triangle2D t,
+  private static final void inCircle (final TriangleR2 t,
                                       final VectorD2 p) {
-    final Triangle2D gold = Triangle2D.truth(t);
+    final TriangleR2 gold = TriangleR2.truth(t);
     final double trueInc = gold.inCircleDistance(p);
-    final List<Triangle2D> triangles = Triangle2D.makeTriangles(t);
-    for (final Triangle2D ti : triangles) {
+    final List<TriangleR2> triangles = TriangleR2.makeTriangles(t);
+    for (final TriangleR2 ti : triangles) {
       final double inc = ti.inCircleDistance(p);
       if (ti.inCircleDistanceExact()) {
         // with delta=0.0 handles +0 vs -0 'correctly'
@@ -55,7 +55,7 @@ public final class InCircleTest extends TriangleTest {
     final VectorD2 p3 =  new VectorD2( -1.0, -1.0);
     final VectorD2 p4 =  new VectorD2( 1.0, -1.0);
 
-    final Triangle2D t = TriangleD2Lazy.of(p1, p2, p3);
+    final TriangleR2 t = TriangleD2Lazy.of(p1, p2, p3);
     inCircle(t, p0);
     inCircle(t, p4);
     inCircle(t, p1);
@@ -76,7 +76,7 @@ public final class InCircleTest extends TriangleTest {
       Generators.triangleGenerator(
         n, Generators.vectorD2Generator(
           Doubles.laplaceGenerator(urp0, 0.0, 1.0)));
-    final Triangle2D[] t = (Triangle2D[]) tGenerator.next();
+    final TriangleR2[] t = (TriangleR2[]) tGenerator.next();
     final UniformRandomProvider urp1 =
       PRNG.well44497b("seeds/Well44497b-2019-01-09.txt");
     final Generator pGenerator =
@@ -84,7 +84,7 @@ public final class InCircleTest extends TriangleTest {
         n, Doubles.laplaceGenerator(urp1, 0.0, 1.0));
     final VectorD2[] p = (VectorD2[]) pGenerator.next();
     for (int i = 0; i < m; i++) {
-      final Triangle2D ti = t[i];
+      final TriangleR2 ti = t[i];
       for (int j=0;j<n;j++) {
         inCircle(ti,p[j]); } } }
 

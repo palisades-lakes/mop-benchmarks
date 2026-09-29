@@ -1,7 +1,7 @@
 package mop.java.benchmarks.triangles.area;
 
 import mop.java.benchmarks.triangles.Defaults;
-import mop.java.geometry.triangle.Triangle2D;
+import mop.java.geometry.triangle.TriangleR2;
 
 /** <pre>
  * mvn -q install && jmh mop.java.benchmarks.triangles.area.SignedArea
@@ -13,7 +13,7 @@ import mop.java.geometry.triangle.Triangle2D;
 public class SignedArea extends Base {
 
   @Override
-  public final double operation (final Triangle2D t) {
+  public final double operation (final TriangleR2 t) {
     return t.twiceSignedArea(); }
 
   public static final void main (final String[] ignore)  {

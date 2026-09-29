@@ -3,8 +3,8 @@ package mop.java.scripts.triangles;
 import mop.java.accumulators.ZhuHayesAccumulator;
 import mop.java.geometry.Generators;
 import mop.java.geometry.euclidean.VectorD2;
-import mop.java.geometry.triangle.Triangle2D;
 import mop.java.geometry.triangle.TriangleBF2;
+import mop.java.geometry.triangle.TriangleR2;
 import mop.java.numbers.Doubles;
 import mop.java.prng.Generator;
 import mop.java.prng.PRNG;
@@ -40,8 +40,8 @@ public final class InCircle {
           Doubles.laplaceGenerator(
             PRNG.well44497b("seeds/Well44497b-2019-01-07.txt"),
             0.0, 1.0)));
-    final Triangle2D[] triangles =
-      (Triangle2D[]) triangleGenerator.next();
+    final TriangleR2[] triangles =
+      (TriangleR2[]) triangleGenerator.next();
 
     final double[] d = new double[points.length*triangles.length];
     System.out.println(points.length);
@@ -52,7 +52,7 @@ public final class InCircle {
     final int nreps = 64;
     for (int i=0; i<nreps; i++) {
       int k=0;
-      for (final Triangle2D t : triangles) {
+      for (final TriangleR2 t : triangles) {
         for (final VectorD2 p : points) {
           d[k++] = t.inCircleDistance(p); } }
 

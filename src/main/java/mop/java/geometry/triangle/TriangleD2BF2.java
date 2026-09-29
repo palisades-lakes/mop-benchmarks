@@ -47,14 +47,14 @@ public final class TriangleD2BF2 extends TriangleD2Lazy {
                         final VectorD2 c)  {
     super(a,b,c); }
 
-  public static final Triangle2D of (final VectorD2 a,
+  public static final TriangleR2 of (final VectorD2 a,
                                      final VectorD2 b,
                                      final VectorD2 c) {
     return new TriangleD2BF2(a, b, c); }
 
   /** Convert other triangle classes. */
 
-  public static final Triangle2D from (final Triangle2D t) {
+  public static final TriangleR2 from (final TriangleR2 t) {
     return of(t.getP0(), t.getP1(), t.getP2()); }
 
   //-------------------------------------------------------------------

@@ -3,8 +3,8 @@ package mop.java.benchmarks.triangles.circle;
 import mop.java.benchmarks.triangles.Defaults;
 import mop.java.geometry.Generators;
 import mop.java.geometry.euclidean.VectorD2;
-import mop.java.geometry.triangle.Triangle2D;
 import mop.java.geometry.triangle.TriangleD2Lazy;
+import mop.java.geometry.triangle.TriangleR2;
 import mop.java.numbers.Doubles;
 import mop.java.prng.PRNG;
 import org.openjdk.jmh.annotations.Level;
@@ -47,17 +47,17 @@ public class CocircularInCircle extends Base {
 
   @Setup(Level.Invocation)
   public final void invocationSetup () {
-    triangles = new Triangle2D[nTriangles];
+    triangles = new TriangleR2[nTriangles];
     points = new VectorD2[nTriangles][nPoints];
     for (int i=0;i<nTriangles;i++) {
       final VectorD2 c = (VectorD2) centerGenerator.next();
       final double r = radiusGenerator.nextDouble();
-      final Triangle2D ti =
+      final TriangleR2 ti =
         TriangleD2Lazy.of(
           ((VectorD2) pointGenerator.next()).project(c,r),
           ((VectorD2) pointGenerator.next()).project(c,r),
           ((VectorD2) pointGenerator.next()).project(c,r));
-      triangles[i] = Triangle2D.convertTriangle(ti, className);
+      triangles[i] = TriangleR2.convertTriangle(ti, className);
       for (int j=0;j<nPoints; j++) {
         points[i][j] = ((VectorD2) pointGenerator.next()).project(c,r); } }
     value = new int[3];
@@ -66,7 +66,7 @@ public class CocircularInCircle extends Base {
   //--------------------------------------------------------------
 
   @Override
-  public final double operation (final Triangle2D t,
+  public final double operation (final TriangleR2 t,
                                  final VectorD2 p) {
     return t.inCircle(p); }
 

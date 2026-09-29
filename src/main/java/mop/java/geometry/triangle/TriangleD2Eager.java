@@ -17,7 +17,7 @@ public final record TriangleD2Eager (VectorD2 p0,
                                      double v10Norm2,
                                      double v20Norm2,
                                      double v20Xv10)
-  implements Triangle2D {
+  implements TriangleR2 {
 
   @Override
   public final VectorD2 getP0 () { return p0; }
@@ -61,7 +61,7 @@ public final record TriangleD2Eager (VectorD2 p0,
   // construction
   //--------------------------------------------------------------------
 
-  public static final Triangle2D of (final VectorD2 p0,
+  public static final TriangleR2 of (final VectorD2 p0,
                                      final VectorD2 p1,
                                      final VectorD2 p2) {
     final VectorD2 v10 = p1.subtract(p0);
@@ -72,7 +72,7 @@ public final record TriangleD2Eager (VectorD2 p0,
 
   /** Convert other triangle classes. */
 
-  public static final Triangle2D from (final Triangle2D t) {
+  public static final TriangleR2 from (final TriangleR2 t) {
     return of(t.getP0(), t.getP1(), t.getP2()); }
 
   //-------------------------------------------------------------------
