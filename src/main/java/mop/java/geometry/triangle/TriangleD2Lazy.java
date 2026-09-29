@@ -48,7 +48,12 @@ public class TriangleD2Lazy extends TriangleD2 {
     if (Double.isNaN(_V20xV10)) { _V20xV10 = wedge(getV20(),getV10()); }
     return _V20xV10; }
 
-  //--------------------------------------------------------------------
+  private Double _areaBound = null;
+
+  public final double twiceSignedAreaBound () {
+    if (null == _areaBound) {
+      _areaBound = super.twiceSignedAreaBound(); }
+    return _areaBound; }
 
   public final boolean signedAreaExact () { return false; }
 

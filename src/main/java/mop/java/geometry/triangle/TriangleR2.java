@@ -23,8 +23,8 @@ public interface TriangleR2 {
   //--------------------------------------------------------------------
 
   // TODO: an estimate of accuracy for each operation would be better.
-  /** Is this algorithm exact (to the resolution expansions)
-   * or approximate?
+  /** Is this algorithm exact (assuming <code>double</code> inputs)?
+   * Does not depend on point configuration.
    */
 
   public default boolean signedAreaExact() { return false; }
@@ -45,9 +45,10 @@ public interface TriangleR2 {
     return Double.toHexString(twiceSignedArea()); }
 
   //--------------------------------------------------------------------
-  /** Not clear exactly what I want here. For now, indicate whether
-   * all Kettner orientation tests should pass.
+  /** Is the orientation expected to be correct?
+   * May use an error bound, so answer depends on point configuration.
    */
+
   public default boolean isOrientationRobust () {
     return signedAreaExact(); }
 
@@ -73,6 +74,10 @@ public interface TriangleR2 {
   //--------------------------------------------------------------------
   // inCircle and related methods
   //--------------------------------------------------------------------
+
+  /** Is this algorithm exact (assuming <code>double</code> inputs)?
+   * Does not depend on point configuration.
+   */
 
   public default boolean inCircleDistanceExact () { return false; }
 
@@ -100,8 +105,12 @@ public interface TriangleR2 {
     throw new UnsupportedOperationException(getClass().getSimpleName()); }
 
   //--------------------------------------------------------------------
+  /** Is the sign expected to be correct?
+   * May use an error bound, so answer depends on point configuration.
+   */
 
-//  public boolean inCircleRobust () { return inCircleDistanceExact(); }
+  public default boolean inCircleRobust (final VectorD2 ignore) {
+    return inCircleDistanceExact(); }
 
   /** Return -1, 0, 1 if the point is
    * outside, on, or inside the circumcircle.
@@ -110,6 +119,8 @@ public interface TriangleR2 {
   public default double inCircle (final VectorD2 p) {
     // TODO: what to do with NaN?
     final double a = inCircleDistance(p);
+    // NOTE: <code>compareTo()</code> doesn't handle
+    // signed zeros and NaN 'correctly' for this purpose.
     if (Double.isNaN(a)) { return Double.NaN; }
     if (0.0 < a) { return 1.0; }
     if (0.0 > a) { return -1.0; }
@@ -143,6 +154,7 @@ public interface TriangleR2 {
       case "TriangleD2" ->  TriangleD2.from(t);
       case "TriangleD2Eager" ->  TriangleD2Eager.from(t);
       case "TriangleD2Lazy" -> TriangleD2Lazy.from(t);
+      case "TriangleD2BF2" -> TriangleD2BF2.from(t);
       case "TriangleBF2" ->  TriangleBF2.from(t);
       case "TriangleBF2X" ->  TriangleBF2X.from(t);
       case "RationalFloatTriangle2D" ->  RationalFloatTriangle2D.from(t);
@@ -158,16 +170,13 @@ public interface TriangleR2 {
   //-------------------------------------------------------------------
 
   public static List<TriangleR2> makeTriangles (final TriangleR2 t) {
-    final TriangleR2 bf2 = TriangleBF2.from(t);
+    final TriangleR2 d2 = TriangleD2.from(t);
     final TriangleR2 d2eager = TriangleD2Eager.from(t);
     final TriangleR2 d2lazy = TriangleD2Lazy.from(t);
-    final TriangleR2
-      rationalFloat = RationalFloatTriangle2D.from(t);
-    return List.of(
-      // mine
-      d2eager, d2lazy,
-      rationalFloat,
-      bf2); }
+    final TriangleR2 bf2 = TriangleBF2.from(t);
+    final TriangleR2 rf2 = RationalFloatTriangle2D.from(t);
+    final TriangleR2 d2bf2 = TriangleD2BF2.from(t);
+    return List.of(d2, d2eager, d2lazy, bf2, rf2,d2bf2); }
 
   //-------------------------------------------------------------------
 } // end class

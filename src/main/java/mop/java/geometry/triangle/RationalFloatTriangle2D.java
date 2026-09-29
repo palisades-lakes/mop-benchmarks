@@ -7,7 +7,7 @@ import mop.java.numbers.RationalFloat;
  * Should be exact, up to RationalFloat resolution.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 202-09-27
+ * @version 202-09-29
  */
 
 public final class RationalFloatTriangle2D implements TriangleR2 {
@@ -52,9 +52,6 @@ public final class RationalFloatTriangle2D implements TriangleR2 {
     final RationalFloat bcy = by.subtract(cy);
     return
       ((acx.multiply(bcy)).subtract(acy.multiply(bcx))).doubleValue(); }
-
-  @Override
-  public final boolean isOrientationRobust () { return true; }
 
   //--------------------------------------------------------------------
 

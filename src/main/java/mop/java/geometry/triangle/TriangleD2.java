@@ -5,7 +5,7 @@ import mop.java.geometry.euclidean.VectorD2;
 /** Minimal triangle with VectorD2 vertices, nothing cached.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-09-27
+ * @version 2026-09-29
  */
 
 public class TriangleD2 implements TriangleR2 {
@@ -30,6 +30,8 @@ public class TriangleD2 implements TriangleR2 {
   public static final double EPSILON = 0x1.0p-53;
 
   //--------------------------------------------------------------------
+  // orientation, etc.
+  //--------------------------------------------------------------------
 
   private static double triArea (final VectorD2 a,
                                  final VectorD2 b,
@@ -38,19 +40,22 @@ public class TriangleD2 implements TriangleR2 {
     return b.subtract(a).wedge(c.subtract(a)); }
 
   //--------------------------------------------------------------------
-  // orient2d
+
   public static final double AREA_FACTOR =
     16 * 8 * (EPSILON * (3.0 + 16.0 * EPSILON));
 
   /** Shewchuk error bound A for twiceSignedArea. */
-  public double areaBound () {
-    final double xy21 = Math.abs(getV10().getX() * getV20().getY());
-    final double xy12 = Math.abs(getV20().getX() * getV10().getY());
+  public double twiceSignedAreaBound () {
+    final double xy21 = Math.abs(getV10().x() * getV20().getY());
+    final double xy12 = Math.abs(getV20().x() * getV10().getY());
     return AREA_FACTOR * (xy21 + xy12); }
 
+  //--------------------------------------------------------------------
+
+  public final boolean isOrientationRobust () {
+    return Math.abs(twiceSignedArea()) > twiceSignedAreaBound(); }
 
   //--------------------------------------------------------------------
-  // cache?
 
   @Override
   public double twiceSignedArea () {
@@ -58,6 +63,8 @@ public class TriangleD2 implements TriangleR2 {
 
   //--------------------------------------------------------------------
   // inCircle
+  //--------------------------------------------------------------------
+
   public static final double INCIRCLE_FACTOR =
     (10.0 + 96.0 * EPSILON) * EPSILON;
 
@@ -69,21 +76,20 @@ public class TriangleD2 implements TriangleR2 {
     final double b2 = getV10Norm2();
     final double c2 = getV20Norm2();
 
-    final double xy21 = Math.abs(getV10().getX() * getV20().y());
-    final double xy12 = Math.abs(getV20().getX() * getV10().y());
-    final double xyp2 = Math.abs(p0.getX() * getV20().y());
-    final double xy2p = Math.abs(getV20().getX() * p0.y());
-    final double xy1p = Math.abs(getV10().getX() * p0.y());
-    final double xyp1 = Math.abs(p0.getX() * getV10().y());
+    final double xy21 = Math.abs(getV10().x() * getV20().y());
+    final double xy12 = Math.abs(getV20().x() * getV10().y());
+    final double xyp2 = Math.abs(p0.x() * getV20().y());
+    final double xy2p = Math.abs(getV20().x() * p0.y());
+    final double xy1p = Math.abs(getV10().x() * p0.y());
+    final double xyp1 = Math.abs(p0.x() * getV10().y());
     return INCIRCLE_FACTOR *
       ((p2 * (xy21+xy12)) + (b2 * (xyp2+xy2p)) + (c2 * (xy1p+xyp1))); }
 
   //--------------------------------------------------------------------
-  // TODO: permute area calls to use cached differences?
 
   @Override
   public double inCircleDistance (final VectorD2 p) {
-    // TODO: cache l2norm2?
+
     final VectorD2 a = getP0();
     final VectorD2 b = getP1();
     final VectorD2 c = getP2();
@@ -91,6 +97,9 @@ public class TriangleD2 implements TriangleR2 {
     return
       a.l2norm2()*triArea(b,c,p) - b.l2norm2()*triArea(a,c,p)
         + c.l2norm2()*triArea(a,b,p) - p.l2norm2()*triArea(a,b,c); }
+
+  public final boolean inCircleRobust (final VectorD2 p) {
+    return Math.abs(inCircleDistance(p)) > inCircleBound(p); }
 
   //--------------------------------------------------------------------
   // Object methods
