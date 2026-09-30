@@ -21,7 +21,7 @@ import java.util.List;
 public final class Numbers implements Set {
 
   /** <code>(int &amp; UNSIGNED_MASK)</code>
-   * returns <code>long<code> containing <code>unsigned int</code>
+   * returns <code>long</code> containing <code>unsigned int</code>
  . */
   private static final long UNSIGNED_MASK = 0xFFFFFFFFL;
 

@@ -8,8 +8,6 @@ import org.apache.commons.rng.UniformRandomProvider;
 import java.math.BigInteger;
 import java.util.Arrays;
 
-import static mop.java.numbers.Numbers.*;
-
 /** Immutable large but bounded (like BigInteger) non-negative integers
  * (natural numbers) as a bit sequence,
  * represented by an <code>int[]</code> of words,
@@ -60,7 +58,7 @@ import static mop.java.numbers.Numbers.*;
  * when the operation result exceeds the bound.
  *  <br>
  * @author palisades dot lakes at gmail dot com
- * @version 202-09-26
+ * @version 202-09-29
  */
 
 //
@@ -157,8 +155,8 @@ public final class BoundedNatural
   public final int compareTo (final long u) {
     assert 0L<=u;
     final int nt = hiInt();
-    final long ulo = loWord(u);
-    final long uhi = hiWord(u);
+    final long ulo = Numbers.loWord(u);
+    final long uhi = Numbers.hiWord(u);
     final int nu = ((0L!=uhi) ? 2 : (0L!=ulo) ? 1 : 0);
     if (nt<nu) { return -1; }
     if (nt>nu) { return 1; }
@@ -205,8 +203,8 @@ public final class BoundedNatural
     i--;
     final int bShift = (upShift&0x1F);
     if (0==bShift) {
-      final long uhi = hiWord(u);
-      final long ulo = loWord(u);
+      final long uhi = Numbers.hiWord(u);
+      final long ulo = Numbers.loWord(u);
       if (0L!=uhi) {
         if (tti<uhi) { return -1; }
         if (tti>uhi) { return 1; }
@@ -222,25 +220,25 @@ public final class BoundedNatural
         if (tti>uhi) { return 1; }
         tti = unsigned(tt[i--]);
         final long us = (u<<bShift);
-        final long umid = hiWord(us);
+        final long umid = Numbers.hiWord(us);
         if (tti<umid) { return -1; }
         if (tti>umid) { return 1; }
         tti = unsigned(tt[i--]);
-        final long ulo = loWord(us);
+        final long ulo = Numbers.loWord(us);
         if (tti<ulo) { return -1; }
         if (tti>ulo) { return 1; } }
       else {
         final long us = (u<<bShift);
-        final long umid = hiWord(us);
+        final long umid = Numbers.hiWord(us);
         if (0L!=umid) {
           if (tti<umid) { return -1; }
           if (tti>umid) { return 1; }
           tti = unsigned(tt[i--]);
-          final long ulo = loWord(us);
+          final long ulo = Numbers.loWord(us);
           if (tti<ulo) { return -1; }
           if (tti>ulo) { return 1; } }
         else {
-          final long ulo = loWord(us);
+          final long ulo = Numbers.loWord(us);
           if (tti<ulo) { return -1; }
           if (tti>ulo) { return 1; } } } }
 
@@ -255,21 +253,21 @@ public final class BoundedNatural
     assert 0L<=t1;
     //if ((0L==t0||(0L==t1))) { return zero(); }
 
-    final long lo0 = loWord(t0);
-    final long lo1 = loWord(t1);
-    final long hi0 = hiWord(t0);
-    final long hi1 = hiWord(t1);
+    final long lo0 = Numbers.loWord(t0);
+    final long lo1 = Numbers.loWord(t1);
+    final long hi0 = Numbers.hiWord(t0);
+    final long hi1 = Numbers.hiWord(t1);
 
     long sum = lo0*lo1;
     final int w0 = (int) sum;
     // TODO: fix lurking overflow issue
     // works here because t0,t1 53 bit double significands
     //final long hilo2 = Math.addExact(hi0*lo1,hi1*lo0);
-    sum = hiWord(sum) + (hi0*lo1) + (hi1*lo0);
+    sum = Numbers.hiWord(sum) + (hi0*lo1) + (hi1*lo0);
     final int w1 = (int) sum;
-    sum = hiWord(sum) + (hi0*hi1);
+    sum = Numbers.hiWord(sum) + (hi0*hi1);
     final int w2 = (int) sum;
-    final int w3 = (int) hiWord(sum);
+    final int w3 = (int) Numbers.hiWord(sum);
     if (0!=w3) { return new BoundedNatural(new int[] {w0,w1,w2,w3,}); }
     if (0!=w2) { return new BoundedNatural(new int[] {w0,w1,w2,}); }
     if (0!=w1) { return new BoundedNatural(new int[] {w0,w1,}); }
@@ -282,19 +280,19 @@ public final class BoundedNatural
   public static final BoundedNatural fromSquare (final long t) {
     assert 0L<=t;
     //if (0L==t) { return zero(); }
-    final long hi = hiWord(t);
-    final long lo = loWord(t);
+    final long hi = Numbers.hiWord(t);
+    final long lo = Numbers.loWord(t);
     final long lolo = lo*lo;
     final long hilo2 = ((hi*lo)<<1);
     //final long hilo2 = Math.multiplyExact(2,hi*lo);
     final long hihi = hi*hi;
     long sum = lolo;
     final int w0 = (int) sum;
-    sum = hiWord(sum) + hilo2;
+    sum = Numbers.hiWord(sum) + hilo2;
     final int w1 = (int) sum;
-    sum = hiWord(sum) + hihi ;
+    sum = Numbers.hiWord(sum) + hihi ;
     final int w2 = (int) sum;
-    final int w3 = (int) hiWord(sum);
+    final int w3 = (int) Numbers.hiWord(sum);
 
     if (0!=w3) { return new BoundedNatural(new int[] { w0,w1,w2,w3,}); }
     if (0!=w2) { return new BoundedNatural(new int[] { w0,w1,w2, }); }
@@ -311,8 +309,8 @@ public final class BoundedNatural
     //if (0L==u) { return this; }
     final int nt = hiInt();
     //if (0==nt) { return valueOf(u); }
-    final long uhi = hiWord(u);
-    final long ulo = loWord(u);
+    final long uhi = Numbers.hiWord(u);
+    final long ulo = Numbers.loWord(u);
     final int nu = ((0L!=uhi)?2:(0L!=ulo)?1:0);
     final int nv = Math.max(nu,nt);
     NaturalInts.checkOverflow(nv);
@@ -322,19 +320,19 @@ public final class BoundedNatural
     long sum = ulo;
     if (0<nt) { sum += unsigned(tt[0]); }
     vv[0] = (int) sum;
-    sum = hiWord(sum);
+    sum = Numbers.hiWord(sum);
     if (1<nv) {
       sum += uhi;
       if (1<nt) { sum += unsigned(tt[1]); }
       vv[1] = (int) sum;
-      sum = hiWord(sum); }
+      sum = Numbers.hiWord(sum); }
 
     int i=2;
     for (;i<nt;i=Math.addExact(i,1)) {
       if (0L==sum) { break; }
       sum += unsigned(tt[i]);
       vv[i] = (int) sum;
-      sum = hiWord(sum); }
+      sum = Numbers.hiWord(sum); }
     if (0L!=sum) {
       final int nvv = Math.addExact(nv,1);
       NaturalInts.checkOverflow(nvv);
@@ -353,29 +351,29 @@ public final class BoundedNatural
                                            final int iShift) {
     final int nt = hiInt();
     final int[] tt = words();
-    final long hi = hiWord(u);
+    final long hi = Numbers.hiWord(u);
     final int nu = iShift+((0L==hi)?1:2);
     final int nv = Math.max(nt,nu);
     final int[] vv = new int[nv];
 //    for (int i=0;i<Math.min(iShift,nt);i++) { vv[i] = tt[i]; }
     System.arraycopy(tt,0,vv,0,Math.min(iShift,nt));
 
-    long sum = loWord(u);
+    long sum = Numbers.loWord(u);
     int i = iShift;
     if (i<nt) { sum += unsigned(tt[i]); }
     vv[i++] = (int) sum;
-    sum = hiWord(sum);
+    sum = Numbers.hiWord(sum);
     if (i<nu) {
       sum += hi;
       if (i<nt) { sum += unsigned(tt[i]); }
       vv[i++] = (int) sum;
-      sum = hiWord(sum); }
+      sum = Numbers.hiWord(sum); }
 
     for (;i<nt;i++) {
       if (0L==sum) { break; }
       sum += unsigned(tt[i]);
       vv[i] = (int) sum;
-      sum = hiWord(sum); }
+      sum = Numbers.hiWord(sum); }
 
     if (0L!=sum) {
       final int[] vvv = new int[nv+1];
@@ -393,36 +391,36 @@ public final class BoundedNatural
     final int nt = hiInt();
     final int[] tt = words();
     final long us = (u<<bShift);
-    final long mid = hiWord(us);
+    final long mid = Numbers.hiWord(us);
     final long hi = (u>>>(64-bShift));
     final int nu = iShift+((0L==hi)?((0L==mid)?1:2):3);
     final int nv = Math.max(nt,nu);
     final int[] vv = new int[nv];
 //    for (int i=0;i<Math.min(iShift,nt);i++) { vv[i] = tt[i]; }
     System.arraycopy(tt,0,vv,0,Math.min(iShift,nt));
-    long sum = loWord(us);
+    long sum = Numbers.loWord(us);
 
     int i=iShift;
     if (i<nt) { sum += unsigned(tt[i]); }
     vv[i++] = (int) sum;
-    sum = hiWord(sum);
+    sum = Numbers.hiWord(sum);
     if (i<nu) {
       sum += mid;
       if (i<nt) { sum += unsigned(tt[i]); }
       vv[i++] = (int) sum;
-      sum = hiWord(sum);
+      sum = Numbers.hiWord(sum);
       if (i<nu) {
         sum += hi;
         if (i<nt) { sum += unsigned(tt[i]); }
         vv[i++] = (int) sum;
-        sum = hiWord(sum); } }
+        sum = Numbers.hiWord(sum); } }
 
     boolean nocarry = (0==(int)sum);
     for (;i<nt;i++) {
       if (nocarry) { break; }
       final long vvi = 1L + unsigned(tt[i]);
       vv[i] = (int) vvi;
-      nocarry = (0==(int)hiWord(vvi)); }
+      nocarry = (0==(int) Numbers.hiWord(vvi)); }
 
     if (!nocarry) {
       final int[] vvv = new int[nv+1];
@@ -447,18 +445,19 @@ public final class BoundedNatural
   //--------------------------------------------------------------
 
   public final BoundedNatural subtract (final long u) {
+
     assert 0L<=u;
     assert 0<=compareTo(u);
-    //if (0L==u) { return this; }
+    if (0L==u) { return this; }
     final int nt = hiInt();
     final int[] tt = words();
     final int[] vv = new int[nt];
     // at least 1 element in tt or u==0
-    long dif = unsigned(tt[0])-loWord(u);
+    long dif = unsigned(tt[0])- Numbers.loWord(u);
     vv[0] = (int) dif;
     dif = (dif>>32);
     if (1<nt) {
-      dif = (unsigned(tt[1])-hiWord(u))+dif;
+      dif = (unsigned(tt[1])- Numbers.hiWord(u))+dif;
       vv[1] = (int) dif;
       dif = (dif>>32); }
     int i=2;
@@ -482,11 +481,11 @@ public final class BoundedNatural
     System.arraycopy(tt,0,vv,0,iShift);
 
     int i=iShift;
-    long dif = unsigned(tt[i])-loWord(u);
+    long dif = unsigned(tt[i])- Numbers.loWord(u);
     vv[i++] = (int) dif;
     dif = (dif>>32);
     if (i<nt) { // else high word is 0
-      dif += unsigned(tt[i])-hiWord(u);
+      dif += unsigned(tt[i])- Numbers.hiWord(u);
       vv[i] = (int) dif;
       dif = (dif>>32); }
 
@@ -513,11 +512,11 @@ public final class BoundedNatural
     System.arraycopy(tt,0,vv,0,iShift);
     final long us = (u<<bShift);
     int i=iShift;
-    long dif = unsigned(tt[i])-loWord(us);
+    long dif = unsigned(tt[i])- Numbers.loWord(us);
     vv[i++] = (int) dif;
     dif = (dif>>32);
     if (i<nt) { // else upper 2 words must be 0
-      dif += unsigned(tt[i])-hiWord(us);
+      dif += unsigned(tt[i])- Numbers.hiWord(us);
       vv[i++] = (int) dif;
       dif = (dif>>32);
       if (i<nt) {// else upper word must be 0
@@ -555,9 +554,9 @@ public final class BoundedNatural
     assert 0>=compareTo(u);
     //if (0L==u) { return this; }
     // at least 1 element in tt or u==0
-    long dif = loWord(u)-uword(0);
+    long dif = Numbers.loWord(u)-uword(0);
     final int vv0 = (int) dif;
-    dif = (hiWord(u)-uword(1))+(dif>>32);
+    dif = (Numbers.hiWord(u)-uword(1))+(dif>>32);
     final int vv1 = (int) dif;
     assert 0L== (dif>>32) :  (dif>>32);
     if (0==vv1) { return unsafe(new int[] {vv0}); }
@@ -580,12 +579,12 @@ public final class BoundedNatural
     for (;i<iShift;i++) {
       vv[i] = (int) dif;
       dif = (dif>>32); }
-    dif += loWord(u);
+    dif += Numbers.loWord(u);
     i=iShift;
     if (i<nt) { dif -= unsigned(tt[i]); }
     vv[i++] = (int) dif;
     dif = (dif>>32);
-    dif += hiWord(u);
+    dif += Numbers.hiWord(u);
     if (i<nt) { dif -= unsigned(tt[i]); }
     vv[i] = (int) dif;
     assert 0L==(dif>>32);
@@ -608,7 +607,7 @@ public final class BoundedNatural
       vv[i] = (int) dif;
       dif = (dif>>32); }
     i=iShift;
-    final int hi = (int) hiWord(u);
+    final int hi = (int) Numbers.hiWord(u);
     final int lo = (int) u;
     final int rShift = 32-bShift;
     dif += unsigned(lo<<bShift);
@@ -648,7 +647,8 @@ public final class BoundedNatural
     final int nt = hiInt();
     final int[] tt = words();
     final int[] uu = u.words();
-    assert 0<u.hiInt();
+    final int uhi = u.hiInt();
+    if (0==uhi) { return this; }
     final int nu = u.hiInt()+iShift;
     final int nv = Math.max(nt,nu);
     final int[] vv = new int[nv];
@@ -659,13 +659,13 @@ public final class BoundedNatural
       sum += unsigned(uu[i-iShift]);
       if (i<nt) { sum += unsigned(tt[i]); }
       vv[i] = (int) sum;
-      sum = hiWord(sum); }
+      sum = Numbers.hiWord(sum); }
 
     for (;i<nt;i++) {
       if (0L==sum) { break; }
       sum += unsigned(tt[i]);
       vv[i] = (int) sum;
-      sum = hiWord(sum); }
+      sum = Numbers.hiWord(sum); }
 
     if (0L!=sum) {
       final int[] vvv = new int[nv+1];
@@ -676,14 +676,18 @@ public final class BoundedNatural
     for (;i<nt;i++) { vv[i] = tt[i]; }
     return new BoundedNatural(vv); }
 
+  private static final long UNSIGNED_MASK = 0xFFFFFFFFL;
+  private static final long unsigned (final int i) {
+    return i & UNSIGNED_MASK; }
+
   private final BoundedNatural addByBits (final BoundedNatural u,
                                           final int iShift,
                                           final int bShift) {
     final int nt = hiInt();
     final int[] tt = words();
     final int nu0 = u.hiInt();
+    if (0==nu0) { return this; }
     final int[] uu = u.words();
-    assert 0<u.hiInt();
     final int rShift = 32-bShift;
     final int uhi = (uu[nu0-1]>>rShift);
     final int nu1 = nu0+iShift;
@@ -699,19 +703,19 @@ public final class BoundedNatural
       u0 = u1;
       if (i<nt) { sum += unsigned(tt[i]); }
       vv[i] = (int) sum;
-      sum = hiWord(sum); }
+      sum = Numbers.hiWord(sum); }
     final long ui = unsigned(u0>>>rShift);
     if (0L!=ui) {
       sum += ui;
       if (i<nt) { sum += unsigned(tt[i]); }
       vv[i++] = (int) sum;
-      sum = hiWord(sum); }
+      sum = Numbers.hiWord(sum); }
 
     for (;i<nt;i++) {
       if (0L==sum) { break; }
       sum += unsigned(tt[i]);
       vv[i] = (int) sum;
-      sum = hiWord(sum); }
+      sum = Numbers.hiWord(sum); }
 
     if (0L!=sum) {
       final int[] vvv = new int[nv+1];
@@ -724,10 +728,10 @@ public final class BoundedNatural
 
   public final BoundedNatural add (final BoundedNatural u,
                                    final int upShift) {
-    assert 0<=upShift;
+    //assert 0<=upShift;
     //if (0==upShift) { return add(u); }
     //if (isZero()) { return u.shiftUp(upShift); }
-    if (u.isZero()) { return this; }
+    //if (u.isZero()) { return this; }
     final int iShift = (upShift>>>5);
     final int bShift = (upShift&0x1f);
     if (0==bShift) { return addByWords(u,iShift); }
@@ -846,7 +850,7 @@ public final class BoundedNatural
 
   @Override
   public final BoundedNatural square () {
-    if (isZero()) { return zero(); }
+    //if (isZero()) { return zero(); }
     //if (isOne()) { return one(); }
     final int n = hiInt();
     final BoundedNatural tmp;
@@ -1171,7 +1175,7 @@ public final class BoundedNatural
     assert 0L<=u;
     //if (0L==u) { return zero(); }
     final int lo = (int) u;
-    final int hi = (int) hiWord(u);
+    final int hi = (int) Numbers.hiWord(u);
     if (0==hi) {
       if (0==lo) { return new BoundedNatural(new int[0]); }
       return new BoundedNatural(new int[] {lo}); }
@@ -1187,11 +1191,11 @@ public final class BoundedNatural
     if (0==bShift) {
       vv = new int[iShift+2];
       vv[iShift] = (int) u;
-      vv[iShift+1] = (int) hiWord(u); }
+      vv[iShift+1] = (int) Numbers.hiWord(u); }
     else {
       final long us = (u<<bShift);
       final int vv0 = (int) us;
-      final int vv1 = (int) hiWord(us);
+      final int vv1 = (int) Numbers.hiWord(us);
       final int vv2 = (int) (u>>>(64-bShift));
       if (0!=vv2) {
         vv = new int[iShift+3];

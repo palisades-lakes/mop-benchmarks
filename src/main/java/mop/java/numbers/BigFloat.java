@@ -31,7 +31,7 @@ import java.util.Objects;
  * <code>(nonNegative()?1:-1) * significand() * 2^exponent()</code>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 202-09-26
+ * @version 202-09-29
  */
 
 public final class BigFloat implements Ringlike<BigFloat> {
@@ -93,15 +93,6 @@ public final class BigFloat implements Ringlike<BigFloat> {
 
   public static final BigFloat NEGATIVE_INFINITY = makeInfinity(false);
 
-  //    private static final BigFloat TWO =
-  //    finite(true,BoundedNatural.valueOf(1),1);
-  //
-  //  private static final BigFloat TEN =
-  //    finite(true,BoundedNatural.valueOf(5),1);
-  //
-  //  private static final BigFloat MINUS_ONE =
-  //    finite(false,BoundedNatural.valueOf(1),0);
-
   //--------------------------------------------------------------
   // Value classification
   //--------------------------------------------------------------
@@ -140,9 +131,7 @@ public final class BigFloat implements Ringlike<BigFloat> {
         if (nonNegative()) { yield this; }
         yield valueOf(true, significand(), exponent()); }
       case Classification.NAN -> this;
-      case Classification.INFINITE -> POSITIVE_INFINITY;
-    };
-  }
+      case Classification.INFINITE -> POSITIVE_INFINITY; }; }
 
   //--------------------------------------------------------------
   // assuming args correspond to finite numbers
@@ -165,8 +154,9 @@ public final class BigFloat implements Ringlike<BigFloat> {
       if (0<c01) { return valueOf(p0,t0s.subtract(t1),e1); }
       return ZERO; }
     // same signs
-    if (0<de) { return valueOf(p0,t1.add(t0,de),e1);}
-    return valueOf(p0,t0.add(t1),e1); }
+    return valueOf(p0,t1.add(t0,de),e1); }
+//    if (0<de) { return valueOf(p0,t1.add(t0,de),e1);}
+//    return valueOf(p0,t0.add(t1),e1); }
 
   //--------------------------------------------------------------
 
@@ -307,8 +297,7 @@ public final class BigFloat implements Ringlike<BigFloat> {
   //--------------------------------------------------------------
 
   @Override
-  public final BigFloat
-  subtract (final BigFloat q) {
+  public final BigFloat subtract (final BigFloat q) {
     if (isFinite() && q.isFinite()) {
       return add6(
         nonNegative(),
@@ -335,8 +324,11 @@ public final class BigFloat implements Ringlike<BigFloat> {
   public static final BigFloat sum (final double z0,
                                     final double z1) {
     if (Double.isFinite(z0) && Double.isFinite(z1)) {
-      if (0.0 == z0) { return BigFloat.valueOf(z1); }
-      if (0.0 == z1) { return BigFloat.valueOf(z0); }
+//      if (0.0 == z0) { return BigFloat.valueOf(z1); }
+//      if (0.0 == z1) { return BigFloat.valueOf(z0); }
+      final int e0 = Doubles.exponent(z0);
+      final int e1 = Doubles.exponent(z1);
+      if (e0<e1) { return sum(z1,z0); }
       final boolean p0 = Doubles.nonNegative(z0);
       final long t0 = Doubles.significand(z0);
       final boolean p1 = Doubles.nonNegative(z1);
@@ -347,9 +339,6 @@ public final class BigFloat implements Ringlike<BigFloat> {
       // 0<=t0,t1<=2^53
       // need to convert one signifcand to BoundedNatural to handle
       // overflow in significand shift and addition/subtraction
-      final int e0 = Doubles.exponent(z0);
-      final int e1 = Doubles.exponent(z1);
-      if (e0<e1) { return sum(z1,z0); }
       final BoundedNatural s = BoundedNatural.valueOf(t0, e0-e1);
       if (p0 == p1) { return BigFloat.valueOf(p0, s.add(t1), e1); }
       if (p0) {
@@ -456,8 +445,7 @@ public final class BigFloat implements Ringlike<BigFloat> {
   public final BigFloat
   square () {
     if (isFinite()) {
-      if (isZero() ) { return ZERO; }
-      //if (isOne()) { return ONE; }
+      //if (isZero() ) { return ZERO; }
       return valueOf(true, significand().square(),2*exponent()); }
     if (isNaN()) { return NaN; }
     if (isPositiveInfinity()) { return POSITIVE_INFINITY; }
@@ -475,8 +463,7 @@ public final class BigFloat implements Ringlike<BigFloat> {
                    final int e1) {
     if (e0<e1) { return add4Nonnegative(t1, e1, t0, e0); }
     final int de = e0-e1;
-    if (0<de) { return valueOf(true,t1.add(t0,de),e1);}
-    return valueOf(true,t0.add(t1),e1); }
+    return valueOf(true,t1.add(t0,de),e1); }
 
   /** Compute squared l2norm2 without intermediate instances. */
 

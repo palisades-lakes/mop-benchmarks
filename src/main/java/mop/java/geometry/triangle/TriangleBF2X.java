@@ -5,10 +5,10 @@ import mop.java.geometry.euclidean.VectorD2;
 import mop.java.numbers.BigFloatX;
 
 /** Standard calculations implemented in BigFloatX.
- * Should be exact, up to BigFloatX resolution.
+ * Should be exact, with <code>double</code> inputs.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 202-09-27
+ * @version 202-09-29
  */
 
 public final class TriangleBF2X implements TriangleR2 {
@@ -56,7 +56,6 @@ public final class TriangleBF2X implements TriangleR2 {
     return _v20Xv10; }
 
   /** force cache calculation when profiling */
-  @SuppressWarnings("unused")
   public final void clearCaches () {
     _v10 = null;
     _v10Norm2 = null;
@@ -110,23 +109,22 @@ public final class TriangleBF2X implements TriangleR2 {
 
   public final double inCircle (final VectorD2 p) {
 
-    // TODO: BigFloatXVector operations
-    final VectorBF2X p0 = VectorBF2X.dif(p,getP0());
-
-    final BigFloatX bxp = getV10().wedge(p0);
-    final BigFloatX bxc = getV20xV10();
-    final BigFloatX pxc = p0.wedge(getV20());
-
-    final BigFloatX p2 = p0.l2norm2();
-    final BigFloatX b2 = getV10Norm2();
-    final BigFloatX c2 = getV20Norm2();
-
-    // TODO: reverse crossProducts
-    final BigFloatX icd = BigFloatX.dot(p2,b2,c2,bxc,pxc,bxp);
+    final BigFloatX icd = inCircleDistanceBF(p);
     if (! icd.isFinite()) { return icd.doubleValue(); }
     if (icd.isZero()) { return 0.0; }
     if (icd.nonNegative()) { return 1.0; }
     return -1.0; }
+
+//--------------------------------------------------------------------
+
+  public final String toString () {
+    return toHexString() +
+      "\nv10: " + getV10().toHexString() +
+      "\nv20: " + getV20().toHexString() +
+      "\n|v10|^2: " + getV10Norm2().toHexString() +
+      "\n|v20|^2: " + getV20Norm2().toHexString() +
+      "\nv20 X v10: " + getV20xV10().toHexString() +
+      "\n" ; }
 
   //--------------------------------------------------------------------
   // construction

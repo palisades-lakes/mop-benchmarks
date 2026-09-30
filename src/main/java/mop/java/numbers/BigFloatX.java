@@ -31,7 +31,7 @@ import java.util.Objects;
  * <code>(nonNegative()?1:-1) * significand() * 2^exponent()</code>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 202-09-26
+ * @version 202-09-29
  */
 
 public final class BigFloatX implements Ringlike<BigFloatX> {
@@ -40,7 +40,6 @@ public final class BigFloatX implements Ringlike<BigFloatX> {
   //--------------------------------------------------------------
   // instance fields and methods
   //--------------------------------------------------------------
-  // TODO: can't be both NaN and infinite. Better way to capture that?
 
   private final Classification _classification;
   private final Classification classification () {
@@ -80,10 +79,10 @@ public final class BigFloatX implements Ringlike<BigFloatX> {
   public static final BigFloatX ZERO =
     makeFinite(true, BoundedNatural.ZERO, 0);
 
-//  public static final BigFloatX POSITIVE_ZERO = ZERO;
-//
-//  public static final BigFloatX NEGATIVE_ZERO =
-//    makeFinite(false, BoundedNatural.ZERO, 0);
+  public static final BigFloatX POSITIVE_ZERO = ZERO;
+
+  public static final BigFloatX NEGATIVE_ZERO =
+    makeFinite(false, BoundedNatural.ZERO, 0);
 
   public static final BigFloatX ONE =
     makeFinite(true, BoundedNatural.valueOf(1), 0);
@@ -132,9 +131,7 @@ public final class BigFloatX implements Ringlike<BigFloatX> {
         if (nonNegative()) { yield this; }
         yield valueOf(true, significand(), exponent()); }
       case Classification.NAN -> this;
-      case Classification.INFINITE -> POSITIVE_INFINITY;
-    };
-  }
+      case Classification.INFINITE -> POSITIVE_INFINITY; }; }
 
   //--------------------------------------------------------------
   // assuming args correspond to finite numbers
@@ -157,8 +154,9 @@ public final class BigFloatX implements Ringlike<BigFloatX> {
       if (0<c01) { return valueOf(p0,t0s.subtract(t1),e1); }
       return ZERO; }
     // same signs
-    if (0<de) { return valueOf(p0,t1.add(t0,de),e1);}
-    return valueOf(p0,t0.add(t1),e1); }
+    return valueOf(p0,t1.add(t0,de),e1); }
+//    if (0<de) { return valueOf(p0,t1.add(t0,de),e1);}
+//    return valueOf(p0,t0.add(t1),e1); }
 
   //--------------------------------------------------------------
 
@@ -289,7 +287,6 @@ public final class BigFloatX implements Ringlike<BigFloatX> {
 
     throw new UnsupportedOperationException("shouldn't get here"); }
 
-  @SuppressWarnings("unused")
   public final BigFloatX
   addAbsAll (final double[] z) {
 //    assert isFinite();
@@ -300,8 +297,7 @@ public final class BigFloatX implements Ringlike<BigFloatX> {
   //--------------------------------------------------------------
 
   @Override
-  public final BigFloatX
-  subtract (final BigFloatX q) {
+  public final BigFloatX subtract (final BigFloatX q) {
     if (isFinite() && q.isFinite()) {
       return add6(
         nonNegative(),
@@ -322,14 +318,17 @@ public final class BigFloatX implements Ringlike<BigFloatX> {
 
   //--------------------------------------------------------------
   /** Return the "exact" value of <code>z0+z1</code>,
-   * without intermediate <code>BigFloat</code> instances.
+   * without intermediate <code>BigFloatX</code> instances.
    */
 
   public static final BigFloatX sum (final double z0,
                                      final double z1) {
     if (Double.isFinite(z0) && Double.isFinite(z1)) {
-      if (0.0 == z0) { return BigFloatX.valueOf(z1); }
-      if (0.0 == z1) { return BigFloatX.valueOf(z0); }
+//      if (0.0 == z0) { return BigFloatX.valueOf(z1); }
+//      if (0.0 == z1) { return BigFloatX.valueOf(z0); }
+      final int e0 = Doubles.exponent(z0);
+      final int e1 = Doubles.exponent(z1);
+      if (e0<e1) { return sum(z1,z0); }
       final boolean p0 = Doubles.nonNegative(z0);
       final long t0 = Doubles.significand(z0);
       final boolean p1 = Doubles.nonNegative(z1);
@@ -340,9 +339,6 @@ public final class BigFloatX implements Ringlike<BigFloatX> {
       // 0<=t0,t1<=2^53
       // need to convert one signifcand to BoundedNatural to handle
       // overflow in significand shift and addition/subtraction
-      final int e0 = Doubles.exponent(z0);
-      final int e1 = Doubles.exponent(z1);
-      if (e0<e1) { return sum(z1,z0); }
       final BoundedNatural s = BoundedNatural.valueOf(t0, e0-e1);
       if (p0 == p1) { return BigFloatX.valueOf(p0, s.add(t1), e1); }
       if (p0) {
@@ -364,7 +360,7 @@ public final class BigFloatX implements Ringlike<BigFloatX> {
     throw new UnsupportedOperationException("shouldn't get here"); }
 
   /** Return the "exact" value of <code>z0-z1</code>,
-   * without intermediate <code>BigFloat</code> instances.
+   * without intermediate <code>BigFloatX</code> instances.
    */
 
   public static final BigFloatX dif (final double z0,
@@ -375,7 +371,7 @@ public final class BigFloatX implements Ringlike<BigFloatX> {
   //--------------------------------------------------------------
   // used in Rational.addWithDenom()?
 
-//  public static final BigFloat
+//  public static final BigFloatX
 //  product (final BoundedNatural x0,
 //           final boolean p1,
 //           final long x1) {
@@ -449,8 +445,7 @@ public final class BigFloatX implements Ringlike<BigFloatX> {
   public final BigFloatX
   square () {
     if (isFinite()) {
-      if (isZero() ) { return ZERO; }
-      //if (isOne()) { return ONE; }
+      //if (isZero() ) { return ZERO; }
       return valueOf(true, significand().square(),2*exponent()); }
     if (isNaN()) { return NaN; }
     if (isPositiveInfinity()) { return POSITIVE_INFINITY; }
@@ -468,8 +463,7 @@ public final class BigFloatX implements Ringlike<BigFloatX> {
                    final int e1) {
     if (e0<e1) { return add4Nonnegative(t1, e1, t0, e0); }
     final int de = e0-e1;
-    if (0<de) { return valueOf(true,t1.add(t0,de),e1);}
-    return valueOf(true,t0.add(t1),e1); }
+    return valueOf(true,t1.add(t0,de),e1); }
 
   /** Compute squared l2norm2 without intermediate instances. */
 
@@ -561,7 +555,6 @@ public final class BigFloatX implements Ringlike<BigFloatX> {
     if (isPositiveInfinity()) { return POSITIVE_INFINITY; }
 
     throw new UnsupportedOperationException("shouldn't get here"); }
-
 
   public final BigFloatX
   add2All (final double[] z) {
@@ -776,7 +769,7 @@ public final class BigFloatX implements Ringlike<BigFloatX> {
       case Double qq -> add(qq);
       default ->
         throw new UnsupportedOperationException(
-          "No method to add BigFloat to " +
+          "No method to add BigFloatX to " +
             q.getClass().getName() ); }; }
 
   public final BigFloatX subtract (final Object q) {
@@ -785,7 +778,7 @@ public final class BigFloatX implements Ringlike<BigFloatX> {
       case Double qq -> subtract(qq);
       default ->
         throw new UnsupportedOperationException(
-          "No method to subtract BigFloat to " +
+          "No method to subtract BigFloatX to " +
             q.getClass().getName() ); }; }
 
   public final BigFloatX multiply (final Object q) {
@@ -794,7 +787,7 @@ public final class BigFloatX implements Ringlike<BigFloatX> {
       case Double qq -> multiply(qq);
       default ->
         throw new UnsupportedOperationException(
-          "No method to multiply BigFloat by " +
+          "No method to multiply BigFloatX by " +
             q.getClass().getName() ); }; }
 
   //--------------------------------------------------------------
@@ -1021,7 +1014,7 @@ public final class BigFloatX implements Ringlike<BigFloatX> {
     return ! opGT(q); }
 
   //--------------------------------------------------------------
-  // WARNING: Doubles.exponent() and BigFloat.exponent() are not
+  // WARNING: Doubles.exponent() and BigFloatX.exponent() are not
   // directly comparable!!!
 
   public final boolean opEQ (final double q) {
@@ -1197,13 +1190,13 @@ public final class BigFloatX implements Ringlike<BigFloatX> {
 
   //--------------------------------------------------------------
 
-  //  private static final BigFloat reduce (final boolean p0,
-  //                                        final BoundedNatural t0,
-  //                                        final int e0) {
-  //    //if (t0.isZero()) { return ZERO; }
-  //    final int shift = t0.loBit();
-  //    if (0>=shift) { return finite(p0,t0,e0); }
-  //    return finite(p0, t0.shiftDown(shift),e0+shift); }
+    private static final BigFloatX reduce (final boolean p0,
+                                          final BoundedNatural t0,
+                                          final int e0) {
+      //if (t0.isZero()) { return ZERO; }
+      final int shift = t0.loBit();
+      if (0>=shift) { return makeFinite(p0,t0,e0); }
+      return makeFinite(p0, t0.shiftDown(shift),e0+shift); }
 
   public final BigFloatX reduce () {
     if (! isFinite()) { return this; }
@@ -1268,49 +1261,49 @@ public final class BigFloatX implements Ringlike<BigFloatX> {
 
   //--------------------------------------------------------------
 
-  //  public static final BigFloat valueOf (final byte t)  {
+  //  public static final BigFloatX valueOf (final byte t)  {
   //    if (0<=t) { return valueOf(true,BoundedNatural.valueOf(t),0); }
   //    return valueOf(false,BoundedNatural.valueOf(-t),0); }
   //
-  //  public static final BigFloat valueOf (final short t)  {
+  //  public static final BigFloatX valueOf (final short t)  {
   //    if (0<=t) { return valueOf(true,BoundedNatural.valueOf(t),0); }
   //    return valueOf(false,BoundedNatural.valueOf(-t),0); }
   //
-  //  public static final BigFloat valueOf (final int t)  {
+  //  public static final BigFloatX valueOf (final int t)  {
   //    if (0<=t) { return valueOf(true,BoundedNatural.valueOf(t),0); }
   //    return valueOf(false,BoundedNatural.valueOf(-t),0); }
 
-  //  public static final BigFloat valueOf (final long t)  {
+  //  public static final BigFloatX valueOf (final long t)  {
   //    if (0<=t) { return valueOf(true,BoundedNatural.valueOf(t),0); }
   //    return valueOf(false,BoundedNatural.valueOf(-t),0); }
 
   //--------------------------------------------------------------
 
-  //  public static final BigFloat valueOf (final Double x)  {
+  //  public static final BigFloatX valueOf (final Double x)  {
   //    return valueOf(x.doubleValue()); }
   //
-  //  public static final BigFloat valueOf (final Float x)  {
+  //  public static final BigFloatX valueOf (final Float x)  {
   //    return valueOf(x.floatValue()); }
   //
-  //  public static final BigFloat valueOf (final Byte x)  {
+  //  public static final BigFloatX valueOf (final Byte x)  {
   //    return valueOf(x.byteValue()); }
   //
-  //  public static final BigFloat valueOf (final Short x)  {
+  //  public static final BigFloatX valueOf (final Short x)  {
   //    return valueOf(x.shortValue()); }
   //
-  //  public static final BigFloat valueOf (final Integer x)  {
+  //  public static final BigFloatX valueOf (final Integer x)  {
   //    return valueOf(x.intValue()); }
   //
-  //  public static final BigFloat valueOf (final Long x)  {
+  //  public static final BigFloatX valueOf (final Long x)  {
   //    return valueOf(x.longValue()); }
   //
-  //  public static final BigFloat valueOf (final BigDecimal x)  {
+  //  public static final BigFloatX valueOf (final BigDecimal x)  {
   //    throw Exceptions.unsupportedOperation(null,"valueOf",x); }
   //
-  //  public static final BigFloat valueOf (final BoundedNatural x)  {
+  //  public static final BigFloatX valueOf (final BoundedNatural x)  {
   //    return valueOf(true,x,0); }
   //
-  //  public static final BigFloat valueOf (final Number x)  {
+  //  public static final BigFloatX valueOf (final Number x)  {
   //    if (x instanceof Double) { return valueOf((Double) x); }
   //    if (x instanceof Float) { return valueOf((Float) x); }
   //    if (x instanceof Byte) { return valueOf((Byte) x); }
@@ -1320,8 +1313,8 @@ public final class BigFloatX implements Ringlike<BigFloatX> {
   //    if (x instanceof BigDecimal) { return valueOf((BigDecimal) x); }
   //    throw Exceptions.unsupportedOperation(null,"valueOf",x); }
   //
-  //  public static final BigFloat valueOf (final Object x)  {
-  //    if (x instanceof BigFloat) { return (BigFloat) x; }
+  //  public static final BigFloatX valueOf (final Object x)  {
+  //    if (x instanceof BigFloatX) { return (BigFloatX) x; }
   //    if (x instanceof BoundedNatural) { return valueOf((BoundedNatural) x); }
   //    return valueOf((Number) x); }
   //

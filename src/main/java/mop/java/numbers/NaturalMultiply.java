@@ -7,7 +7,7 @@ import static mop.java.numbers.Numbers.*;
  * Non-instantiable.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-08-11
+ * @version 2026-09-29
  */
 
 final class NaturalMultiply {
@@ -250,17 +250,16 @@ final class NaturalMultiply {
 
   public static final BoundedNatural multiply (final BoundedNatural u,
                                                final BoundedNatural v) {
-    if ((v.isZero()) || (u.isZero())) { return v.zero(); }
+//    if ((v.isZero()) || (u.isZero())) { return v.zero(); }
     final int n0 = v.hiInt();
     // equals is expensive and unlikely unless u==v
 //    if (u.equals(v) && (n0>MULTIPLY_SQUARE_THRESHOLD)) {
-      if ((u==v) && (n0>MULTIPLY_SQUARE_THRESHOLD)) {
-        return v.square(); }
-    if (n0==1) { return NaturalMultiply.multiply(u,v.uword(0)); }
+//      if ((u==v) && (n0>MULTIPLY_SQUARE_THRESHOLD)) { return v.square(); }
+    if (n0==1) { return multiply(u,v.uword(0)); }
     final int n1 = u.hiInt();
-    if (n1==1) { return NaturalMultiply.multiply(v,u.uword(0)); }
+    if (n1==1) { return multiply(v,u.uword(0)); }
     if ((n0<KARATSUBA_THRESHOLD) || (n1<KARATSUBA_THRESHOLD)) {
-      return NaturalMultiply.multiplySimple(u,v); }
+      return multiplySimple(u,v); }
     if ((n0<TOOM_COOK_THRESHOLD) && (n1<TOOM_COOK_THRESHOLD)) {
       return multiplyKaratsuba(v,u); }
     return multiplyToomCook3(v,u); }

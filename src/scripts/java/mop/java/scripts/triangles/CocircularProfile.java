@@ -2,8 +2,8 @@ package mop.java.scripts.triangles;
 
 import mop.java.geometry.Generators;
 import mop.java.geometry.euclidean.VectorD2;
-import mop.java.geometry.triangle.TriangleBF2;
-import mop.java.numbers.BigFloat;
+import mop.java.geometry.triangle.TriangleBF2X;
+import mop.java.numbers.BigFloatX;
 import mop.java.numbers.Doubles;
 import mop.java.prng.Generator;
 import mop.java.prng.PRNG;
@@ -13,7 +13,7 @@ import mop.java.prng.PRNG;
  * mvn -q install && jy src/scripts/java/mop/java/scripts/triangles/CocircularProfile.java
  * </pre>
  * @author palisades dot lakes at gmail dot com
- * @version 202-09-26
+ * @version 202-09-29
  */
 
 public final class CocircularProfile {
@@ -98,14 +98,14 @@ public final class CocircularProfile {
     for (int i=0; i<ncircles; i++) {
       final VectorD2[] p = points[i];
       for (int j=0;j<npoints-3;j++) {
-        final TriangleBF2 t =
-          (TriangleBF2) TriangleBF2.of(p[j], p[j+1], p[j+2]);
+        final TriangleBF2X t =
+          (TriangleBF2X) TriangleBF2X.of(p[j], p[j+1], p[j+2]);
         for (int k=j+3; k<npoints; k++) {
           ntrys++;
-          final BigFloat d = t.inCircleDistanceBF(p[k]);
+          final BigFloatX d = t.inCircleDistanceBF(p[k]);
           if (d.isZero()) { nzero++; } } } }
     System.out.println(
-      "BigFloat cocircular= " + nzero + "/" + ntrys +
+      "BigFloatX cocircular= " + nzero + "/" + ntrys +
         " = " + ((double) nzero) / ntrys); }
 
   //--------------------------------------------------------------------

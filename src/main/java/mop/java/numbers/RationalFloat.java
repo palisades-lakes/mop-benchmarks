@@ -43,6 +43,12 @@ public final class RationalFloat
   private final boolean _nonNegative;
   public final boolean nonNegative () { return _nonNegative; }
 
+  public final boolean isPositiveInfinity () {
+    return isInfinite() && nonNegative(); }
+
+  public final boolean isNegativeInfinity () {
+    return isInfinite() && (! nonNegative()); }
+
   private final BoundedNatural _numerator;
   public final BoundedNatural numerator () { return _numerator; }
 
@@ -82,8 +88,9 @@ public final class RationalFloat
 
    @Override
   public final boolean isOne () {
+    final RationalFloat r = reduce();
     return
-      (0 == exponent()) && numerator().equals(denominator()); }
+      (0 == r.exponent()) && r.numerator().equals(r.denominator()); }
 
   //--------------------------------------------------------------
 
@@ -500,10 +507,14 @@ public final class RationalFloat
 
   @Override
   public final RationalFloat square () {
-    if (isZero() ) { return ZERO; }
-    if (isOne()) { return ONE; }
-    return multiply(
+    if (isFinite()) {
+      if (isZero() ) { return ZERO; }
+      return multiply(
       nonNegative(),numerator(),denominator(),exponent()); }
+    if (isNaN()) { return NaN; }
+    if (isPositiveInfinity()) { return POSITIVE_INFINITY; }
+    if (isNegativeInfinity()) { return POSITIVE_INFINITY; }
+    throw new UnsupportedOperationException("shouldn't get here"); }
 
   //--------------------------------------------------------------
   // geometry

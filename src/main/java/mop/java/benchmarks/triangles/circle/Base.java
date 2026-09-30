@@ -26,10 +26,12 @@ public abstract class Base {
   Generator radiusGenerator;
 
   @Param({
+//    "TriangleBF2X",
     "TriangleBF2",
-    "TriangleBF2X",
+//    "TriangleD2BF2",
 //    "TriangleD2Eager",
 //    "TriangleD2Lazy",
+//    "TriangleRF2",
     })
   String className;
 

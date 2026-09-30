@@ -12,9 +12,9 @@ import mop.java.geometry.euclidean.VectorD2;
 public final class TriangleD2BF2 implements TriangleR2 {
 
   // eager
-  private final TriangleD2 _triangleD2;
+  private final TriangleD2Lazy _triangleD2;
   // fast and approximate
-  private final TriangleD2 getTriangleD2 () { return _triangleD2; }
+  private final TriangleD2Lazy getTriangleD2 () { return _triangleD2; }
 
   public final VectorD2 getP0 () { return _triangleD2.getP0(); }
   public final VectorD2 getP1 () { return _triangleD2.getP1(); }
@@ -31,14 +31,16 @@ public final class TriangleD2BF2 implements TriangleR2 {
   //--------------------------------------------------------------------
 
   public final double twiceSignedArea () {
-    if (isOrientationRobust()) { return getTriangleD2().twiceSignedArea(); }
+    if (getTriangleD2().isOrientationRobust()) {
+      return getTriangleD2().twiceSignedArea(); }
     return getTriangleBF2().twiceSignedArea(); }
 
   //--------------------------------------------------------------------
 
   public final double inCircleDistance (final VectorD2 p) {
 
-    if (inCircleRobust(p)) { return getTriangleD2().inCircleDistance(p); }
+    if (getTriangleD2().inCircleRobust(p)) {
+      return getTriangleD2().inCircleDistance(p); }
     return getTriangleBF2().inCircleDistance(p); }
 
 //--------------------------------------------------------------------
@@ -53,7 +55,7 @@ public final class TriangleD2BF2 implements TriangleR2 {
                         final VectorD2 b,
                         final VectorD2 c)  {
     super();
-   _triangleD2 = (TriangleD2) TriangleD2Lazy.of(a,b,c); }
+   _triangleD2 = (TriangleD2Lazy) TriangleD2Lazy.of(a,b,c); }
 
   public static final TriangleR2 of (final VectorD2 a,
                                      final VectorD2 b,
