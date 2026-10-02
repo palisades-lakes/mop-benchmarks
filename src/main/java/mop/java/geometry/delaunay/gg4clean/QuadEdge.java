@@ -1,4 +1,4 @@
-package mop.java.geometry.delaunay.gg4;
+package mop.java.geometry.delaunay.gg4clean;
 
 /** Delaunay triangulation, after
  * <a href="https://www.researchgate.net/publication/262235495_Incremental_Delaunay_Triangulation">
@@ -11,6 +11,9 @@ package mop.java.geometry.delaunay.gg4;
  */
 
 public final class QuadEdge {
+
+  // TODO: merge Edge and QuadEdge as in JTS.
+  //  Get rid of clunky array position defining dual/reverse/next relations
 
   private final Edge[] e;
   public final Edge edge (final int i) { return e[i]; }

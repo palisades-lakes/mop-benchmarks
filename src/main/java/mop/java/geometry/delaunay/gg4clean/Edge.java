@@ -1,4 +1,4 @@
-package mop.java.geometry.delaunay.gg4;
+package mop.java.geometry.delaunay.gg4clean;
 
 import mop.java.geometry.euclidean.VectorD2;
 
@@ -13,74 +13,69 @@ import mop.java.geometry.euclidean.VectorD2;
  */
 public final class Edge {
 
-  private final QuadEdge _Qedge;
-  public final QuadEdge Qedge () { return _Qedge; }
-  /** index of this edge in the Qedge's edge array. */
+  private final QuadEdge _qedge;
+  public final QuadEdge qedge () { return _qedge; }
+  /** index of this edge in the qedge's edge array. */
   int num;
   Edge next;
-  private VectorD2 data;
+  private VectorD2 origin;
 
   //--------------------------------------------------------------------
   // methods
   //--------------------------------------------------------------------
 
-  public final Edge Rot() {
+  public final Edge dual () {
     // Return the dual of the current edge, directed from its right to its left.
-    return Qedge().edge((num < 3) ? num + 1 : num - 3); }
+    return qedge().edge((num < 3) ? num + 1 : num - 3); }
 
-  public final Edge invRot() {
+  public final Edge dualReverse () {
     // Return the dual of the current edge, directed from its left to its right.
-    return Qedge().edge((num > 0) ? num - 1 : num + 3); }
+    return qedge().edge((num > 0) ? num - 1 : num + 3); }
 
-  public final Edge Sym() {
+  public final Edge reverse () {
     // Return the edge from the destination to the origin of the current edge.
-    return Qedge().edge((num < 2) ? num + 2 : num - 2); }
+    return qedge().edge((num < 2) ? num + 2 : num - 2); }
 
-  public final Edge Onext() {
+  public final Edge srcNext () {
     // Return the next ccw edge around (from) the origin of the current edge.
     return next; }
 
-  public final Edge Oprev() {
+  public final Edge srcPrev () {
     // Return the next cw edge around (from) the origin of the current edge.
-    return Rot().Onext().Rot(); }
+    return dual().srcNext().dual(); }
 
-//  public final Edge Dnext() {
-//    // Return the next ccw edge around (into) the destination of the current edge.
-//    return Sym().Onext().Sym(); }
+  public final Edge dstNext () {
+    // Return the next ccw edge around (into) the destination of the current edge.
+    return reverse().srcNext().reverse(); }
 
-  public final Edge Dprev() {
+  public final Edge dstPrev () {
     // Return the next cw edge around (into) the destination of the current edge.
-    return invRot().Onext().invRot(); }
+    return dualReverse().srcNext().dualReverse(); }
 
-  public final Edge Lnext() {
+  public final Edge leftNext () {
     // Return the ccw edge around the left face following the current edge.
-    return invRot().Onext().Rot(); }
+    return dualReverse().srcNext().dual(); }
 
-  public final Edge Lprev() {
+  public final Edge leftPrev () {
     // Return the ccw edge around the left face before the current edge.
-    return Onext().Sym(); }
+    return srcNext().reverse(); }
 
-//  public final Edge Rnext() {
-//    // Return the edge around the right face ccw following the current edge.
-//      return Rot().Onext().invRot(); }
+  public final Edge rightNext () {
+    // Return the edge around the right face ccw following the current edge.
+      return dual().srcNext().dualReverse(); }
 
-//  public final Edge Rprev() {
-//    // Return the edge around the right face ccw before the current edge.
-//    return Sym().Onext(); }
+  public final Edge rightPrev () {
+    // Return the edge around the right face ccw before the current edge.
+    return reverse().srcNext(); }
 
-  public final VectorD2 Org() { return data; }
+  public final VectorD2 src () { return origin; }
 
-  public final VectorD2 Dest() { return Sym().data; }
+  public final VectorD2 dst () { return reverse().origin; }
 
-  public final VectorD2 Org2d() { return data; }
-
-  public final VectorD2 Dest2d() {
-    return Qedge().edge((num < 2) ? (num + 2) : (num - 2)).data; }
-
-  public final void EndPoints (final VectorD2 or,
-                               final VectorD2 de) {
-    data= or;
-    Sym().data = de; }
+  public final void setEndpoints (final VectorD2 src,
+                                  final VectorD2 dst) {
+    origin = src;
+    reverse().origin = dst; }
 
   //--------------------------------------------------------------------
   // construction
@@ -89,8 +84,7 @@ public final class Edge {
   public Edge (final QuadEdge q) {
     // cpp: data = 0;
     // same as default to null
-    _Qedge = q;
-  }
+    _qedge = q; }
 
   //--------------------------------------------------------------------
 } // end class
