@@ -18,16 +18,16 @@
 (defn make-world []
   (let [p0 (VectorD2. 0.0 0.0)
         p1 (VectorD2. 2.0 0.0)
-        p2 (VectorD2. 0.0, 2.0)
+        p2 (VectorD2. 0.0 2.0)
+        frame #{p0 p1 p2}
         mesh (Subdivision. p0 p1 p2)
         pointGenerator (Generators/vectorD2Generator
                          (Doubles/uniformGenerator
                            (PRNG/well44497b "seeds/Well44497b-2019-01-11.txt")
                            0.0 1.0))
         nsites 16]
-    (dotimes [i nsites] (.insertSite mesh (.next pointGenerator)))
-
-         (.jfxTriangles mesh (Color/web "#000088FF") "uniform 0 1")))
+    (dotimes [_ nsites] (.insertSite mesh (.next pointGenerator)))
+    (.jfxTriangles mesh frame (Color/web "#000088FF") "uniform 0 1")))
 ;;----------------------------------------------------------------
 ;;(println (System/getProperty "glass.win.uiScale"))
 (System/setProperty "glass.win.uiScale" "1")

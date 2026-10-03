@@ -30,14 +30,21 @@ public final class Subdivision {
   //--------------------------------------------------------------------
   // Basic Topological Operators
   //--------------------------------------------------------------------
-    /** Lischinski: <br>
-   * This operator affects the two edge rings around the origins of a and b,
-   * and, independently, the two edge rings around the left faces of a and b.
-   * In each case, (i) if the two rings are distinct, Splice will combine
-   * them into one; (ii) if the two are the same ring, Splice will break it
+  /** Lischinski: <br>
+   * This operator affects the two edge rings around the origins
+   * of a and b, and, independently, the two edge rings around
+   * the left faces of a and b. In each case,
+   * <ol>
+   * <li> if the two rings are distinct, Splice will combine
+   * them into one;
+   * </li>
+   * <li> if the two are the same ring, Splice will break it
    * into two separate pieces.
-   * Thus, Splice can be used both to attach the two edges together, and
-   * to break them apart. See Guibas and Stolfi (1985) p.96 for more details
+   * </li>
+   * </ol>
+   * Thus, Splice can be used both to attach the two edges together,
+   * and to break them apart. <br>
+   * See Guibas and Stolfi (1985) p.96 for more details
    * and illustrations.
    */
   private static final void splice (final QEdge a, final QEdge b) {
@@ -59,7 +66,7 @@ public final class Subdivision {
     splice(e.reverse(), e.reverse().prev()); }
 
   //--------------------------------------------------------------------
-    /** Lischinski: <br>
+  /** Lischinski: <br>
    * Add a new edge e connecting the destination of a to the
    * origin of b, in such a way that all three have the same
    * left face after the connection is complete.
@@ -73,7 +80,7 @@ public final class Subdivision {
     return e; }
 
   //--------------------------------------------------------------------
-    /** Lischinski: <br>
+  /** Lischinski: <br>
    * Essentially turns edge e counterclockwise inside its enclosing
    * quadrilateral. The data pointers are modified accordingly.
    */
@@ -92,7 +99,7 @@ public final class Subdivision {
   //--------------------------------------------------------------------
   // geometric predicates
   //--------------------------------------------------------------------
-    /** Lischinski: <br>
+  /** Lischinski: <br>
    * Returns twice the signed area of the oriented triangle (a, b, c),
    * i.e., the area is positive if the triangle is counterclockwise.
    */
@@ -106,7 +113,7 @@ public final class Subdivision {
         -
         (b.y() - a.y())*(c.x() - a.x()); }
 
-    /** Lischinski: <br>
+  /** Lischinski: <br>
    * Returns true if the point d is inside the circle defined by the
    * points a, b, c. See Guibas and Stolfi (1985) p.107.
    */
@@ -161,7 +168,7 @@ public final class Subdivision {
       c = -(a*p.x() + b*p.y()); } }
 
   //--------------------------------------------------------------------
-    /** Lischinski: <br>
+  /** Lischinski: <br>
    * A predicate that determines if the point x is on the edge e.
    * The point is considered on if it is in the EPS-neighborhood
    * of the edge.
@@ -185,11 +192,11 @@ public final class Subdivision {
   //--------------------------------------------------------------------
   // Incremental delaunay
   //--------------------------------------------------------------------
-    /** Lischinski: <br>
-  * Returns an edge e, s.t. either x is on e, or e is an edge of
-  * a triangle containing x. The search starts from startingEdge
-  * and proceeds in the general direction of x. Based on the
-  * pseudocode in Guibas and Stolfi (1985) p.121.
+  /** Lischinski: <br>
+   * Returns an edge e, s.t. either x is on e, or e is an edge of
+   * a triangle containing x. The search starts from startingEdge
+   * and proceeds in the general direction of x. Based on the
+   * pseudocode in Guibas and Stolfi (1985) p.121.
    */
 
   private final QEdge locate (final VectorD2 x) {
@@ -203,12 +210,12 @@ public final class Subdivision {
       else { return e; } } }
 
   //--------------------------------------------------------------------
-    /** Lischinski: <br>
-  * Inserts a new point into a subdivision representing a Delaunay
-  * triangulation, and fixes the affected edges so that the result
-  * is still a Delaunay triangulation. This is based on the
-  * pseudocode from Guibas and Stolfi (1985) p.120, with slight
-  * modifications and a bug fix.
+  /** Lischinski: <br>
+   * Inserts a new point into a subdivision representing a Delaunay
+   * triangulation, and fixes the affected edges so that the result
+   * is still a Delaunay triangulation. This is based on the
+   * pseudocode from Guibas and Stolfi (1985) p.120, with slight
+   * modifications and a bug fix.
    */
 
   public final void insertSite (final VectorD2 x) {
@@ -259,32 +266,43 @@ public final class Subdivision {
     return t; }
 
   //--------------------------------------------------------------------
+  //--------------------------------------------------------------------
   /** Collect the triangles as a JFX Group Node for display.
+   * Skip edges whose origin is in <code>frame</code>.
    * <b>Assumes mesh is connected!</b>
    */
 
-  public final Group jfxTriangles (final Color color,
+  public final Group jfxTriangles (final Set<VectorD2> frame,
+                                   final Color color,
                                    final String id) {
     final Group group = new Group();
     final List<Node> children = group.getChildren();
 
-    final Set<QEdge>
-      visited = new HashSet<>();
+    final Set<QEdge> visited = new HashSet<>();
     final Stack<QEdge> toVisit = new Stack<>();
     toVisit.push(startingEdge);
     while (! toVisit.empty()) {
-      final QEdge
-        e0 = toVisit.pop();
+      final QEdge e0 = toVisit.pop();
       if (! visited.contains(e0)) {
-        visited.add(e0); toVisit.push(e0.reverse());
+        visited.add(e0);
         final QEdge e1 = e0.faceNext();
-        visited.add(e1); toVisit.push(e1.reverse());
         final QEdge e2 = e1.faceNext();
-        visited.add(e2); toVisit.push(e2.reverse());
-        children.add(
-          jfxTriangle(e0.origin(), e1.origin(), e2.origin(), color)); } }
+        toVisit.push(e0.reverse());
+        toVisit.push(e1.reverse());
+        toVisit.push(e2.reverse());
+        final VectorD2 p0 = e0.origin();
+        final VectorD2 p1 = e1.origin();
+        final VectorD2 p2 = e2.origin();
+        if (! (frame.contains(p0) ||
+          frame.contains(p1) ||
+          frame.contains(p2))) {
+         children.add(jfxTriangle(p0,p1,p2,color)); } } }
     group.setId(id);
     return group; }
+
+  public final Group jfxTriangles (final Color color,
+                                   final String id) {
+    return jfxTriangles(new HashSet<>(),color,id); }
 
   //--------------------------------------------------------------------
   // construction

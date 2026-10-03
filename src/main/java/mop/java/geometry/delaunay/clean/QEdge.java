@@ -2,6 +2,8 @@ package mop.java.geometry.delaunay.clean;
 
 import mop.java.geometry.euclidean.VectorD2;
 
+import java.util.Set;
+
 /** Delaunay triangulation, after
  * <a href="https://www.researchgate.net/publication/262235495_Incremental_Delaunay_Triangulation">
  *  Dani Lischinski
@@ -48,6 +50,14 @@ public final class QEdge {
   /** The next edge ccw around the (left) face. */
   public final QEdge faceNext () {
     return dual().reverse().next().dual(); }
+
+  //--------------------------------------------------------------------
+
+  public final boolean frameEdge (final Set<VectorD2> frame) {
+    return
+      frame.contains(origin())
+        ||
+        frame.contains(reverse().origin()); }
 
   //--------------------------------------------------------------------
   // construction
