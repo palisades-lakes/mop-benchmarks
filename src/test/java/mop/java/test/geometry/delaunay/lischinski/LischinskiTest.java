@@ -1,7 +1,9 @@
-package mop.java.test.geometry.delaunay.gg4;
+package mop.java.test.geometry.delaunay.lischinski;
 
+import javafx.scene.Group;
+import javafx.scene.paint.Color;
 import mop.java.geometry.Generators;
-import mop.java.geometry.delaunay.gg4.Subdivision;
+import mop.java.geometry.delaunay.lischinski.Subdivision;
 import mop.java.geometry.euclidean.VectorD2;
 import mop.java.numbers.Doubles;
 import mop.java.prng.Generator;
@@ -9,14 +11,14 @@ import mop.java.prng.PRNG;
 import org.junit.jupiter.api.Test;
 
 /** <pre>
- * mvn -Dtest=mop.java.test.geometry.delaunay.gg4.GemsTest test
+ * mvn -Dtest=mop.java.test.geometry.delaunay.lischinski.InsertTests test
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 202-10-01
+ * @version 202-10-03
  */
 
-public final class GemsTest {
+public final class LischinskiTest {
 
   //--------------------------------------------------------------
 
@@ -30,7 +32,9 @@ public final class GemsTest {
 
     final Subdivision mesh = new Subdivision(p1,p2,p3);
     mesh.InsertSite(p1);
-    mesh.InsertSite(new VectorD2(0.0,-1.0)); }
+    mesh.InsertSite(new VectorD2(0.0,-1.0));
+    final Color color = new Color(0.0,0.0,0.0,1.0);
+    final Group triangles = mesh.jfxTriangles(color); }
 
   //--------------------------------------------------------------
 

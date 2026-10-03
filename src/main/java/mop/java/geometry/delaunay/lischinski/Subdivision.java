@@ -1,6 +1,17 @@
-package mop.java.geometry.delaunay.gg4;
+package mop.java.geometry.delaunay.lischinski;
 
+import javafx.scene.Group;
+import javafx.scene.Node;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Polyline;
+import javafx.scene.shape.Shape;
+import javafx.scene.shape.StrokeType;
 import mop.java.geometry.euclidean.VectorD2;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.Stack;
 
 /** Delaunay triangulation, after
  * <a href="https://www.researchgate.net/publication/262235495_Incremental_Delaunay_Triangulation">
@@ -120,7 +131,7 @@ public final class Subdivision {
   private static final boolean RightOf (final VectorD2 x, final Edge e) {
     return ccw(x, e.Dest2d(), e.Org2d()); }
 
-//  private static final boolean LeftOf (final VectorD2 x, final  Edge e) {
+//  private static final boolean LeftOf (final VectorD2 x, final  QEdge e) {
 //    return ccw(x, e.Org2d(), e.Dest2d()); }
 
   private static final double EPS = 1.0e-6;
@@ -225,6 +236,45 @@ public final class Subdivision {
       // pop a suspect edge
       else { e = e.Onext().Lprev(); }
     } while (true); }
+
+  //--------------------------------------------------------------------
+  /** JFK triangle, */
+
+  public static final Shape jfkTriangle (final VectorD2 p0,
+                                         final VectorD2 p1,
+                                         final VectorD2 p2,
+                                         final Color color) {
+    final Shape t = new Polyline(p0.x(), p0.y(),
+                                 p1.x(), p1.y(),
+                                 p2.x(), p2.y());
+    t.setStroke(color);
+    t.setStrokeWidth(1);
+    t.setStrokeType(StrokeType.CENTERED);
+    return t; }
+
+  //--------------------------------------------------------------------
+  /** Collect the triangles as a JFK Group Node for display.
+   * <b>Assumes mesh is connected!</b>
+   */
+
+  public final Group jfxTriangles (final Color color) {
+    final Group group = new Group();
+    final List<Node> children = group.getChildren();
+
+    final Set<Edge> visited = new HashSet<>();
+    final Stack<Edge> toVisit = new Stack<>();
+    toVisit.push(startingEdge);
+    while (! toVisit.empty()) {
+      final Edge e0 = toVisit.pop();
+      if (! visited.contains(e0)) {
+        visited.add(e0); toVisit.push(e0.Sym());
+        final Edge e1 = e0.Lnext();
+        visited.add(e1); toVisit.push(e1.Sym());
+        final Edge e2 = e1.Lnext();
+        visited.add(e2); toVisit.push(e2.Sym());
+        children.add(jfkTriangle(e0.Org(), e1.Org(), e2.Org(), color)); } }
+
+    return group; }
 
   //--------------------------------------------------------------------
   // construction

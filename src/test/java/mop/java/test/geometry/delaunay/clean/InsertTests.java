@@ -1,7 +1,7 @@
-package mop.java.test.geometry.delaunay.gg4clean;
+package mop.java.test.geometry.delaunay.clean;
 
 import mop.java.geometry.Generators;
-import mop.java.geometry.delaunay.gg4clean.Subdivision;
+import mop.java.geometry.delaunay.clean.Subdivision;
 import mop.java.geometry.euclidean.VectorD2;
 import mop.java.numbers.Doubles;
 import mop.java.prng.Generator;
@@ -9,14 +9,14 @@ import mop.java.prng.PRNG;
 import org.junit.jupiter.api.Test;
 
 /** <pre>
- * mvn -Dtest=mop.java.test.geometry.delaunay.gg4clean.GemsTest test
+ * mvn -Dtest=mop.java.test.geometry.delaunay.clean.InsertTests test
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 202-10-01
+ * @version 202-10-03
  */
 
-public final class GemsTest {
+public final class InsertTests {
 
   //--------------------------------------------------------------
 

@@ -1,4 +1,4 @@
-/** A minimal translation into Java of cpp code from<br>
+/** A somewhat cleaned up translation into Java of cpp code from<br>
  * <a href="https://www.researchgate.net/publication/262235495_Incremental_Delaunay_Triangulation">
  *  Dani Lischinski<br
  *  <i>Incremental Delaunay triangulation</i><br>
@@ -11,5 +11,5 @@
  * @version 2026-10-01
  */
 
-package mop.java.geometry.delaunay.gg4;
+package mop.java.geometry.delaunay.clean;
 
