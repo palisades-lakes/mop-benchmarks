@@ -1,4 +1,4 @@
-package mop.java.geometry.delaunay.clean;
+package mop.java.geometry.delaunay.qedge;
 
 import mop.java.geometry.euclidean.VectorD2;
 
@@ -56,10 +56,12 @@ public final class QEdge {
   private QEdge () { }
 
   /** Construct a group of 4 circularly linked <code>QEdge</code>s,
-   * returning one as a representative for the group.
+   * returning the one from <code>p0</code> to <code>p1</code>,
+   * as a representative for the group.
    */
-  public static final QEdge make (final VectorD2 a,
-                                  final VectorD2 b) {
+
+  public static final QEdge make (final VectorD2 p0,
+                                  final VectorD2 p1) {
 
     final QEdge q0 = new QEdge();
     final QEdge q1 = new QEdge();
@@ -76,8 +78,8 @@ public final class QEdge {
     q2._next = q2;
     q3._next = q1;
 
-    q0.setOrigin(a);
-    q0.reverse().setOrigin(b);
+    q0.setOrigin(p0);
+    q0.reverse().setOrigin(p1);
     return q0; }
 
   //--------------------------------------------------------------------

@@ -1,13 +1,12 @@
 package mop.java.test.numbers;
 
-import java.util.function.BinaryOperator;
-
-import org.junit.jupiter.api.Test;
-
+import mop.java.benchmarks.accumulate.Common;
 import mop.java.numbers.BoundedNatural;
 import mop.java.numbers.Numbers;
 import mop.java.numbers.RationalFloat;
-import mop.java.benchmarks.accumulate.Common;
+import org.junit.jupiter.api.Test;
+
+import java.util.function.BinaryOperator;
 
 //----------------------------------------------------------------
 /** Test desired properties of RationalFloat.
@@ -17,7 +16,7 @@ import mop.java.benchmarks.accumulate.Common;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-08-21
+ * @version 2026-10-04
  */
 
 public final class RationalFloatTest {

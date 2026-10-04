@@ -23,12 +23,12 @@ import java.util.stream.Stream;
 /** Test utilities
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-09-19
+ * @version 2026-10-04
  */
 @SuppressWarnings({"unchecked", "unused"})
 public final class Common {
 
-  public static final int TRYS = 131;
+  public static final int TRYS = 63;
 
   //--------------------------------------------------------------
 

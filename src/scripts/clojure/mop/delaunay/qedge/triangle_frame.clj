@@ -1,33 +1,33 @@
 (set! *warn-on-reflection* true)
 (set! *unchecked-math* :warn-on-boxed)
 ;;----------------------------------------------------------------
-(ns mop.delaunay.clean.uniform
+(ns mop.delaunay.qedge.triangle-frame
   {:doc     "Use JavaFX to display a delaunay triangulation."
    :author  "palisades dot lakes at gmail dot com"
-   :version "2026-10-03"}
+   :version "2026-10-04"}
 
   (:import
-    [javafx.scene.paint Color]
     [mop.java.geometry Generators]
-    [mop.java.geometry.delaunay.clean Subdivision]
+    [mop.java.geometry.delaunay.qedge QMesh]
     [mop.java.geometry.euclidean VectorD2]
-    [mop.java.jfx JfxWorld] [mop.java.numbers Doubles] [mop.java.prng PRNG]))
+    [mop.java.jfx JfxWorld]
+    [mop.java.numbers Doubles]
+    [mop.java.prng PRNG]))
 ;;----------------------------------------------------------------
-;; mvn -q -DskipTests=true install & cljfx src\scripts\clojure\mop\delaunay\clean\uniform.clj
+;; mvn -q -DskipTests=true install & cljfx src\scripts\clojure\mop\delaunay\clean\triangle_frame.clj
 ;;----------------------------------------------------------------
 (defn make-world []
   (let [p0 (VectorD2. 0.0 0.0)
         p1 (VectorD2. 2.0 0.0)
         p2 (VectorD2. 0.0 2.0)
-        frame #{p0 p1 p2}
-        mesh (Subdivision. p0 p1 p2)
+        mesh (QMesh/triangleFrame p0 p1 p2)
         pointGenerator (Generators/vectorD2Generator
                          (Doubles/uniformGenerator
                            (PRNG/well44497b "seeds/Well44497b-2019-01-11.txt")
                            0.0 1.0))
-        nsites 16]
+        nsites 8]
     (dotimes [_ nsites] (.insertSite mesh (.next pointGenerator)))
-    (.jfxTriangles mesh frame (Color/web "#000088FF") "uniform 0 1")))
+    (.jfxTriangles mesh true "uniform 0 1")))
 ;;----------------------------------------------------------------
 ;;(println (System/getProperty "glass.win.uiScale"))
 (System/setProperty "glass.win.uiScale" "1")

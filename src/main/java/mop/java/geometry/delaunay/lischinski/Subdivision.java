@@ -207,7 +207,7 @@ public final class Subdivision {
     // modifications and a bug fix.
 
     Edge e = Locate(x);
-    // point is already in Subdivision
+    // point is already in QMesh
     if ((x == e.Org2d()) || (x == e.Dest2d()))  { return; }
     else if (OnEdge(x, e)) {
       e = e.Oprev();

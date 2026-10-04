@@ -1,7 +1,7 @@
 package mop.java.test.geometry.delaunay.clean;
 
 import mop.java.geometry.Generators;
-import mop.java.geometry.delaunay.clean.Subdivision;
+import mop.java.geometry.delaunay.qedge.QMesh;
 import mop.java.geometry.euclidean.VectorD2;
 import mop.java.numbers.Doubles;
 import mop.java.prng.Generator;
@@ -9,7 +9,7 @@ import mop.java.prng.PRNG;
 import org.junit.jupiter.api.Test;
 
 /** <pre>
- * mvn -Dtest=mop.java.test.geometry.delaunay.clean.InsertTests test
+ * mvn -Dtest=mop.java.test.geometry.delaunay.qedge.InsertTests test
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
@@ -28,7 +28,7 @@ public final class InsertTests {
     final VectorD2 p2 = new VectorD2(  2.0, -1.0);
     final VectorD2 p3 = new VectorD2(  0.5,  3.0);
 
-    final Subdivision mesh = new Subdivision(p1,p2,p3);
+    final QMesh mesh = QMesh.triangleFrame(p1, p2, p3);
     mesh.insertSite(p1);
     mesh.insertSite(new VectorD2(0.0, -1.0)); }
 
@@ -42,7 +42,7 @@ public final class InsertTests {
     final VectorD2 p2 = new VectorD2(  2.0, -1.0);
     final VectorD2 p3 = new VectorD2(  0.5,  3.0);
 
-    final Subdivision mesh = new Subdivision(p1,p2,p3);
+    final QMesh mesh = QMesh.triangleFrame(p1, p2, p3);
 
     final Generator pointGenerator = Generators.vectorD2Generator(
       Doubles.uniformGenerator(
@@ -63,7 +63,7 @@ public final class InsertTests {
 //    final VectorD2 p2 = new VectorD2(  2.0, -1.0);
 //    final VectorD2 p3 = new VectorD2(  0.5,  3.0);
 //
-//    final Subdivision mesh = new Subdivision(p1,p2,p3);
+//    final QMesh mesh = QMesh.triangleFrame(p1,p2,p3);
 //
 //    final double pMu = 0.0;
 //    final double pSigma = 3.0;

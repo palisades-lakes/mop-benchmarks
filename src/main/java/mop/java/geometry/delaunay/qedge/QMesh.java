@@ -1,11 +1,9 @@
-package mop.java.geometry.delaunay.clean;
+package mop.java.geometry.delaunay.qedge;
 
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Polyline;
-import javafx.scene.shape.Shape;
-import javafx.scene.shape.StrokeType;
+import javafx.scene.shape.*;
 import mop.java.geometry.euclidean.VectorD2;
 
 import java.util.HashSet;
@@ -20,14 +18,27 @@ import java.util.Stack;
  *  <b>Graphics Gems IV</b> Academic Press 1994 </a>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-10-03
+ * @version 2026-10-04
  */
 
-public final class Subdivision {
+public final class QMesh {
 
-  private QEdge startingEdge;
+  private QEdge _startingEdge;
+  private final QEdge startingEdge () { return _startingEdge; }
+  private final void setStartingEdge (final QEdge e) {
+    _startingEdge = e; }
 
-  //--------------------------------------------------------------------
+  private final Set<VectorD2> _framePoints;
+  private final Set<VectorD2> framePoints () { return _framePoints; }
+  private final boolean noFramePoints (final VectorD2 p0,
+                                       final VectorD2 p1,
+                                       final VectorD2 p2) {
+    return
+      ! (framePoints().contains(p0)
+        || framePoints().contains(p1)
+        || framePoints().contains(p2)); }
+
+   //--------------------------------------------------------------------
   // Basic Topological Operators
   //--------------------------------------------------------------------
   /** Lischinski: <br>
@@ -42,12 +53,13 @@ public final class Subdivision {
    * into two separate pieces.
    * </li>
    * </ol>
-   * Thus, Splice can be used both to attach the two edges together,
+   * Thus, splice can be used both to attach the two edges together,
    * and to break them apart. <br>
    * See Guibas and Stolfi (1985) p.96 for more details
    * and illustrations.
    */
-  private static final void splice (final QEdge a, final QEdge b) {
+  private static final void splice (final QEdge a,
+                                    final QEdge b) {
     final QEdge alpha = a.next().dual();
     final QEdge beta = b.next().dual();
     final QEdge t1 = b.next();
@@ -67,16 +79,18 @@ public final class Subdivision {
 
   //--------------------------------------------------------------------
   /** Lischinski: <br>
-   * Add a new edge e connecting the destination of a to the
-   * origin of b, in such a way that all three have the same
+   * Add a new edge e connecting the destination of <code>e0</code> to the
+   * origin of <code>e1</code></code>,
+   * in such a way that all three have the same
    * left face after the connection is complete.
    * Additionally, the data pointers of the new edge are set.
    */
 
-  private static final QEdge connect (final QEdge a, final QEdge b) {
-    final QEdge e = QEdge.make(a.reverse().origin(), b.origin());
-    splice(e, a.faceNext());
-    splice(e.reverse(), b);
+  private static final QEdge connect (final QEdge e0,
+                                      final QEdge e1) {
+    final QEdge e = QEdge.make(e0.reverse().origin(), e1.origin());
+    splice(e, e0.faceNext());
+    splice(e.reverse(), e1);
     return e; }
 
   //--------------------------------------------------------------------
@@ -201,12 +215,15 @@ public final class Subdivision {
 
   private final QEdge locate (final VectorD2 x) {
 
-    QEdge e = startingEdge;
+    QEdge e = startingEdge();
     while (true) {
-      if (x == e.origin() || x == e.reverse().origin()) { return e; }
-      else if (rightOf(x, e)) { e = e.reverse(); }
-      else if (!rightOf(x, e.next())) { e = e.next(); }
-      else if (!leftOf(x, e.faceNext())) { e = e.faceNext().reverse(); }
+      if (x.equals(e.origin())) { return e; }
+      if (x.equals(e.reverse().origin())) { return e; }
+
+      if (rightOf(x, e)) { e = e.reverse(); }
+      else if (! rightOf(x, e.next())) { e = e.next(); }
+      else if (! leftOf(x, e.faceNext())) {
+        e = e.faceNext().reverse(); }
       else { return e; } } }
 
   //--------------------------------------------------------------------
@@ -221,7 +238,7 @@ public final class Subdivision {
   public final void insertSite (final VectorD2 x) {
 
     QEdge e = locate(x);
-    // point is already in Subdivision
+    // point is already in QMesh
     if ((x == e.origin()) || (x == e.reverse().origin()))  { return; }
     else if (onEdge(x, e)) {
       e = e.prev();
@@ -231,26 +248,30 @@ public final class Subdivision {
     // existing edge.)
     QEdge base = QEdge.make(e.origin(), x);
     splice(base, e);
-    startingEdge = base;
+    setStartingEdge(base);
     do {
       base = connect(e, base.reverse());
       e = base.prev();
-    } while (e.faceNext() != startingEdge);
+    } while (e.faceNext() != startingEdge());
     // Examine suspect edges to ensure that the Delaunay condition
     // is satisfied.
     do {
       QEdge t = e.prev();
       if (rightOf(t.reverse().origin(), e) &&
-        inCircle(e.origin(), t.reverse().origin(), e.reverse().origin(), x)) {
+        inCircle(e.origin(),
+                 t.reverse().origin(),
+                 e.reverse().origin(),
+                 x)) {
         swap(e);
         e = e.prev(); }
       // no more suspect edges
-      else if (e.next() == startingEdge) { return; }
+      else if (e.next() == startingEdge()) { return; }
       // pop a suspect edge
       else { e = e.next().next().reverse(); }
     } while (true); }
 
   //--------------------------------------------------------------------
+
   /** JFX triangle, */
 
   public static final Shape jfxTriangle (final VectorD2 p0,
@@ -263,24 +284,27 @@ public final class Subdivision {
     t.setStroke(color);
     t.setStrokeWidth(1);
     t.setStrokeType(StrokeType.CENTERED);
+    t.setStrokeLineCap(StrokeLineCap.ROUND);
+    t.setStrokeLineJoin(StrokeLineJoin.ROUND);
+    t.setStrokeMiterLimit(1.0);
     return t; }
 
   //--------------------------------------------------------------------
-  //--------------------------------------------------------------------
+  private static final Color FRAME_COLOR = Color.web("#AA000088");
+  private static final Color MESH_COLOR = Color.web("#0000AAFF");
   /** Collect the triangles as a JFX Group Node for display.
-   * Skip edges whose origin is in <code>frame</code>.
+   * Skip triangles that have any vertices in <code>frame</code>.
    * <b>Assumes mesh is connected!</b>
    */
 
-  public final Group jfxTriangles (final Set<VectorD2> frame,
-                                   final Color color,
+  public final Group jfxTriangles (final boolean withFrame,
                                    final String id) {
     final Group group = new Group();
     final List<Node> children = group.getChildren();
 
     final Set<QEdge> visited = new HashSet<>();
     final Stack<QEdge> toVisit = new Stack<>();
-    toVisit.push(startingEdge);
+    toVisit.push(startingEdge());
     while (! toVisit.empty()) {
       final QEdge e0 = toVisit.pop();
       if (! visited.contains(e0)) {
@@ -293,34 +317,72 @@ public final class Subdivision {
         final VectorD2 p0 = e0.origin();
         final VectorD2 p1 = e1.origin();
         final VectorD2 p2 = e2.origin();
-        if (! (frame.contains(p0) ||
-          frame.contains(p1) ||
-          frame.contains(p2))) {
-         children.add(jfxTriangle(p0,p1,p2,color)); } } }
+        if (noFramePoints(p0,p1,p2)) {
+          children.add(jfxTriangle(p0,p1,p2,MESH_COLOR)); }
+        else if (withFrame) {
+          children.add(jfxTriangle(p0,p1,p2,FRAME_COLOR)); } } }
     group.setId(id);
     return group; }
-
-  public final Group jfxTriangles (final Color color,
-                                   final String id) {
-    return jfxTriangles(new HashSet<>(),color,id); }
 
   //--------------------------------------------------------------------
   // construction
   //--------------------------------------------------------------------
+
+  /** All inserted points must lie in the initial mesh
+   * (entered from <code>startingEdge</code>, created from
+   * the <code>framePoints.</code>
+   */
+  private QMesh (final Set<VectorD2> framePoints,
+                 final QEdge startingEdge) {
+    _framePoints = framePoints;
+    _startingEdge = startingEdge; }
+
   /** All inserted points must lie in the triangle formed by
-   * <code>a, b, c</code>.
+   * <code>p0, p1, p2</code>.
    */
 
-  public Subdivision (final VectorD2 a,
-                      final VectorD2 b,
-                      final VectorD2 c) {
-    final QEdge ab = QEdge.make(a, b);
-    final QEdge bc = QEdge.make(b, c);
-    final QEdge ca = QEdge.make(c, a);
-    splice(ab.reverse(), bc);
-    splice(bc.reverse(), ca);
-    splice(ca.reverse(), ab);
-    startingEdge = ab; }
+  public static final QMesh
+  triangleFrame (final VectorD2 p0,
+                 final VectorD2 p1,
+                 final VectorD2 p2) {
+    final QEdge e01 = QEdge.make(p0, p1);
+    final QEdge e12 = QEdge.make(p1, p2);
+    final QEdge e20 = QEdge.make(p2, p0);
+    splice(e01,e20.reverse());
+    splice(e12,e01.reverse());
+    splice(e20,e12.reverse());
+    return new QMesh(Set.of(p0, p1, p2), e01); }
+
+  /** All inserted points must lie in the triangle formed by
+   * <code>p0, p1, p2</code>.
+   */
+
+  public static final QMesh
+  rectangleFrame (final double xmin,
+                  final double xmax,
+                  final double ymin,
+                  final double ymax) {
+    final VectorD2 p0 = new VectorD2(xmin,ymin);
+    final VectorD2 p1 = new VectorD2(xmax,ymin);
+    final VectorD2 p2 = new VectorD2(xmax,ymax);
+    final VectorD2 p3 = new VectorD2(xmin,ymax);
+    final QEdge e01 = QEdge.make(p0, p1);
+    final QEdge e12 = QEdge.make(p1, p2);
+    final QEdge e20 = QEdge.make(p2, p0);
+    final QEdge e23 = QEdge.make(p2, p3);
+    final QEdge e30 = QEdge.make(p3, p0);
+    // around p0
+    splice(e01,e20.reverse());
+    splice(e20.reverse(),e30.reverse());
+    // around p1
+    splice(e12,e01.reverse());
+    // around p2
+    splice(e20,e23);
+    splice(e20,e12.reverse());
+    // around p3
+    splice(e23.reverse(),e30);
+
+    return new QMesh(Set.of(p0, p1, p2, p3), e01); }
 
 //--------------------------------------------------------------------
 } // end class

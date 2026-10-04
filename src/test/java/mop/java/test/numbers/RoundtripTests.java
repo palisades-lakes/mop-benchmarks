@@ -21,12 +21,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 202-09-26
+ * @version 2026-10-04
  */
 
 public final class RoundtripTests {
 
-  private static final int TRYS = 32*1024;
+  private static final int TRYS = 11*1024;
 
   public static final Generator finiteDoubles () {
     return

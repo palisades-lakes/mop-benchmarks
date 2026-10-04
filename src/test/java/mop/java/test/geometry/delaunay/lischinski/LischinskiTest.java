@@ -67,7 +67,7 @@ public final class LischinskiTest {
 //    final VectorD2 p2 = new VectorD2(  2.0, -1.0);
 //    final VectorD2 p3 = new VectorD2(  0.5,  3.0);
 //
-//    final Subdivision mesh = new Subdivision(p1,p2,p3);
+//    final QMesh mesh = new QMesh(p1,p2,p3);
 //
 //    final double pMu = 0.0;
 //    final double pSigma = 3.0;

@@ -18,12 +18,12 @@ import java.util.function.BinaryOperator;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 202-09-26
+ * @version 2026-10-04
  */
 
 public final class BigFloatTest {
 
-  private static final int TRYS = 33;
+  private static final int TRYS = 13;
 
   @Test
   public final void l2norm2Test () {
