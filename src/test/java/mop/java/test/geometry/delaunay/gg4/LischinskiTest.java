@@ -1,9 +1,9 @@
-package mop.java.test.geometry.delaunay.lischinski;
+package mop.java.test.geometry.delaunay.gg4;
 
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
 import mop.java.geometry.Generators;
-import mop.java.geometry.delaunay.lischinski.Subdivision;
+import mop.java.geometry.delaunay.gg4.Subdivision;
 import mop.java.geometry.euclidean.VectorD2;
 import mop.java.numbers.Doubles;
 import mop.java.prng.Generator;

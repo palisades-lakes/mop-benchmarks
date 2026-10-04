@@ -1,14 +1,14 @@
 (set! *warn-on-reflection* true)
 (set! *unchecked-math* :warn-on-boxed)
 ;;----------------------------------------------------------------
-(ns mop.delaunay.lischinski.onesite
+(ns mop.delaunay.gg4.onesite
   {:doc     "Use JavaFX to display a delaunay triangulation."
    :author  "palisades dot lakes at gmail dot com"
-   :version "2026-10-03"}
+   :version "2026-10-04"}
 
   (:import
     [javafx.scene.paint Color]
-    [mop.java.geometry.delaunay.lischinski Subdivision]
+    [mop.java.geometry.delaunay.gg4 Subdivision]
     [mop.java.geometry.euclidean VectorD2]
     [mop.java.jfx JfxWorld]))
 ;;----------------------------------------------------------------

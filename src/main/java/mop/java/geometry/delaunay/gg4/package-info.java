@@ -11,5 +11,5 @@
  * @version 2026-10-01
  */
 
-package mop.java.geometry.delaunay.lischinski;
+package mop.java.geometry.delaunay.gg4;
 

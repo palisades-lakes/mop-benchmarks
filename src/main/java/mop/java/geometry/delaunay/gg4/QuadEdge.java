@@ -1,4 +1,4 @@
-package mop.java.geometry.delaunay.lischinski;
+package mop.java.geometry.delaunay.gg4;
 
 /** Delaunay triangulation, after
  * <a href="https://www.researchgate.net/publication/262235495_Incremental_Delaunay_Triangulation">

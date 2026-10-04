@@ -1,4 +1,4 @@
-package mop.java.geometry.delaunay.lischinski;
+package mop.java.geometry.delaunay.gg4;
 
 import mop.java.geometry.euclidean.VectorD2;
 

@@ -50,6 +50,75 @@ public final class QEdge {
     return dual().reverse().next().dual(); }
 
   //--------------------------------------------------------------------
+  // Basic Topological Operators
+  //--------------------------------------------------------------------
+  /** Lischinski: <br>
+   * This operator affects the two edge rings around the origins
+   * of a and b, and, independently, the two edge rings around
+   * the left faces of a and b. In each case,
+   * <ol>
+   * <li> if the two rings are distinct, Splice will combine
+   * them into one;
+   * </li>
+   * <li> if the two are the same ring, Splice will break it
+   * into two separate pieces.
+   * </li>
+   * </ol>
+   * Thus, splice can be used both to attach the two edges together,
+   * and to break them apart. <br>
+   * See Guibas and Stolfi (1985) p.96 for more details
+   * and illustrations.
+   */
+  final void splice (final QEdge b) {
+    final QEdge alpha = this.next().dual();
+    final QEdge beta = b.next().dual();
+    final QEdge t1 = b.next();
+    final QEdge t2 = this.next();
+    final QEdge t3 = beta.next();
+    final QEdge t4 = alpha.next();
+    this.setNext(t1);
+    b.setNext(t2);
+    alpha.setNext(t3);
+    beta.setNext(t4); }
+
+  //--------------------------------------------------------------------
+
+  final void delete () {
+    splice(prev());
+    reverse().splice(reverse().prev()); }
+
+  //--------------------------------------------------------------------
+  /** Lischinski: <br>
+   * Add a new edge e connecting the destination of <code>e0</code> to the
+   * origin of <code>e1</code></code>,
+   * in such a way that all three have the same
+   * left face after the connection is complete.
+   * Additionally, the data pointers of the new edge are set.
+   */
+
+  final QEdge connect (final QEdge e1) {
+    final QEdge e = make(reverse().origin(), e1.origin());
+    e.splice(faceNext());
+    e.reverse().splice(e1);
+    return e; }
+
+  /** Lischinski: <br>
+   * Essentially turns edge e counterclockwise inside its enclosing
+   * quadrilateral. The data pointers are modified accordingly.
+   */
+
+  final void swap () {
+    // TODO: can we replace with a new edge, rather than modifying?
+    final QEdge a = prev();
+    final QEdge b = reverse().prev();
+    splice(a);
+    reverse().splice(b);
+    splice(a.faceNext());
+    reverse().splice(b.faceNext());
+    setOrigin(a.reverse().origin());
+    reverse().setOrigin(b.reverse().origin()); }
+
+  //--------------------------------------------------------------------
   // construction
   //--------------------------------------------------------------------
 

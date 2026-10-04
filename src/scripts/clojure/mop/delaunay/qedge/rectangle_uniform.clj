@@ -1,33 +1,31 @@
 (set! *warn-on-reflection* true)
 (set! *unchecked-math* :warn-on-boxed)
 ;;----------------------------------------------------------------
-(ns mop.delaunay.qedge.triangle-frame
+(ns mop.delaunay.qedge.rectangle-uniform
   {:doc     "Use JavaFX to display a delaunay triangulation."
    :author  "palisades dot lakes at gmail dot com"
    :version "2026-10-04"}
 
   (:import
     [mop.java.geometry Generators]
-    [mop.java.geometry.delaunay.qedge QMesh]
-    [mop.java.geometry.euclidean VectorD2]
-    [mop.java.jfx JfxWorld]
+    [mop.java.geometry.delaunay.qedge LischinskiIncremental QMesh]
+    [mop.java.jfx JFX JfxWorld]
     [mop.java.numbers Doubles]
     [mop.java.prng PRNG]))
 ;;----------------------------------------------------------------
-;; mvn -q -DskipTests=true install & cljfx src\scripts\clojure\mop\delaunay\clean\triangle_frame.clj
+;; mvn -q -DskipTests=true install & cljfx src\scripts\clojure\mop\delaunay\qedge\rectangle_uniform.clj
 ;;----------------------------------------------------------------
 (defn make-world []
-  (let [p0 (VectorD2. 0.0 0.0)
-        p1 (VectorD2. 2.0 0.0)
-        p2 (VectorD2. 0.0 2.0)
-        mesh (QMesh/triangleFrame p0 p1 p2)
+  (let [mesh (QMesh/rectangleFrame 0.0 1.0 0.0 1.0)
+        exclude (.vertices mesh #{})
         pointGenerator (Generators/vectorD2Generator
                          (Doubles/uniformGenerator
                            (PRNG/well44497b "seeds/Well44497b-2019-01-11.txt")
                            0.0 1.0))
-        nsites 8]
-    (dotimes [_ nsites] (.insertSite mesh (.next pointGenerator)))
-    (.jfxTriangles mesh true "uniform 0 1")))
+        nsites 64]
+    (dotimes [_ nsites]
+      (LischinskiIncremental/insertSite mesh (.next pointGenerator)))
+    (JFX/edges (.edges mesh exclude) JFX/MESH_COLOR "rectangle uniform")))
 ;;----------------------------------------------------------------
 (System/setProperty "glass.win.uiScale" "1")
 (JfxWorld/setWorldBuilder make-world)

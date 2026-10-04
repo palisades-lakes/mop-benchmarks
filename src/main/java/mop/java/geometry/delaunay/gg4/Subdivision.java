@@ -1,4 +1,4 @@
-package mop.java.geometry.delaunay.lischinski;
+package mop.java.geometry.delaunay.gg4;
 
 import javafx.scene.Group;
 import javafx.scene.Node;
