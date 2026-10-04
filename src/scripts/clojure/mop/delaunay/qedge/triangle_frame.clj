@@ -29,11 +29,6 @@
     (dotimes [_ nsites] (.insertSite mesh (.next pointGenerator)))
     (.jfxTriangles mesh true "uniform 0 1")))
 ;;----------------------------------------------------------------
-;;(println (System/getProperty "glass.win.uiScale"))
 (System/setProperty "glass.win.uiScale" "1")
-;;(println (System/getProperty "glass.win.uiScale"))
-;;(System/setProperty "javafx.pulseLogger" "true")
-;;(System/setProperty "prism.verbose" "true")
-;;(System/setProperty "prism.order" "d3d")
 (JfxWorld/setWorldBuilder make-world)
 (JfxWorld/launch JfxWorld (make-array String 0))

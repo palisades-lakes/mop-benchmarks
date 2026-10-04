@@ -4,7 +4,7 @@
 (ns mop.delaunay.qedge.one
   {:doc     "Use JavaFX to display a delaunay triangulation."
    :author  "palisades dot lakes at gmail dot com"
-   :version "2026-10-03"}
+   :version "2026-10-04"}
 
   (:import
     [mop.java.geometry.delaunay.qedge QMesh]
