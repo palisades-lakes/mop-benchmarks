@@ -71,11 +71,6 @@ public final class InsertTests {
   @Test
   public final void uniform01RectangleFrame () {
 
-    // Construct a triangle containing the unit square:
-    final VectorD2 p1 = new VectorD2( -1.0, -1.0);
-    final VectorD2 p2 = new VectorD2(  2.0, -1.0);
-    final VectorD2 p3 = new VectorD2(  0.5,  3.0);
-
     final QMesh mesh = QMesh.rectangleFrame(
       0.0,1.0,0.0,1.0);
 
