@@ -36,7 +36,7 @@ public final class SignedAreaProfile {
     final TriangleR2[] t =
       TriangleR2.convertTriangles(
         (TriangleR2[]) triangleGenerator.next(),
-      "TriangleD2Eager");
+      "SegmentD2Eager");
     System.gc();
     System.gc();
     System.out.println("nTriangles= " + nTriangles);

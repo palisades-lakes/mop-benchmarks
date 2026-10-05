@@ -23,10 +23,10 @@ public abstract class Base {
   Generator triangleGenerator;
 
   @Param({
-    "TriangleD2Eager",
-//    "TriangleBF2",
+    "SegmentD2Eager",
+//    "SegmentBF2",
 //    "TriangleBF2X",
-//    "TriangleD2Lazy",
+//    "SegmentD2Lazy",
 //    "TriangleRF2",
     })
   String className;

@@ -17,8 +17,8 @@ public abstract class TriangleTest {
   //--------------------------------------------------------------
 //  private static final String debugMsg (final double truth,
 //                                        final double check,
-//                                        final TriangleR2 gold,
-//                                        final TriangleR2 pred,
+//                                        final SegmentR2 gold,
+//                                        final SegmentR2 pred,
 //                                        final VectorD2 p0,
 //                                        final VectorD2 p1,
 //                                        final VectorD2 p2,
@@ -47,10 +47,7 @@ public abstract class TriangleTest {
     if (null != triangles) {
       for (final TriangleR2 t : triangles) {
         msg.append("\n\n").append(t.description()).append(" ->\n");
-        if (null!=p) {
-          msg.append(p).append(" \n"); }
-        else {
-          msg.append(t.twiceSignedAreaInterval()); }}}
+        if (null!=p) { msg.append(p).append(" \n"); } } }
     return msg + "\n"; }
 
   //--------------------------------------------------------------

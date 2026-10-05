@@ -36,16 +36,10 @@ public class TriangleD2Lazy extends TriangleD2 {
     if (Double.isNaN(_v20Norm2)) { _v20Norm2 = getV20().l2norm2(); }
     return _v20Norm2; }
 
-  /** AKA wedge product, cross product (in 3D), ... */
-  private static final double wedge (final VectorD2 v0,
-                                     final VectorD2 v1) {
-    // TODO: more accurate version via fma?
-    return (v0.getX()*v1.getY()) - (v0.getY()*v1.getX()); }
-
   private double _V20xV10 = Double.NaN;
   public final double getV20xV10 () {
     // TODO: what if computed corss product is NaN?
-    if (Double.isNaN(_V20xV10)) { _V20xV10 = wedge(getV20(),getV10()); }
+    if (Double.isNaN(_V20xV10)) { _V20xV10 = getV20().wedge(getV10()); }
     return _V20xV10; }
 
   private Double _areaBound = null;
@@ -77,9 +71,9 @@ public class TriangleD2Lazy extends TriangleD2 {
 
     final VectorD2 vp0 = p.subtract(getP0());
 
-    final double bxp = wedge(getV10(),vp0);
+    final double bxp = getV10().wedge(vp0);
     final double bxc = getV20xV10();
-    final double pxc = wedge(vp0,getV20());
+    final double pxc = vp0.wedge(getV20());
 
     final double p2 = vp0.l2norm2();
     final double b2 = getV10Norm2();

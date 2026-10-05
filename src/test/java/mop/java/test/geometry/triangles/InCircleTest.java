@@ -61,8 +61,8 @@ public final class InCircleTest extends TriangleTest {
     inCircle(t, p1);
     // Not working for InCircleCC
     // TODO: decide on the right answer for singular cases.
-    // inCircle(TriangleD2Lazy.of(p1, p1, p1), p4);
-    // inCircle(TriangleD2Lazy.of(p1, p2, p1), p4);
+    // inCircle(SegmentD2Lazy.of(p1, p1, p1), p4);
+    // inCircle(SegmentD2Lazy.of(p1, p2, p1), p4);
   }
   //--------------------------------------------------------------
 

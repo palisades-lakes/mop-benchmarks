@@ -41,9 +41,6 @@ public interface TriangleR2 {
     throw new UnsupportedOperationException(
       getClass().getSimpleName()); }
 
-  public default Object twiceSignedAreaInterval () {
-    return Double.toHexString(twiceSignedArea()); }
-
   //--------------------------------------------------------------------
   /** Is the orientation expected to be correct?
    * May use an error bound, so answer depends on point configuration.
@@ -145,17 +142,17 @@ public interface TriangleR2 {
   public static TriangleR2 truth (final TriangleR2 t) {
     return TriangleBF2.from(t); }
 
-  /** conversions from any TriangleD2 to other Triangle classes. */
+  /** conversions from any SegmentD2 to other Triangle classes. */
 
   public static TriangleR2 convertTriangle (final TriangleR2 t,
                                             final String dest) {
     // TODO: lookup method object rather than switch (String)
     return switch (dest) {
-      case "TriangleD2" ->  TriangleD2.from(t);
-      case "TriangleD2Eager" ->  TriangleD2Eager.from(t);
-      case "TriangleD2Lazy" -> TriangleD2Lazy.from(t);
-      case "TriangleD2BF2" -> TriangleD2BF2.from(t);
-      case "TriangleBF2" ->  TriangleBF2.from(t);
+      case "SegmentD2" ->  TriangleD2.from(t);
+      case "SegmentD2Eager" ->  TriangleD2Eager.from(t);
+      case "SegmentD2Lazy" -> TriangleD2Lazy.from(t);
+      case "SegmentD2BF2" -> TriangleD2BF2.from(t);
+      case "SegmentBF2" ->  TriangleBF2.from(t);
       case "TriangleBF2X" ->  TriangleBF2X.from(t);
       case "TriangleRF2" ->  TriangleRF2.from(t);
       default -> throw new UnsupportedOperationException(); }; }

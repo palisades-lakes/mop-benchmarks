@@ -83,19 +83,19 @@ public final class OrientationTest extends TriangleTest {
     final VectorD2 p2 = new VectorD2( Math.nextDown(a), 0x1.0p10);
     final VectorD2 p3 = new VectorD2( a, 1.0);
 
-//    System.out.println("p0=" + TriangleR2.toHexString(p0));
-//    System.out.println("p1=" + TriangleR2.toHexString(p1));
-//    System.out.println("p2=" + TriangleR2.toHexString(p2));
-//    System.out.println("p3=" + TriangleR2.toHexString(p3));
+//    System.out.println("p0=" + SegmentR2.toHexString(p0));
+//    System.out.println("p1=" + SegmentR2.toHexString(p1));
+//    System.out.println("p2=" + SegmentR2.toHexString(p2));
+//    System.out.println("p3=" + SegmentR2.toHexString(p3));
 
     final TriangleR2 t013 = TriangleD2Lazy.of(p0, p1, p3);
-//    final TriangleR2 bf013 = TriangleBF2.from(t013);
+//    final SegmentR2 bf013 = SegmentBF2.from(t013);
 //    System.out.println("bf013=" + bf013);
 //    System.out.println(Double.toHexString(bf013.orientation()));
     checkOrientation(t013);
 
     final TriangleR2 t023 = TriangleD2Lazy.of(p0, p2, p3);
-//    final TriangleR2 bf023 = TriangleBF2.from(t023);
+//    final SegmentR2 bf023 = SegmentBF2.from(t023);
 //    System.out.println("bf023=" + bf023);
 //    System.out.println(Double.toHexString(bf023.orientation()));
     checkOrientation(t023);

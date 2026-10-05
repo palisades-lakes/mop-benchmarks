@@ -42,15 +42,13 @@ public final class LischinskiIncremental {
                                          final VectorD2 b,
                                          final VectorD2 c,
                                          final VectorD2 d) {
-
     return
-      ((a.x()*a.x() + a.y()*a.y()) * signedArea(b, c, d) -
-        (b.x()*b.x() + b.y()*b.y()) * signedArea(a, c, d) +
-        (c.x()*c.x() + c.y()*c.y()) * signedArea(a, b, d) -
-        (d.x()*d.x() + d.y()*d.y()) * signedArea(a, b, c))
+      ((a.l2norm2() * signedArea(b, c, d))
+        + (b.l2norm2() * signedArea(c, a, d))
+        + (c.l2norm2() * signedArea(a, b, d))
+        + (d.l2norm2() * signedArea(b, a, c)))
         > 0.0; }
 
-  /** Are a, b, c counterclockwise? */
   private static final boolean ccw (final VectorD2 a,
                                     final VectorD2 b,
                                     final VectorD2 c) {
@@ -61,14 +59,11 @@ public final class LischinskiIncremental {
     return ccw(x, e.reverse().origin(), e.origin()); }
 
   private static final boolean leftOf (final VectorD2 x,
-                                       final  QEdge e) {
+                                       final QEdge e) {
     return ccw(x, e.origin(), e.reverse().origin()); }
 
-  private static final double EPS = 1.0e-6;
-  private static final double EPS2 = EPS*EPS;
-
   //--------------------------------------------------------------------
-  /** Used to test for point on line */
+  /** Used to test for point on line. */
 
   private static final class Line {
 
@@ -76,7 +71,7 @@ public final class LischinskiIncremental {
     private final double b;
     private final double c;
 
-    final double eval (final VectorD2 p) {
+    private final double eval (final VectorD2 p) {
       // Plugs point p into the line equation.
       return (a * p.x() + b * p.y() + c); }
 
@@ -88,6 +83,9 @@ public final class LischinskiIncremental {
       c = -(a*p.x() + b*p.y()); } }
 
   //--------------------------------------------------------------------
+  private static final double EPS = 1.0e-6;
+  private static final double EPS2 = EPS*EPS;
+
   /** Lischinski: <br>
    * A predicate that determines if the point x is on the edge e.
    * The point is considered on if it is in the EPS-neighborhood
@@ -99,8 +97,6 @@ public final class LischinskiIncremental {
 
   private static final boolean onEdge (final VectorD2 x,
                                        final QEdge e) {
-
-
     final double t1 = x.subtract(e.origin()).l2norm2();
     final double t2 = x.subtract(e.reverse().origin()).l2norm2();
     if (t1 < EPS2 || t2 < EPS2) { return true; }
@@ -121,7 +117,6 @@ public final class LischinskiIncremental {
 
   private static final QEdge locate (final QMesh mesh,
                                      final VectorD2 x) {
-
     QEdge e = mesh.startingEdge();
     while (true) {
       if (x.equals(e.origin())) { return e; }
@@ -147,10 +142,9 @@ public final class LischinskiIncremental {
 
     QEdge e = locate(mesh,x);
     // point is already in QMesh
-    if ((x == e.origin()) || (x == e.reverse().origin()))  { return; }
-    else if (onEdge(x, e)) {
-      e = e.prev();
-      e.next().delete(); }
+    if ((x.equals(e.origin())) || (x.equals(e.reverse().origin())))  {
+      return; }
+    else if (onEdge(x, e)) { e = e.prev(); e.next().delete(); }
     // Connect the new point to the vertices of the containing
     // triangle (or quadrilateral, if the new point fell on an
     // existing edge.)
@@ -166,9 +160,7 @@ public final class LischinskiIncremental {
     do {
       QEdge t = e.prev();
       if (rightOf(t.reverse().origin(), e) &&
-        inCircle(e.origin(),
-                 t.reverse().origin(),
-                 e.reverse().origin(),
+        inCircle(e.origin(), t.reverse().origin(), e.reverse().origin(),
                  x)) {
         e.swap();
         e = e.prev(); }

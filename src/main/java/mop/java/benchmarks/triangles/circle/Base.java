@@ -27,10 +27,10 @@ public abstract class Base {
 
   @Param({
 //    "TriangleBF2X",
-    "TriangleBF2",
-//    "TriangleD2BF2",
-//    "TriangleD2Eager",
-//    "TriangleD2Lazy",
+    "SegmentBF2",
+//    "SegmentD2BF2",
+//    "SegmentD2Eager",
+//    "SegmentD2Lazy",
 //    "TriangleRF2",
     })
   String className;
