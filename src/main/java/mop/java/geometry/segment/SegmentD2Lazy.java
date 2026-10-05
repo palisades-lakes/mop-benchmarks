@@ -22,6 +22,9 @@ public final class SegmentD2Lazy implements SegmentR2 {
   public final VectorD2 getP1 () { return p1; }
 
   private VectorD2 v10;
+  public final VectorD2 getV10 () {
+    if (null == v10) { v10 = p1.subtract(p0); }
+    return v10; }
 
   //--------------------------------------------------------------------
 
@@ -43,7 +46,7 @@ public final class SegmentD2Lazy implements SegmentR2 {
 
   @Override
   public final double side (final VectorD2 p) {
-    return v10.wedge(p.subtract(p0)); }
+    return getV10().wedge(p.subtract(p0)); }
 
   //--------------------------------------------------------------------
   // construction

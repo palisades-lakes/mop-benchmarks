@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 /** <pre>
- * mvn -Dtest=mop.java.test.geometry.triangles.OrientationTest test
+ * mvn -Dtest=mop.java.test.geometry.triangles.SideTest test
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com

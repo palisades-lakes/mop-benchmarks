@@ -1,6 +1,8 @@
 package mop.java.geometry;
 
 import mop.java.geometry.euclidean.VectorD2;
+import mop.java.geometry.segment.SegmentD2;
+import mop.java.geometry.segment.SegmentR2;
 import mop.java.geometry.tetrahedron.Tetrahedron3D;
 import mop.java.geometry.tetrahedron.TetrahedronVector3D;
 import mop.java.geometry.triangle.TriangleD2;
@@ -92,6 +94,55 @@ public final class Generators {
           for (int j=0;j<n;j++) {
             p[i][j] = (VectorD2) vGenerator.next(); } }
         return p; } }; }
+
+  //--------------------------------------------------------------
+
+  public static final Generator
+  segmentGenerator (final Generator vectorGenerator) {
+    // TODO: named local class rather than anonymous with name?
+    return new GeneratorBase("segmentGenerator") {
+      @Override
+      public final Object next () {
+        final VectorD2 p0 = (VectorD2) vectorGenerator.next();
+        final VectorD2 p1 = (VectorD2) vectorGenerator.next();
+        return SegmentD2.of(p0, p1); } }; }
+
+  public static final Generator
+  segmentGenerator (final int n,
+                     final Generator vectorGenerator) {
+    return new GeneratorBase("segmentGenerator[" + n + "]") {
+      final Generator tGenerator = segmentGenerator(vectorGenerator);
+      @Override
+      public final Object next () {
+        final SegmentR2[] p =  new SegmentR2[n];
+        for (int i = 0; i < n; i++) {
+          p[i] = (SegmentR2) tGenerator.next(); }
+        return p; } }; }
+
+  // TODO: uncomment for benchmarks/profiling:
+//  public static final Generator
+//  segmentGenerator (final Function<SegmentR2, SegmentR2> converter,
+//                     Generator vectorGenerator) {
+//    final Generator tGenerator = segmentGenerator(vectorGenerator);
+//    return new GeneratorBase(converter + " * segmentGenerator") {
+//      @Override
+//      public final Object next () {
+//        return converter.apply((SegmentR2) tGenerator.next()); } }; }
+
+//  public static final Generator
+//  segmentGenerator (final int n,
+//                     final Function<SegmentR2, SegmentR2> converter,
+//                     final Generator vectorGenerator) {
+//    return new GeneratorBase(
+//      converter + " * segmentGenerator[" + n + "]") {
+//      final Generator tGenerator =
+//        segmentGenerator(converter, vectorGenerator);
+//      @Override
+//      public final Object next () {
+//        final SegmentR2[] p =  new SegmentR2[n];
+//        for (int i = 0; i < n; i++) {
+//          p[i] = (SegmentR2) tGenerator.next(); }
+//        return p; } }; }
 
   //--------------------------------------------------------------
 

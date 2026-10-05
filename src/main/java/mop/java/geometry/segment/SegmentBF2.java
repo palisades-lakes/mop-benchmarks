@@ -42,7 +42,7 @@ public final class SegmentBF2 implements SegmentR2 {
 
   @Override
   public final double side (final VectorD2 p) {
-    return v10.wedge(VectorBF2.dif(p,p0)).doubleValue(); }
+    return getV10().wedge(VectorBF2.dif(p,p0)).doubleValue(); }
 
 //--------------------------------------------------------------------
 
