@@ -173,7 +173,7 @@ public final class LischinskiIncremental {
   //--------------------------------------------------------------------
   // construction
   //--------------------------------------------------------------------
-  /** disabled constructor, class method only. */
+  /** disabled constructor, class methods only. */
 
   private LischinskiIncremental () {
    throw new UnsupportedOperationException(
