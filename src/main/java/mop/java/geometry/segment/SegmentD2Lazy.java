@@ -10,9 +10,6 @@ import mop.java.geometry.euclidean.VectorD2;
 
 public final class SegmentD2Lazy implements SegmentR2 {
 
-  // cache vector result of translating p0 to origin,
-  // and related quantities
-
   private final VectorD2 p0;
   private final VectorD2 p1;
 
@@ -20,6 +17,9 @@ public final class SegmentD2Lazy implements SegmentR2 {
   public final VectorD2 getP0 () { return p0; }
   @Override
   public final VectorD2 getP1 () { return p1; }
+
+  // cache vector result of translating p0 to origin,
+  // and related quantities
 
   private VectorD2 v10;
   public final VectorD2 getV10 () {

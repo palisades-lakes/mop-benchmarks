@@ -16,8 +16,20 @@ import mop.java.geometry.euclidean.VectorD2;
  *   <li>Simplify edge algebra.</li>
  * </ul>
  * </p>
+ * Note: <br>
+ * One of the strengths/weaknesses of the
+ * <code>QEdge</code> representation is that there is no explicit
+ * representation for the faces;
+ * they are just defined implicitly as a ring of
+ * <code>QEdge</code>s;
+ * and the implicit faces can be any polygon.
+ * This allows the same representation to be used for a triangulation
+ * and it dual polygonal mesh (ie Delaunay vs Voronoi).
+ * But it means that triangulation code must maintain an implicit
+ * constraint that the faces are triangular.
+ *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-10-03
+ * @version 2026-10-06
  */
 public final class QEdge {
 
@@ -31,9 +43,14 @@ public final class QEdge {
   /** The dual edge, directed from the right face to the left. */
   public final QEdge dual () { return _dual; }
 
+  // TODO: separate primal and dual edges, primal with reference to
+  //  origin point, dual reference to explicit origin face?
+
   private VectorD2 _origin;
   public final VectorD2 origin () { return _origin; }
-  public final void setOrigin (final VectorD2 p) { _origin = p; }
+  public final void setOrigin (final VectorD2 p) {
+    assert _origin != null;
+    _origin = p; }
 
   //--------------------------------------------------------------------
   // minimal edge 'algebra'
@@ -147,8 +164,8 @@ public final class QEdge {
     q2._next = q2;
     q3._next = q1;
 
-    q0.setOrigin(p0);
-    q0.reverse().setOrigin(p1);
+    q0._origin = p0;
+    q0.reverse()._origin = p1;
     return q0; }
 
   //--------------------------------------------------------------------
