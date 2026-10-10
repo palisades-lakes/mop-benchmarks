@@ -1,8 +1,8 @@
 package mop.java.geometry.delaunay.cdsbw;
 
 import mop.java.cmplx.OneSimplex;
-import mop.java.cmplx.TwoSimplex;
 import mop.java.cmplx.ZeroSimplex;
+import mop.java.geometry.euclidean.VectorD2;
 
 /** Delaunay triangulation, after
  * Cheng, Dey, Shewchuk discussion of Boyer-Watson, <br>
@@ -43,12 +43,23 @@ import mop.java.cmplx.ZeroSimplex;
  * </p>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-10-07
+ * @version 2026-10-10
  */
 
 public interface DelaunayBuilder {
 
-  /** CDS: Add positively oriented triangle. */
+  /** Add an embedding for <code>z</code>. <br>
+   * Throw an exception if embedding already exists.<br>
+   * TODO: no exception if matches existing embedding?
+   */
+  public void embed (final ZeroSimplex z,
+                     final VectorD2 p);
+
+  /** CDS: Add positively oriented triangle.
+   * <br>
+   * Throw an exception if triangle already present.
+   * TODO: Ignore repeated additions of the same triangle?
+   */
   public void addTriangle (final ZeroSimplex z0,
                            final ZeroSimplex z1,
                            final ZeroSimplex z2);
@@ -58,18 +69,22 @@ public interface DelaunayBuilder {
                               final ZeroSimplex z1,
                               final ZeroSimplex z2);
 
-  // TODO: is 'opposite' a better name than 'adjacent'?
+  public int nFaces ();
+
   /** CDS: Return a vertex <code>z2</code>
    * such that <code>(z0,z1,z2)</code>
    * is a positively oriented triangle.
-   * <br>TODO: return a <code>OneSimplex</code> for symmetry?
+   * <br>
+   * Throw an exception if no such face.
    */
-  public TwoSimplex adjacent (final ZeroSimplex z0,
-                              final ZeroSimplex z1);
+  public ZeroSimplex adjacent (final ZeroSimplex z0,
+                               final ZeroSimplex z1);
 
   /** CDS: Return an edge <code>z1,z2</code>
    * such that <code>(z0,z1,z2)</code>
    * is a positively oriented triangle.
+   * <br>
+   * Throw an exception if no such face.
    */
   public OneSimplex adjacent (final ZeroSimplex z0);
 

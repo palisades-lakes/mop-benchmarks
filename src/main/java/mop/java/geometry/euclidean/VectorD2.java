@@ -65,6 +65,9 @@ public final record VectorD2 (double x, double y)
       Double.toHexString(x) + "," +
       Double.toHexString(y) + ")"; }
 
+  @Override
+  public final String toString () { return toHexString(); }
+
   //-------------------------------------------------------------------
 } // end class
 //-------------------------------------------------------------------
