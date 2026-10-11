@@ -79,17 +79,23 @@ public interface DelaunayBuilder {
    * TODO: Ignore repeated additions of the same triangle?
    */
 
-  public default void addTriangle (final ZeroSimplex z0,
-                                   final ZeroSimplex z1,
-                                   final ZeroSimplex z2) {
+  public default TwoSimplex addTriangle (final ZeroSimplex z0,
+                                         final ZeroSimplex z1,
+                                         final ZeroSimplex z2) {
     // TODO: check orientation?
     final TwoSimplex t = TwoSimplex.make(z0,z1,z2);
+    // TODO: self hash to de-dupe multiple insertions?
     assert ! faces().contains(t);
     vertices().add(z0);
     vertices().add(z1);
     vertices().add(z2);
-    faces().add(t); }
+    faces().add(t);
+    return t; }
 
+  /** CDS: Delete positively oriented triangle. */
+  public default void deleteTriangle (final TwoSimplex t) {
+    assert faces().contains(t);
+    faces().remove(t); }
 
   /** CDS: Delete positively oriented triangle. */
   public default void deleteTriangle (final ZeroSimplex z0,
@@ -97,9 +103,7 @@ public interface DelaunayBuilder {
                                       final ZeroSimplex z2) {
     // TODO: eliminate ephemeral instance?
     // NOTE: only one face in set for any even permutation of vertices
-    final TwoSimplex t = TwoSimplex.make(z0,z1,z2);
-    assert faces().contains(t);
-    faces().remove(TwoSimplex.make(z0, z1, z2)); }
+    deleteTriangle(TwoSimplex.make(z0,z1,z2)); }
 
   //--------------------------------------------------------------------
   // TODO: is 'opposite' a better name than 'adjacent'?
@@ -142,34 +146,55 @@ public interface DelaunayBuilder {
   // inCircle
   //--------------------------------------------------------------------
 
-  private static double inCircle (final VectorD2 p0,
-                                  final VectorD2 p1,
-                                  final VectorD2 p2,
-                                  final VectorD2 p) {
+  private static double inCircleDistance (final VectorD2 p0,
+                                          final VectorD2 p1,
+                                          final VectorD2 p2,
+                                          final VectorD2 p) {
 
     final VectorD2 v0 = p0.subtract(p);
     final VectorD2 v1 = p1.subtract(p);
     final VectorD2 v2 = p2.subtract(p);
 
-    final double v0xv2 = v0.wedge(v2);
-    final double v1xv0 = v1.wedge(v0);
-    final double v2xv1 = v2.wedge(v1);
+    final double v0xv1 = v0.wedge(v1);
+    final double v1xv2 = v1.wedge(v2);
+    final double v2xv0 = v2.wedge(v0);
 
     final double v02 = v0.l2norm2();
     final double v12 = v1.l2norm2();
     final double v22 = v2.l2norm2();
 
-    return v22*v1xv0 + v02*v2xv1 + v12*v0xv2; }
+    return v22*v0xv1 + v02*v1xv2 + v12*v2xv0; }
 
-  public default double inCircle (final ZeroSimplex z0,
-                                  final ZeroSimplex z1,
-                                  final ZeroSimplex z2,
-                                  final ZeroSimplex z) {
+  public default double inCircleDistance (final ZeroSimplex z0,
+                                          final ZeroSimplex z1,
+                                          final ZeroSimplex z2,
+                                          final ZeroSimplex z) {
     final VectorD2 p0 = embedding(z0);
     final VectorD2 p1 = embedding(z1);
     final VectorD2 p2 = embedding(z2);
     final VectorD2 p = embedding(z);
-    return inCircle(p0, p1, p2, p); }
+    return inCircleDistance(p0, p1, p2, p); }
+
+  public default double inCircleDistance (final TwoSimplex t,
+                                          final ZeroSimplex z) {
+    final VectorD2 p0 = embedding(t.z0());
+    final VectorD2 p1 = embedding(t.z1());
+    final VectorD2 p2 = embedding(t.z2());
+    final VectorD2 p = embedding(z);
+    return inCircleDistance(p0, p1, p2, p); }
+
+  /** Is the embedding of <code>z</code> in the circumcircle
+   * of the embedding of <code>z0,z1,z2</code>?
+   */
+  public default boolean inCircle (final ZeroSimplex z0,
+                                   final ZeroSimplex z1,
+                                   final ZeroSimplex z2,
+                                   final ZeroSimplex z) {
+    return 0.0 < inCircleDistance(z0,z1,z2,z); }
+
+  public default boolean inCircle (final TwoSimplex t,
+                                   final ZeroSimplex z) {
+    return 0.0 < inCircleDistance(t,z); }
 
   //--------------------------------------------------------------------
 
@@ -178,7 +203,7 @@ public interface DelaunayBuilder {
                                  final ZeroSimplex w) {
     final ZeroSimplex x = adjacent(w,v);
     if (null != x) {
-      if (inCircle(u,v,w,x)<0) {
+      if (inCircle(u, v, w, x)) {
         deleteTriangle(w,v,x);
         digCavity(u,v,x);
         digCavity(u,x,w); } }
@@ -200,6 +225,34 @@ public interface DelaunayBuilder {
     digCavity(u,v,w);
     digCavity(u,w,x);
     digCavity(u,x,v); }
+
+  public default void insertVertex (final ZeroSimplex u,
+                                    final TwoSimplex t) {
+    deleteTriangle(t);
+    digCavity(u,t.z0(),t.z1());
+    digCavity(u,t.z1(),t.z2());
+    digCavity(u,t.z2(),t.z0()); }
+
+  //--------------------------------------------------------------------
+  /** Find a face whose circumcircle contains the embedding of
+   * <code>z</code>.
+   */
+
+  public default TwoSimplex locate (final ZeroSimplex z) {
+    // Brute force
+    for (final TwoSimplex t : faces()) {
+      if (inCircle(t.z0(), t.z1(), t.z2(), z)) { return t; } }
+    throw new UnsupportedOperationException(
+      z + " -> " + embedding(z) +
+        "\noutside all the circumcircles of the mesh:\n"
+    + this); }
+
+  //--------------------------------------------------------------------
+
+  public default void insert (final ZeroSimplex z) {
+    final TwoSimplex t = locate(z);
+    insertVertex(z,t);
+  }
 
   //--------------------------------------------------------------------
   /** Emit the triangle mesh corresponding to the current state of the
