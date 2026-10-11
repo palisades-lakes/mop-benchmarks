@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 202-10-10
+ * @version 202-10-11
  */
 
 public final class DelaunayBuilderTest {
@@ -29,7 +29,7 @@ public final class DelaunayBuilderTest {
     final ZeroSimplex z0 = ZeroSimplex.make("z0");
     final ZeroSimplex z1 = ZeroSimplex.make("z1");
     final ZeroSimplex z2 = ZeroSimplex.make("z2");
-    final TwoSimplex t0 = TwoSimplex.make(z0,z1,z2);
+    final TwoSimplex t0 = TwoSimplex.make(z0, z1, z2);
     final TwoSimplex t1 = TwoSimplex.make(z1,z2,z0);
     Assertions.assertEquals(t0,t1);
 
@@ -79,11 +79,10 @@ public final class DelaunayBuilderTest {
     final ZeroSimplex z = ZeroSimplex.make("z");
     final VectorD2 p = new VectorD2(0.5,0.5);
     builder.embed(z,p);
-    Assertions.assertTrue(0.0 < builder.inCircle(z0,z1,z2,z));
+    Assertions.assertTrue(0.0 < builder.inCircle(z,z0,z1,z2));
 
     builder.insertVertex(z,z0,z1,z2);
-    Assertions.assertEquals(3,builder.nFaces());
-  }
+    Assertions.assertEquals(3,builder.nFaces()); }
 
   @Test
   public final void splitRectangle () {
@@ -165,11 +164,14 @@ public final class DelaunayBuilderTest {
           (z3.equals(e2.z0())) && z0.equals(e2.z1()))); }
 
     final ZeroSimplex z = ZeroSimplex.make("z");
-    final VectorD2 p = new VectorD2(0.5,0.5);
+    final VectorD2 p = new VectorD2(0.5,0.25);
     builder.embed(z,p);
-    Assertions.assertTrue(0.0 < builder.inCircle(z0,z1,z2,z));
-    Assertions.assertTrue(0.0 < builder.inCircle(z0,z2,z3,z));
-  }
+    Assertions.assertTrue(0.0 < builder.inCircle(z,z0,z1,z2));
+    Assertions.assertTrue(0.0 < builder.inCircle(z,z0,z2,z3));
+    builder.insertVertex(z,z0,z1,z2);
+    Assertions.assertEquals(
+      4, builder.nFaces(), builder.toString());
+ }
 
 //  @Test
 //  public final void singularRectangleFrame () {

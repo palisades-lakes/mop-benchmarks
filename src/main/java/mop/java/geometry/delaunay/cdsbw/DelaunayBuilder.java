@@ -1,8 +1,16 @@
 package mop.java.geometry.delaunay.cdsbw;
 
+import clojure.lang.IFn;
 import mop.java.cmplx.OneSimplex;
+import mop.java.cmplx.SimplicialComplex2D;
+import mop.java.cmplx.TwoSimplex;
 import mop.java.cmplx.ZeroSimplex;
+import mop.java.geom.mesh.TriangleMesh;
 import mop.java.geometry.euclidean.VectorD2;
+import mop.java.util.IFnWrapper;
+
+import java.util.Collection;
+import java.util.Map;
 
 /** Delaunay triangulation, after
  * Cheng, Dey, Shewchuk discussion of Boyer-Watson, <br>
@@ -43,10 +51,14 @@ import mop.java.geometry.euclidean.VectorD2;
  * </p>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-10-10
+ * @version 2026-10-11
  */
 
 public interface DelaunayBuilder {
+
+  public Collection<ZeroSimplex> vertices ();
+  public Collection<TwoSimplex> faces ();
+  public default int nFaces () { return faces().size(); }
 
   /** Add an embedding for <code>z</code>. <br>
    * Throw an exception if embedding already exists.<br>
@@ -59,39 +71,72 @@ public interface DelaunayBuilder {
    * Throw an exception if no embedding exists.<br>
    */
   public VectorD2 embedding (final ZeroSimplex z);
+  public Map<ZeroSimplex, VectorD2> embedding ();
 
   /** CDS: Add positively oriented triangle.
    * <br>
    * Throw an exception if triangle already present.
    * TODO: Ignore repeated additions of the same triangle?
    */
-  public void addTriangle (final ZeroSimplex z0,
-                           final ZeroSimplex z1,
-                           final ZeroSimplex z2);
+
+  public default void addTriangle (final ZeroSimplex z0,
+                                   final ZeroSimplex z1,
+                                   final ZeroSimplex z2) {
+    // TODO: check orientation?
+    final TwoSimplex t = TwoSimplex.make(z0,z1,z2);
+    assert ! faces().contains(t);
+    vertices().add(z0);
+    vertices().add(z1);
+    vertices().add(z2);
+    faces().add(t); }
+
 
   /** CDS: Delete positively oriented triangle. */
-  public void deleteTriangle (final ZeroSimplex z0,
-                              final ZeroSimplex z1,
-                              final ZeroSimplex z2);
+  public default void deleteTriangle (final ZeroSimplex z0,
+                                      final ZeroSimplex z1,
+                                      final ZeroSimplex z2) {
+    // TODO: eliminate ephemeral instance?
+    // NOTE: only one face in set for any even permutation of vertices
+    final TwoSimplex t = TwoSimplex.make(z0,z1,z2);
+    assert faces().contains(t);
+    faces().remove(TwoSimplex.make(z0, z1, z2)); }
 
-  public int nFaces ();
-
+  //--------------------------------------------------------------------
+  // TODO: is 'opposite' a better name than 'adjacent'?
+  // TODO: memoize?
   /** CDS: Return a vertex <code>z2</code>
    * such that <code>(z0,z1,z2)</code>
    * is a positively oriented triangle.
    * <br>
    * Throw an exception if no such face.
    */
-  public ZeroSimplex adjacent (final ZeroSimplex z0,
-                               final ZeroSimplex z1);
 
+  public default ZeroSimplex adjacent (final ZeroSimplex z0,
+                                       final ZeroSimplex z1) {
+    // TODO: should be unique --- unit test to check
+    for (final TwoSimplex t : faces()) {
+      if (z0.equals(t.z0()) && z1.equals(t.z1())) { return t.z2(); }
+      if (z0.equals(t.z1()) && z1.equals(t.z2())) { return t.z0(); }
+      if (z0.equals(t.z2()) && z1.equals(t.z0())) { return t.z1(); } }
+    return null; }
+
+  //--------------------------------------------------------------------
+  // TODO: memoize vertex to edge?
+  // TODO: soft cache edge objects independent of faces?
   /** CDS: Return an edge <code>z1,z2</code>
    * such that <code>(z0,z1,z2)</code>
    * is a positively oriented triangle.
    * <br>
    * Throw an exception if no such face.
    */
-  public OneSimplex adjacent (final ZeroSimplex z0);
+
+  public default OneSimplex adjacent (final ZeroSimplex z) {
+    for (final TwoSimplex t : faces()) {
+      if (t.z0().equals(z)) { return OneSimplex.make(t.z1(),t.z2()); }
+      if (t.z1().equals(z)) { return OneSimplex.make(t.z2(),t.z0()); }
+      if (t.z2().equals(z)) { return OneSimplex.make(t.z0(),t.z1()); } }
+    throw new UnsupportedOperationException(
+      "no face with vertex:" + z); }
 
   //--------------------------------------------------------------------
   // inCircle
@@ -102,29 +147,29 @@ public interface DelaunayBuilder {
                                   final VectorD2 p2,
                                   final VectorD2 p) {
 
-    final VectorD2 v10 = p1.subtract(p0);
-    final VectorD2 v20 = p2.subtract(p0);
-    final VectorD2 vp0 = p.subtract(p0);
+    final VectorD2 v0 = p0.subtract(p);
+    final VectorD2 v1 = p1.subtract(p);
+    final VectorD2 v2 = p2.subtract(p);
 
-    final double bxp = v10.wedge(vp0);
-    final double bxc = v20.wedge(v10);
-    final double pxc = vp0.wedge(v20);
+    final double v0xv2 = v0.wedge(v2);
+    final double v1xv0 = v1.wedge(v0);
+    final double v2xv1 = v2.wedge(v1);
 
-    final double a2 = vp0.l2norm2();
-    final double b2 = v10.l2norm2();
-    final double c2 = v20.l2norm2();
+    final double v02 = v0.l2norm2();
+    final double v12 = v1.l2norm2();
+    final double v22 = v2.l2norm2();
 
-    return a2*bxc + b2*pxc + c2*bxp; }
+    return v22*v1xv0 + v02*v2xv1 + v12*v0xv2; }
 
   public default double inCircle (final ZeroSimplex z0,
-                                   final ZeroSimplex z1,
-                                   final ZeroSimplex z2,
-                                   final ZeroSimplex z) {
+                                  final ZeroSimplex z1,
+                                  final ZeroSimplex z2,
+                                  final ZeroSimplex z) {
     final VectorD2 p0 = embedding(z0);
     final VectorD2 p1 = embedding(z1);
     final VectorD2 p2 = embedding(z2);
     final VectorD2 p = embedding(z);
-    return inCircle(p0,p1,p2,p); }
+    return inCircle(p0, p1, p2, p); }
 
   //--------------------------------------------------------------------
 
@@ -132,21 +177,21 @@ public interface DelaunayBuilder {
                                  final ZeroSimplex v,
                                  final ZeroSimplex w) {
     final ZeroSimplex x = adjacent(w,v);
-    if (null == x) { return; }
-    if (inCircle(w,v,x,u)>0) {
-      deleteTriangle(w,v,x);
-      digCavity(u,v,x);
-      digCavity(u,x,w); }
+    if (null != x) {
+      if (inCircle(u,v,w,x)<0) {
+        deleteTriangle(w,v,x);
+        digCavity(u,v,x);
+        digCavity(u,x,w); } }
     else { addTriangle(u,v,w); } }
 
   //--------------------------------------------------------------------
-  // TODO: reorder args to match my face, site convention
-
+  // TODO: reorder args to match (face, site) convention
   /** <code>z</code> is the vertex to insert.
    * <code>z0,z1,z2</code> the vertices of a (positively)
    * oriented face whose circumcircle includes <code>z</code>
    * (using the current embedding of the vertices).
    */
+
   public default void insertVertex (final ZeroSimplex u,
                                     final ZeroSimplex v,
                                     final ZeroSimplex w,
@@ -156,7 +201,20 @@ public interface DelaunayBuilder {
     digCavity(u,w,x);
     digCavity(u,x,v); }
 
-//--------------------------------------------------------------------
+  //--------------------------------------------------------------------
+  /** Emit the triangle mesh corresponding to the current state of the
+   * builder.
+   * <br>
+   * TODO: cache last value and stateChanged to avoid rebuilding
+   *  rebuilding the same mesh? Not really a likely scenario.
+   */
+
+  public default TriangleMesh build () {
+    final SimplicialComplex2D cmplx = SimplicialComplex2D.make(faces());
+    final IFn z2p = IFnWrapper.make(embedding());
+    return TriangleMesh.make(cmplx,z2p); }
+
+  //--------------------------------------------------------------------
 } // end interface
 //--------------------------------------------------------------------
 
