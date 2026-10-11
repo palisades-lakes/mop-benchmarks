@@ -67,23 +67,29 @@ public final class CDSBWDelaunayBuilder implements DelaunayBuilder {
   // TODO: extract embedding keys when needed?
 
   private final SortedSet<ZeroSimplex> _vertices = new TreeSet<>();
-  public final SortedSet<ZeroSimplex> vertices () { return _vertices; }
+  private final SortedSet<ZeroSimplex> vertices () { return _vertices; }
 
   //--------------------------------------------------------------------
 
   private final SortedMap<ZeroSimplex, VectorD2> _embedding
     = new TreeMap<>();
-  public final SortedMap<ZeroSimplex, VectorD2> embedding () {
+  private final SortedMap<ZeroSimplex, VectorD2> embedding () {
     return _embedding; }
 
   // TODO: Map implementation that allows adding.
   //  but not modifying entries?
+  @Override
   public final void embed (final ZeroSimplex z,
                            final VectorD2 p) {
     // just in case...
     vertices().add(z);
     final Object previous = embedding().putIfAbsent(z,p);
     assert (null == previous); }
+
+  public final VectorD2 embedding (final ZeroSimplex z) {
+    final VectorD2 p = embedding().get(z);
+    assert (null != p);
+    return p; }
 
   //--------------------------------------------------------------------
 
@@ -123,8 +129,7 @@ public final class CDSBWDelaunayBuilder implements DelaunayBuilder {
       if (z0.equals(t.z0()) && z1.equals(t.z1())) { return t.z2(); }
       if (z0.equals(t.z1()) && z1.equals(t.z2())) { return t.z0(); }
       if (z0.equals(t.z2()) && z1.equals(t.z0())) { return t.z1(); } }
-    throw new UnsupportedOperationException(
-      "no face with directed edge:" + z0 + " -> " + z1); }
+    return null; }
 
   //--------------------------------------------------------------------
   // TODO: memoize vertex to edge?

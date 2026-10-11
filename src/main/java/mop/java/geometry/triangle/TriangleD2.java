@@ -86,7 +86,8 @@ public class TriangleD2 implements TriangleR2 {
       ((p2 * (xy21+xy12)) + (b2 * (xyp2+xy2p)) + (c2 * (xy1p+xyp1))); }
 
   //--------------------------------------------------------------------
-
+  // TODO: bound above is incorrect for this calculation
+  //  needs translation to p0 origin
   @Override
   public double inCircleDistance (final VectorD2 p) {
 

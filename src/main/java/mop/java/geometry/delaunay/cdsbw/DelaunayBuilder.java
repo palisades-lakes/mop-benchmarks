@@ -55,6 +55,11 @@ public interface DelaunayBuilder {
   public void embed (final ZeroSimplex z,
                      final VectorD2 p);
 
+  /** Get the embedding for <code>z</code>. <br>
+   * Throw an exception if no embedding exists.<br>
+   */
+  public VectorD2 embedding (final ZeroSimplex z);
+
   /** CDS: Add positively oriented triangle.
    * <br>
    * Throw an exception if triangle already present.
@@ -87,6 +92,69 @@ public interface DelaunayBuilder {
    * Throw an exception if no such face.
    */
   public OneSimplex adjacent (final ZeroSimplex z0);
+
+  //--------------------------------------------------------------------
+  // inCircle
+  //--------------------------------------------------------------------
+
+  private static double inCircle (final VectorD2 p0,
+                                  final VectorD2 p1,
+                                  final VectorD2 p2,
+                                  final VectorD2 p) {
+
+    final VectorD2 v10 = p1.subtract(p0);
+    final VectorD2 v20 = p2.subtract(p0);
+    final VectorD2 vp0 = p.subtract(p0);
+
+    final double bxp = v10.wedge(vp0);
+    final double bxc = v20.wedge(v10);
+    final double pxc = vp0.wedge(v20);
+
+    final double a2 = vp0.l2norm2();
+    final double b2 = v10.l2norm2();
+    final double c2 = v20.l2norm2();
+
+    return a2*bxc + b2*pxc + c2*bxp; }
+
+  public default double inCircle (final ZeroSimplex z0,
+                                   final ZeroSimplex z1,
+                                   final ZeroSimplex z2,
+                                   final ZeroSimplex z) {
+    final VectorD2 p0 = embedding(z0);
+    final VectorD2 p1 = embedding(z1);
+    final VectorD2 p2 = embedding(z2);
+    final VectorD2 p = embedding(z);
+    return inCircle(p0,p1,p2,p); }
+
+  //--------------------------------------------------------------------
+
+  public default void digCavity (final ZeroSimplex u,
+                                 final ZeroSimplex v,
+                                 final ZeroSimplex w) {
+    final ZeroSimplex x = adjacent(w,v);
+    if (null == x) { return; }
+    if (inCircle(w,v,x,u)>0) {
+      deleteTriangle(w,v,x);
+      digCavity(u,v,x);
+      digCavity(u,x,w); }
+    else { addTriangle(u,v,w); } }
+
+  //--------------------------------------------------------------------
+  // TODO: reorder args to match my face, site convention
+
+  /** <code>z</code> is the vertex to insert.
+   * <code>z0,z1,z2</code> the vertices of a (positively)
+   * oriented face whose circumcircle includes <code>z</code>
+   * (using the current embedding of the vertices).
+   */
+  public default void insertVertex (final ZeroSimplex u,
+                                    final ZeroSimplex v,
+                                    final ZeroSimplex w,
+                                    final ZeroSimplex x) {
+    deleteTriangle(v,w,x);
+    digCavity(u,v,w);
+    digCavity(u,w,x);
+    digCavity(u,x,v); }
 
 //--------------------------------------------------------------------
 } // end interface
