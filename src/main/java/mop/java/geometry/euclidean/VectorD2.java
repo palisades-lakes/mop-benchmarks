@@ -1,5 +1,7 @@
 package mop.java.geometry.euclidean;
 
+import java.util.Objects;
+
 /** Interface for classes representing subsets of
  * <code>R<sup>2</sup></code>, allowing coordinate representations
  * that are more precise than <code>double/Double</code>.
@@ -9,7 +11,7 @@ package mop.java.geometry.euclidean;
  */
 
 public final record VectorD2 (double x, double y)
-  implements VectorR2<Double> {
+  implements VectorR2<Double>, Comparable<VectorD2> {
 
   public final VectorD2 add (final VectorD2 v) {
     return new VectorD2(x+v.x,y+v.y); }
@@ -58,6 +60,35 @@ public final record VectorD2 (double x, double y)
   @Override
   public final Double wedge (final VectorR2<Double> v) {
     return x*v.getY() - y*v.getX(); }
+
+  //--------------------------------------------------------------------
+  // Comparable
+  //--------------------------------------------------------------------
+  /** Lexicographic x,y */
+
+  @Override
+  public final int compareTo (final VectorD2 v) {
+    final int c = Double.compare(x(),v.x());
+    if (0 == c) { return Double.compare(y(),v.y()); }
+    return c;  }
+
+  //--------------------------------------------------------------------
+  // Object
+  //--------------------------------------------------------------------
+
+  @Override
+  public final int hashCode () {
+    return Objects.hash(x(), y()); }
+
+  @Override
+  public final boolean equals (final Object that) {
+    assert that instanceof VectorD2;
+    final VectorD2 v = (VectorD2) that;
+    // Use compare() to handle NaN
+    return
+      (0 == Double.compare(x(),v.x()))
+        &&
+        (0 == Double.compare(y(),v.y())); }
 
   @Override
   public final String toHexString () {

@@ -8,8 +8,10 @@ import mop.java.geom.mesh.TriangleMesh;
 import mop.java.geometry.euclidean.VectorD2;
 import mop.java.util.IFnWrapper;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author palisades dot lakes at gmail dot com
@@ -17,6 +19,31 @@ import java.util.Map;
  */
 
 public final class Util {
+
+  //--------------------------------------------------------------------
+  // TODO: move to mop TriangleMesh instance methods
+  //--------------------------------------------------------------------
+
+  private static final VectorD2[] sortedPair (final VectorD2 p0,
+                                              final VectorD2 p1) {
+    final int c = p0.compareTo(p1);
+    assert 0 != c;
+    if (c < 0) { return new VectorD2[]{p0,p1}; }
+    return new VectorD2[]{p1,p0}; }
+
+  public static final Set<VectorD2[]>
+  edgeCoordinates (final TriangleMesh mesh) {
+    final Set<VectorD2[]> pairs = new HashSet<>();
+    final IFn e = mesh.embedding();
+    final SimplicialComplex2D c = (SimplicialComplex2D) mesh.cmplx();
+    for (final TwoSimplex f : c.faces()) {
+      final VectorD2 p0 = (VectorD2) e.invoke(f.z0());
+      final VectorD2 p1 = (VectorD2) e.invoke(f.z1());
+      final VectorD2 p2 = (VectorD2) e.invoke(f.z2());
+      pairs.add(sortedPair(p0,p1));
+      pairs.add(sortedPair(p1,p2));
+      pairs.add(sortedPair(p2,p0)); }
+    return pairs; }
 
   //--------------------------------------------------------------------
   // geometric predicates
@@ -117,9 +144,9 @@ public final class Util {
   public static final TriangleMesh triangleFrame01 () {
 
     // Construct a triangle containing the unit square:
-    final ZeroSimplex z0 = ZeroSimplex.make("frame0");
-    final ZeroSimplex z1 = ZeroSimplex.make("frame1");
-    final ZeroSimplex z2 = ZeroSimplex.make("frame22");
+    final ZeroSimplex z0 = ZeroSimplex.make("f0");
+    final ZeroSimplex z1 = ZeroSimplex.make("f1");
+    final ZeroSimplex z2 = ZeroSimplex.make("f2");
     final TwoSimplex t012 = TwoSimplex.make(z0, z1, z2);
     final SimplicialComplex2D c =
       SimplicialComplex2D.make(List.of(t012));
@@ -143,10 +170,10 @@ public final class Util {
                                                    final double ymax) {
 
     // Construct a unit square as 2 triangles:
-    final ZeroSimplex z0 = ZeroSimplex.make("z0");
-    final ZeroSimplex z1 = ZeroSimplex.make("z1");
-    final ZeroSimplex z2 = ZeroSimplex.make("z2");
-    final ZeroSimplex z3 = ZeroSimplex.make("z3");
+    final ZeroSimplex z0 = ZeroSimplex.make("f0");
+    final ZeroSimplex z1 = ZeroSimplex.make("f1");
+    final ZeroSimplex z2 = ZeroSimplex.make("f2");
+    final ZeroSimplex z3 = ZeroSimplex.make("f3");
     final TwoSimplex t012 = TwoSimplex.make(z0, z1, z2);
     final TwoSimplex t023 = TwoSimplex.make(z0, z2, z3);
     final SimplicialComplex2D c =

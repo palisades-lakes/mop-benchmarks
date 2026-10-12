@@ -12,6 +12,7 @@ import mop.java.util.IFnWrapper;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /** Delaunay triangulation, after
  * Cheng, Dey, Shewchuk discussion of Boyer-Watson, <br>
@@ -52,7 +53,7 @@ import java.util.Map;
  * </p>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-10-11
+ * @version 2026-10-12
  */
 
 public interface DelaunayBuilder {
@@ -202,6 +203,16 @@ public interface DelaunayBuilder {
     insertVertex(z,t); }
 
   //--------------------------------------------------------------------
+
+  static final AtomicInteger _counter = new AtomicInteger(0);
+  private static int counter () { return _counter.getAndIncrement(); }
+
+  public default void insertPoint (final VectorD2 p) {
+    final ZeroSimplex z = ZeroSimplex.make("site" + counter());
+    embed(z,p);
+    insert(z); }
+
+  //--------------------------------------------------------------------
   // emit mesh
   //--------------------------------------------------------------------
   /** Emit the triangle mesh corresponding to the current state of the
@@ -215,6 +226,17 @@ public interface DelaunayBuilder {
     final SimplicialComplex2D cmplx = SimplicialComplex2D.make(faces());
     final IFn z2p = IFnWrapper.make(embedding());
     return TriangleMesh.make(cmplx,z2p); }
+
+  //--------------------------------------------------------------------
+  // Object
+  //--------------------------------------------------------------------
+
+  public static String toString (final DelaunayBuilder builder) {
+    return
+      builder.getClass().getSimpleName() + ":\n"
+        + "faces:\n" + builder.faces() + "\n"
+        + "vertices:\n" + builder.vertices() + "\n"
+        + "embedding:\n" + builder.embedding(); }
 
   //--------------------------------------------------------------------
 } // end interface

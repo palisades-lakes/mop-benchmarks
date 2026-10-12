@@ -104,13 +104,8 @@ public final class CDSBWDelaunayBuilder implements DelaunayBuilder {
   // Object
   //--------------------------------------------------------------------
 
-  @Override
-  public final String toString () {
-    return
-      getClass().getSimpleName() + ":\n"
-        + "faces:\n" + faces() + "\n"
-        + "vertices:\n" + vertices() + "\n"
-        + "embedding:\n" + embedding(); }
+  public String toString () {
+    return DelaunayBuilder.toString(this); }
 
   //--------------------------------------------------------------------
   // construction

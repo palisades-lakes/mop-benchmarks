@@ -8,9 +8,10 @@ import java.util.Map;
  * Probably already done somewhere, but can't find it.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-10-10
+ * @version 2026-10-12
  */
 
+@SuppressWarnings("unchecked")
 public final class IFnWrapper extends IFnImplementation {
 
   private final Map _immutableMap;
@@ -23,6 +24,13 @@ public final class IFnWrapper extends IFnImplementation {
   @Override
   public Object invoke (final Object key) {
     return immutableMap().get(key); }
+
+  //--------------------------------------------------------------------
+  // Object
+  //--------------------------------------------------------------------
+
+  @Override
+  public final String toString () { return immutableMap().toString(); }
 
   //--------------------------------------------------------------------
   // construction
