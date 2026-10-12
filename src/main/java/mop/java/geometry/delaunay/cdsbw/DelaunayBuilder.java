@@ -86,6 +86,7 @@ public interface DelaunayBuilder {
                                          final ZeroSimplex z2) {
     // TODO: check orientation?
     final TwoSimplex t = TwoSimplex.make(z0,z1,z2);
+    System.out.println("add: " + t);
     // TODO: self hash to de-dupe multiple insertions?
     assert ! faces().contains(t);
     vertices().add(z0);
@@ -97,6 +98,7 @@ public interface DelaunayBuilder {
   /** CDS: Delete positively oriented triangle. */
   public default void deleteTriangle (final TwoSimplex t) {
     assert faces().contains(t);
+    System.out.println("delete: " + t);
     faces().remove(t); }
 
   /** CDS: Delete positively oriented triangle. */
@@ -200,6 +202,7 @@ public interface DelaunayBuilder {
 
   public default void insert (final ZeroSimplex z) {
     final TwoSimplex t = locate(z);
+    System.out.println("locate(" + z + ") -> " + t);
     insertVertex(z,t); }
 
   //--------------------------------------------------------------------
@@ -234,9 +237,9 @@ public interface DelaunayBuilder {
   public static String toString (final DelaunayBuilder builder) {
     return
       builder.getClass().getSimpleName() + ":\n"
-        + "faces:\n" + builder.faces() + "\n"
-        + "vertices:\n" + builder.vertices() + "\n"
-        + "embedding:\n" + builder.embedding(); }
+        + "faces: " + builder.faces() + "\n"
+        + "vertices: " + builder.vertices() + "\n"
+        + "embedding:" + builder.embedding(); }
 
   //--------------------------------------------------------------------
 } // end interface
