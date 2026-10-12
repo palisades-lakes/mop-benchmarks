@@ -1,5 +1,6 @@
 package mop.java.geometry.delaunay.qedge;
 
+import mop.java.geometry.delaunay.Util;
 import mop.java.geometry.euclidean.VectorD2;
 
 /** Delaunay triangulation, after
@@ -29,11 +30,12 @@ import mop.java.geometry.euclidean.VectorD2;
  * constraint that the faces are triangular.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-10-06
+ * @version 2026-10-12
  */
 public final class QEdge {
 
   private QEdge _next;
+
   /** The next edge ccw around the origin. */
   public final QEdge next () { return _next; }
   /** The next edge ccw around the origin. */
@@ -65,6 +67,18 @@ public final class QEdge {
   /** The next edge ccw around the (left) face. */
   public final QEdge faceNext () {
     return dual().reverse().next().dual(); }
+
+  //--------------------------------------------------------------------
+  // geometric predicates
+  //--------------------------------------------------------------------
+
+  /** Is <code>p</code> on the right side of this directed edge? */
+  public final boolean right (final VectorD2 p) {
+    return Util.ccw(p, reverse().origin(), origin()); }
+
+  /** Is <code>p</code> on the left side of this directed edge? */
+  public final boolean left (final VectorD2 p) {
+    return Util.ccw(p, origin(), reverse().origin()); }
 
   //--------------------------------------------------------------------
   // Basic Topological Operators

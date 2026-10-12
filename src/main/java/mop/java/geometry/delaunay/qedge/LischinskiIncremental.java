@@ -1,5 +1,6 @@
 package mop.java.geometry.delaunay.qedge;
 
+import mop.java.geometry.delaunay.Util;
 import mop.java.geometry.euclidean.VectorD2;
 
 /** Algorithm for Delaunay triangulation, after
@@ -11,7 +12,7 @@ import mop.java.geometry.euclidean.VectorD2;
  * <b>NOTE: </b> all inserted points must fall within the existing mesh!
  * </p>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-10-04
+ * @version 2026-10-12
  */
 
 public final class LischinskiIncremental {
@@ -19,48 +20,48 @@ public final class LischinskiIncremental {
   //--------------------------------------------------------------------
   // geometric predicates
   //--------------------------------------------------------------------
-  /** Lischinski: <br>
-   * Returns twice the signed area of the oriented triangle (a, b, c),
-   * i.e., the area is positive if the triangle is counterclockwise.
-   */
-
-  private static final double signedArea (final VectorD2 a,
-                                          final VectorD2 b,
-                                          final VectorD2 c) {
-
-    return
-      (b.x() - a.x())*(c.y() - a.y())
-        -
-        (b.y() - a.y())*(c.x() - a.x()); }
-
-  /** Lischinski: <br>
-   * Returns true if the point d is inside the circle defined by the
-   * points a, b, c. See Guibas and Stolfi (1985) p.107.
-   */
-
-  private static final boolean inCircle (final VectorD2 a,
-                                         final VectorD2 b,
-                                         final VectorD2 c,
-                                         final VectorD2 d) {
-    return
-      ((a.l2norm2() * signedArea(b, c, d))
-        + (b.l2norm2() * signedArea(c, a, d))
-        + (c.l2norm2() * signedArea(a, b, d))
-        + (d.l2norm2() * signedArea(b, a, c)))
-        > 0.0; }
-
-  private static final boolean ccw (final VectorD2 a,
-                                    final VectorD2 b,
-                                    final VectorD2 c) {
-    return (signedArea(a, b, c) > 0); }
-
-  private static final boolean rightOf (final VectorD2 x,
-                                        final QEdge e) {
-    return ccw(x, e.reverse().origin(), e.origin()); }
-
-  private static final boolean leftOf (final VectorD2 x,
-                                       final QEdge e) {
-    return ccw(x, e.origin(), e.reverse().origin()); }
+//  /** Lischinski: <br>
+//   * Returns twice the signed area of the oriented triangle (a, b, c),
+//   * i.e., the area is positive if the triangle is counterclockwise.
+//   */
+//
+//  private static final double signedArea (final VectorD2 a,
+//                                          final VectorD2 b,
+//                                          final VectorD2 c) {
+//
+//    return
+//      (b.x() - a.x())*(c.y() - a.y())
+//        -
+//        (b.y() - a.y())*(c.x() - a.x()); }
+//
+//  /** Lischinski: <br>
+//   * Returns true if the point d is inside the circle defined by the
+//   * points a, b, c. See Guibas and Stolfi (1985) p.107.
+//   */
+//
+//  private static final boolean inCircle (final VectorD2 a,
+//                                         final VectorD2 b,
+//                                         final VectorD2 c,
+//                                         final VectorD2 d) {
+//    return
+//      ((a.l2norm2() * signedArea(b, c, d))
+//        + (b.l2norm2() * signedArea(c, a, d))
+//        + (c.l2norm2() * signedArea(a, b, d))
+//        + (d.l2norm2() * signedArea(b, a, c)))
+//        > 0.0; }
+//
+//  private static final boolean ccw (final VectorD2 a,
+//                                    final VectorD2 b,
+//                                    final VectorD2 c) {
+//    return (signedArea(a, b, c) > 0); }
+//
+//  private static final boolean rightOf (final VectorD2 x,
+//                                        final QEdge e) {
+//    return ccw(x, e.reverse().origin(), e.origin()); }
+//
+//  private static final boolean leftOf (final VectorD2 x,
+//                                       final QEdge e) {
+//    return ccw(x, e.origin(), e.reverse().origin()); }
 
   //--------------------------------------------------------------------
   /** Used to test for point on line. */
@@ -122,9 +123,9 @@ public final class LischinskiIncremental {
       if (x.equals(e.origin())) { return e; }
       if (x.equals(e.reverse().origin())) { return e; }
 
-      if (rightOf(x, e)) { e = e.reverse(); }
-      else if (! rightOf(x, e.next())) { e = e.next(); }
-      else if (! leftOf(x, e.faceNext())) {
+      if (e.right(x)) { e = e.reverse(); }
+      else if (! e.next().right(x)) { e = e.next(); }
+      else if (! e.faceNext().left(x)) {
         e = e.faceNext().reverse(); }
       else { return e; } } }
 
@@ -159,8 +160,10 @@ public final class LischinskiIncremental {
     // is satisfied.
     do {
       QEdge t = e.prev();
-      if (rightOf(t.reverse().origin(), e) &&
-        inCircle(e.origin(), t.reverse().origin(), e.reverse().origin(),
+      if (e.right(t.reverse().origin()) &&
+        Util.inCircle(e.origin(),
+                      t.reverse().origin(),
+                      e.reverse().origin(),
                  x)) {
         e.swap();
         e = e.prev(); }

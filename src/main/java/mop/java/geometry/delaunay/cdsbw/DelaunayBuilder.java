@@ -6,6 +6,7 @@ import mop.java.cmplx.SimplicialComplex2D;
 import mop.java.cmplx.TwoSimplex;
 import mop.java.cmplx.ZeroSimplex;
 import mop.java.geom.mesh.TriangleMesh;
+import mop.java.geometry.delaunay.Util;
 import mop.java.geometry.euclidean.VectorD2;
 import mop.java.util.IFnWrapper;
 
@@ -143,67 +144,13 @@ public interface DelaunayBuilder {
       "no face with vertex:" + z); }
 
   //--------------------------------------------------------------------
-  // inCircle
-  //--------------------------------------------------------------------
-
-  private static double inCircleDistance (final VectorD2 p0,
-                                          final VectorD2 p1,
-                                          final VectorD2 p2,
-                                          final VectorD2 p) {
-
-    final VectorD2 v0 = p0.subtract(p);
-    final VectorD2 v1 = p1.subtract(p);
-    final VectorD2 v2 = p2.subtract(p);
-
-    final double v0xv1 = v0.wedge(v1);
-    final double v1xv2 = v1.wedge(v2);
-    final double v2xv0 = v2.wedge(v0);
-
-    final double v02 = v0.l2norm2();
-    final double v12 = v1.l2norm2();
-    final double v22 = v2.l2norm2();
-
-    return v22*v0xv1 + v02*v1xv2 + v12*v2xv0; }
-
-  public default double inCircleDistance (final ZeroSimplex z0,
-                                          final ZeroSimplex z1,
-                                          final ZeroSimplex z2,
-                                          final ZeroSimplex z) {
-    final VectorD2 p0 = embedding(z0);
-    final VectorD2 p1 = embedding(z1);
-    final VectorD2 p2 = embedding(z2);
-    final VectorD2 p = embedding(z);
-    return inCircleDistance(p0, p1, p2, p); }
-
-  public default double inCircleDistance (final TwoSimplex t,
-                                          final ZeroSimplex z) {
-    final VectorD2 p0 = embedding(t.z0());
-    final VectorD2 p1 = embedding(t.z1());
-    final VectorD2 p2 = embedding(t.z2());
-    final VectorD2 p = embedding(z);
-    return inCircleDistance(p0, p1, p2, p); }
-
-  /** Is the embedding of <code>z</code> in the circumcircle
-   * of the embedding of <code>z0,z1,z2</code>?
-   */
-  public default boolean inCircle (final ZeroSimplex z0,
-                                   final ZeroSimplex z1,
-                                   final ZeroSimplex z2,
-                                   final ZeroSimplex z) {
-    return 0.0 < inCircleDistance(z0,z1,z2,z); }
-
-  public default boolean inCircle (final TwoSimplex t,
-                                   final ZeroSimplex z) {
-    return 0.0 < inCircleDistance(t,z); }
-
-  //--------------------------------------------------------------------
 
   public default void digCavity (final ZeroSimplex u,
                                  final ZeroSimplex v,
                                  final ZeroSimplex w) {
     final ZeroSimplex x = adjacent(w,v);
     if (null != x) {
-      if (inCircle(u, v, w, x)) {
+      if (Util.inCircle(u, v, w, x,embedding())) {
         deleteTriangle(w,v,x);
         digCavity(u,v,x);
         digCavity(u,x,w); } }
@@ -241,7 +188,8 @@ public interface DelaunayBuilder {
   public default TwoSimplex locate (final ZeroSimplex z) {
     // Brute force
     for (final TwoSimplex t : faces()) {
-      if (inCircle(t.z0(), t.z1(), t.z2(), z)) { return t; } }
+      if (Util.inCircle(t.z0(), t.z1(), t.z2(), z, embedding())) {
+        return t; } }
     throw new UnsupportedOperationException(
       z + " -> " + embedding(z) +
         "\noutside all the circumcircles of the mesh:\n"
@@ -251,9 +199,10 @@ public interface DelaunayBuilder {
 
   public default void insert (final ZeroSimplex z) {
     final TwoSimplex t = locate(z);
-    insertVertex(z,t);
-  }
+    insertVertex(z,t); }
 
+  //--------------------------------------------------------------------
+  // emit mesh
   //--------------------------------------------------------------------
   /** Emit the triangle mesh corresponding to the current state of the
    * builder.

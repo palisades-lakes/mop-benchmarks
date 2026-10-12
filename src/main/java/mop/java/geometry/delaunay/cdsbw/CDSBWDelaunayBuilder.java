@@ -1,7 +1,10 @@
 package mop.java.geometry.delaunay.cdsbw;
 
+import clojure.lang.IFn;
+import mop.java.cmplx.SimplicialComplex2D;
 import mop.java.cmplx.TwoSimplex;
 import mop.java.cmplx.ZeroSimplex;
+import mop.java.geom.mesh.TriangleMesh;
 import mop.java.geometry.euclidean.VectorD2;
 
 import java.util.SortedMap;
@@ -98,7 +101,6 @@ public final class CDSBWDelaunayBuilder implements DelaunayBuilder {
   public final SortedSet<TwoSimplex> faces () { return _faces; }
 
   //--------------------------------------------------------------------
-  //--------------------------------------------------------------------
   // Object
   //--------------------------------------------------------------------
 
@@ -111,9 +113,6 @@ public final class CDSBWDelaunayBuilder implements DelaunayBuilder {
         + "embedding:\n" + embedding(); }
 
   //--------------------------------------------------------------------
-  // emit mesh
-  //--------------------------------------------------------------------
-  //--------------------------------------------------------------------
   // construction
   //--------------------------------------------------------------------
 
@@ -121,6 +120,18 @@ public final class CDSBWDelaunayBuilder implements DelaunayBuilder {
 
   public static final DelaunayBuilder make () {
     return new CDSBWDelaunayBuilder(); }
+
+  /** Use <code>mesh</code> as the initial frame for the builder. */
+  public static final DelaunayBuilder make (final TriangleMesh mesh) {
+    final DelaunayBuilder b = new CDSBWDelaunayBuilder();
+    final SimplicialComplex2D c = (SimplicialComplex2D) mesh.cmplx();
+    final IFn e = mesh.embedding();
+    for (final ZeroSimplex z : c.vertices()) {
+      b.embed(z,(VectorD2) e.invoke(z)); }
+    b.vertices().addAll(c.vertices());
+    b.faces().addAll(c.faces());
+
+    return b; }
 
 //--------------------------------------------------------------------
 } // end class
