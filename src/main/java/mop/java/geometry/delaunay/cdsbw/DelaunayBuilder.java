@@ -53,7 +53,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * </p>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-10-12
+ * @version 2026-10-13
  */
 
 public interface DelaunayBuilder {
@@ -151,12 +151,16 @@ public interface DelaunayBuilder {
   public default void digCavity (final ZeroSimplex u,
                                  final ZeroSimplex v,
                                  final ZeroSimplex w) {
+    System.out.println("digCavity: " + u + ", " + v + ", " + w);
+      System.out.println("faces: " + faces());
     final ZeroSimplex x = adjacent(w,v);
+    System.out.println("adjacent(" + w + "," + v + ") -> " + x);
     if (null != x) {
-      if (Util.inCircle(u, v, w, x,embedding())) {
+      if (Util.inCircle(u, v, w, x, embedding())) {
         deleteTriangle(w,v,x);
         digCavity(u,v,x);
-        digCavity(u,x,w); } }
+        digCavity(u,x,w); }
+      else { addTriangle(u,v,w); } }
     else { addTriangle(u,v,w); } }
 
   //--------------------------------------------------------------------
