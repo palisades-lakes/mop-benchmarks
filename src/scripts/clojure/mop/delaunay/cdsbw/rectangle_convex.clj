@@ -1,0 +1,34 @@
+(set! *warn-on-reflection* true)
+(set! *unchecked-math* :warn-on-boxed)
+;;----------------------------------------------------------------
+(ns mop.delaunay.cdsbw.rectangle-convex
+  {:doc     "Use JavaFX to display a delaunay triangulation."
+   :author  "palisades dot lakes at gmail dot com"
+   :version "2026-10-14"}
+
+  (:import
+    [mop.java.geometry.delaunay Util]
+    [mop.java.geometry.delaunay.cdsbw CDSBWDelaunayBuilder]
+    [mop.java.geometry.euclidean VectorD2]
+    [mop.java.jfx JFX JfxWorld]))
+;;----------------------------------------------------------------
+;; mvn -q -DskipTests=true install & cljfx src\scripts\clojure\mop\delaunay\cdsbw\rectangle_convex.clj
+;;----------------------------------------------------------------
+(defn make-world []
+  (let [frame (Util/rectangleFrame 0.0 1.0 0.0 1.0)
+        builder (CDSBWDelaunayBuilder/make frame)
+        sites [(VectorD2. 0.5 0.10)
+               (VectorD2. 0.5 0.25)
+               (VectorD2. 0.5 0.75)
+               (VectorD2. 0.25 0.5)
+               (VectorD2. 0.75 0.5)
+               (VectorD2. 0.25 0.2)
+               (VectorD2. 0.75 0.2)]]
+    (doseq [site sites] (.insertPoint builder site))
+    (JFX/edges
+      (Util/edgeCoordinates (.build builder) (.vertices (.cmplx frame)))
+      JFX/FRAME_COLOR "nonconvex")))
+;;----------------------------------------------------------------
+(System/setProperty "glass.win.uiScale" "1")
+(JfxWorld/setWorldBuilder make-world)
+(JfxWorld/launch JfxWorld (make-array String 0))

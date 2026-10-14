@@ -4,7 +4,7 @@
 (ns mop.delaunay.cdsbw.rectangle-nonconvex
   {:doc     "Use JavaFX to display a delaunay triangulation."
    :author  "palisades dot lakes at gmail dot com"
-   :version "2026-10-12"}
+   :version "2026-10-14"}
 
   (:import
     [mop.java.geometry.delaunay Util]
@@ -25,7 +25,7 @@
                (VectorD2. 0.75 0.2)]]
     (doseq [site sites] (.insertPoint builder site))
     (JFX/edges
-      (Util/edgeCoordinates (.build builder))
+      (Util/edgeCoordinates (.build builder) (.vertices (.cmplx frame)))
       JFX/FRAME_COLOR "nonconvex")))
 ;;----------------------------------------------------------------
 (System/setProperty "glass.win.uiScale" "1")

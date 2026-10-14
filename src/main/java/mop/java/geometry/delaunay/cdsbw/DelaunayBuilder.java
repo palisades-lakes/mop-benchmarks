@@ -53,7 +53,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * </p>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-10-13
+ * @version 2026-10-14
  */
 
 public interface DelaunayBuilder {
@@ -86,7 +86,7 @@ public interface DelaunayBuilder {
                                          final ZeroSimplex z2) {
     // TODO: check orientation?
     final TwoSimplex t = TwoSimplex.make(z0,z1,z2);
-    System.out.println("add: " + t);
+    //System.out.println("add: " + t);
     // TODO: self hash to de-dupe multiple insertions?
     assert ! faces().contains(t);
     vertices().add(z0);
@@ -98,7 +98,7 @@ public interface DelaunayBuilder {
   /** CDS: Delete positively oriented triangle. */
   public default void deleteTriangle (final TwoSimplex t) {
     assert faces().contains(t);
-    System.out.println("delete: " + t);
+    //System.out.println("delete: " + t);
     faces().remove(t); }
 
   /** CDS: Delete positively oriented triangle. */
@@ -151,10 +151,10 @@ public interface DelaunayBuilder {
   public default void digCavity (final ZeroSimplex u,
                                  final ZeroSimplex v,
                                  final ZeroSimplex w) {
-    System.out.println("digCavity: " + u + ", " + v + ", " + w);
-      System.out.println("faces: " + faces());
+    //System.out.println("digCavity: " + u + ", " + v + ", " + w);
+      //System.out.println("faces: " + faces());
     final ZeroSimplex x = adjacent(w,v);
-    System.out.println("adjacent(" + w + "," + v + ") -> " + x);
+    //System.out.println("adjacent(" + w + "," + v + ") -> " + x);
     if (null != x) {
       if (Util.inCircle(u, v, w, x, embedding())) {
         deleteTriangle(w,v,x);
@@ -206,7 +206,7 @@ public interface DelaunayBuilder {
 
   public default void insert (final ZeroSimplex z) {
     final TwoSimplex t = locate(z);
-    System.out.println("locate(" + z + ") -> " + t);
+    //System.out.println("locate(" + z + ") -> " + t);
     insertVertex(z,t); }
 
   //--------------------------------------------------------------------

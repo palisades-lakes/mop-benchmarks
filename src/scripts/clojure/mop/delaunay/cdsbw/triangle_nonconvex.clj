@@ -4,7 +4,7 @@
 (ns mop.delaunay.cdsbw.triangle-nonconvex
   {:doc     "Use JavaFX to display a delaunay triangulation."
    :author  "palisades dot lakes at gmail dot com"
-   :version "2026-10-12"}
+   :version "2026-10-14"}
 
   (:import
     [mop.java.geometry.delaunay Util]
@@ -16,7 +16,6 @@
 ;;----------------------------------------------------------------
 (defn make-world []
   (let [frame (Util/triangleFrame01)
-        ;;exclude (.vertices mesh #{})
         builder (CDSBWDelaunayBuilder/make frame)
         sites [(VectorD2. 0.5 0.25)
                (VectorD2. 0.5 0.75)
@@ -25,7 +24,8 @@
                (VectorD2. 0.25 0.2)
                (VectorD2. 0.75 0.2)]]
     (doseq [site sites] (.insertPoint builder site))
-    (JFX/edges (Util/edgeCoordinates (.build builder))
+    (JFX/edges
+      (Util/edgeCoordinates (.build builder) #_(.vertices (.cmplx frame)))
       JFX/MESH_COLOR "triangle frame")))
     ;;----------------------------------------------------------------
 (System/setProperty "glass.win.uiScale" "1")

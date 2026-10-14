@@ -4,7 +4,7 @@
 (ns mop.delaunay.cdsbw.triangle-two
   {:doc     "Use JavaFX to display a delaunay triangulation."
    :author  "palisades dot lakes at gmail dot com"
-   :version "2026-10-12"}
+   :version "2026-10-14"}
 
   (:import
     [mop.java.geometry.delaunay Util]
@@ -27,8 +27,7 @@
     (.insertPoint builder (VectorD2. 0.75 0.75))
     (println (str "2nd\n" (.toString builder)))
     ;;(println (str "mesh\n" (.toString (.build builder))))
-  (JFX/edges
-      (Util/edgeCoordinates (.build builder))
+  (JFX/edges (Util/edgeCoordinates (.build builder))
       JFX/FRAME_COLOR "two")))
 ;;----------------------------------------------------------------
 (System/setProperty "glass.win.uiScale" "1")

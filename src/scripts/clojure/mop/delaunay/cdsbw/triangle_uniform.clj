@@ -4,7 +4,7 @@
 (ns mop.delaunay.cdsbw.triangle-uniform
   {:doc     "Use JavaFX to display a delaunay triangulation."
    :author  "palisades dot lakes at gmail dot com"
-   :version "2026-10-12"}
+   :version "2026-10-14"}
 
   (:import
     [mop.java.geometry Generators]
@@ -27,7 +27,9 @@
         nsites 64]
     (dotimes [_ nsites]
       (.insertPoint builder (.next pointGenerator)))
-    (JFX/edges (Util/edgeCoordinates (.build builder)) JFX/MESH_COLOR "triangle uniform")))
+    (JFX/edges
+      (Util/edgeCoordinates (.build builder)(.vertices (.cmplx frame)))
+      JFX/MESH_COLOR "triangle uniform")))
   ;;----------------------------------------------------------------
 (System/setProperty "glass.win.uiScale" "1")
 (JfxWorld/setWorldBuilder make-world)

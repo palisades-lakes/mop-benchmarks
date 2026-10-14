@@ -8,14 +8,11 @@ import mop.java.geom.mesh.TriangleMesh;
 import mop.java.geometry.euclidean.VectorD2;
 import mop.java.util.IFnWrapper;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author palisades dot lakes at gmail dot com
- * @version 2026-10-12
+ * @version 2026-10-14
  */
 
 public final class Util {
@@ -32,18 +29,30 @@ public final class Util {
     return new VectorD2[]{p1,p0}; }
 
   public static final Set<VectorD2[]>
-  edgeCoordinates (final TriangleMesh mesh) {
+  edgeCoordinates (final TriangleMesh mesh,
+                   final Collection exclude) {
     final Set<VectorD2[]> pairs = new HashSet<>();
     final IFn e = mesh.embedding();
     final SimplicialComplex2D c = (SimplicialComplex2D) mesh.cmplx();
     for (final TwoSimplex f : c.faces()) {
-      final VectorD2 p0 = (VectorD2) e.invoke(f.z0());
+      final ZeroSimplex z0 = f.z0();
+      final ZeroSimplex z1 = f.z1();
+      final ZeroSimplex z2 = f.z2();
+     final boolean ok0 = ! exclude.contains(z0);
+      final boolean ok1 = ! exclude.contains(z1);
+      final boolean ok2 = ! exclude.contains(z2);
       final VectorD2 p1 = (VectorD2) e.invoke(f.z1());
       final VectorD2 p2 = (VectorD2) e.invoke(f.z2());
-      pairs.add(sortedPair(p0,p1));
-      pairs.add(sortedPair(p1,p2));
-      pairs.add(sortedPair(p2,p0)); }
+      if (ok0) {
+        final VectorD2 p0 = (VectorD2) e.invoke(z0);
+        if (ok1) { pairs.add(sortedPair(p0,p1)); }
+        if (ok2) { pairs.add(sortedPair(p2,p0)); } }
+      if (ok1 && ok2) { pairs.add(sortedPair(p1,p2)); } }
     return pairs; }
+
+  public static final Set<VectorD2[]>
+  edgeCoordinates (final TriangleMesh mesh) {
+    return edgeCoordinates(mesh,Collections.EMPTY_SET); }
 
   //--------------------------------------------------------------------
   // geometric predicates

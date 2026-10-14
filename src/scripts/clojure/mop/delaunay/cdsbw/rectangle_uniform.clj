@@ -4,7 +4,7 @@
 (ns mop.delaunay.cdsbw.rectangle-uniform
   {:doc     "Use JavaFX to display a delaunay triangulation."
    :author  "palisades dot lakes at gmail dot com"
-   :version "2026-10-12"}
+   :version "2026-10-14"}
 
   (:require
     [mop.commons.time :as mct])
@@ -30,7 +30,8 @@
       (str "insert: " nsites)
       (dotimes [_ nsites] (.insertPoint builder (.next pointGenerator))))
     (mct/seconds "jfx"
-      (JFX/edges (Util/edgeCoordinates (.build builder))
+      (JFX/edges
+        (Util/edgeCoordinates (.build builder) (.vertices (.cmplx frame)))
         JFX/MESH_COLOR "rectangle uniform"))))
   ;;----------------------------------------------------------------
 (System/setProperty "glass.win.uiScale" "1")
