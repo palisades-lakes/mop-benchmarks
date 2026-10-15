@@ -29,6 +29,9 @@ public final class DelaunayBuilderTest {
 
   //--------------------------------------------------------------
 
+  // TODO: pass BuilderBuilder Function to each test,
+  //  and iterate over DelaunayBuilder.make() implementations
+  //  Also, iterate over frames.
   @Test
   public final void singleTriangle () {
 

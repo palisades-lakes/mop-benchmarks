@@ -8,11 +8,13 @@ import mop.java.cmplx.ZeroSimplex;
 import mop.java.geom.mesh.TriangleMesh;
 import mop.java.geometry.delaunay.Util;
 import mop.java.geometry.euclidean.VectorD2;
+import mop.java.geometry.triangle.TriangleR2;
 import mop.java.util.IFnWrapper;
 
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiFunction;
 
 /** Delaunay triangulation, after
  * Cheng, Dey, Shewchuk discussion of Boyer-Watson, <br>
@@ -75,6 +77,19 @@ public interface DelaunayBuilder {
   public VectorD2 embedding (final ZeroSimplex z);
   public Map<ZeroSimplex, VectorD2> embedding ();
 
+  //--------------------------------------------------------------------
+  /** Function that maps an abstract face and its embedding to a
+   * triangle predicate.
+   */
+
+  public default
+  BiFunction<TwoSimplex,Map<ZeroSimplex,VectorD2>,TriangleR2>
+  predicateBuilder () { throw new UnsupportedOperationException(); }
+
+  public default TriangleR2 predicate (final TwoSimplex f) {
+    throw new UnsupportedOperationException(); }
+
+  //--------------------------------------------------------------------
   /** CDS: Add positively oriented triangle.
    * <br>
    * Throw an exception if triangle already present.

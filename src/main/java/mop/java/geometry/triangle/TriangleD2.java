@@ -1,11 +1,15 @@
 package mop.java.geometry.triangle;
 
+import mop.java.cmplx.TwoSimplex;
+import mop.java.cmplx.ZeroSimplex;
 import mop.java.geometry.euclidean.VectorD2;
+
+import java.util.Map;
 
 /** Minimal triangle with VectorD2 vertices, nothing cached.
  *
  * @author palisades dot lakes at gmail dot com,
- * @version 2026-09-29
+ * @version 2026-10-14
  */
 
 public class TriangleD2 implements TriangleR2 {
@@ -139,6 +143,10 @@ public class TriangleD2 implements TriangleR2 {
 
   public static TriangleR2 from (final TriangleR2 t) {
     return of(t.getP0(), t.getP1(), t.getP2()); }
+
+  public static TriangleR2 from (final TwoSimplex f,
+                                       final Map<ZeroSimplex,VectorD2> e) {
+    return of(e.get(f.z0()), e.get(f.z1()), e.get(f.z2())); }
 
 //-------------------------------------------------------------------
 } // end class
