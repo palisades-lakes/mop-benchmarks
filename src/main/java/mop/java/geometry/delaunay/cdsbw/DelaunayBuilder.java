@@ -55,13 +55,17 @@ import java.util.function.BiFunction;
  * </p>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-10-14
+ * @version 2026-10-15
  */
 
 public interface DelaunayBuilder {
 
-  public Collection<ZeroSimplex> vertices ();
-  public Collection<TwoSimplex> faces ();
+  public default Collection<ZeroSimplex> vertices () {
+    throw new UnsupportedOperationException(); }
+
+  public default Collection<TwoSimplex> faces (){
+    throw new UnsupportedOperationException(); }
+
   public default int nFaces () { return faces().size(); }
 
   /** Add an embedding for <code>z</code>. <br>
@@ -75,6 +79,7 @@ public interface DelaunayBuilder {
    * Throw an exception if no embedding exists.<br>
    */
   public VectorD2 embedding (final ZeroSimplex z);
+  // TODO: remove this?
   public Map<ZeroSimplex, VectorD2> embedding ();
 
   //--------------------------------------------------------------------
@@ -90,15 +95,16 @@ public interface DelaunayBuilder {
     throw new UnsupportedOperationException(); }
 
   //--------------------------------------------------------------------
-  /** CDS: Add positively oriented triangle.
+  /**
+   * CDS: Add positively oriented triangle.
    * <br>
    * Throw an exception if triangle already present.
    * TODO: Ignore repeated additions of the same triangle?
    */
 
-  public default TwoSimplex addTriangle (final ZeroSimplex z0,
-                                         final ZeroSimplex z1,
-                                         final ZeroSimplex z2) {
+  public default void addTriangle (final ZeroSimplex z0,
+                                   final ZeroSimplex z1,
+                                   final ZeroSimplex z2) {
     // TODO: check orientation?
     final TwoSimplex t = TwoSimplex.make(z0,z1,z2);
     //System.out.println("add: " + t);
@@ -107,8 +113,15 @@ public interface DelaunayBuilder {
     vertices().add(z0);
     vertices().add(z1);
     vertices().add(z2);
-    faces().add(t);
-    return t; }
+    faces().add(t); }
+
+  public default void addTriangle (final TwoSimplex f) {
+    // TODO: self hash to de-dupe multiple insertions?
+    assert ! faces().contains(f);
+    vertices().add(f.z0());
+    vertices().add(f.z1());
+    vertices().add(f.z2());
+    faces().add(f); }
 
   /** CDS: Delete positively oriented triangle. */
   public default void deleteTriangle (final TwoSimplex t) {
@@ -230,7 +243,7 @@ public interface DelaunayBuilder {
   private static int counter () { return _counter.getAndIncrement(); }
 
   public default void insertPoint (final VectorD2 p) {
-    final ZeroSimplex z = ZeroSimplex.make("site" + counter());
+    final ZeroSimplex z = ZeroSimplex.make("s" + counter());
     embed(z,p);
     insert(z); }
 

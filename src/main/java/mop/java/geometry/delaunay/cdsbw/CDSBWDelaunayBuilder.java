@@ -72,6 +72,7 @@ public final class CDSBWDelaunayBuilder implements DelaunayBuilder {
 
   private final SortedMap<ZeroSimplex, VectorD2> _embedding
     = new TreeMap<>();
+  // TODO: returning mutable map!!!!
   @Override
   public final SortedMap<ZeroSimplex, VectorD2> embedding () {
     return _embedding; }

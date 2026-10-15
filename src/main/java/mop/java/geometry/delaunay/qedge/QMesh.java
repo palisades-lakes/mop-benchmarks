@@ -146,23 +146,79 @@ public final class QMesh {
     final VectorD2 p1 = new VectorD2(xmax,ymin);
     final VectorD2 p2 = new VectorD2(xmax,ymax);
     final VectorD2 p3 = new VectorD2(xmin,ymax);
+    // face012
     final QEdge e01 = QEdge.make(p0, p1);
     final QEdge e12 = QEdge.make(p1, p2);
     final QEdge e20 = QEdge.make(p2, p0);
+    e01.splice(e20.reverse());
+    e12.splice(e01.reverse());
+    e20.splice(e12.reverse());
+    // face023
+    final QEdge e02 = QEdge.make(p0, p2);
     final QEdge e23 = QEdge.make(p2, p3);
     final QEdge e30 = QEdge.make(p3, p0);
-    // around p0
-    e01.splice(e20.reverse());
-    e20.reverse().splice(e30.reverse());
-    // around p1
-    e12.splice(e01.reverse());
-    // around p2
-    e20.splice(e23);
-    e20.splice(e12.reverse());
-    // around p3
-    e23.reverse().splice(e30);
+    e02.splice(e30.reverse());
+    e23.splice(e02.reverse());
+    e30.splice(e23.reverse());
 
-    return new QMesh(e01); }
+    e02.splice(e20);
+    return new QMesh(e30); }
+
+//  public static final QMesh
+//  rectangleFrame (final double xmin,
+//                  final double xmax,
+//                  final double ymin,
+//                  final double ymax) {
+//    final VectorD2 p0 = new VectorD2(xmin,ymin);
+//    final VectorD2 p1 = new VectorD2(xmax,ymin);
+//    final VectorD2 p2 = new VectorD2(xmax,ymax);
+//    final VectorD2 p3 = new VectorD2(xmin,ymax);
+//    // face012
+//    final QEdge e01 = QEdge.make(p0, p1);
+//    final QEdge e12 = QEdge.make(p1, p2);
+//    final QEdge e20 = QEdge.make(p2, p0);
+//    e01.splice(e20.reverse());
+//    e12.splice(e01.reverse());
+//    e20.splice(e12.reverse());
+//    // face023
+//    final QEdge e02 = e20.reverse();
+//    final QEdge e23 = QEdge.make(p2, p3);
+//    final QEdge e30 = QEdge.make(p3, p0);
+//    e02.splice(e30.reverse());
+//    e23.splice(e02.reverse());
+//    e30.splice(e23.reverse());
+//
+//    return new QMesh(e30); }
+
+//  public static final QMesh
+//  rectangleFrame (final double xmin,
+//                  final double xmax,
+//                  final double ymin,
+//                  final double ymax) {
+//    final VectorD2 p0 = new VectorD2(xmin,ymin);
+//    final VectorD2 p1 = new VectorD2(xmax,ymin);
+//    final VectorD2 p2 = new VectorD2(xmax,ymax);
+//    final VectorD2 p3 = new VectorD2(xmin,ymax);
+//    final QEdge e01 = QEdge.make(p0, p1);
+//    final QEdge e12 = QEdge.make(p1, p2);
+//    final QEdge e20 = QEdge.make(p2, p0);
+//    final QEdge e23 = QEdge.make(p2, p3);
+//    final QEdge e30 = QEdge.make(p3, p0);
+//    final QEdge e02 = QEdge.make(p0,p1);
+//
+//
+//    // around p0
+//    e01.splice(e20.reverse());
+//    e20.reverse().splice(e30.reverse());
+//    // around p1
+//    e12.splice(e01.reverse());
+//    // around p2
+//    e20.splice(e23);
+//    e20.splice(e12.reverse());
+//    // around p3
+//    e23.reverse().splice(e30);
+//
+//    return new QMesh(e01); }
 
 //--------------------------------------------------------------------
 } // end class

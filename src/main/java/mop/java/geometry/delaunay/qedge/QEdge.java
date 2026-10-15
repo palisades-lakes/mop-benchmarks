@@ -30,7 +30,7 @@ import mop.java.geometry.euclidean.VectorD2;
  * constraint that the faces are triangular.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-10-12
+ * @version 2026-10-15
  */
 public final class QEdge {
 
@@ -73,11 +73,11 @@ public final class QEdge {
   //--------------------------------------------------------------------
 
   /** Is <code>p</code> on the right side of this directed edge? */
-  public final boolean right (final VectorD2 p) {
+  public final boolean isRight (final VectorD2 p) {
     return Util.ccw(p, reverse().origin(), origin()); }
 
   /** Is <code>p</code> on the left side of this directed edge? */
-  public final boolean left (final VectorD2 p) {
+  public final boolean isLeft (final VectorD2 p) {
     return Util.ccw(p, origin(), reverse().origin()); }
 
   //--------------------------------------------------------------------
@@ -101,13 +101,13 @@ public final class QEdge {
    * and illustrations.
    */
   final void splice (final QEdge b) {
-    final QEdge alpha = this.next().dual();
+    final QEdge alpha = next().dual();
     final QEdge beta = b.next().dual();
     final QEdge t1 = b.next();
-    final QEdge t2 = this.next();
+    final QEdge t2 = next();
     final QEdge t3 = beta.next();
     final QEdge t4 = alpha.next();
-    this.setNext(t1);
+    setNext(t1);
     b.setNext(t2);
     alpha.setNext(t3);
     beta.setNext(t4); }
@@ -120,8 +120,8 @@ public final class QEdge {
 
   //--------------------------------------------------------------------
   /** Lischinski: <br>
-   * Add a new edge e connecting the destination of <code>e0</code> to the
-   * origin of <code>e1</code></code>,
+   * Add a new edge e connecting the destination of <code>this</code>
+   * to the origin of <code>e1</code></code>,
    * in such a way that all three have the same
    * left face after the connection is complete.
    * Additionally, the data pointers of the new edge are set.

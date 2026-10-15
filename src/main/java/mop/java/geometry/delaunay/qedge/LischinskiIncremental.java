@@ -123,9 +123,9 @@ public final class LischinskiIncremental {
       if (x.equals(e.origin())) { return e; }
       if (x.equals(e.reverse().origin())) { return e; }
 
-      if (e.right(x)) { e = e.reverse(); }
-      else if (! e.next().right(x)) { e = e.next(); }
-      else if (! e.faceNext().left(x)) {
+      if (e.isRight(x)) { e = e.reverse(); }
+      else if (! e.next().isRight(x)) { e = e.next(); }
+      else if (! e.faceNext().isLeft(x)) {
         e = e.faceNext().reverse(); }
       else { return e; } } }
 
@@ -160,7 +160,7 @@ public final class LischinskiIncremental {
     // is satisfied.
     do {
       QEdge t = e.prev();
-      if (e.right(t.reverse().origin()) &&
+      if (e.isRight(t.reverse().origin()) &&
         Util.inCircle(e.origin(),
                       t.reverse().origin(),
                       e.reverse().origin(),

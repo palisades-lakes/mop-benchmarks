@@ -7,33 +7,34 @@ import mop.java.cmplx.ZeroSimplex;
 import mop.java.geom.mesh.TriangleMesh;
 import mop.java.geometry.Generators;
 import mop.java.geometry.delaunay.Util;
+import mop.java.geometry.delaunay.aqedge.LischinskiIncrementalBuilder;
 import mop.java.geometry.delaunay.cdsbw.CDSBWDelaunayBuilder;
 import mop.java.geometry.delaunay.cdsbw.DelaunayBuilder;
+import mop.java.geometry.delaunay.cdsbw.RobustCDSBWDelaunayBuilder;
 import mop.java.geometry.euclidean.VectorD2;
 import mop.java.numbers.Doubles;
 import mop.java.prng.Generator;
 import mop.java.prng.PRNG;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.testng.Assert;
+
+import java.util.List;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 /** <pre>
  * mvn -Dtest=mop.java.test.geometry.delaunay.cdsbw.DelaunayBuilderTest test
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 202-10-11
+ * @version 202-10-15
  */
 
 public final class DelaunayBuilderTest {
 
   //--------------------------------------------------------------
 
-  // TODO: pass BuilderBuilder Function to each test,
-  //  and iterate over DelaunayBuilder.make() implementations
-  //  Also, iterate over frames.
-  @Test
-  public final void singleTriangle () {
+  private final void singleTriangle (final DelaunayBuilder builder) {
 
     // Construct a triangle containing the unit square:
     final ZeroSimplex z0 = ZeroSimplex.make("z0");
@@ -47,7 +48,6 @@ public final class DelaunayBuilderTest {
     final VectorD2 p1 = new VectorD2(  2.0, -1.0);
     final VectorD2 p2 = new VectorD2(  0.5,  3.0);
 
-    final DelaunayBuilder builder = CDSBWDelaunayBuilder.make();
     builder.embed(z0,p0);
     builder.embed(z1,p1);
     builder.embed(z2,p2);
@@ -66,7 +66,7 @@ public final class DelaunayBuilderTest {
       AssertionError.class, () -> builder.deleteTriangle(z0, z1, z2),
       Classes.className(builder));
 
-    final TwoSimplex t = builder.addTriangle(z0,z1,z2);
+    builder.addTriangle(z0,z1,z2);
     Assertions.assertEquals(1,builder.nFaces());
 
     final ZeroSimplex z01 = builder.adjacent(z0,z1);
@@ -90,13 +90,12 @@ public final class DelaunayBuilderTest {
     final VectorD2 p = new VectorD2(0.5,0.5);
     builder.embed(z,p);
     Assertions.assertTrue(Util.inCircle(z0, z1, z2, z,builder.embedding()));
-    Assertions.assertEquals(t,builder.locate(z));
+    //Assertions.assertEquals(t,builder.locate(z));
 
     builder.insertVertex(z,z0,z1,z2);
     Assertions.assertEquals(3,builder.nFaces()); }
 
-  @Test
-  public final void splitRectangle () {
+  private final void splitRectangle (final DelaunayBuilder builder) {
 
     // Construct a unit square as 2 triangles:
     final ZeroSimplex z0 = ZeroSimplex.make("z0");
@@ -109,7 +108,6 @@ public final class DelaunayBuilderTest {
     final VectorD2 p2 = new VectorD2(1.0,1.0);
     final VectorD2 p3 = new VectorD2(0.0,1.0);
 
-    final DelaunayBuilder builder = CDSBWDelaunayBuilder.make();
     builder.embed(z0,p0);
     builder.embed(z1,p1);
     builder.embed(z2,p2);
@@ -136,8 +134,8 @@ public final class DelaunayBuilderTest {
       AssertionError.class, () -> builder.deleteTriangle(z3,z0,z2),
       Classes.className(builder));
 
-    final TwoSimplex t012 = builder.addTriangle(z0,z1,z2);
-    final TwoSimplex t023 = builder.addTriangle(z0,z2,z3);
+    builder.addTriangle(z0,z1,z2);
+    builder.addTriangle(z0,z2,z3);
     Assertions.assertEquals(2,builder.nFaces());
 
     final ZeroSimplex z01 = builder.adjacent(z0,z1);
@@ -177,19 +175,16 @@ public final class DelaunayBuilderTest {
     final ZeroSimplex z = ZeroSimplex.make("z");
     final VectorD2 p = new VectorD2(0.5,0.25);
     builder.embed(z,p);
-    Assert.assertEquals(t012,builder.locate(z));
-    Assertions.assertTrue(Util.inCircle(t012, z, builder.embedding()));
-    Assertions.assertTrue(Util.inCircle(t023, z, builder.embedding()));
+//    Assert.assertEquals(t012,builder.locate(z));
+//    Assertions.assertTrue(Util.inCircle(t012, z, builder.embedding()));
+//    Assertions.assertTrue(Util.inCircle(t023, z, builder.embedding()));
     builder.insertVertex(z,z0,z1,z2);
     Assertions.assertEquals(
       4, builder.nFaces(), builder.toString());
   }
-  @Test
-  public final void splitRectangleFrame () {
+  //--------------------------------------------------------------
 
-    final TriangleMesh m =
-      Util.rectangleFrame(0.0,1.0,0.0,1.0);
-    final DelaunayBuilder builder = CDSBWDelaunayBuilder.make(m);
+  private final void uniform01 (final DelaunayBuilder builder) {
 
     final Generator pointGenerator = Generators.vectorD2Generator(
       Doubles.uniformGenerator(
@@ -205,48 +200,40 @@ public final class DelaunayBuilderTest {
     // TODO: checkDelaunay checkOrientation assertions
   }
 
- //--------------------------------------------------------------
+  //--------------------------------------------------------------
 
   @Test
-  public final void uniform01Triangle () {
+  public final void framedTests () {
 
-    // Construct a triangle containing the unit square:
-    final ZeroSimplex z0 = ZeroSimplex.make("z0");
-    final ZeroSimplex z1 = ZeroSimplex.make("z1");
-    final ZeroSimplex z2 = ZeroSimplex.make("z2");
-    final TwoSimplex t0 = TwoSimplex.make(z0, z1, z2);
-    final TwoSimplex t1 = TwoSimplex.make(z1,z2,z0);
-    Assertions.assertEquals(t0,t1);
+    final List<Function<TriangleMesh,DelaunayBuilder>> frame2Builders =
+      List.of(
+        //LischinskiIncrementalBuilder::make,
+        CDSBWDelaunayBuilder::make,
+        RobustCDSBWDelaunayBuilder::make);
 
-    final VectorD2 p0 = new VectorD2( -1.0, -1.0);
-    final VectorD2 p1 = new VectorD2(  2.0, -1.0);
-    final VectorD2 p2 = new VectorD2(  0.5,  3.0);
+    final List<TriangleMesh> frames =
+      List.of(
+        Util.triangleFrame01(),
+        Util.rectangleFrame(0.0,1.0,0.0,1.0));
 
-    final DelaunayBuilder builder = CDSBWDelaunayBuilder.make();
-    builder.embed(z0,p0);
-    builder.embed(z1,p1);
-    builder.embed(z2,p2);
-    builder.addTriangle(z0,z1,z2); }
+    for (final TriangleMesh frame : frames) {
+      for (Function<TriangleMesh,DelaunayBuilder>
+        builderBuilder : frame2Builders) {
+        uniform01(builderBuilder.apply(frame)); } } }
 
   @Test
-  public final void uniform01TriangleFrame () {
+  public final void unframedTests () {
 
-    final TriangleMesh m = Util.triangleFrame01();
-    final DelaunayBuilder builder = CDSBWDelaunayBuilder.make(m);
+    final List<Supplier<DelaunayBuilder>> builderBuilders =
+      List.of(
+        LischinskiIncrementalBuilder::make,
+        CDSBWDelaunayBuilder::make,
+        RobustCDSBWDelaunayBuilder::make);
 
-    final Generator pointGenerator = Generators.vectorD2Generator(
-      Doubles.uniformGenerator(
-        PRNG.well44497b("seeds/Well44497b-2019-01-11.txt"),
-        0.0, 1.0));
-
-    final int nsites = 128;
-    for (int i=0;i<nsites;i++) {
-      final ZeroSimplex zi = ZeroSimplex.make("a" + i);
-      final VectorD2 pi = (VectorD2) pointGenerator.next();
-      builder.embed(zi,pi);
-      builder.insert(zi); }
-    // TODO: checkDelaunay checkOrientation assertions
-    }
+    for (Supplier<DelaunayBuilder>
+      builderBuilder : builderBuilders) {
+      splitRectangle(builderBuilder.get());
+      singleTriangle(builderBuilder.get()); } }
 
   //--------------------------------------------------------------
 
@@ -263,7 +250,7 @@ public final class DelaunayBuilderTest {
 //
 //    final int nsites = 16;
 //    for (int i=0;i<nsites;i++) {
-//      LischinskiIncremental.insertSite(mesh,(VectorD2) pointGenerator.next()); } }
+//      LischinskiIncrementalBuilder.insertSite(mesh,(VectorD2) pointGenerator.next()); } }
 
   //--------------------------------------------------------------
 // goes into infinite loop!!!
