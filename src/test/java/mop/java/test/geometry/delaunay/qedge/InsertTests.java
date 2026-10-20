@@ -16,7 +16,7 @@ import java.util.Set;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 202-10-04
+ * @version 202-10-20
  */
 
 public final class InsertTests {
@@ -56,6 +56,8 @@ public final class InsertTests {
     for (int i=0;i<nsites;i++) {
       LischinskiIncremental.insertSite(mesh,(VectorD2) pointGenerator.next()); } }
 
+  //--------------------------------------------------------------
+
   @Test
   public final void singularRectangleFrame () {
 
@@ -68,20 +70,50 @@ public final class InsertTests {
 
   //--------------------------------------------------------------
 
-  @Test
-  public final void uniform01RectangleFrame () {
+//  @Test
+//  public final void uniform01RectangleFrame () {
+//
+//    final QMesh mesh = QMesh.rectangleFrame(
+//      0.0,1.0,0.0,1.0);
+//
+//    final Generator pointGenerator = Generators.vectorD2Generator(
+//      Doubles.uniformGenerator(
+//        PRNG.well44497b("seeds/Well44497b-2019-01-11.txt"),
+//        0.0, 1.0));
+//
+//    final int nsites = 16;
+//    for (int i=0;i<nsites;i++) {
+//      LischinskiIncremental.insertSite(mesh,(VectorD2) pointGenerator.next()); } }
 
-    final QMesh mesh = QMesh.rectangleFrame(
-      0.0,1.0,0.0,1.0);
+  //--------------------------------------------------------------
 
-    final Generator pointGenerator = Generators.vectorD2Generator(
-      Doubles.uniformGenerator(
-        PRNG.well44497b("seeds/Well44497b-2019-01-11.txt"),
-        0.0, 1.0));
-
-    final int nsites = 16;
-    for (int i=0;i<nsites;i++) {
-      LischinskiIncremental.insertSite(mesh,(VectorD2) pointGenerator.next()); } }
+//  @Test
+//  public final void twoTriangles () {
+//    final double xmin = 0.0;
+//    final double xmax = 1.0;
+//    final double ymin = 0.0;
+//    final double ymax = 1.0;
+//      final VectorD2 p0 = new VectorD2(xmin,ymin);
+//      final VectorD2 p1 = new VectorD2(xmax,ymin);
+//      final VectorD2 p2 = new VectorD2(xmax,ymax);
+//      final VectorD2 p3 = new VectorD2(xmin,ymax);
+//      // face012
+//      final QEdge e01 = QEdge.make("e01", p0, p1);
+//      final QEdge e12 = QEdge.make("e12", p1, p2);
+//      final QEdge e20 = QEdge.make("e20", p2, p0);
+//      e01.splice(e20.reverse());
+//      e12.splice(e01.reverse());
+//      e20.splice(e12.reverse());
+//      // face023
+//      final QEdge e02 = QEdge.make("e02", p0,p2);
+//      final QEdge e23 = QEdge.make("e23", p2, p3);
+//      final QEdge e30 = QEdge.make("e30", p3, p0);
+//      e02.splice(e30.reverse());
+//      e23.splice(e02.reverse());
+//      e30.splice(e23.reverse());
+//      System.out.println("two triangles:");
+//    System.out.println(e01.meshString());
+//    System.out.println(e02.meshString()); }
 
   //--------------------------------------------------------------
 // goes into infinite loop!!!

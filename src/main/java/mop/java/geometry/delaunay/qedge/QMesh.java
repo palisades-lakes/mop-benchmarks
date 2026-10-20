@@ -125,17 +125,70 @@ public final class QMesh {
   triangleFrame (final VectorD2 p0,
                  final VectorD2 p1,
                  final VectorD2 p2) {
-    final QEdge e01 = QEdge.make(p0, p1);
-    final QEdge e12 = QEdge.make(p1, p2);
-    final QEdge e20 = QEdge.make(p2, p0);
+   // this creates a closed manifold, a triangle and its 'reverse'
+    final QEdge e01 = QEdge.make("e01", p0, p1);
+    final QEdge e12 = QEdge.make("e12", p1, p2);
+    final QEdge e20 = QEdge.make("e20", p2, p0);
     e01.splice(e20.reverse());
     e12.splice(e01.reverse());
     e20.splice(e12.reverse());
+    System.out.println("triangleFrame:");
+    System.out.println(e01.meshString());
     return new QMesh(e01); }
 
-  /** All inserted points must lie in the triangle formed by
-   * <code>p0, p1, p2</code>.
-   */
+//  // follow Lischinski code more closely
+//  public static final QMesh
+//  triangleFrame (final VectorD2 p0,
+//                 final VectorD2 p1,
+//                 final VectorD2 p2) {
+//    final QEdge e01 = QEdge.make("e01", p0, p1);
+//    final QEdge e12 = QEdge.make("e12", p1, p2);
+//    e01.reverse().splice(e12);
+//    e12.setOrigin(p1);
+//    e12.reverse().setOrigin(p2);
+//    final QEdge e20 = QEdge.make("e20", p2, p0);
+//    e12.reverse().splice(e20);
+//    e20.setOrigin(p2);
+//    e20.reverse().setOrigin(p0);
+//    e20.reverse().splice(e01);
+//    System.out.println("triangleFrame:");
+//    System.out.println(e01.meshString());
+//    return new QMesh(e01); }
+
+//  // fails tests, merges triangle and reverse into one face
+//  public static final QMesh
+//  triangleFrame (final VectorD2 p0,
+//                 final VectorD2 p1,
+//                 final VectorD2 p2) {
+//    final QEdge e01 = QEdge.make("e01", p0, p1);
+//    final QEdge e12 = QEdge.make("e12", p1, p2);
+//    final QEdge e20 = e01.connect(e12,"e20");
+//    System.out.println("triangleFrame:");
+//    System.out.println(e01.meshString());
+//    return new QMesh(e01); }
+
+  // trying to create just one face, without reverse
+//  public static final QMesh
+//  triangleFrame (final VectorD2 p0,
+//                 final VectorD2 p1,
+//                 final VectorD2 p2) {
+//    final QEdge e01 = QEdge.make("e01", p0, p1);
+//    final QEdge e12 = QEdge.make("e12", p1, p2);
+//    final QEdge e20 = QEdge.make("e20", p2, p0);
+//    final QEdge e10 = e01.reverse();
+//    final QEdge e21 = e12.reverse();
+//    final QEdge e02 = e20.reverse();
+//    e01.setNext(e02);
+//    e12.setNext(e10);
+//    e20.setNext(e21);
+//    e02.dual().setNext(e10.dual());
+//    e10.dual().setNext(e21.dual());
+//    e21.dual().setNext(e02.dual());
+//    System.out.println("triangleFrame:");
+//    System.out.println(e01.meshString());
+//    return new QMesh(e01); }
+
+  //--------------------------------------------------------------------
 
   public static final QMesh
   rectangleFrame (final double xmin,
@@ -147,22 +200,22 @@ public final class QMesh {
     final VectorD2 p2 = new VectorD2(xmax,ymax);
     final VectorD2 p3 = new VectorD2(xmin,ymax);
     // face012
-    final QEdge e01 = QEdge.make(p0, p1);
-    final QEdge e12 = QEdge.make(p1, p2);
-    final QEdge e20 = QEdge.make(p2, p0);
+    final QEdge e01 = QEdge.make("e01",p0, p1);
+    final QEdge e12 = QEdge.make("e12",p1, p2);
+    final QEdge e20 = QEdge.make("e20",p2, p0);
     e01.splice(e20.reverse());
     e12.splice(e01.reverse());
     e20.splice(e12.reverse());
     // face023
-    final QEdge e02 = QEdge.make(p0, p2);
-    final QEdge e23 = QEdge.make(p2, p3);
-    final QEdge e30 = QEdge.make(p3, p0);
+    final QEdge e02 = e20.reverse();
+    final QEdge e23 = QEdge.make("e23",p2, p3);
+    final QEdge e30 = QEdge.make("e30",p3, p0);
     e02.splice(e30.reverse());
     e23.splice(e02.reverse());
     e30.splice(e23.reverse());
-
-    e02.splice(e20);
-    return new QMesh(e30); }
+    System.out.println("rectangleFrame:");
+    System.out.println(e01.meshString());
+    return new QMesh(e01); }
 
 //  public static final QMesh
 //  rectangleFrame (final double xmin,
@@ -181,44 +234,16 @@ public final class QMesh {
 //    e12.splice(e01.reverse());
 //    e20.splice(e12.reverse());
 //    // face023
-//    final QEdge e02 = e20.reverse();
+//    final QEdge e02 = QEdge.make(p0,p2);
 //    final QEdge e23 = QEdge.make(p2, p3);
 //    final QEdge e30 = QEdge.make(p3, p0);
 //    e02.splice(e30.reverse());
 //    e23.splice(e02.reverse());
 //    e30.splice(e23.reverse());
 //
-//    return new QMesh(e30); }
-
-//  public static final QMesh
-//  rectangleFrame (final double xmin,
-//                  final double xmax,
-//                  final double ymin,
-//                  final double ymax) {
-//    final VectorD2 p0 = new VectorD2(xmin,ymin);
-//    final VectorD2 p1 = new VectorD2(xmax,ymin);
-//    final VectorD2 p2 = new VectorD2(xmax,ymax);
-//    final VectorD2 p3 = new VectorD2(xmin,ymax);
-//    final QEdge e01 = QEdge.make(p0, p1);
-//    final QEdge e12 = QEdge.make(p1, p2);
-//    final QEdge e20 = QEdge.make(p2, p0);
-//    final QEdge e23 = QEdge.make(p2, p3);
-//    final QEdge e30 = QEdge.make(p3, p0);
-//    final QEdge e02 = QEdge.make(p0,p1);
+//    final QEdge e = e20.glue(e02);
 //
-//
-//    // around p0
-//    e01.splice(e20.reverse());
-//    e20.reverse().splice(e30.reverse());
-//    // around p1
-//    e12.splice(e01.reverse());
-//    // around p2
-//    e20.splice(e23);
-//    e20.splice(e12.reverse());
-//    // around p3
-//    e23.reverse().splice(e30);
-//
-//    return new QMesh(e01); }
+//    return new QMesh(e); }
 
 //--------------------------------------------------------------------
 } // end class

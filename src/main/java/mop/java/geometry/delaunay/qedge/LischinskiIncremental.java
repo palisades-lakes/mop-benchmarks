@@ -164,7 +164,7 @@ public final class LischinskiIncremental {
         Util.inCircle(e.origin(),
                       t.reverse().origin(),
                       e.reverse().origin(),
-                 x)) {
+                      x)) {
         e.swap();
         e = e.prev(); }
       // no more suspect edges
@@ -179,8 +179,8 @@ public final class LischinskiIncremental {
   /** disabled constructor, class methods only. */
 
   private LischinskiIncremental () {
-   throw new UnsupportedOperationException(
-     getClass().getSimpleName() + ": construction not allowed."); }
+    throw new UnsupportedOperationException(
+      getClass().getSimpleName() + ": construction not allowed."); }
 
 //--------------------------------------------------------------------
 } // end class

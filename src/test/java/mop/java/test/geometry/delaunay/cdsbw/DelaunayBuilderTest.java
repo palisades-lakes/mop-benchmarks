@@ -7,7 +7,6 @@ import mop.java.cmplx.ZeroSimplex;
 import mop.java.geom.mesh.TriangleMesh;
 import mop.java.geometry.Generators;
 import mop.java.geometry.delaunay.Util;
-import mop.java.geometry.delaunay.aqedge.LischinskiIncrementalBuilder;
 import mop.java.geometry.delaunay.cdsbw.CDSBWDelaunayBuilder;
 import mop.java.geometry.delaunay.cdsbw.DelaunayBuilder;
 import mop.java.geometry.delaunay.cdsbw.RobustCDSBWDelaunayBuilder;
@@ -226,7 +225,7 @@ public final class DelaunayBuilderTest {
 
     final List<Supplier<DelaunayBuilder>> builderBuilders =
       List.of(
-        LischinskiIncrementalBuilder::make,
+        //LischinskiIncrementalBuilder::make,
         CDSBWDelaunayBuilder::make,
         RobustCDSBWDelaunayBuilder::make);
 

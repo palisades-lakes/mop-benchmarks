@@ -29,29 +29,39 @@ import mop.java.cmplx.ZeroSimplex;
  * constraint that the faces are triangular.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-10-12
+ * @version 2026-10-20
  */
 public final class QEdge {
 
-  private QEdge _next;
-
-  /** The next edge ccw around the origin. */
-  public final QEdge next () { return _next; }
-  /** The next edge ccw around the origin. */
-  public final void setNext (final QEdge e) { _next = e; }
+  // TODO: separate primal and dual edges, primal with reference to
+  //  origin point, dual reference to explicit origin face?
+  //  G+S's edge algebra has separate finite sets E and E* for the
+  //  primal and dual edges.
+  // TODO: this is actually G+S Rot operation, not dual,
+  //  which is why dual().dual() == reverse(), not identity.
 
   private QEdge _dual;
   /** The dual edge, directed from the right face to the left. */
   public final QEdge dual () { return _dual; }
-
-  // TODO: separate primal and dual edges, primal with reference to
-  //  origin point, dual reference to explicit origin face?
+  /** The dual edge, directed from the right face to the left. */
+  public final void setDual (final QEdge e) { _dual = e; }
 
   private ZeroSimplex _origin;
   public final ZeroSimplex origin () { return _origin; }
   public final void setOrigin (final ZeroSimplex p) {
     assert _origin != null;
     _origin = p; }
+
+  /** The next edge ccw around the origin.
+   * TODO: origin is null for dual edges?
+   */
+  private QEdge _next;
+  /** The next edge ccw around the origin. */
+  public final QEdge next () { return _next; }
+  /** The next edge ccw around the origin. */
+  public final void setNext (final QEdge e) {
+    //assert null != _origin;
+    _next = e; }
 
   //--------------------------------------------------------------------
   // minimal edge 'algebra'
@@ -70,10 +80,20 @@ public final class QEdge {
   //--------------------------------------------------------------------
   // Basic Topological Operators
   //--------------------------------------------------------------------
+  // TODO: is this some version of splice?
+
+  public final void glue (final QEdge that) {
+    final QEdge r = reverse();
+    assert r.origin() == that.origin();
+    assert origin() == that.reverse().origin();
+    r.setNext(that.next());
+    r.setDual(that.dual()); }
+
+  //--------------------------------------------------------------------
   /** Lischinski: <br>
    * This operator affects the two edge rings around the origins
    * of a and b, and, independently, the two edge rings around
-   * the left faces of <code>this</code> and <code>b</code>.
+   * the left faces of <code>this</code> and <code>that</code>.
    * In each case,
    * <ol>
    * <li> if the two rings are distinct, Splice will combine
@@ -84,25 +104,26 @@ public final class QEdge {
    * </li>
    * </ol>
    * Thus, splice can be used both to attach the two edges together,
-   * and to break them apart. <br>
+   * and to break them apart.
+   * <br>
    * See Guibas and Stolfi (1985) p.96 for more details
    * and illustrations.
    */
-  final void splice (final QEdge b) {
-    final QEdge alpha = this.next().dual();
-    final QEdge beta = b.next().dual();
-    final QEdge t1 = b.next();
-    final QEdge t2 = this.next();
-    final QEdge t3 = beta.next();
-    final QEdge t4 = alpha.next();
-    this.setNext(t1);
-    b.setNext(t2);
-    alpha.setNext(t3);
-    beta.setNext(t4); }
+  public final void splice (final QEdge that) {
+
+    final QEdge n0 = this.next();
+    final QEdge n1 = that.next();
+    this.setNext(n1);
+    that.setNext(n0);
+
+    final QEdge d0 = n0.dual();
+    final QEdge d1 = n1.dual();
+    d0.setNext(d1.next());
+    d1.setNext(d0.next()); }
 
   //--------------------------------------------------------------------
 
-  final void delete () {
+  public final void delete () {
     splice(prev());
     reverse().splice(reverse().prev()); }
 
@@ -116,7 +137,7 @@ public final class QEdge {
    * Additionally, the data pointers of the new edge are set.
    */
 
-  final QEdge connect (final QEdge e1) {
+  public final QEdge connect (final QEdge e1) {
     final QEdge e = make(reverse().origin(), e1.origin());
     e.splice(faceNext());
     e.reverse().splice(e1);
@@ -127,7 +148,7 @@ public final class QEdge {
    * quadrilateral. The data pointers are modified accordingly.
    */
 
-  final void swap () {
+  public final void swap () {
     // TODO: can we replace with a new edge, rather than modifying?
     final QEdge a = prev();
     final QEdge b = reverse().prev();
@@ -141,8 +162,9 @@ public final class QEdge {
   //--------------------------------------------------------------------
   // construction
   //--------------------------------------------------------------------
+  // Mutable mesh wired together by setting _next
 
-  private QEdge () { }
+  private QEdge () { _next = this; }
 
   /** Construct a group of 4 circularly linked <code>QEdge</code>s,
    * returning the one from <code>p0</code> to <code>p1</code>,
@@ -151,21 +173,19 @@ public final class QEdge {
 
   public static final QEdge make (final ZeroSimplex z0,
                                   final ZeroSimplex z1) {
-    final QEdge q0 = new QEdge();
-    final QEdge q1 = new QEdge();
-    final QEdge q2 = new QEdge();
-    final QEdge q3 = new QEdge();
-    q0._dual = q1;
-    q1._dual = q2;
-    q2._dual = q3;
-    q3._dual = q0;
-    q0._next = q0;
-    q1._next = q3;
-    q2._next = q2;
-    q3._next = q1;
-    q0._origin = z0;
-    q0.reverse()._origin = z1;
-    return q0; }
+    final QEdge primal0 = new QEdge();
+    final QEdge primal1 = new QEdge();
+    final QEdge dual0 = new QEdge();
+    final QEdge dual1 = new QEdge();
+    primal0._dual = dual0;
+    primal1._dual = dual1;
+    dual0._dual = primal1;
+    dual1._dual = primal0;
+
+    primal0._origin = z0;
+    assert primal1.equals(primal0.reverse());
+    primal0.reverse()._origin = z1;
+    return primal0; }
 
   //--------------------------------------------------------------------
 } // end class

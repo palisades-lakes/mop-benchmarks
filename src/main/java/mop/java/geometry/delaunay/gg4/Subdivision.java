@@ -240,7 +240,7 @@ public final class Subdivision {
   //--------------------------------------------------------------------
   /** JFK triangle, */
 
-  public static final Shape jfkTriangle (final VectorD2 p0,
+  public static final Shape jfxTriangle (final VectorD2 p0,
                                          final VectorD2 p1,
                                          final VectorD2 p2,
                                          final Color color) {
@@ -272,7 +272,7 @@ public final class Subdivision {
         visited.add(e1); toVisit.push(e1.Sym());
         final Edge e2 = e1.Lnext();
         visited.add(e2); toVisit.push(e2.Sym());
-        children.add(jfkTriangle(e0.Org(), e1.Org(), e2.Org(), color)); } }
+        children.add(jfxTriangle(e0.Org(), e1.Org(), e2.Org(), color)); } }
 
     return group; }
 

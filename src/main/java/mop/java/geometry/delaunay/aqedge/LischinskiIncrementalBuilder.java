@@ -22,7 +22,7 @@ import java.util.*;
  * <b>NOTE: </b> all inserted points must fall within the existing mesh!
  * </p>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-10-15
+ * @version 2026-10-17
  */
 
 public final class LischinskiIncrementalBuilder
@@ -334,7 +334,6 @@ public final class LischinskiIncrementalBuilder
     final LischinskiIncrementalBuilder b = unsafe(embedding);
     for (final TwoSimplex f : c.faces()) { b.addTriangle(f); }
     return b; }
-
 
 //--------------------------------------------------------------------
 } // end class
