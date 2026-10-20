@@ -1,0 +1,57 @@
+# Installation directories:
+INSTALLDIR = INSTALLDIR_IS_UNDEFINED
+INC = $(INSTALLDIR)/include
+LIB = $(INSTALLDIR)/$(PLATFORM)/lib
+
+HFILES = \
+  quad.h
+
+HOFILES = \
+  quad.ho
+
+OFILES = \
+  quad.o
+  
+LIBFILE = \
+  libquad.a
+  
+GCCFLAGS = \
+  -I. -I$(INC) \
+  -g \
+  -ansi \
+  -Wall -Wtraditional -Wpointer-arith -Wmissing-prototypes \
+  -mfpu
+
+.PHONY: all cleanup uninstall install
+
+all: uninstall $(HOFILES) $(LIBFILE) install
+
+cleanup: ;\
+  /bin/rm -f *~ *.ho *.o *.a 
+
+uninstall: ;\
+  ( cd $(INC) && rm -f $(HFILES) $(HOFILES) ) ;\
+  ( cd $(LIB) && rm -f $(LIBFILE) )
+
+install: ;\
+  cp -p $(HFILES) $(HOFILES) $(INC) ;\
+  cp -p $(LIBFILE) $(LIB)
+  
+%.o: %.c ;\
+  gcc -c $(GCCFLAGS) $*.c
+  
+%.ho: %.h ;\
+  gcc -o $*.ho -c $(GCCFLAGS) -x c $*.h \
+  || /bin/rm -f $*.ho
+  
+$(LIBFILE): $(OFILES) ;\
+  rm -f $*.a && ar crv $*.a $(OFILES) && ranlib $*.a
+
+# Dependencies of .h files: 
+
+quad.ho:: quad.h
+
+# Dependencies for .c files:
+
+quad.o:: quad.c quad.ho
+
