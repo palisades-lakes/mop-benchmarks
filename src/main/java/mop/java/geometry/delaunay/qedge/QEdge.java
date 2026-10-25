@@ -1,11 +1,8 @@
 package mop.java.geometry.delaunay.qedge;
 
-import mop.java.geometry.delaunay.Util;
-import mop.java.geometry.euclidean.VectorD2;
+import mop.java.cmplx.ZeroSimplex;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.Stack;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /** Delaunay triangulation, after
@@ -35,65 +32,53 @@ import java.util.concurrent.atomic.AtomicInteger;
  * constraint that the faces are triangular.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-10-19
+ * @version 2026-10-24
  */
 public final class QEdge {
 
   // TODO: separate primal and dual edges, primal with reference to
   //  origin point, dual reference to explicit origin face?
+  //  G+S's edge algebra has separate finite sets E and E* for the
+  //  primal and dual edges.
+  // TODO: this is actually G+S Rot operation, not dual,
+  //  which is why dual().dual() == reverse(), not identity.
 
-  private QEdge _dual;
+  private QEdge _rot;
   /** The dual edge, directed from the right face to the left. */
-  public final QEdge dual () { return _dual; }
-  /** The dual edge, directed from the right face to the left. */
-  public final void setDual (final QEdge e) { _dual = e; }
+  public final QEdge rot () { return _rot; }
+//  /** The dual edge, directed from the right face to the left. */
+//  public final void setRot (final QEdge e) { _rot = e; }
 
-  private VectorD2 _origin;
-  public final VectorD2 origin () { return _origin; }
-  public final void setOrigin (final VectorD2 p) {
+  private ZeroSimplex _origin;
+  public final ZeroSimplex origin () { return _origin; }
+  public final void setOrigin (final ZeroSimplex p) {
     assert _origin != null;
     _origin = p; }
 
-  /** The next edge ccw around the origin.
-   * TODO: origin is null for dual edges?
-   */
+  /** The next edge ccw around the origin. */
   private QEdge _next;
   /** The next edge ccw around the origin. */
   public final QEdge next () { return _next; }
   /** The next edge ccw around the origin. */
-  public final void setNext (final QEdge e) {
-    //assert null != _origin;
-    _next = e; }
+  public final void setNext (final QEdge e) { _next = e; }
 
   //--------------------------------------------------------------------
   // minimal edge 'algebra'
   //--------------------------------------------------------------------
 
   /** The edge from the destination to the origin. */
-  public final QEdge reverse () { return dual().dual(); }
+  public final QEdge reverse () { return rot().rot(); }
 
   /** The next edge cw around the origin. */
-  public final QEdge prev () { return dual().next().dual(); }
+  public final QEdge prev () { return rot().next().rot(); }
 
   /** The next edge ccw around the (left) face. */
   public final QEdge faceNext () {
-    return dual().reverse().next().dual(); }
+    return rot().reverse().next().rot(); }
 
-  /** The previous edge ccw around the (left) face. */
-  public final QEdge facePrev () {
-    return next().reverse(); }
-
-  //--------------------------------------------------------------------
-  // geometric predicates
-  //--------------------------------------------------------------------
-
-  /** Is <code>p</code> on the right side of this directed edge? */
-  public final boolean isRight (final VectorD2 p) {
-    return Util.ccw(p, reverse().origin(), origin()); }
-
-  /** Is <code>p</code> on the left side of this directed edge? */
-  public final boolean isLeft (final VectorD2 p) {
-    return Util.ccw(p, origin(), reverse().origin()); }
+//  /** The previous edge ccw around the (left) face. */
+//  public final QEdge facePrev () {
+//    return next().reverse(); }
 
   //--------------------------------------------------------------------
   // Basic Topological Operators
@@ -126,43 +111,7 @@ public final class QEdge {
 
   public final void splice (final QEdge that) {
     swapNext(that);
-    next().dual().swapNext(that.next().dual()); }
-
-  //--------------------------------------------------------------------
-  // TODO: is this some version of splice?
-
-  public final QEdge glue (final QEdge that) {
-    System.out.println("\nBefore glue");
-    System.out.println("this:" + this);
-    System.out.println(meshString());
-    System.out.println("\nthat:" + that);
-    System.out.println(that.meshString());
-    final QEdge r0 = this.reverse();
-    final QEdge r1 = that.reverse();
-    assert r0.origin() == that.origin();
-    assert r1.origin() == this.origin();
-    final QEdge d0 = this.dual();
-    final QEdge d1 = that.dual();
-    final QEdge f0 = this.faceNext();
-    final QEdge f1 = that.faceNext();
-    final QEdge p0 = this.facePrev().reverse();
-    final QEdge p1 = that.facePrev().reverse();
-    this.setNext(f1);
-    that.setNext(f0);
-    d0.setNext(f1.dual());
-    d1.setNext(f0.dual());
-    f0.setNext(p1);
-    f1.setNext(p0);
-    f0.dual().setNext(p1.dual());
-    f1.dual().setNext(p0.dual());
-    d0.setDual(that);
-    d1.setDual(this);
-    System.out.println("\nAfter glue");
-    System.out.println("this:" + this);
-    System.out.println(meshString());
-    System.out.println("\nthat:" + that);
-    System.out.println(that.meshString());
-    return this; }
+    next().rot().swapNext(that.next().rot()); }
 
   //--------------------------------------------------------------------
 
@@ -186,11 +135,11 @@ public final class QEdge {
     e.reverse().splice(that);
     return e; }
 
-  public final QEdge connect (final QEdge that, final String prefix) {
-    final QEdge e = make(prefix,reverse().origin(), that.origin());
-    e.splice(faceNext());
-    e.reverse().splice(that);
-    return e; }
+//  public final QEdge connect (final QEdge that, final String prefix) {
+//    final QEdge e = make(prefix,reverse().origin(), that.origin());
+//    e.splice(faceNext());
+//    e.reverse().splice(that);
+//    return e; }
 
   /** Lischinski: <br>
    * Essentially turns edge e counterclockwise inside its enclosing
@@ -199,6 +148,7 @@ public final class QEdge {
 
   public final void swap () {
     // TODO: can we replace with a new edge, rather than modifying?
+    // TODO: what happens if it's not in a quadrilateral? -> unit test!
     final QEdge a = prev();
     final QEdge b = reverse().prev();
     splice(a);
@@ -209,6 +159,93 @@ public final class QEdge {
     reverse().setOrigin(b.reverse().origin()); }
 
   //--------------------------------------------------------------------
+  // collect mesh elements
+  //--------------------------------------------------------------------
+
+  private final boolean noElements (final Set<ZeroSimplex> exclude,
+                                    final ZeroSimplex[] points) {
+    for (final ZeroSimplex p : points) {
+      if (exclude.contains(p)) { return false; } }
+    return true; }
+
+  //--------------------------------------------------------------------
+  /** Collect the vertices as a set of points.
+   * Skip elements of <code>exclude</code>.
+   * <b>Assumes mesh is connected!</b>
+   */
+
+  public final SortedSet<ZeroSimplex> vertices (final Set<ZeroSimplex> exclude) {
+    final SortedSet<ZeroSimplex> t = new TreeSet<>();
+    final Set<QEdge> visited = new HashSet<>();
+    final Stack<QEdge> toVisit = new Stack<>();
+    toVisit.push(this);
+    while (! toVisit.empty()) {
+      final QEdge e0 = toVisit.pop();
+      if (! visited.contains(e0)) {
+        visited.add(e0);
+        toVisit.push(e0.reverse());
+        toVisit.push(e0.faceNext());
+        final ZeroSimplex p = e0.origin();
+        if (!exclude.contains(p)) { t.add(p); } } }
+    return t; }
+
+  public final SortedSet<ZeroSimplex> vertices () {
+    return vertices(new TreeSet<>()); }
+
+  /** Collect the edges as a set of pairs of coordinates.
+   * Skip edges that have any vertices in <code>exclude</code>.
+   * <b>Assumes mesh is connected!</b>
+   */
+
+  public final Set<ZeroSimplex[]> edges (final Set<ZeroSimplex> exclude) {
+    final Set<ZeroSimplex[]> t = new HashSet<>();
+    final Set<QEdge> visited = new HashSet<>();
+    final Stack<QEdge> toVisit = new Stack<>();
+    toVisit.push(this);
+    while (! toVisit.empty()) {
+      final QEdge e0 = toVisit.pop();
+      if (! visited.contains(e0)) {
+        final QEdge e1 = e0.reverse();
+        visited.add(e0);
+        visited.add(e1);
+        toVisit.push(e0.faceNext());
+        toVisit.push(e1.faceNext());
+        // TODO: sort, preserving orientation, so that same edge
+        //  only returned once.
+        final ZeroSimplex[] points = new ZeroSimplex[] {
+          e0.origin(), e1.origin(), };
+        Arrays.sort(points);
+        if (noElements(exclude,points)) { t.add(points); } } }
+    return t; }
+
+  //--------------------------------------------------------------------
+  /** Collect the triangles as a set of triples of coordinates.
+   * Skip triangles that have any vertices in <code>exclude</code>.
+   * <b>Assumes mesh is connected!</b>
+   */
+
+  public final Set<ZeroSimplex[]> triangles (final Set<ZeroSimplex> exclude) {
+    final Set<ZeroSimplex[]> t = new HashSet<>();
+    final Set<QEdge> visited = new HashSet<>();
+    final Stack<QEdge> toVisit = new Stack<>();
+    toVisit.push(this);
+    while (! toVisit.empty()) {
+      final QEdge e0 = toVisit.pop();
+      if (! visited.contains(e0)) {
+        visited.add(e0);
+        final QEdge e1 = e0.faceNext();
+        final QEdge e2 = e1.faceNext();
+        toVisit.push(e0.reverse());
+        toVisit.push(e1.reverse());
+        toVisit.push(e2.reverse());
+        // TODO: sort, preserving orientation, so that same triangle
+        //  only returned once.
+        final ZeroSimplex[] vtxs = new ZeroSimplex[] {
+          e0.origin(), e1.origin(), e2.origin(), };
+        if (noElements(exclude,vtxs)) { t.add(vtxs); } } }
+    return t; }
+
+  //--------------------------------------------------------------------
   // Object
   //--------------------------------------------------------------------
 
@@ -216,9 +253,9 @@ public final class QEdge {
   public final String toString () {
     return
       name()
-        + "[d:" + dual().name()
-        + ", n:" + next().name()
-        + ", f:" + faceNext().name()
+        + "[rot:" + rot().name() + "->" + rot().next().name()
+        + ", next:" + next().name()
+        + ", fNext:" + faceNext().name()
         + "]"; }
 
   //--------------------------------------------------------------------
@@ -228,31 +265,27 @@ public final class QEdge {
   private final String _name;
   private final String name () { return _name; }
 
-  public static final void appendFace (final Set<QEdge> visited,
-                                       final Stack<QEdge> toVisit,
-                                       final StringBuilder sb) {
-    QEdge e = toVisit.pop();
-    if ((null!=e) && (! visited.contains(e))) {
-    sb.append("face(" + e + ")\n");
-      QEdge e0;
-      QEdge e1 = e;
-    do {
-      visited.add(e1);
-      toVisit.remove(e1);
+  public static final void printFace (final Set<QEdge> visited,
+                                      final Stack<QEdge> toVisit) {
+    final QEdge e0 = toVisit.pop();
+    if ((null!=e0) && (! visited.contains(e0))) {
+      System.out.println("face(" + e0 + ")");
+      QEdge e1 = e0;
+      do {
+        visited.add(e1);
+        toVisit.remove(e1);
         final QEdge ri = e1.reverse();
         if (! visited.contains(ri)) { toVisit.push(ri); }
-      sb.append("  "); sb.append(e1); sb.append("\n");
-        e0 = e1;;
-      e1 = e1.faceNext();
-      } while (! ((null==e1) || (e0==e1)|| (e==e1))); } }
+        System.out.println(e1);
+        e1 = e1.faceNext();
+        assert null != e1;
+      } while (e0 != e1); } }
 
-  public final String meshString () {
+  public final void printMesh () {
     final Set<QEdge> visited = new HashSet<>();
     final Stack<QEdge> toVisit = new Stack<>();
-    final StringBuilder sb = new StringBuilder("mesh:\n\n");
     toVisit.push(this);
-    while (!toVisit.empty()) { appendFace(visited,toVisit,sb); }
-    return sb.toString(); }
+    while (!toVisit.empty()) { printFace(visited,toVisit); } }
 
   //--------------------------------------------------------------------
   // construction
@@ -260,7 +293,7 @@ public final class QEdge {
   // Mutable mesh wired together by setting _next
 
   private QEdge (final String name,
-                 final VectorD2 origin) {
+                 final ZeroSimplex origin) {
     _name = name;
     _origin = origin;
     _next = this; }
@@ -274,26 +307,26 @@ public final class QEdge {
   private static int counter () { return _counter.getAndIncrement(); }
 
   public static final QEdge make (final String prefix,
-                                  final VectorD2 p0,
-                                  final VectorD2 p1) {
+                                  final ZeroSimplex p0,
+                                  final ZeroSimplex p1) {
 
-    final QEdge primal = new QEdge(prefix + ".p", p0);
-    final QEdge reverse = new QEdge(prefix + ".r", p1);
-    final QEdge dual = new QEdge(prefix + ".d",null);
-    final QEdge reverseDual = new QEdge(prefix + ".s",null);
+    final QEdge primal = new QEdge(prefix + ".pri", p0);
+    final QEdge reverse = new QEdge(prefix + ".rev", p1);
+    final QEdge rot = new QEdge(prefix + ".rot",null);
+    final QEdge reverseRot = new QEdge(prefix + ".rer",null);
 
-    primal._dual = dual;
-    reverse._dual = reverseDual;
-    dual._dual = reverse;
-    reverseDual._dual = primal;
+    primal._rot = rot;
+    reverse._rot = reverseRot;
+    rot._rot = reverse;
+    reverseRot._rot = primal;
 
-    dual.setNext(reverseDual);
-    reverseDual.setNext(dual);
+    rot.setNext(reverseRot);
+    reverseRot.setNext(rot);
 
     return primal; }
 
-  public static final QEdge make (final VectorD2 p0,
-                                  final VectorD2 p1) {
+  public static final QEdge make (final ZeroSimplex p0,
+                                  final ZeroSimplex p1) {
 
     return make("q" + counter(),p0,p1); }
 

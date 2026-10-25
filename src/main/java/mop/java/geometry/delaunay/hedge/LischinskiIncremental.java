@@ -1,4 +1,4 @@
-package mop.java.geometry.delaunay.qedge;
+package mop.java.geometry.delaunay.hedge;
 
 import mop.java.geometry.delaunay.Util;
 import mop.java.geometry.euclidean.VectorD2;
@@ -7,61 +7,16 @@ import mop.java.geometry.euclidean.VectorD2;
  * <a href="https://www.researchgate.net/publication/262235495_Incremental_Delaunay_Triangulation">
  *  Dani Lischinski
  *  <i>Incremental Delaunay triangulation</i>
- *  <b>Graphics Gems IV</b> Academic Press 1994 </a>
+ *  <b>Graphics Gems IV</b> Academic Press 1994 </a>,
+ *  converted to half-edge representation.
  * <p>
  * <b>NOTE: </b> all inserted points must fall within the existing mesh!
  * </p>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-10-12
+ * @version 2026-10-24
  */
 
 public final class LischinskiIncremental {
-
-  //--------------------------------------------------------------------
-  // geometric predicates
-  //--------------------------------------------------------------------
-//  /** Lischinski: <br>
-//   * Returns twice the signed area of the oriented triangle (a, b, c),
-//   * i.e., the area is positive if the triangle is counterclockwise.
-//   */
-//
-//  private static final double signedArea (final VectorD2 a,
-//                                          final VectorD2 b,
-//                                          final VectorD2 c) {
-//
-//    return
-//      (b.x() - a.x())*(c.y() - a.y())
-//        -
-//        (b.y() - a.y())*(c.x() - a.x()); }
-//
-//  /** Lischinski: <br>
-//   * Returns true if the point d is inside the circle defined by the
-//   * points a, b, c. See Guibas and Stolfi (1985) p.107.
-//   */
-//
-//  private static final boolean inCircle (final VectorD2 a,
-//                                         final VectorD2 b,
-//                                         final VectorD2 c,
-//                                         final VectorD2 d) {
-//    return
-//      ((a.l2norm2() * signedArea(b, c, d))
-//        + (b.l2norm2() * signedArea(c, a, d))
-//        + (c.l2norm2() * signedArea(a, b, d))
-//        + (d.l2norm2() * signedArea(b, a, c)))
-//        > 0.0; }
-//
-//  private static final boolean ccw (final VectorD2 a,
-//                                    final VectorD2 b,
-//                                    final VectorD2 c) {
-//    return (signedArea(a, b, c) > 0); }
-//
-//  private static final boolean rightOf (final VectorD2 x,
-//                                        final QEdge e) {
-//    return ccw(x, e.reverse().origin(), e.origin()); }
-//
-//  private static final boolean leftOf (final VectorD2 x,
-//                                       final QEdge e) {
-//    return ccw(x, e.origin(), e.reverse().origin()); }
 
   //--------------------------------------------------------------------
   /** Used to test for point on line. */
@@ -97,7 +52,7 @@ public final class LischinskiIncremental {
    */
 
   private static final boolean onEdge (final VectorD2 x,
-                                       final QEdge e) {
+                                       final HEdge e) {
     final double t1 = x.subtract(e.origin()).l2norm2();
     final double t2 = x.subtract(e.reverse().origin()).l2norm2();
     if (t1 < EPS2 || t2 < EPS2) { return true; }
@@ -114,11 +69,59 @@ public final class LischinskiIncremental {
    * a triangle containing x. The search starts from startingEdge
    * and proceeds in the general direction of x. Based on the
    * pseudocode in Guibas and Stolfi (1985) p.121.
+   * <br>
+   * TODO: fix infinite loops!
+   * <br>
+   * See <a href="https://people.eecs.berkeley.edu/~jrs/meshpapers/GSflaws">
+   * Shewchuk's GSFlaws:</a>
+   * <pre>
+   * Three fixes to Guibas and Stolfi's "Primitives for the Manipulation of
+   * General Subdivisions and the Computation of Voronoi Diagrams":
+   *
+   * One, their Locate primitive always works in the interior of the mesh,
+   * but can get stuck in an infinite loop on the convex hull.  Consider
+   * this mesh:
+   *                                y       z
+   *                                o-------o
+   *                               / \     / \
+   *                              /   \   /   \
+   *                             /     \ /     \
+   *                            o--X----o-------o
+   *                            u       v       w
+   *
+   * Suppose you're trying to locate the X, which is collinear with uvw.
+   * Look at p. 121 of Guibas & Stolfi.  You are searching with an edge
+   * e for the edge uv.  Suppose that e := wv (directed toward v).
+   * RightOf[X, e] is false.  NOT RightOf[X, e.Onext] is true, so we
+   * execute "e <- e.Onext", which sets e to wz.  On the next iteration,
+   * we execute "e <- e.Onext", which sets e back to wv.  This continues
+   * forever, an infinite loop.
+   *
+   * To fix this bug, changing both "Not RightOf" expressions to "LeftOf"
+   * expressions is a good start, but doesn't fulfill the criterion that
+   * "Locate returns an edge e of the current Delaunay diagram such that
+   * the given point X is either on e or _strictly_ inside the left face
+   * of e."  Rather, X might be on any edge of the left face; X might
+   * even be the apex vertex.  An explicit test for these possibilities
+   * is necessary.
+   *
+   * Two, I think there are other places in the paper where Guibas &
+   * Stolfi sometime use RightOf when they mean NOT LeftOf, and vice
+   * versa.  Give careful consideration in each case to what should
+   * happen when the determinant is zero.
+   *
+   * Three, on p. 120, in their InsertSite procedure, the fifth-last line
+   * is wrong.  The statement "e <- t" should read "e <- e.Oprev".
+   *
+   * If you're not using exact arithmetic for the CCW and InCircle tests,
+   * other things can go wrong as well.  Some problem cases can be
+   * avoided by changing the code a bit, and some can't.
+   * </pre>
    */
 
-  private static final QEdge locate (final QMesh mesh,
+  private static final HEdge locate (final HMesh mesh,
                                      final VectorD2 x) {
-    QEdge e = mesh.startingEdge();
+    HEdge e = mesh.startingEdge();
     while (true) {
       if (x.equals(e.origin())) { return e; }
       if (x.equals(e.reverse().origin())) { return e; }
@@ -138,10 +141,10 @@ public final class LischinskiIncremental {
    * modifications and a bug fix.
    */
 
-  public static final void insertSite (final QMesh mesh,
+  public static final void insert (final HMesh mesh,
                                        final VectorD2 x) {
 
-    QEdge e = locate(mesh,x);
+    HEdge e = locate(mesh, x);
     // point is already in QMesh
     if ((x.equals(e.origin())) || (x.equals(e.reverse().origin())))  {
       return; }
@@ -149,7 +152,7 @@ public final class LischinskiIncremental {
     // Connect the new point to the vertices of the containing
     // triangle (or quadrilateral, if the new point fell on an
     // existing edge.)
-    QEdge base = QEdge.make(e.origin(), x);
+    HEdge base = HEdge.make(e.origin(), x);
     base.splice(e);
     mesh.setStartingEdge(base);
     do {
@@ -159,7 +162,7 @@ public final class LischinskiIncremental {
     // Examine suspect edges to ensure that the Delaunay condition
     // is satisfied.
     do {
-      QEdge t = e.prev();
+      HEdge t = e.prev();
       if (e.isRight(t.reverse().origin()) &&
         Util.inCircle(e.origin(),
                       t.reverse().origin(),

@@ -1,4 +1,4 @@
-package mop.java.geometry.delaunay.cdsbw;
+package mop.java.geometry.delaunay;
 
 import clojure.lang.IFn;
 import mop.java.cmplx.OneSimplex;
@@ -6,13 +6,13 @@ import mop.java.cmplx.SimplicialComplex2D;
 import mop.java.cmplx.TwoSimplex;
 import mop.java.cmplx.ZeroSimplex;
 import mop.java.geom.mesh.TriangleMesh;
-import mop.java.geometry.delaunay.Util;
 import mop.java.geometry.euclidean.VectorD2;
 import mop.java.geometry.triangle.TriangleR2;
 import mop.java.util.IFnWrapper;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
 
@@ -55,7 +55,7 @@ import java.util.function.BiFunction;
  * </p>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-10-15
+ * @version 2026-10-25
  */
 
 public interface DelaunayBuilder {
@@ -237,12 +237,22 @@ public interface DelaunayBuilder {
     //System.out.println("locate(" + z + ") -> " + t);
     insertVertex(z,t); }
 
+  // TODO: insert point set, embedding map?
+  /** Assumes all the zero simplexes have embeddings. */
+  public default void insert (final Set<ZeroSimplex> zs) {
+    for (final ZeroSimplex z : zs) { insert(z); } }
+
+  public default void insert (final ZeroSimplex z,
+                              final VectorD2 p) {
+    embed(z,p);
+    insert(z); }
+
   //--------------------------------------------------------------------
 
   static final AtomicInteger _counter = new AtomicInteger(0);
   private static int counter () { return _counter.getAndIncrement(); }
 
-  public default void insertPoint (final VectorD2 p) {
+  public default void insert (final VectorD2 p) {
     final ZeroSimplex z = ZeroSimplex.make("s" + counter());
     embed(z,p);
     insert(z); }

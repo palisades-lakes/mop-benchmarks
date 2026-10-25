@@ -7,7 +7,7 @@
    :version "2026-10-04"}
 
   (:import
-    [mop.java.geometry.delaunay.qedge LischinskiIncremental QMesh]
+    [mop.java.geometry.delaunay.qedge LischinskiIncrementalBuilder]
     [mop.java.geometry.euclidean VectorD2]
     [mop.java.jfx JFX JfxWorld]))
 ;;----------------------------------------------------------------
@@ -22,7 +22,7 @@
                (VectorD2. 0.75 0.5)
                (VectorD2. 0.25 0.2)
                (VectorD2. 0.75 0.2)]]
-    (doseq [site sites] (LischinskiIncremental/insertSite mesh site))
+    (doseq [site sites] (LischinskiIncrementalBuilder /insert mesh site))
     (JFX/edges (.edges mesh exclude) JFX/MESH_COLOR "rectangle frame")))
 ;;----------------------------------------------------------------
 (System/setProperty "glass.win.uiScale" "1")

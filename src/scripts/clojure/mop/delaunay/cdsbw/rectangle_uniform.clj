@@ -28,7 +28,7 @@
         nsites 64 #_(* 64 1024)]
     (mct/seconds
       (str "insert: " nsites)
-      (dotimes [_ nsites] (.insertPoint builder (.next pointGenerator))))
+      (dotimes [_ nsites] (.insert builder (.next pointGenerator))))
     (mct/seconds "jfx"
       (JFX/edges
         (Util/edgeCoordinates (.build builder) (.vertices (.cmplx frame)))

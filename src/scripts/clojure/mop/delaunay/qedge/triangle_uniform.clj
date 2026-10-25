@@ -8,7 +8,7 @@
 
   (:import
     [mop.java.geometry Generators]
-    [mop.java.geometry.delaunay.qedge LischinskiIncremental QMesh]
+    [mop.java.geometry.delaunay.qedge LischinskiIncrementalBuilder]
     [mop.java.geometry.euclidean VectorD2]
     [mop.java.jfx JFX JfxWorld]
     [mop.java.numbers Doubles]
@@ -28,7 +28,7 @@
                            0.0 1.0))
         nsites 64]
     (dotimes [_ nsites]
-      (LischinskiIncremental/insertSite mesh (.next pointGenerator)))
+      (LischinskiIncrementalBuilder /insert mesh (.next pointGenerator)))
     (JFX/edges (.edges mesh exclude) JFX/MESH_COLOR "triangle uniform")))
 ;;----------------------------------------------------------------
 (System/setProperty "glass.win.uiScale" "1")

@@ -4,6 +4,8 @@
  *  <i>Incremental Delaunay triangulation</i><br>
  *  <b>Graphics Gems IV</b> Academic Press 1994 </a>
  *  <br>
+ *  Main change is use of half-edge rather than quad-edge.
+ *  <br>
  *  See also:
  *  <a href="https://github.com/erich666/GraphicsGems">Graphics Gems github</a>
  * See also:
@@ -20,16 +22,9 @@
  * (<a href="https://doi.org/10.1145/282918.282923">(DOI)</a>
  * </li>
  * </ul>
- * The main difference from Lischinski is that <code>QEdge</code> is
- * independent of embedding, a representation of the simplicial/cell
- * complex connecting abstract
- * <code>ZeroSimplex</code>s.
- * The embedding in some 2d space is held in the <code>QMesh</code>,
- * as in <code>SimplicialComplex2D</code> and <code>TriangelMesh</code>.
- *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-10-15
+ * @version 2026-10-07
  */
 
-package mop.java.geometry.delaunay.aqedge;
+package mop.java.geometry.delaunay.hedge;
 

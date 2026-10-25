@@ -5,6 +5,7 @@ import mop.java.cmplx.SimplicialComplex2D;
 import mop.java.cmplx.TwoSimplex;
 import mop.java.cmplx.ZeroSimplex;
 import mop.java.geom.mesh.TriangleMesh;
+import mop.java.geometry.delaunay.DelaunayBuilder;
 import mop.java.geometry.euclidean.VectorD2;
 
 import java.util.SortedMap;

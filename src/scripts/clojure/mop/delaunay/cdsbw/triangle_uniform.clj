@@ -26,7 +26,7 @@
                            0.0 1.0))
         nsites 64]
     (dotimes [_ nsites]
-      (.insertPoint builder (.next pointGenerator)))
+      (.insert builder (.next pointGenerator)))
     (JFX/edges
       (Util/edgeCoordinates (.build builder)(.vertices (.cmplx frame)))
       JFX/MESH_COLOR "triangle uniform")))

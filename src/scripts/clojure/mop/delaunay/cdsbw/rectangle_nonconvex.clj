@@ -23,7 +23,7 @@
                (VectorD2. 0.75 0.5)
                (VectorD2. 0.25 0.2)
                (VectorD2. 0.75 0.2)]]
-    (doseq [site sites] (.insertPoint builder site))
+    (doseq [site sites] (.insert builder site))
     (JFX/edges
       (Util/edgeCoordinates (.build builder) (.vertices (.cmplx frame)))
       JFX/FRAME_COLOR "nonconvex")))

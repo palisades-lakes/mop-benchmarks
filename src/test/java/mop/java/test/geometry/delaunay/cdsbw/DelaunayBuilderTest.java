@@ -6,9 +6,9 @@ import mop.java.cmplx.TwoSimplex;
 import mop.java.cmplx.ZeroSimplex;
 import mop.java.geom.mesh.TriangleMesh;
 import mop.java.geometry.Generators;
+import mop.java.geometry.delaunay.DelaunayBuilder;
 import mop.java.geometry.delaunay.Util;
 import mop.java.geometry.delaunay.cdsbw.CDSBWDelaunayBuilder;
-import mop.java.geometry.delaunay.cdsbw.DelaunayBuilder;
 import mop.java.geometry.delaunay.cdsbw.RobustCDSBWDelaunayBuilder;
 import mop.java.geometry.euclidean.VectorD2;
 import mop.java.numbers.Doubles;
@@ -249,7 +249,7 @@ public final class DelaunayBuilderTest {
 //
 //    final int nsites = 16;
 //    for (int i=0;i<nsites;i++) {
-//      LischinskiIncrementalBuilder.insertSite(mesh,(VectorD2) pointGenerator.next()); } }
+//      LischinskiIncrementalBuilder.insert(mesh,(VectorD2) pointGenerator.next()); } }
 
   //--------------------------------------------------------------
 // goes into infinite loop!!!

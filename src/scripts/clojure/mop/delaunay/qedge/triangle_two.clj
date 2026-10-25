@@ -7,7 +7,7 @@
    :version "2026-10-13"}
 
   (:import
-    [mop.java.geometry.delaunay.qedge LischinskiIncremental QMesh]
+    [mop.java.geometry.delaunay.qedge LischinskiIncrementalBuilder]
     [mop.java.geometry.euclidean VectorD2]
     [mop.java.jfx JFX JfxWorld]))
 ;;----------------------------------------------------------------
@@ -18,8 +18,8 @@
         p1 (VectorD2.  2.0 -1.0)
         p2 (VectorD2.  0.5, 3.0)
         mesh (QMesh/triangleFrame p0 p1 p2)]
-    (LischinskiIncremental/insertSite mesh (VectorD2. 0.25 0.25))
-    (LischinskiIncremental/insertSite mesh (VectorD2. 0.75 0.75))
+    (LischinskiIncrementalBuilder /insert mesh (VectorD2. 0.25 0.25))
+    (LischinskiIncrementalBuilder /insert mesh (VectorD2. 0.75 0.75))
     (JFX/edges (.edges mesh #{}) JFX/FRAME_COLOR "two")))
 ;;----------------------------------------------------------------
 (System/setProperty "glass.win.uiScale" "1")

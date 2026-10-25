@@ -10,7 +10,7 @@
     [mop.commons.time :as mct])
   (:import
     [mop.java.geometry Generators]
-    [mop.java.geometry.delaunay.qedge LischinskiIncremental QMesh]
+    [mop.java.geometry.delaunay.qedge LischinskiIncrementalBuilder]
     [mop.java.jfx JFX JfxWorld]
     [mop.java.numbers Doubles]
     [mop.java.prng PRNG]))
@@ -30,7 +30,7 @@
       (mct/seconds
         (str "insert: " nsites)
         (dotimes [_ nsites]
-          (LischinskiIncremental/insertSite mesh (.next pointGenerator))))
+          (LischinskiIncrementalBuilder /insert mesh (.next pointGenerator))))
       (mct/seconds "jfx"
         (JFX/edges (.edges mesh exclude) JFX/MESH_COLOR "rectangle uniform")))))
   ;;----------------------------------------------------------------

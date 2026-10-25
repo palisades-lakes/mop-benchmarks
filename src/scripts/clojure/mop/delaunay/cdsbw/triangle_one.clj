@@ -17,7 +17,7 @@
 (defn make-world []
   (let [frame (Util/triangleFrame01)
         builder (CDSBWDelaunayBuilder/make frame)]
-    (.insertPoint builder (VectorD2. 0.5 0.5))
+    (.insert builder (VectorD2. 0.5 0.5))
     (JFX/edges
       (Util/edgeCoordinates (.build builder))
       JFX/FRAME_COLOR "one")))

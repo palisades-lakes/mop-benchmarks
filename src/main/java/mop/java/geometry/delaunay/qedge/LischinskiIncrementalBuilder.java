@@ -1,13 +1,12 @@
-package mop.java.geometry.delaunay.aqedge;
+package mop.java.geometry.delaunay.qedge;
 
 import clojure.lang.IFn;
-import mop.java.cmplx.OneSimplex;
 import mop.java.cmplx.SimplicialComplex2D;
 import mop.java.cmplx.TwoSimplex;
 import mop.java.cmplx.ZeroSimplex;
 import mop.java.geom.mesh.TriangleMesh;
+import mop.java.geometry.delaunay.DelaunayBuilder;
 import mop.java.geometry.delaunay.Util;
-import mop.java.geometry.delaunay.cdsbw.DelaunayBuilder;
 import mop.java.geometry.euclidean.VectorD2;
 import mop.java.util.IFnWrapper;
 
@@ -22,7 +21,7 @@ import java.util.*;
  * <b>NOTE: </b> all inserted points must fall within the existing mesh!
  * </p>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-10-17
+ * @version 2026-10-24
  */
 
 public final class LischinskiIncrementalBuilder
@@ -57,7 +56,7 @@ public final class LischinskiIncrementalBuilder
   /** The entry into the abstract cell complex represented
    * by the <code>QEdege</code>s.
    */
-  final QEdge startingEdge () { return _startingEdge; }
+  public final QEdge startingEdge () { return _startingEdge; }
   /** The entry into the abstract cell complex represented
    * by the <code>QEdege</code>s.
    */
@@ -106,53 +105,14 @@ public final class LischinskiIncrementalBuilder
 
   //--------------------------------------------------------------------
 
-  private final Map<OneSimplex,QEdge> cache = new HashMap<>();
-
   public final void addTriangle (final ZeroSimplex z0,
                                  final ZeroSimplex z1,
                                  final ZeroSimplex z2) {
-    final OneSimplex s10 = OneSimplex.make(z1,z0);
-    final QEdge e01;
-    if (cache.containsKey(s10)) {
-      e01 = cache.get(s10).reverse(); }
-    else {
-      e01 = QEdge.make(z0,z1);
-      setStartingEdge(e01);
-      cache.put(OneSimplex.make(z0,z1),e01); }
-
-    final OneSimplex s21 = OneSimplex.make(z2,z1);
-    final QEdge e12;
-    if (cache.containsKey(s21)) {
-      e12 = cache.get(s21).reverse(); }
-    else {
-      e12 = QEdge.make(z1,z2);
-      setStartingEdge(e12);
-      cache.put(OneSimplex.make(z1,z2),e12); }
-
-    final OneSimplex s02 = OneSimplex.make(z0,z2);
-    final QEdge e20;
-    if (cache.containsKey(s02)) {
-      e20 = cache.get(s02).reverse(); }
-    else {
-      e20 = QEdge.make(z2,z0);
-      setStartingEdge(e20);
-      cache.put(OneSimplex.make(z2,z0),e20); }
-
-    // TODO: what if quad mesh already has face?
-    e01.splice(e20.reverse());
-    e12.splice(e01.reverse());
-    e20.splice(e12.reverse()); }
-
-  public final void addTriangle (final TwoSimplex f) {
-    addTriangle(f.z0(),f.z1(),f.z2()); }
+    throw new UnsupportedOperationException(); }
 
   public final void deleteTriangle (final ZeroSimplex z0,
                                     final ZeroSimplex z1,
                                     final ZeroSimplex z2) {
-    throw new UnsupportedOperationException(); }
-
-  // TODO: how to make a hole in a QEdge mesh?
-  public final void deleteTriangle (final TwoSimplex t) {
     throw new UnsupportedOperationException(); }
 
   //--------------------------------------------------------------------
@@ -191,7 +151,7 @@ public final class LischinskiIncrementalBuilder
                              final ZeroSimplex z) {
     return Util.ccw(embedding(z),
                     embedding(q.origin()),
-                    embedding(q.origin())); }
+                    embedding(q.reverse().origin())); }
 
   //--------------------------------------------------------------------
   private static final double EPS = 1.0e-6;
@@ -227,6 +187,54 @@ public final class LischinskiIncrementalBuilder
    * a triangle containing x. The search starts from startingEdge
    * and proceeds in the general direction of x. Based on the
    * pseudocode in Guibas and Stolfi (1985) p.121.
+   * <br>
+   * TODO: fix infinite loops!
+   * <br>
+   * See <a href="https://people.eecs.berkeley.edu/~jrs/meshpapers/GSflaws">
+   * Shewchuk's GSFlaws:</a>
+   * <pre>
+   * Three fixes to Guibas and Stolfi's "Primitives for the Manipulation of
+   * General Subdivisions and the Computation of Voronoi Diagrams":
+   *
+   * One, their Locate primitive always works in the interior of the mesh,
+   * but can get stuck in an infinite loop on the convex hull.  Consider
+   * this mesh:
+   *                                y       z
+   *                                o-------o
+   *                               / \     / \
+   *                              /   \   /   \
+   *                             /     \ /     \
+   *                            o--X----o-------o
+   *                            u       v       w
+   *
+   * Suppose you're trying to locate the X, which is collinear with uvw.
+   * Look at p. 121 of Guibas & Stolfi.  You are searching with an edge
+   * e for the edge uv.  Suppose that e := wv (directed toward v).
+   * RightOf[X, e] is false.  NOT RightOf[X, e.Onext] is true, so we
+   * execute "e <- e.Onext", which sets e to wz.  On the next iteration,
+   * we execute "e <- e.Onext", which sets e back to wv.  This continues
+   * forever, an infinite loop.
+   *
+   * To fix this bug, changing both "Not RightOf" expressions to "LeftOf"
+   * expressions is a good start, but doesn't fulfill the criterion that
+   * "Locate returns an edge e of the current Delaunay diagram such that
+   * the given point X is either on e or _strictly_ inside the left face
+   * of e."  Rather, X might be on any edge of the left face; X might
+   * even be the apex vertex.  An explicit test for these possibilities
+   * is necessary.
+   *
+   * Two, I think there are other places in the paper where Guibas &
+   * Stolfi sometime use RightOf when they mean NOT LeftOf, and vice
+   * versa.  Give careful consideration in each case to what should
+   * happen when the determinant is zero.
+   *
+   * Three, on p. 120, in their InsertSite procedure, the fifth-last line
+   * is wrong.  The statement "e <- t" should read "e <- e.Oprev".
+   *
+   * If you're not using exact arithmetic for the CCW and InCircle tests,
+   * other things can go wrong as well.  Some problem cases can be
+   * avoided by changing the code a bit, and some can't.
+   * </pre>
    */
 
   private final QEdge locateQ (final ZeroSimplex z) {
@@ -234,7 +242,6 @@ public final class LischinskiIncrementalBuilder
     while (true) {
       if (z.equals(e.origin())) { return e; }
       if (z.equals(e.reverse().origin())) { return e; }
-
       if (right(e,z)) { e = e.reverse(); }
       else if (! right(e.next(),z)) { e = e.next(); }
       else if (! left(e.faceNext(),z)) {
@@ -252,6 +259,8 @@ public final class LischinskiIncrementalBuilder
 
   @Override
   public final void insert (final ZeroSimplex z) {
+    assert embedding().containsKey(z) :
+      "No embedding for " + z + "\n" + embedding();
 
     QEdge e = locateQ(z);
     // point is already in QMesh
@@ -299,7 +308,7 @@ public final class LischinskiIncrementalBuilder
   public final TriangleMesh build () {
     final SimplicialComplex2D cmplx = SimplicialComplex2D.make(faces());
     final IFn z2p = IFnWrapper.make(embedding());
-    return TriangleMesh.make(cmplx,z2p); }
+    return TriangleMesh.make(cmplx, z2p); }
 
   //--------------------------------------------------------------------
   // construction
@@ -308,32 +317,99 @@ public final class LischinskiIncrementalBuilder
 
   private LischinskiIncrementalBuilder (
     final SortedMap<ZeroSimplex, VectorD2> embedding) {
-    _embedding = embedding;
-  }
+    _embedding = embedding; }
 
   public static final LischinskiIncrementalBuilder
   unsafe (final SortedMap<ZeroSimplex, VectorD2> embedding) {
     return new LischinskiIncrementalBuilder(embedding); }
 
-  public static final DelaunayBuilder make () {
+  public static final LischinskiIncrementalBuilder make () {
     return unsafe(new TreeMap<>()); }
 
-  public static final DelaunayBuilder
-  make (final SortedMap<ZeroSimplex, VectorD2> embedding) {
+  public static final LischinskiIncrementalBuilder
+  make (final Map<ZeroSimplex, VectorD2> embedding) {
     // defensive copy
     return unsafe(new TreeMap<>(embedding)); }
 
-  /** Use <code>mesh</code> as the initial frame for the builder. */
+  public static final LischinskiIncrementalBuilder
+  make (final Map<ZeroSimplex, VectorD2> embedding,
+        final QEdge startingEdge) {
+    // defensive copy
+    final LischinskiIncrementalBuilder builder =
+      unsafe(new TreeMap<>(embedding));
+    builder.setStartingEdge(startingEdge);
+    return builder; }
 
-  public static final DelaunayBuilder make (final TriangleMesh mesh) {
-    final SimplicialComplex2D c = (SimplicialComplex2D) mesh.cmplx();
-    final SortedMap<ZeroSimplex, VectorD2> embedding = new TreeMap<>();
-    final IFn e = mesh.embedding();
-    for (final ZeroSimplex z : c.vertices()) {
-      embedding.put(z,(VectorD2) e.invoke(z)); }
-    final LischinskiIncrementalBuilder b = unsafe(embedding);
-    for (final TwoSimplex f : c.faces()) { b.addTriangle(f); }
-    return b; }
+//  /** Use <code>mesh</code> as the initial frame for the builder. */
+//
+//  public static final DelaunayBuilder make (final TriangleMesh mesh) {
+//    final SimplicialComplex2D c = (SimplicialComplex2D) mesh.cmplx();
+//    final SortedMap<ZeroSimplex, VectorD2> embedding = new TreeMap<>();
+//    final IFn e = mesh.embedding();
+//    for (final ZeroSimplex z : c.vertices()) {
+//      embedding.put(z,(VectorD2) e.invoke(z)); }
+//    final LischinskiIncrementalBuilder b = unsafe(embedding);
+//    for (final TwoSimplex f : c.faces()) { b.addTriangle(f); }
+//    return b; }
+//
+  //--------------------------------------------------------------------
+  /** All inserted points must lie in the triangle formed by
+   * <code>p0, p1, p2</code>.
+   */
+
+  public static final LischinskiIncrementalBuilder
+  triangleFrame (final VectorD2 p0,
+                 final VectorD2 p1,
+                 final VectorD2 p2) {
+    // this creates a closed manifold, a triangle and its 'reverse'
+    final ZeroSimplex z0 = ZeroSimplex.make("z0");
+    final ZeroSimplex z1 = ZeroSimplex.make("z1");
+    final ZeroSimplex z2 = ZeroSimplex.make("z2");
+    final Map<ZeroSimplex,VectorD2> embedding =
+      Map.of(z0,p0,z1,p1,z2,p2);
+
+    final QEdge e01 = QEdge.make("e01", z0, z1);
+    final QEdge e12 = QEdge.make("e12", z1, z2);
+    final QEdge e20 = QEdge.make("e20", z2, z0);
+    e01.splice(e20.reverse());
+    e12.splice(e01.reverse());
+    e20.splice(e12.reverse());
+    return make(embedding,e01); }
+
+  //--------------------------------------------------------------------
+
+  public static final LischinskiIncrementalBuilder
+  rectangleFrame (final double xmin,
+                  final double xmax,
+                  final double ymin,
+                  final double ymax) {
+    final ZeroSimplex z0 = ZeroSimplex.make("z0");
+    final ZeroSimplex z1 = ZeroSimplex.make("z1");
+    final ZeroSimplex z2 = ZeroSimplex.make("z2");
+    final ZeroSimplex z3 = ZeroSimplex.make("z3");
+    final VectorD2 p0 = new VectorD2(xmin,ymin);
+    final VectorD2 p1 = new VectorD2(xmax,ymin);
+    final VectorD2 p2 = new VectorD2(xmax,ymax);
+    final VectorD2 p3 = new VectorD2(xmin,ymax);
+    final Map<ZeroSimplex,VectorD2> embedding =
+      Map.of(z0,p0,z1,p1,z2,p2,z3,p3);
+
+    // face012
+    final QEdge e01 = QEdge.make("e01",z0, z1);
+    final QEdge e12 = QEdge.make("e12",z1, z2);
+    final QEdge e20 = QEdge.make("e20",z2, z0);
+    e01.splice(e20.reverse());
+    e12.splice(e01.reverse());
+    e20.splice(e12.reverse());
+    // face023
+    final QEdge e02 = e20.reverse();
+    final QEdge e23 = QEdge.make("e23",z2, z3);
+    final QEdge e30 = QEdge.make("e30",z3, z0);
+    e02.splice(e30.reverse());
+    e23.splice(e02.reverse());
+    e30.splice(e23.reverse());
+
+    return make(embedding,e01); }
 
 //--------------------------------------------------------------------
 } // end class
