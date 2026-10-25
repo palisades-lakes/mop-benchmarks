@@ -54,7 +54,7 @@ public final class InsertTests {
 //    // TODO: infinite loop
     final SortedSet<ZeroSimplex> zs = builder.vertices();
     builder.insert(zs);
-    builder.insert(new VectorD2(0.0, -1.0)); }
+    builder.insertPoint(new VectorD2(0.0, -1.0)); }
 
   //--------------------------------------------------------------
 
@@ -76,7 +76,7 @@ public final class InsertTests {
 
     final int nsites = 16;
     for (int i=0;i<nsites;i++) {
-      builder.insert((VectorD2) pointGenerator.next()); } }
+      builder.insertPoint((VectorD2) pointGenerator.next()); } }
 
   //--------------------------------------------------------------
 
@@ -87,7 +87,7 @@ public final class InsertTests {
       LischinskiIncrementalBuilder.rectangleFrame(0.0,1.0,0.0,1.0);
     final Set<ZeroSimplex> frame = builder.vertices();
     for (final ZeroSimplex z : frame) { builder.insert(z); }
-    builder.insert(new VectorD2(0.5, 0.5)); }
+    builder.insertPoint(new VectorD2(0.5, 0.5)); }
 
   //--------------------------------------------------------------
 

@@ -7,6 +7,7 @@
    :version "2026-10-04"}
 
   (:import
+    [mop.java.geometry.delaunay Util]
     [mop.java.geometry.delaunay.qedge LischinskiIncrementalBuilder]
     [mop.java.geometry.euclidean VectorD2]
     [mop.java.jfx JFX JfxWorld]))
@@ -17,16 +18,17 @@
   (let [p0 (VectorD2. 0.0 0.0)
         p1 (VectorD2. 2.0 0.0)
         p2 (VectorD2. 0.0 2.0)
-        mesh (QMesh/triangleFrame p0 p1 p2)
-        exclude (.vertices mesh #{})
+        builder (LischinskiIncrementalBuilder/triangleFrame p0 p1 p2)
+        exclude (.vertices builder)
         sites [(VectorD2. 0.5 0.25)
                (VectorD2. 0.5 0.75)
                (VectorD2. 0.25 0.5)
                (VectorD2. 0.75 0.5)
                (VectorD2. 0.25 0.2)
                (VectorD2. 0.75 0.2)]]
-    (doseq [site sites] (LischinskiIncrementalBuilder /insert mesh site))
-    (JFX/edges (.edges mesh exclude) JFX/MESH_COLOR "triangle frame")))
+    (doseq [site sites] (.insertPoint builder site))
+    (JFX/edges (Util/edgeCoordinates (.build builder) exclude)
+      JFX/MESH_COLOR "triangle-nonconvex")))
     ;;----------------------------------------------------------------
 (System/setProperty "glass.win.uiScale" "1")
 (JfxWorld/setWorldBuilder make-world)

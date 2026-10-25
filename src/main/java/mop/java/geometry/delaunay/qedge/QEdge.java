@@ -1,5 +1,6 @@
 package mop.java.geometry.delaunay.qedge;
 
+import mop.java.cmplx.TwoSimplex;
 import mop.java.cmplx.ZeroSimplex;
 
 import java.util.*;
@@ -162,11 +163,13 @@ public final class QEdge {
   // collect mesh elements
   //--------------------------------------------------------------------
 
-  private final boolean noElements (final Set<ZeroSimplex> exclude,
-                                    final ZeroSimplex[] points) {
-    for (final ZeroSimplex p : points) {
-      if (exclude.contains(p)) { return false; } }
-    return true; }
+// --Commented out by Inspection START (10/25/2026 14:09):
+//  private final boolean noElements (final Set<ZeroSimplex> exclude,
+//                                    final ZeroSimplex[] points) {
+//    for (final ZeroSimplex p : points) {
+//      if (exclude.contains(p)) { return false; } }
+//    return true; }
+// --Commented out by Inspection STOP (10/25/2026 14:09)
 
   //--------------------------------------------------------------------
   /** Collect the vertices as a set of points.
@@ -192,40 +195,34 @@ public final class QEdge {
   public final SortedSet<ZeroSimplex> vertices () {
     return vertices(new TreeSet<>()); }
 
-  /** Collect the edges as a set of pairs of coordinates.
-   * Skip edges that have any vertices in <code>exclude</code>.
-   * <b>Assumes mesh is connected!</b>
-   */
+//  /** Collect the edges as a set of pairs of coordinates.
+//   * Skip edges that have any vertices in <code>exclude</code>.
+//   * <b>Assumes mesh is connected!</b>
+//   */
+//
+//  public final SortedSet<ZeroSimplex[]> edges (final Set<ZeroSimplex> exclude) {
+//    final Set<ZeroSimplex[]> t = new HashSet<>();
+//    final Set<QEdge> visited = new HashSet<>();
+//    final Stack<QEdge> toVisit = new Stack<>();
+//    toVisit.push(this);
+//    while (! toVisit.empty()) {
+//      final QEdge e0 = toVisit.pop();
+//      if (! visited.contains(e0)) {
+//        final QEdge e1 = e0.reverse();
+//        visited.add(e0);
+//        visited.add(e1);
+//        toVisit.push(e0.faceNext());
+//        toVisit.push(e1.faceNext());
+//        // TODO: sort, preserving orientation, so that same edge
+//        //  only returned once.
+//        final ZeroSimplex[] points = new ZeroSimplex[] {
+//          e0.origin(), e1.origin(), };
+//        Arrays.sort(points);
+//        if (noElements(exclude,points)) { t.add(points); } } }
+//    return t; }
 
-  public final Set<ZeroSimplex[]> edges (final Set<ZeroSimplex> exclude) {
-    final Set<ZeroSimplex[]> t = new HashSet<>();
-    final Set<QEdge> visited = new HashSet<>();
-    final Stack<QEdge> toVisit = new Stack<>();
-    toVisit.push(this);
-    while (! toVisit.empty()) {
-      final QEdge e0 = toVisit.pop();
-      if (! visited.contains(e0)) {
-        final QEdge e1 = e0.reverse();
-        visited.add(e0);
-        visited.add(e1);
-        toVisit.push(e0.faceNext());
-        toVisit.push(e1.faceNext());
-        // TODO: sort, preserving orientation, so that same edge
-        //  only returned once.
-        final ZeroSimplex[] points = new ZeroSimplex[] {
-          e0.origin(), e1.origin(), };
-        Arrays.sort(points);
-        if (noElements(exclude,points)) { t.add(points); } } }
-    return t; }
-
-  //--------------------------------------------------------------------
-  /** Collect the triangles as a set of triples of coordinates.
-   * Skip triangles that have any vertices in <code>exclude</code>.
-   * <b>Assumes mesh is connected!</b>
-   */
-
-  public final Set<ZeroSimplex[]> triangles (final Set<ZeroSimplex> exclude) {
-    final Set<ZeroSimplex[]> t = new HashSet<>();
+  public final SortedSet<TwoSimplex> faces () {
+    final SortedSet<TwoSimplex> faces = new TreeSet<>();
     final Set<QEdge> visited = new HashSet<>();
     final Stack<QEdge> toVisit = new Stack<>();
     toVisit.push(this);
@@ -240,10 +237,39 @@ public final class QEdge {
         toVisit.push(e2.reverse());
         // TODO: sort, preserving orientation, so that same triangle
         //  only returned once.
-        final ZeroSimplex[] vtxs = new ZeroSimplex[] {
-          e0.origin(), e1.origin(), e2.origin(), };
-        if (noElements(exclude,vtxs)) { t.add(vtxs); } } }
-    return t; }
+        final TwoSimplex face = TwoSimplex.make(
+          e0.origin(), e1.origin(), e2.origin());
+        faces.add(face); } }
+    return faces; }
+
+  //--------------------------------------------------------------------
+// --Commented out by Inspection START (10/25/2026 14:07):
+//  /** Collect the triangles as a set of triples of coordinates.
+//   * Skip triangles that have any vertices in <code>exclude</code>.
+//   * <b>Assumes mesh is connected!</b>
+//   */
+//
+//  public final Set<ZeroSimplex[]> triangles (final Set<ZeroSimplex> exclude) {
+//    final Set<ZeroSimplex[]> t = new HashSet<>();
+//    final Set<QEdge> visited = new HashSet<>();
+//    final Stack<QEdge> toVisit = new Stack<>();
+//    toVisit.push(this);
+//    while (! toVisit.empty()) {
+//      final QEdge e0 = toVisit.pop();
+//      if (! visited.contains(e0)) {
+//        visited.add(e0);
+//        final QEdge e1 = e0.faceNext();
+//        final QEdge e2 = e1.faceNext();
+//        toVisit.push(e0.reverse());
+//        toVisit.push(e1.reverse());
+//        toVisit.push(e2.reverse());
+//        // TODO: sort, preserving orientation, so that same triangle
+//        //  only returned once.
+//        final ZeroSimplex[] vtxs = new ZeroSimplex[] {
+//          e0.origin(), e1.origin(), e2.origin(), };
+//        if (noElements(exclude,vtxs)) { t.add(vtxs); } } }
+//    return t; }
+// --Commented out by Inspection STOP (10/25/2026 14:07)
 
   //--------------------------------------------------------------------
   // Object

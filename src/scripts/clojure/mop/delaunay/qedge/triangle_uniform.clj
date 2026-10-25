@@ -4,10 +4,11 @@
 (ns mop.delaunay.qedge.triangle-uniform
   {:doc     "Use JavaFX to display a delaunay triangulation."
    :author  "palisades dot lakes at gmail dot com"
-   :version "2026-10-04"}
+   :version "2026-10-25"}
 
   (:import
     [mop.java.geometry Generators]
+    [mop.java.geometry.delaunay Util]
     [mop.java.geometry.delaunay.qedge LischinskiIncrementalBuilder]
     [mop.java.geometry.euclidean VectorD2]
     [mop.java.jfx JFX JfxWorld]
@@ -20,16 +21,16 @@
   (let [p0 (VectorD2. 0.0 0.0)
         p1 (VectorD2. 2.0 0.0)
         p2 (VectorD2. 0.0 2.0)
-        mesh (QMesh/triangleFrame p0 p1 p2)
-        exclude (.vertices mesh #{})
+        builder (LischinskiIncrementalBuilder/triangleFrame p0 p1 p2)
+        exclude (.vertices builder)
         pointGenerator (Generators/vectorD2Generator
                          (Doubles/uniformGenerator
                            (PRNG/well44497b "seeds/Well44497b-2019-01-11.txt")
                            0.0 1.0))
         nsites 64]
-    (dotimes [_ nsites]
-      (LischinskiIncrementalBuilder /insert mesh (.next pointGenerator)))
-    (JFX/edges (.edges mesh exclude) JFX/MESH_COLOR "triangle uniform")))
+    (dotimes [_ nsites] (.insertPoint builder (.next pointGenerator)))
+    (JFX/edges (Util/edgeCoordinates (.build builder) exclude)
+      JFX/MESH_COLOR "triangle-uniform")))
 ;;----------------------------------------------------------------
 (System/setProperty "glass.win.uiScale" "1")
 (JfxWorld/setWorldBuilder make-world)

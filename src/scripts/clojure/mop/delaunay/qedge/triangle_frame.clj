@@ -4,9 +4,11 @@
 (ns mop.delaunay.qedge.triangle-frame
   {:doc     "Use JavaFX to display a delaunay triangulation."
    :author  "palisades dot lakes at gmail dot com"
-   :version "2026-10-23"}
+   :version "2026-10-25"}
 
   (:import
+    [mop.java.geometry.delaunay Util]
+    [mop.java.geometry.delaunay.qedge LischinskiIncrementalBuilder]
     [mop.java.geometry.euclidean VectorD2]
     [mop.java.jfx JFX JfxWorld]))
 ;;----------------------------------------------------------------
@@ -16,8 +18,10 @@
   (let [p0 (VectorD2. -1.0 -1.0)
         p1 (VectorD2.  2.0 -1.0)
         p2 (VectorD2.  0.5, 3.0)
-        mesh (QMesh/triangleFrame p0 p1 p2)]
-    (JFX/edges (.edges mesh #{}) JFX/FRAME_COLOR "one")))
+        builder (LischinskiIncrementalBuilder/triangleFrame p0 p1 p2)
+        exclude #{}]
+    (JFX/edges (Util/edgeCoordinates (.build builder) exclude)
+      JFX/FRAME_COLOR "one")))
 ;;----------------------------------------------------------------
 (System/setProperty "glass.win.uiScale" "1")
 (JfxWorld/setWorldBuilder make-world)

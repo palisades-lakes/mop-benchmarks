@@ -91,8 +91,10 @@ public interface DelaunayBuilder {
   BiFunction<TwoSimplex,Map<ZeroSimplex,VectorD2>,TriangleR2>
   predicateBuilder () { throw new UnsupportedOperationException(); }
 
-  public default TriangleR2 predicate (final TwoSimplex f) {
-    throw new UnsupportedOperationException(); }
+// --Commented out by Inspection START (10/25/2026 14:09):
+//  public default TriangleR2 predicate (final TwoSimplex f) {
+//    throw new UnsupportedOperationException(); }
+// --Commented out by Inspection STOP (10/25/2026 14:09)
 
   //--------------------------------------------------------------------
   /**
@@ -115,13 +117,15 @@ public interface DelaunayBuilder {
     vertices().add(z2);
     faces().add(t); }
 
-  public default void addTriangle (final TwoSimplex f) {
-    // TODO: self hash to de-dupe multiple insertions?
-    assert ! faces().contains(f);
-    vertices().add(f.z0());
-    vertices().add(f.z1());
-    vertices().add(f.z2());
-    faces().add(f); }
+// --Commented out by Inspection START (10/25/2026 14:08):
+//  public default void addTriangle (final TwoSimplex f) {
+//    // TODO: self hash to de-dupe multiple insertions?
+//    assert ! faces().contains(f);
+//    vertices().add(f.z0());
+//    vertices().add(f.z1());
+//    vertices().add(f.z2());
+//    faces().add(f); }
+// --Commented out by Inspection STOP (10/25/2026 14:08)
 
   /** CDS: Delete positively oriented triangle. */
   public default void deleteTriangle (final TwoSimplex t) {
@@ -242,17 +246,19 @@ public interface DelaunayBuilder {
   public default void insert (final Set<ZeroSimplex> zs) {
     for (final ZeroSimplex z : zs) { insert(z); } }
 
-  public default void insert (final ZeroSimplex z,
-                              final VectorD2 p) {
-    embed(z,p);
-    insert(z); }
+// --Commented out by Inspection START (10/25/2026 14:08):
+//  public default void insert (final ZeroSimplex z,
+//                              final VectorD2 p) {
+//    embed(z,p);
+//    insert(z); }
+// --Commented out by Inspection STOP (10/25/2026 14:08)
 
   //--------------------------------------------------------------------
 
   static final AtomicInteger _counter = new AtomicInteger(0);
   private static int counter () { return _counter.getAndIncrement(); }
 
-  public default void insert (final VectorD2 p) {
+  public default void insertPoint (final VectorD2 p) {
     final ZeroSimplex z = ZeroSimplex.make("s" + counter());
     embed(z,p);
     insert(z); }

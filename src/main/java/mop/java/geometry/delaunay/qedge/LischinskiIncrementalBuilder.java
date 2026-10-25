@@ -10,7 +10,10 @@ import mop.java.geometry.delaunay.Util;
 import mop.java.geometry.euclidean.VectorD2;
 import mop.java.util.IFnWrapper;
 
-import java.util.*;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.SortedSet;
+import java.util.TreeMap;
 
 /** Algorithm for Delaunay triangulation, after
  * <a href="https://www.researchgate.net/publication/262235495_Incremental_Delaunay_Triangulation">
@@ -66,42 +69,11 @@ public final class LischinskiIncrementalBuilder
 
   @Override
   public final SortedSet<ZeroSimplex> vertices () {
-    final SortedSet<ZeroSimplex> vertices = new TreeSet<>();
-    final Set<QEdge> visited = new HashSet<>();
-    final Stack<QEdge> toVisit = new Stack<>();
-    toVisit.push(startingEdge());
-    while (! toVisit.empty()) {
-      final QEdge e0 = toVisit.pop();
-      if (! visited.contains(e0)) {
-        visited.add(e0);
-        toVisit.push(e0.reverse());
-        toVisit.push(e0.faceNext());
-        vertices.add(e0.origin()); } }
-    return vertices; }
-
-  //--------------------------------------------------------------------
+    return startingEdge().vertices(); }
 
   @Override
   public final SortedSet<TwoSimplex> faces () {
-    final SortedSet<TwoSimplex> faces = new TreeSet<>();
-    final Set<QEdge> visited = new HashSet<>();
-    final Stack<QEdge> toVisit = new Stack<>();
-    toVisit.push(startingEdge());
-    while (! toVisit.empty()) {
-      final QEdge e0 = toVisit.pop();
-      if (! visited.contains(e0)) {
-        visited.add(e0);
-        final QEdge e1 = e0.faceNext();
-        final QEdge e2 = e1.faceNext();
-        toVisit.push(e0.reverse());
-        toVisit.push(e1.reverse());
-        toVisit.push(e2.reverse());
-        // TODO: sort, preserving orientation, so that same triangle
-        //  only returned once.
-        final TwoSimplex face = TwoSimplex.make(
-          e0.origin(), e1.origin(), e2.origin());
-        faces.add(face); } }
-    return faces; }
+    return startingEdge().faces(); }
 
   //--------------------------------------------------------------------
 
@@ -323,13 +295,17 @@ public final class LischinskiIncrementalBuilder
   unsafe (final SortedMap<ZeroSimplex, VectorD2> embedding) {
     return new LischinskiIncrementalBuilder(embedding); }
 
-  public static final LischinskiIncrementalBuilder make () {
-    return unsafe(new TreeMap<>()); }
+// --Commented out by Inspection START (10/25/2026 14:09):
+//  public static final LischinskiIncrementalBuilder make () {
+//    return unsafe(new TreeMap<>()); }
+// --Commented out by Inspection STOP (10/25/2026 14:09)
 
-  public static final LischinskiIncrementalBuilder
-  make (final Map<ZeroSimplex, VectorD2> embedding) {
-    // defensive copy
-    return unsafe(new TreeMap<>(embedding)); }
+// --Commented out by Inspection START (10/25/2026 14:09):
+//  public static final LischinskiIncrementalBuilder
+//  make (final Map<ZeroSimplex, VectorD2> embedding) {
+//    // defensive copy
+//    return unsafe(new TreeMap<>(embedding)); }
+// --Commented out by Inspection STOP (10/25/2026 14:09)
 
   public static final LischinskiIncrementalBuilder
   make (final Map<ZeroSimplex, VectorD2> embedding,
