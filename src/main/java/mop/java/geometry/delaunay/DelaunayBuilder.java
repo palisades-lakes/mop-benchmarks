@@ -1,7 +1,7 @@
 package mop.java.geometry.delaunay;
 
 import clojure.lang.IFn;
-import mop.java.cmplx.OneSimplex;
+import mop.java.cmplx.DirectedOneSimplex;
 import mop.java.cmplx.SimplicialComplex2D;
 import mop.java.cmplx.TwoSimplex;
 import mop.java.cmplx.ZeroSimplex;
@@ -170,11 +170,11 @@ public interface DelaunayBuilder {
    * Throw an exception if no such face.
    */
 
-  public default OneSimplex adjacent (final ZeroSimplex z) {
+  public default DirectedOneSimplex adjacent (final ZeroSimplex z) {
     for (final TwoSimplex t : faces()) {
-      if (t.z0().equals(z)) { return OneSimplex.make(t.z1(),t.z2()); }
-      if (t.z1().equals(z)) { return OneSimplex.make(t.z2(),t.z0()); }
-      if (t.z2().equals(z)) { return OneSimplex.make(t.z0(),t.z1()); } }
+      if (t.z0().equals(z)) { return DirectedOneSimplex.make(t.z1(),t.z2()); }
+      if (t.z1().equals(z)) { return DirectedOneSimplex.make(t.z2(),t.z0()); }
+      if (t.z2().equals(z)) { return DirectedOneSimplex.make(t.z0(),t.z1()); } }
     throw new UnsupportedOperationException(
       "no face with vertex:" + z); }
 

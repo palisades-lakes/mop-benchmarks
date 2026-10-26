@@ -118,7 +118,9 @@ public final class CDSBWDelaunayBuilder implements DelaunayBuilder {
   public static final DelaunayBuilder make () {
     return new CDSBWDelaunayBuilder(); }
 
-  /** Use <code>mesh</code> as the initial frame for the builder. */
+  /** Use <code>mesh</code> as the initial frame for the builder.
+   * TODO: check that it's delaunay.
+   */
   public static final DelaunayBuilder make (final TriangleMesh mesh) {
     final DelaunayBuilder b = new CDSBWDelaunayBuilder();
     final SimplicialComplex2D c = (SimplicialComplex2D) mesh.cmplx();

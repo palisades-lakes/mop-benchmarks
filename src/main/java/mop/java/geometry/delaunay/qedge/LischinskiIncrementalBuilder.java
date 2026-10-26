@@ -387,6 +387,20 @@ public final class LischinskiIncrementalBuilder
 
     return make(embedding,e01); }
 
+  /** Use <code>mesh</code> as the initial frame for the builder.
+   * TODO: check that it's delaunay.
+   */
+//  public static final DelaunayBuilder make (final TriangleMesh mesh) {
+//    final DelaunayBuilder b = new CDSBWDelaunayBuilder();
+//    final SimplicialComplex2D c = (SimplicialComplex2D) mesh.cmplx();
+//    final IFn e = mesh.embedding();
+//    for (final ZeroSimplex z : c.vertices()) {
+//      b.embed(z,(VectorD2) e.invoke(z)); }
+//    b.vertices().addAll(c.vertices());
+//    b.faces().addAll(c.faces());
+//
+//    return b; }
+
 //--------------------------------------------------------------------
 } // end class
 //--------------------------------------------------------------------

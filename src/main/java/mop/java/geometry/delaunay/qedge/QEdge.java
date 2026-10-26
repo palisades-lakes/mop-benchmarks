@@ -33,7 +33,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * constraint that the faces are triangular.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-10-24
+ * @version 2026-10-25
  */
 public final class QEdge {
 

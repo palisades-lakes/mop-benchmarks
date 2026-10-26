@@ -1,7 +1,7 @@
 package mop.java.test.geometry.delaunay.cdsbw;
 
 import mop.java.Classes;
-import mop.java.cmplx.OneSimplex;
+import mop.java.cmplx.DirectedOneSimplex;
 import mop.java.cmplx.TwoSimplex;
 import mop.java.cmplx.ZeroSimplex;
 import mop.java.geom.mesh.TriangleMesh;
@@ -26,7 +26,7 @@ import java.util.function.Supplier;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 202-10-15
+ * @version 202-10-25
  */
 
 public final class DelaunayBuilderTest {
@@ -75,13 +75,13 @@ public final class DelaunayBuilderTest {
     final ZeroSimplex z20 = builder.adjacent(z2,z0);
     Assertions.assertEquals(z1,z20);
 
-    final OneSimplex e0 = builder.adjacent(z0);
+    final DirectedOneSimplex e0 = builder.adjacent(z0);
     Assertions.assertEquals(z1,e0.z0());
     Assertions.assertEquals(z2,e0.z1());
-    final OneSimplex e1 = builder.adjacent(z1);
+    final DirectedOneSimplex e1 = builder.adjacent(z1);
     Assertions.assertEquals(z2,e1.z0());
     Assertions.assertEquals(z0,e1.z1());
-    final OneSimplex e2 = builder.adjacent(z2);
+    final DirectedOneSimplex e2 = builder.adjacent(z2);
     Assertions.assertEquals(z0,e2.z0());
     Assertions.assertEquals(z1,e2.z1());
 
@@ -152,21 +152,21 @@ public final class DelaunayBuilderTest {
     Assertions.assertEquals(z0,z23);
 
     // unique opposite edge in these 2
-    { final OneSimplex e1 = builder.adjacent(z1);
+    { final DirectedOneSimplex e1 = builder.adjacent(z1);
       Assertions.assertEquals(z2,e1.z0());
       Assertions.assertEquals(z0,e1.z1()); }
-    { final OneSimplex e3 = builder.adjacent(z3);
+    { final DirectedOneSimplex e3 = builder.adjacent(z3);
       Assertions.assertEquals(z0,e3.z0());
       Assertions.assertEquals(z2,e3.z1()); }
 
     // 2 possible answers in these 2
     // determined by ordering of face iteration,
     // but don't want to assume that:
-    { final OneSimplex e0 = builder.adjacent(z0);
+    { final DirectedOneSimplex e0 = builder.adjacent(z0);
       Assertions.assertTrue(
         (z1.equals(e0.z0()) && z2.equals(e0.z1()) ||
           (z2.equals(e0.z0())) && z3.equals(e0.z1()))); }
-    { final OneSimplex e2 = builder.adjacent(z2);
+    { final DirectedOneSimplex e2 = builder.adjacent(z2);
       Assertions.assertTrue(
         (z0.equals(e2.z0()) && z1.equals(e2.z1()) ||
           (z3.equals(e2.z0())) && z0.equals(e2.z1()))); }
