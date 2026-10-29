@@ -16,8 +16,8 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
 
-/** Delaunay triangulation, after
- * Cheng, Dey, Shewchuk discussion of Boyer-Watson, <br>
+/** Delaunay triangulation,
+ * after Cheng, Dey, Shewchuk discussion of Boyer-Watson, <br>
  * in Ch 3 of<br>
  * <a href="https://www.routledge.com/Delaunay-Mesh-Generation/Cheng-Dey-Shewchuk/p/book/9781584887300">
  * Siu-wing Cheng,
