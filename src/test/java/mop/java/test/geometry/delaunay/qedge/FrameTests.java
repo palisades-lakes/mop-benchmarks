@@ -5,11 +5,11 @@ import mop.java.geometry.euclidean.VectorD2;
 import org.junit.jupiter.api.Test;
 
 /** <pre>
- * mvn -Dtest=mop.java.test.geometry.delaunay.qedge.FrameTests test
+ * mvn -q -Dtest=mop.java.test.geometry.delaunay.qedge.FrameTests test
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 202-10-29
+ * @version 202-10-30
  */
 
 public final class FrameTests {
@@ -28,10 +28,7 @@ public final class FrameTests {
       LischinskiIncrementalBuilder.triangleFrame(p1, p2, p3);
     System.out.println("triangle:");
     frame.startingEdge().printMesh();
-    final LischinskiIncrementalBuilder frameX =
-      LischinskiIncrementalBuilder.triangleFrameX(p1, p2, p3);
-    System.out.println("triangleX:");
-    frameX.startingEdge().printMesh();
+
   }
 
   //--------------------------------------------------------------
@@ -41,9 +38,11 @@ public final class FrameTests {
 
     final LischinskiIncrementalBuilder frame =
       LischinskiIncrementalBuilder.rectangleFrame(
-      0.0,1.0,0.0,1.0);
-    System.out.println("rectangle:");
-    frame.startingEdge().printMesh(); }
+        0.0,1.0,0.0,1.0);
+    System.out.println("\nrectangle:");
+    frame.startingEdge().printMesh();
+    System.out.println("mesh");
+    System.out.println(frame.build()); }
 
   //--------------------------------------------------------------
 }

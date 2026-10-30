@@ -70,6 +70,7 @@ public final class QEdge {
   /** The edge from the destination to the origin. */
   public final QEdge reverse () { return rot().rot(); }
 
+  public final ZeroSimplex dest () { return reverse().origin(); }
   /** The next edge cw around the origin. */
   public final QEdge prev () { return rot().next().rot(); }
 
@@ -278,11 +279,14 @@ public final class QEdge {
   @Override
   public final String toString () {
     return
-      name()
-        + "[rot:" + rot().name() + "->" + rot().next().name()
-        + ", next:" + next().name()
-        + ", fNext:" + faceNext().name()
-        + "] -> " + origin(); }
+      "\n" + name()
+        + "\nnext:" + next().name()
+        + "\nfaceNext:" + faceNext().name()
+        + "\nrot:" + rot().name()
+        + "\nreverse:" + reverse().name()
+        + "\nrot.reverse:" + rot().reverse().name()
+        + "\nrot.reverse.next:" + rot().reverse().next().name()
+        + "\n" + origin() + "->" + dest(); }
 
   //--------------------------------------------------------------------
   // debugging
@@ -295,7 +299,7 @@ public final class QEdge {
                                       final Stack<QEdge> toVisit) {
     final QEdge e0 = toVisit.pop();
     if ((null!=e0) && (! visited.contains(e0))) {
-      System.out.println("face(" + e0 + ")");
+      System.out.println("\nface:" );
       QEdge e1 = e0;
       do {
         toVisit.remove(e1);

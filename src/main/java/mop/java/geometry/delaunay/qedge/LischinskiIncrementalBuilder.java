@@ -24,7 +24,7 @@ import java.util.TreeMap;
  * <b>NOTE: </b> all inserted points must fall within the existing mesh!
  * </p>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-10-29
+ * @version 2026-10-30
  */
 
 public final class LischinskiIncrementalBuilder
@@ -279,6 +279,7 @@ public final class LischinskiIncrementalBuilder
 
   public final TriangleMesh build () {
     final SimplicialComplex2D cmplx = SimplicialComplex2D.make(faces());
+    System.out.println(cmplx);
     final IFn z2p = IFnWrapper.make(embedding());
     return TriangleMesh.make(cmplx, z2p); }
 
@@ -367,24 +368,24 @@ public final class LischinskiIncrementalBuilder
 
     return make(embedding,e01); }
 
-  public static final LischinskiIncrementalBuilder
-  triangleFrameX (final VectorD2 p0,
-                  final VectorD2 p1,
-                  final VectorD2 p2) {
-    // this creates a closed manifold, a triangle and its 'reverse'
-    final ZeroSimplex z0 = ZeroSimplex.make("z0");
-    final ZeroSimplex z1 = ZeroSimplex.make("z1");
-    final ZeroSimplex z2 = ZeroSimplex.make("z2");
-    final Map<ZeroSimplex,VectorD2> embedding =
-      Map.of(z0,p0,z1,p1,z2,p2);
-
-    final QEdge e01 = QEdge.make("e01", z0, z1);
-    final QEdge e12 = QEdge.make("e12", z1, z2);
-    final QEdge e20 = QEdge.make("e20", z2, z0);
-    e01.splice(e20.reverse());
-    e12.splice(e01.reverse());
-    e20.splice(e12.reverse());
-    return make(embedding,e01); }
+//  public static final LischinskiIncrementalBuilder
+//  triangleFrameX (final VectorD2 p0,
+//                  final VectorD2 p1,
+//                  final VectorD2 p2) {
+//    // this creates a closed manifold, a triangle and its 'reverse'
+//    final ZeroSimplex z0 = ZeroSimplex.make("z0");
+//    final ZeroSimplex z1 = ZeroSimplex.make("z1");
+//    final ZeroSimplex z2 = ZeroSimplex.make("z2");
+//    final Map<ZeroSimplex,VectorD2> embedding =
+//      Map.of(z0,p0,z1,p1,z2,p2);
+//
+//    final QEdge e01 = QEdge.make("e01", z0, z1);
+//    final QEdge e12 = QEdge.make("e12", z1, z2);
+//    final QEdge e20 = QEdge.make("e20", z2, z0);
+//    e01.splice(e20.reverse());
+//    e12.splice(e01.reverse());
+//    e20.splice(e12.reverse());
+//    return make(embedding,e01); }
 
   //--------------------------------------------------------------------
 
@@ -437,44 +438,57 @@ public final class LischinskiIncrementalBuilder
     final Map<ZeroSimplex,VectorD2> embedding =
       Map.of(z0,p0,z1,p1,z2,p2,z3,p3);
 
-    // 5 primal edges
-    final QEdge e01 = QEdge.make("e01",z0, z1);
-    final QEdge e12 = QEdge.make("e12",z1, z2);
-    final QEdge e20 = QEdge.make("e20",z2, z0);
-    final QEdge e23 = QEdge.make("e23",z2, z3);
-    final QEdge e30 = QEdge.make("e30",z3, z0);
+    // primal edges
 
-    // 5 primal rot edges
-    final QEdge r01 = e01.rot();
-    final QEdge r12 = e12.rot();
-    final QEdge r20 = e20.rot();
-    final QEdge r23 = e23.rot();
-    final QEdge r30 = e30.rot();
+    // 4 ccw inner rectangle
+    final QEdge e01 = QEdge.make("e01",z0,z1);
+    final QEdge e12 = QEdge.make("e12",z1,z2);
+    final QEdge e23 = QEdge.make("e23",z2,z3);
+    final QEdge e30 = QEdge.make("e30",z3,z0);
 
-    // 5 reverse edges
-    final QEdge e10 = r01.rot();
-    final QEdge e21 = r12.rot();
-    final QEdge e02 = r20.rot();
-    final QEdge e32 = r23.rot();
-    final QEdge e03 = r30.rot();
+    // 2 inner diagonal
+    final QEdge e20 = QEdge.make("e20",z2,z0);
+    final QEdge e02 = e20.reverse();
 
-    // 5 reverse rot edges
-    final QEdge r10 = e10.rot();
-    final QEdge r21 = e21.rot();
-    final QEdge r02 = e02.rot();
-    final QEdge r32 = e32.rot();
-    final QEdge r03 = e03.rot();
+    // 4 cw outer rectangle
+    final QEdge e10 = e01.reverse();
+    final QEdge e21 = e12.reverse();
+    final QEdge e32 = e23.reverse();
+    final QEdge e03 = e30.reverse();
 
+    // inner
     e01.setNext(e02); e12.setNext(e10); e20.setNext(e21);
     e02.setNext(e03); e23.setNext(e20); e30.setNext(e32);
 
+    // outer
     e10.setNext(e12); e21.setNext(e23); e32.setNext(e30);
     e03.setNext(e01);
 
-    r01.setNext(r30); r12.setNext(r10); r20.setNext(r32);
-    r02.setNext(r10); r23.setNext(r12);
+    // 'dual' edges
+    // 4 ccw inner rectangle
+    final QEdge r01 = e01.rot();
+    final QEdge r12 = e12.rot();
+    final QEdge r23 = e23.rot();
+    final QEdge r30 = e30.rot();
 
-    r30.setNext(r23); r10.setNext(r21); r21.setNext(r02);
+    // 2 inner diagonal
+    final QEdge r20 = e20.rot();
+    final QEdge r02 = e02.rot();
+
+    // 4 cw outer rectangle
+    final QEdge r10 = e10.rot();
+    final QEdge r21 = e21.rot();
+    final QEdge r32 = e32.rot();
+    final QEdge r03 = e03.rot();
+
+    // inner
+    r01.setNext(r30); r12.setNext(r01); r23.setNext(r12);
+    r30.setNext(r23);
+
+    r20.setNext(r32); r02.setNext(r10);
+
+    // outer
+    r10.setNext(r21); r21.setNext(r02);
     r32.setNext(r03); r03.setNext(r20);
 
 
