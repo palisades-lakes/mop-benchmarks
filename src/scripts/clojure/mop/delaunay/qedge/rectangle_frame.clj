@@ -4,9 +4,10 @@
 (ns mop.delaunay.qedge.rectangle-frame
   {:doc     "Use JavaFX to display a delaunay triangulation."
    :author  "palisades dot lakes at gmail dot com"
-   :version "2026-10-25"}
+   :version "2026-10-30"}
 
   (:import
+    [java.util Arrays]
     [mop.java.geometry.delaunay Util]
     [mop.java.geometry.delaunay.qedge LischinskiIncrementalBuilder]
     [mop.java.jfx JFX JfxWorld]))
@@ -14,9 +15,12 @@
 ;; mvn -q -DskipTests=true install & cljfx src\scripts\clojure\mop\delaunay\qedge\rectangle_frame.clj
 ;;----------------------------------------------------------------
 (defn make-world []
-  (let [builder (LischinskiIncrementalBuilder/rectangleFrame 0.0 1.0 0.0 1.0)]
-    (JFX/edges (Util/edgeCoordinates (.build builder))
-      JFX/MESH_COLOR "rectangle frame")))
+  (let [builder (LischinskiIncrementalBuilder/rectangleFrame 0.0 1.0 0.0 1.0)
+        edgeCoords (Util/edgeCoordinates (.build builder))]
+    (println "edges")
+    (doseq [e edgeCoords]
+      (println (Arrays/toString ^objects e)))
+    (JFX/edges edgeCoords JFX/MESH_COLOR "rectangle frame")))
 ;;----------------------------------------------------------------
 (System/setProperty "glass.win.uiScale" "1")
 (JfxWorld/setWorldBuilder make-world)

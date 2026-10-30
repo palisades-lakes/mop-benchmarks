@@ -178,7 +178,8 @@ public final class QEdge {
    * <b>Assumes mesh is connected!</b>
    */
 
-  public final SortedSet<ZeroSimplex> vertices (final Set<ZeroSimplex> exclude) {
+  public final SortedSet<ZeroSimplex>
+  zeroSimplexes (final Set<ZeroSimplex> exclude) {
     final SortedSet<ZeroSimplex> t = new TreeSet<>();
     final Set<QEdge> visited = new HashSet<>();
     final Stack<QEdge> toVisit = new Stack<>();
@@ -193,8 +194,8 @@ public final class QEdge {
         if (!exclude.contains(p)) { t.add(p); } } }
     return t; }
 
-  public final SortedSet<ZeroSimplex> vertices () {
-    return vertices(new TreeSet<>()); }
+  public final SortedSet<ZeroSimplex> zeroSimplexes () {
+    return zeroSimplexes(new TreeSet<>()); }
 
 //  /** Collect the edges as a set of pairs of coordinates.
 //   * Skip edges that have any vertices in <code>exclude</code>.
@@ -222,7 +223,8 @@ public final class QEdge {
 //        if (noElements(exclude,points)) { t.add(points); } } }
 //    return t; }
 
-  public final SortedSet<TwoSimplex> faces () {
+  /** Collect connected triangular faces, skip others. */
+  public final SortedSet<TwoSimplex> twoSimplexes () {
     final SortedSet<TwoSimplex> faces = new TreeSet<>();
     final Set<QEdge> visited = new HashSet<>();
     final Stack<QEdge> toVisit = new Stack<>();
@@ -231,16 +233,21 @@ public final class QEdge {
       final QEdge e0 = toVisit.pop();
       if (! visited.contains(e0)) {
         visited.add(e0);
-        final QEdge e1 = e0.faceNext();
-        final QEdge e2 = e1.faceNext();
+        final QEdge e1 = e0.faceNext(); visited.add(e1);
+        final QEdge e2 = e1.faceNext(); visited.add(e2);
+        assert ! (e0.equals(e1) || e0.equals(e2) || (e1.equals(e2)));
         toVisit.push(e0.reverse());
         toVisit.push(e1.reverse());
         toVisit.push(e2.reverse());
-        // TODO: sort, preserving orientation, so that same triangle
-        //  only returned once.
-        final TwoSimplex face = TwoSimplex.make(
-          e0.origin(), e1.origin(), e2.origin());
-        faces.add(face); } }
+        QEdge e3 = e2.faceNext();
+        if (e0.equals(e3)) { // triangular
+          final TwoSimplex face = TwoSimplex.make(
+            e0.origin(), e1.origin(), e2.origin());
+          faces.add(face); }
+        else {
+          while (! e0.equals(e3)) {
+            visited.add(e3); toVisit.push(e3.reverse());
+            e3 = e3.faceNext(); } } } }
     return faces; }
 
   //--------------------------------------------------------------------

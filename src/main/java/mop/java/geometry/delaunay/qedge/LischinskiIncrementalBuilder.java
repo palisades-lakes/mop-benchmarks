@@ -69,11 +69,11 @@ public final class LischinskiIncrementalBuilder
 
   @Override
   public final SortedSet<ZeroSimplex> vertices () {
-    return startingEdge().vertices(); }
+    return startingEdge().zeroSimplexes(); }
 
   @Override
   public final SortedSet<TwoSimplex> faces () {
-    return startingEdge().faces(); }
+    return startingEdge().twoSimplexes(); }
 
   //--------------------------------------------------------------------
 
@@ -388,39 +388,6 @@ public final class LischinskiIncrementalBuilder
 //    return make(embedding,e01); }
 
   //--------------------------------------------------------------------
-
-//  public static final LischinskiIncrementalBuilder
-//  rectangleFrameX (final double xmin,
-//                  final double xmax,
-//                  final double ymin,
-//                  final double ymax) {
-//    final ZeroSimplex z0 = ZeroSimplex.make("z0");
-//    final ZeroSimplex z1 = ZeroSimplex.make("z1");
-//    final ZeroSimplex z2 = ZeroSimplex.make("z2");
-//    final ZeroSimplex z3 = ZeroSimplex.make("z3");
-//    final VectorD2 p0 = new VectorD2(xmin,ymin);
-//    final VectorD2 p1 = new VectorD2(xmax,ymin);
-//    final VectorD2 p2 = new VectorD2(xmax,ymax);
-//    final VectorD2 p3 = new VectorD2(xmin,ymax);
-//    final Map<ZeroSimplex,VectorD2> embedding =
-//      Map.of(z0,p0,z1,p1,z2,p2,z3,p3);
-//
-//    // face012
-//    final QEdge e01 = QEdge.make("e01",z0, z1);
-//    final QEdge e12 = QEdge.make("e12",z1, z2);
-//    final QEdge e20 = QEdge.make("e20",z2, z0);
-//    e01.splice(e20.reverse());
-//    e12.splice(e01.reverse());
-//    e20.splice(e12.reverse());
-//    // face023
-//    final QEdge e02 = e20.reverse();
-//    final QEdge e23 = QEdge.make("e23",z2, z3);
-//    final QEdge e30 = QEdge.make("e30",z3, z0);
-//    e02.splice(e30.reverse());
-//    e23.splice(e02.reverse());
-//    e30.splice(e23.reverse());
-//
-//    return make(embedding,e01); }
 
   public static final LischinskiIncrementalBuilder
   rectangleFrame (final double xmin,

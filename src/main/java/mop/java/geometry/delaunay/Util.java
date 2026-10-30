@@ -3,6 +3,7 @@ package mop.java.geometry.delaunay;
 import clojure.lang.IFn;
 import mop.java.cmplx.SimplicialComplex2D;
 import mop.java.cmplx.TwoSimplex;
+import mop.java.cmplx.UndirectedOneSimplex;
 import mop.java.cmplx.ZeroSimplex;
 import mop.java.geom.mesh.TriangleMesh;
 import mop.java.geometry.euclidean.VectorD2;
@@ -12,7 +13,7 @@ import java.util.*;
 
 /**
  * @author palisades dot lakes at gmail dot com
- * @version 2026-10-14
+ * @version 2026-10-30
  */
 
 public final class Util {
@@ -21,33 +22,34 @@ public final class Util {
   // TODO: move to mop TriangleMesh instance methods
   //--------------------------------------------------------------------
 
-  private static final VectorD2[] sortedPair (final VectorD2 p0,
-                                              final VectorD2 p1) {
-    final int c = p0.compareTo(p1);
-    assert 0 != c;
-    if (c < 0) { return new VectorD2[]{p0,p1}; }
-    return new VectorD2[]{p1,p0}; }
+  public static final Set<UndirectedOneSimplex>
+  edges (final SimplicialComplex2D cmplx,
+         final Collection exclude) {
+    final Set<UndirectedOneSimplex> uedges = new HashSet<>();
+    for (final TwoSimplex f : cmplx.faces()) {
+      final ZeroSimplex z0 = f.z0();
+      final ZeroSimplex z1 = f.z1();
+      final ZeroSimplex z2 = f.z2();
+      final boolean ok0 = ! exclude.contains(z0);
+      final boolean ok1 = ! exclude.contains(z1);
+      final boolean ok2 = ! exclude.contains(z2);
+      if (ok0) {
+        if (ok1) { uedges.add(UndirectedOneSimplex.make(z0,z1)); }
+        if (ok2) { uedges.add(UndirectedOneSimplex.make(z2,z0)); } }
+      if (ok1 && ok2) { uedges.add(UndirectedOneSimplex.make(z1,z2)); } }
+    return uedges; }
 
   public static final Set<VectorD2[]>
   edgeCoordinates (final TriangleMesh mesh,
                    final Collection exclude) {
-    final Set<VectorD2[]> pairs = new HashSet<>();
-    final IFn e = mesh.embedding();
     final SimplicialComplex2D c = (SimplicialComplex2D) mesh.cmplx();
-    for (final TwoSimplex f : c.faces()) {
-      final ZeroSimplex z0 = f.z0();
-      final ZeroSimplex z1 = f.z1();
-      final ZeroSimplex z2 = f.z2();
-     final boolean ok0 = ! exclude.contains(z0);
-      final boolean ok1 = ! exclude.contains(z1);
-      final boolean ok2 = ! exclude.contains(z2);
-      final VectorD2 p1 = (VectorD2) e.invoke(f.z1());
-      final VectorD2 p2 = (VectorD2) e.invoke(f.z2());
-      if (ok0) {
-        final VectorD2 p0 = (VectorD2) e.invoke(z0);
-        if (ok1) { pairs.add(sortedPair(p0,p1)); }
-        if (ok2) { pairs.add(sortedPair(p2,p0)); } }
-      if (ok1 && ok2) { pairs.add(sortedPair(p1,p2)); } }
+    final Set<UndirectedOneSimplex> uedges = edges(c,exclude);
+    final IFn p = mesh.embedding();
+    final Set<VectorD2[]> pairs = new HashSet<>();
+    for (final UndirectedOneSimplex e : uedges) {
+      final VectorD2 p0 = (VectorD2) p.invoke(e.z0());
+      final VectorD2 p1 = (VectorD2) p.invoke(e.z1());
+      pairs.add(new VectorD2[] { p0, p1, }); }
     return pairs; }
 
   public static final Set<VectorD2[]>
