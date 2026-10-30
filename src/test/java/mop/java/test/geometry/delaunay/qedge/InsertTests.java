@@ -17,7 +17,7 @@ import java.util.SortedSet;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 202-10-25
+ * @version 202-10-29
  */
 
 public final class InsertTests {
@@ -42,6 +42,21 @@ public final class InsertTests {
   //--------------------------------------------------------------
 
   @Test
+  public final void singularTriangleFrameX () {
+
+    // Construct a triangle containing the unit square:
+    final VectorD2 p0 = new VectorD2( -1.0, -1.0);
+    final VectorD2 p1 = new VectorD2(  2.0, -1.0);
+    final VectorD2 p2 = new VectorD2(  0.5,  3.0);
+
+    final LischinskiIncrementalBuilder builder =
+      LischinskiIncrementalBuilder.triangleFrameX(p0, p1, p2);
+    // TODO: infinite loop
+    final SortedSet<ZeroSimplex> zs = builder.vertices();
+    builder.insert(zs);
+    builder.insertPoint(new VectorD2(0.0, -1.0)); }
+
+  @Test
   public final void singularTriangleFrame () {
 
     // Construct a triangle containing the unit square:
@@ -51,7 +66,6 @@ public final class InsertTests {
 
     final LischinskiIncrementalBuilder builder =
       LischinskiIncrementalBuilder.triangleFrame(p0, p1, p2);
-//    // TODO: infinite loop
     final SortedSet<ZeroSimplex> zs = builder.vertices();
     builder.insert(zs);
     builder.insertPoint(new VectorD2(0.0, -1.0)); }
@@ -68,6 +82,26 @@ public final class InsertTests {
 
     final LischinskiIncrementalBuilder builder =
       LischinskiIncrementalBuilder.triangleFrame(p0, p1, p2);
+
+    final Generator pointGenerator = Generators.vectorD2Generator(
+      Doubles.uniformGenerator(
+        PRNG.well44497b("seeds/Well44497b-2019-01-11.txt"),
+        0.0, 1.0));
+
+    final int nsites = 16;
+    for (int i=0;i<nsites;i++) {
+      builder.insertPoint((VectorD2) pointGenerator.next()); } }
+
+  @Test
+  public final void uniform01TriangleFrameX () {
+
+    // Construct a triangle containing the unit square:
+    final VectorD2 p0 = new VectorD2( -1.0, -1.0);
+    final VectorD2 p1 = new VectorD2(  2.0, -1.0);
+    final VectorD2 p2 = new VectorD2(  0.5,  3.0);
+
+    final LischinskiIncrementalBuilder builder =
+      LischinskiIncrementalBuilder.triangleFrameX(p0, p1, p2);
 
     final Generator pointGenerator = Generators.vectorD2Generator(
       Doubles.uniformGenerator(

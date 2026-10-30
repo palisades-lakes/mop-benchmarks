@@ -8,11 +8,11 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /** <pre>
- * mvn -Dtest=mop.java.test.geometry.delaunay.qedge.FrameTests test
+ * mvn -Dtest=mop.java.test.geometry.delaunay.qedge.BuilderTests test
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 202-10-25
+ * @version 202-10-29
  */
 
 public final class BuilderTests {
@@ -26,11 +26,16 @@ public final class BuilderTests {
     final SimplicialComplex2D cmplx =
       (SimplicialComplex2D) mesh.cmplx();
     final QEdgeBuilder b = QEdgeBuilder.make(cmplx);
-    // should be 3 left and 0 right, but that uses facts about
-    // triangleFrame01
+    // should be 3 left and 0 right,
+    // but that makes assumptions about triangleFrame01
     Assertions.assertEquals(
-      3,
-      b.leftFaces().size() + b.rightFaces().size()); }
+      3, b.nLeftFaces() + b.nRightFaces());
+    Assertions.assertEquals(3, b.nEdges());
+    // should be 3 leftBoundary and 0 rightBoundary,
+    // but that makes assumptions about triangleFrame01
+    Assertions.assertEquals(3, b.nBoundary());
+    Assertions.assertEquals(0, b.nInterior());
+  }
 
   //--------------------------------------------------------------
 
@@ -42,11 +47,16 @@ public final class BuilderTests {
     final SimplicialComplex2D cmplx =
       (SimplicialComplex2D) mesh.cmplx();
     final QEdgeBuilder b = QEdgeBuilder.make(cmplx);
-    // should be 5 left and 1 right, but that uses facts about
-    // rectangleFrame
+    // should be 5 left and 1 right,
+    // but that makes assumptions about rectangleFrame
     Assertions.assertEquals(
-      6,
-      b.leftFaces().size() + b.rightFaces().size()); }
+      6, b.nLeftFaces() + b.nRightFaces());
+    Assertions.assertEquals(5, b.nEdges());
+    Assertions.assertEquals(1, b.nInterior());
+    // should be 4 left and 0 right,
+    // but that makes assumptions about rectangleFrame
+    Assertions.assertEquals(4, b.nBoundary());
+  }
 
   //--------------------------------------------------------------
 }

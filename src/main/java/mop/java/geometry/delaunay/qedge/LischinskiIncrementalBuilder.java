@@ -24,7 +24,7 @@ import java.util.TreeMap;
  * <b>NOTE: </b> all inserted points must fall within the existing mesh!
  * </p>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-10-24
+ * @version 2026-10-29
  */
 
 public final class LischinskiIncrementalBuilder
@@ -347,12 +347,79 @@ public final class LischinskiIncrementalBuilder
     final QEdge e01 = QEdge.make("e01", z0, z1);
     final QEdge e12 = QEdge.make("e12", z1, z2);
     final QEdge e20 = QEdge.make("e20", z2, z0);
+
+    final QEdge r01 = e01.rot();
+    final QEdge r12 = e12.rot();
+    final QEdge r20 = e20.rot();
+
+    final QEdge e10 = r01.rot();
+    final QEdge e21 = r12.rot();
+    final QEdge e02 = r20.rot();
+
+    final QEdge r10 = e10.rot();
+    final QEdge r21 = e21.rot();
+    final QEdge r02 = e02.rot();
+
+    e01.setNext(e02); e12.setNext(e10); e20.setNext(e21);
+    e10.setNext(e12); e21.setNext(e20); e02.setNext(e01);
+    r01.setNext(r20); r12.setNext(r01); r20.setNext(r12);
+    r10.setNext(r21); r21.setNext(r02); r02.setNext(r10);
+
+    return make(embedding,e01); }
+
+  public static final LischinskiIncrementalBuilder
+  triangleFrameX (final VectorD2 p0,
+                  final VectorD2 p1,
+                  final VectorD2 p2) {
+    // this creates a closed manifold, a triangle and its 'reverse'
+    final ZeroSimplex z0 = ZeroSimplex.make("z0");
+    final ZeroSimplex z1 = ZeroSimplex.make("z1");
+    final ZeroSimplex z2 = ZeroSimplex.make("z2");
+    final Map<ZeroSimplex,VectorD2> embedding =
+      Map.of(z0,p0,z1,p1,z2,p2);
+
+    final QEdge e01 = QEdge.make("e01", z0, z1);
+    final QEdge e12 = QEdge.make("e12", z1, z2);
+    final QEdge e20 = QEdge.make("e20", z2, z0);
     e01.splice(e20.reverse());
     e12.splice(e01.reverse());
     e20.splice(e12.reverse());
     return make(embedding,e01); }
 
   //--------------------------------------------------------------------
+
+//  public static final LischinskiIncrementalBuilder
+//  rectangleFrameX (final double xmin,
+//                  final double xmax,
+//                  final double ymin,
+//                  final double ymax) {
+//    final ZeroSimplex z0 = ZeroSimplex.make("z0");
+//    final ZeroSimplex z1 = ZeroSimplex.make("z1");
+//    final ZeroSimplex z2 = ZeroSimplex.make("z2");
+//    final ZeroSimplex z3 = ZeroSimplex.make("z3");
+//    final VectorD2 p0 = new VectorD2(xmin,ymin);
+//    final VectorD2 p1 = new VectorD2(xmax,ymin);
+//    final VectorD2 p2 = new VectorD2(xmax,ymax);
+//    final VectorD2 p3 = new VectorD2(xmin,ymax);
+//    final Map<ZeroSimplex,VectorD2> embedding =
+//      Map.of(z0,p0,z1,p1,z2,p2,z3,p3);
+//
+//    // face012
+//    final QEdge e01 = QEdge.make("e01",z0, z1);
+//    final QEdge e12 = QEdge.make("e12",z1, z2);
+//    final QEdge e20 = QEdge.make("e20",z2, z0);
+//    e01.splice(e20.reverse());
+//    e12.splice(e01.reverse());
+//    e20.splice(e12.reverse());
+//    // face023
+//    final QEdge e02 = e20.reverse();
+//    final QEdge e23 = QEdge.make("e23",z2, z3);
+//    final QEdge e30 = QEdge.make("e30",z3, z0);
+//    e02.splice(e30.reverse());
+//    e23.splice(e02.reverse());
+//    e30.splice(e23.reverse());
+//
+//    return make(embedding,e01); }
 
   public static final LischinskiIncrementalBuilder
   rectangleFrame (final double xmin,
@@ -370,20 +437,46 @@ public final class LischinskiIncrementalBuilder
     final Map<ZeroSimplex,VectorD2> embedding =
       Map.of(z0,p0,z1,p1,z2,p2,z3,p3);
 
-    // face012
+    // 5 primal edges
     final QEdge e01 = QEdge.make("e01",z0, z1);
     final QEdge e12 = QEdge.make("e12",z1, z2);
     final QEdge e20 = QEdge.make("e20",z2, z0);
-    e01.splice(e20.reverse());
-    e12.splice(e01.reverse());
-    e20.splice(e12.reverse());
-    // face023
-    final QEdge e02 = e20.reverse();
     final QEdge e23 = QEdge.make("e23",z2, z3);
     final QEdge e30 = QEdge.make("e30",z3, z0);
-    e02.splice(e30.reverse());
-    e23.splice(e02.reverse());
-    e30.splice(e23.reverse());
+
+    // 5 primal rot edges
+    final QEdge r01 = e01.rot();
+    final QEdge r12 = e12.rot();
+    final QEdge r20 = e20.rot();
+    final QEdge r23 = e23.rot();
+    final QEdge r30 = e30.rot();
+
+    // 5 reverse edges
+    final QEdge e10 = r01.rot();
+    final QEdge e21 = r12.rot();
+    final QEdge e02 = r20.rot();
+    final QEdge e32 = r23.rot();
+    final QEdge e03 = r30.rot();
+
+    // 5 reverse rot edges
+    final QEdge r10 = e10.rot();
+    final QEdge r21 = e21.rot();
+    final QEdge r02 = e02.rot();
+    final QEdge r32 = e32.rot();
+    final QEdge r03 = e03.rot();
+
+    e01.setNext(e02); e12.setNext(e10); e20.setNext(e21);
+    e02.setNext(e03); e23.setNext(e20); e30.setNext(e32);
+
+    e10.setNext(e12); e21.setNext(e23); e32.setNext(e30);
+    e03.setNext(e01);
+
+    r01.setNext(r30); r12.setNext(r10); r20.setNext(r32);
+    r02.setNext(r10); r23.setNext(r12);
+
+    r30.setNext(r23); r10.setNext(r21); r21.setNext(r02);
+    r32.setNext(r03); r03.setNext(r20);
+
 
     return make(embedding,e01); }
 
