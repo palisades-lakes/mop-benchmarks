@@ -3,16 +3,19 @@ package mop.java.test.geometry.delaunay.qedge;
 import mop.java.cmplx.SimplicialComplex2D;
 import mop.java.geom.mesh.TriangleMesh;
 import mop.java.geometry.delaunay.Util;
+import mop.java.geometry.delaunay.qedge.QEdge;
 import mop.java.geometry.delaunay.qedge.QEdgeBuilder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import java.util.Set;
 
 /** <pre>
  * mvn -Dtest=mop.java.test.geometry.delaunay.qedge.BuilderTests test
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 202-10-29
+ * @version 202-10-31
  */
 
 public final class BuilderTests {
@@ -26,16 +29,14 @@ public final class BuilderTests {
     final SimplicialComplex2D cmplx =
       (SimplicialComplex2D) mesh.cmplx();
     final QEdgeBuilder b = QEdgeBuilder.make(cmplx);
-    // should be 3 left and 0 right,
-    // but that makes assumptions about triangleFrame01
-    Assertions.assertEquals(
-      3, b.nLeftFaces() + b.nRightFaces());
-    Assertions.assertEquals(3, b.nEdges());
-    // should be 3 leftBoundary and 0 rightBoundary,
-    // but that makes assumptions about triangleFrame01
+    final Set<QEdge> primal = b.build();
+    Assertions.assertEquals(3, primal.size());
+    Assertions.assertEquals(1, b.nFaces());
+    Assertions.assertEquals(6, b.nHalfEdges());
     Assertions.assertEquals(3, b.nBoundary());
-    Assertions.assertEquals(0, b.nInterior());
-  }
+    Assertions.assertEquals(3, b.nInterior());
+
+  for (final QEdge q : primal) { System.out.println(q); } }
 
   //--------------------------------------------------------------
 
@@ -47,16 +48,13 @@ public final class BuilderTests {
     final SimplicialComplex2D cmplx =
       (SimplicialComplex2D) mesh.cmplx();
     final QEdgeBuilder b = QEdgeBuilder.make(cmplx);
-    // should be 5 left and 1 right,
-    // but that makes assumptions about rectangleFrame
-    Assertions.assertEquals(
-      6, b.nLeftFaces() + b.nRightFaces());
-    Assertions.assertEquals(5, b.nEdges());
-    Assertions.assertEquals(1, b.nInterior());
-    // should be 4 left and 0 right,
-    // but that makes assumptions about rectangleFrame
+    final Set<QEdge> primal = b.build();
+    Assertions.assertEquals(5, primal.size());
+    Assertions.assertEquals(2, b.nFaces());
+    Assertions.assertEquals(10, b.nHalfEdges());
+    Assertions.assertEquals(6, b.nInterior());
     Assertions.assertEquals(4, b.nBoundary());
-  }
+    for (final QEdge q : primal) { System.out.println(q); } }
 
   //--------------------------------------------------------------
 }

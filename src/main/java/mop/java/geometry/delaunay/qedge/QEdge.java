@@ -31,9 +31,15 @@ import java.util.concurrent.atomic.AtomicInteger;
  * and it dual polygonal mesh (ie Delaunay vs Voronoi).
  * But it means that triangulation code must maintain an implicit
  * constraint that the faces are triangular.
- *
+ * <p>
+ * <em>NOTE:</em> Not suitable to be used as keys in <code>Map</code>s.
+ * Identity <code>hashCode</code> and <code>equals</code>,
+ * due to circular <code>rot()</code> and <code>next()</code>
+ * references, make it difficult to determine if 2 instances
+ * are topologically equivalent.
+ * </p>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-10-29
+ * @version 2026-10-31
  */
 public final class QEdge {
 
