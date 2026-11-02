@@ -31,7 +31,7 @@ import java.util.Set;
  * TODO: Allow building both quad-edge and half-edge meshes.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-10-31
+ * @version 2026-11-02
  */
 public final class QEdgeBuilder {
 
@@ -52,13 +52,18 @@ public final class QEdgeBuilder {
 
   private final DirectedOneSimplex
   reverse (final DirectedOneSimplex e) {
+    assert null != e;
     final DirectedOneSimplex r = reverse().get(e);
     assert null != r;
     return r; }
 
-  private final void addReverse (final DirectedOneSimplex e) {
-    final DirectedOneSimplex r = DirectedOneSimplex.make(e.z1(),e.z0());
-    if (reverse().containsKey(e)) {
+  private final void setReverse (final DirectedOneSimplex e,
+                                 final DirectedOneSimplex r) {
+    assert null != e;
+    assert null != r;
+    assert e.z0().equals(r.z1());
+    assert e.z1().equals(r.z0());
+    if (reverse().containsKey(e) || reverse().containsKey(r)) {
       assert r.equals(reverse().get(e));
       assert e.equals(reverse().get(r)); }
     else {
@@ -80,8 +85,9 @@ public final class QEdgeBuilder {
   private final DirectedOneSimplex
   facePrev (final DirectedOneSimplex e) { return facePrev().get(e); }
 
-  private final void facePrev (final DirectedOneSimplex e,
-                               final DirectedOneSimplex prev) {
+  private final void setFacePrev (final DirectedOneSimplex e,
+                                  final DirectedOneSimplex prev) {
+    assert null != e;
     assert ! facePrev().containsKey(e);
     facePrev().put(e,prev); }
 
@@ -92,10 +98,13 @@ public final class QEdgeBuilder {
     return _faceNext; }
 
   private final DirectedOneSimplex
-  faceNext (final DirectedOneSimplex e) { return faceNext().get(e); }
+  faceNext (final DirectedOneSimplex e) {
+    assert null != e;
+    return faceNext().get(e); }
 
-  private final void faceNext (final DirectedOneSimplex e,
-                               final DirectedOneSimplex next) {
+  private final void setFaceNext (final DirectedOneSimplex e,
+                                  final DirectedOneSimplex next) {
+    assert null != e;
     assert ! faceNext().containsKey(e);
     faceNext().put(e,next); }
 
@@ -110,10 +119,13 @@ public final class QEdgeBuilder {
     return _prev; }
 
   private final DirectedOneSimplex
-  prev (final DirectedOneSimplex e) { return prev().get(e); }
+  prev (final DirectedOneSimplex e) {
+    assert null != e;
+    return prev().get(e); }
 
-  private final void prev (final DirectedOneSimplex e,
-                           final DirectedOneSimplex prev) {
+  private final void setPrev (final DirectedOneSimplex e,
+                              final DirectedOneSimplex prev) {
+    assert null != e;
     assert ! prev().containsKey(e);
     assert null != prev;
     prev().put(e,prev); }
@@ -125,10 +137,13 @@ public final class QEdgeBuilder {
     return _next; }
 
   private final DirectedOneSimplex
-  next (final DirectedOneSimplex e) { return next().get(e); }
+  next (final DirectedOneSimplex e) {
+    assert null != e;
+    return next().get(e); }
 
-  private final void next (final DirectedOneSimplex e,
-                           final DirectedOneSimplex next) {
+  private final void setNext (final DirectedOneSimplex e,
+                              final DirectedOneSimplex next) {
+    assert null != e;
     assert ! next().containsKey(e);
     assert null != next;
     next().put(e,next); }
@@ -146,6 +161,7 @@ public final class QEdgeBuilder {
   //public final int nFaces () { return faces().size() / 3; }
 
   private final TwoSimplex face (final DirectedOneSimplex e) {
+    assert null != e;
     return faces().get(e); }
 
   private final void face (final DirectedOneSimplex e,
@@ -161,9 +177,11 @@ public final class QEdgeBuilder {
   //--------------------------------------------------------------------
 
   private final boolean boundary (final DirectedOneSimplex e) {
+    assert null != e;
     return null == face(e); }
 
   private final boolean interior (final DirectedOneSimplex e) {
+    assert null != e;
     return ! boundary(e); }
 
   // for testing
@@ -186,100 +204,122 @@ public final class QEdgeBuilder {
     final ZeroSimplex z0 = f.z0();
     final ZeroSimplex z1 = f.z1();
     final ZeroSimplex z2 = f.z2();
+    // interior
     final DirectedOneSimplex e01 = DirectedOneSimplex.make(z0,z1);
     final DirectedOneSimplex e12 = DirectedOneSimplex.make(z1,z2);
     final DirectedOneSimplex e20 = DirectedOneSimplex.make(z2,z0);
-    addReverse(e01); addReverse(e12); addReverse(e20);
+    // possible boundary
+    final DirectedOneSimplex e10 = DirectedOneSimplex.make(z1,z0);
+    final DirectedOneSimplex e21 = DirectedOneSimplex.make(z2,z1);
+    final DirectedOneSimplex e02 = DirectedOneSimplex.make(z0,z2);
+    setReverse(e01,e10); setReverse(e12,e21); setReverse(e20,e02);
     face(e01,f); face(e12, f); face(e20,f);
-    facePrev(e01,e20); facePrev(e12,e01); facePrev(e20,e12);
-    faceNext(e01,e12); faceNext(e12,e20); faceNext(e20,e01); }
+    setFacePrev(e01, e20); setFacePrev(e12, e01); setFacePrev(e20, e12);
+    setFaceNext(e01, e12); setFaceNext(e12, e20); setFaceNext(e20, e01);
+  }
 
+  // cache next and prev for e,
+  // using previously cached reverse, faceNext, and facePrev
+  // TODO: do reverse(e) at the same time?
   private final void primalNeighbors (final DirectedOneSimplex e) {
-    final DirectedOneSimplex r = reverse(e);
-    if (interior(e)) {
-      DirectedOneSimplex n = reverse(facePrev(e));
-      next(e,n);
-      if (interior(r)) { prev(e,faceNext(r)); }
-      else if (boundary(r)) {
-        while (! boundary(n)) { n = reverse(facePrev(n)); }
-        prev(e,n); } }
-    else {
-      assert boundary(e);
-      assert interior(r);
-      DirectedOneSimplex p = faceNext(r);
-      prev(e,p);
-      while (! boundary(p)) { p = faceNext(reverse(p)); }
-      next(e,p); } }
 
-  //--------------------------------------------------------------------
+    // TODO: optimize once working
+    System.out.println("e:" + e);
 
-  private final void index () {
-    for (final TwoSimplex f : cmplx().faces()) { addFace(f); }
-    // stitch primal QEdges
-    for (final DirectedOneSimplex e : reverse().keySet()) {
-      primalNeighbors(e); } }
+    if (interior(e) && interior(reverse(e))) {
+      setNext(e, reverse(facePrev(e)));
+      setPrev(e, faceNext(reverse(e)));
+      return; }
 
-  //--------------------------------------------------------------------
-  // map DirectedOneSimplex's to corresponding primal QEdges
+    if (interior(e) && boundary(reverse(e))) {
+      setNext(e, reverse(facePrev(e)));
+      DirectedOneSimplex p = reverse(facePrev(e));
+      while (! boundary(p)) { p = reverse(facePrev(p)); }
+      setPrev(e, p);
+      return; }
 
-  private final Map<DirectedOneSimplex,QEdge> _qedge = new HashMap<>();
-  private final Map<DirectedOneSimplex,QEdge> qedge () { return _qedge; }
-  private final QEdge qedge (final DirectedOneSimplex e) {
-    return qedge().get(e); }
-  private final void qedge (final DirectedOneSimplex e, final QEdge q) {
-    if (! qedge().containsKey(e)) { qedge().put(e,q); } }
+    assert boundary(e);
+    assert interior(reverse(e));
+    setPrev(e, faceNext(reverse(e)));
+    DirectedOneSimplex n = faceNext(reverse(e));
+    System.out.println("n:" + n);
+    while (! boundary(reverse(n))) {
+      n = faceNext(reverse(n));
+      System.out.println("n:" + n);
+    }
+    setNext(e,n); }
 
-  //--------------------------------------------------------------------
-  /** create the <code>QEdge</code> quartet corresponding to the
-   * <code>DirectedOneSimplex</code>;
-   * return the primal <code>QEdge</code>,
-   * which links to the other 3.
-   */
+//--------------------------------------------------------------------
 
-  private final QEdge makeQuartet (final DirectedOneSimplex e) {
-    return QEdge.make(e.toString(),e.z0(),e.z1()); }
+private final void index () {
+  for (final TwoSimplex f : cmplx().faces()) { addFace(f); }
+  // stitch primal QEdges
+  for (final DirectedOneSimplex e : reverse().keySet()) {
+    primalNeighbors(e); } }
 
-  /** Return the primal <code>QEdges</code>s representing a completed
-   * version of the input <code>SimplicialComplex2D</code>.
-   * <br>
-   * Usually one <code>QEdge</code> is enough,
-   * but multiple may be necessary if the corresponding manifold is
-   * not connected.
-   */
-  public final Set<QEdge>
-  build () {
-    index();
-    final Set<QEdge> qEdges = new HashSet<>();
-    // initial QEdge's only carry the origin and reverse links
-    for (final DirectedOneSimplex e : reverse().keySet()) {
-      final DirectedOneSimplex r  = reverse(e);
-      if (! (qedge().containsKey(e) || qedge().containsKey(r))) {
-        final QEdge q = makeQuartet(e);
-        qedge(e,q);
-        qedge(r,q.reverse());
-        qEdges.add(q); } }
-    // Stitch QEdges together via next links
-    for (final DirectedOneSimplex e : reverse().keySet()) {
-      final QEdge q = qedge(e);
-      assert null != qedge(next(e));
-      q.setNext(qedge(next(e)));
-      final QEdge r = q.rot();
-      assert null != qedge(prev(e));
-      final QEdge n = qedge(prev(e)).rot().reverse();
-      r.setNext(n); }
-    return qEdges; }
+//--------------------------------------------------------------------
+// map DirectedOneSimplex's to corresponding primal QEdges
 
-  //--------------------------------------------------------------------
-  // construction
-  //--------------------------------------------------------------------
+private final Map<DirectedOneSimplex,QEdge> _qedge = new HashMap<>();
+private final Map<DirectedOneSimplex,QEdge> qedge () { return _qedge; }
+private final QEdge qedge (final DirectedOneSimplex e) {
+  return qedge().get(e); }
+private final void qedge (final DirectedOneSimplex e, final QEdge q) {
+  if (! qedge().containsKey(e)) { qedge().put(e,q); } }
 
-  private QEdgeBuilder (final SimplicialComplex2D cmplx) {
-    this._cmplx = cmplx; }
+//--------------------------------------------------------------------
+/** create the <code>QEdge</code> quartet corresponding to the
+ * <code>DirectedOneSimplex</code>;
+ * return the primal <code>QEdge</code>,
+ * which links to the other 3.
+ */
 
-  public static final QEdgeBuilder
-  make (final SimplicialComplex2D cmplx) {
-    return new QEdgeBuilder(cmplx); }
+private final QEdge makeQuartet (final DirectedOneSimplex e) {
+  return QEdge.make(e.toString(),e.z0(),e.z1()); }
 
-  //--------------------------------------------------------------------
+/** Return the primal <code>QEdges</code>s representing a completed
+ * version of the input <code>SimplicialComplex2D</code>.
+ * <br>
+ * Usually one <code>QEdge</code> is enough to link into the mesh,
+ * but multiple may be necessary if the corresponding manifold is
+ * not connected.
+ */
+public final Set<QEdge>
+build () {
+  index();
+  final Set<QEdge> qEdges = new HashSet<>();
+  // initial QEdge's only carry the origin and reverse links
+  for (final DirectedOneSimplex e : reverse().keySet()) {
+    final DirectedOneSimplex r  = reverse(e);
+    if (! (qedge().containsKey(e) || qedge().containsKey(r))) {
+      final QEdge q = makeQuartet(e);
+      qedge(e,q);
+      qedge(r,q.reverse());
+      qEdges.add(q);
+      //qEdges.add(q.reverse());
+    } }
+  // Stitch QEdges together via next links
+  for (final DirectedOneSimplex e : reverse().keySet()) {
+    final QEdge q = qedge(e);
+    assert null != qedge(next(e));
+    q.setNext(qedge(next(e)));
+    final QEdge r = q.rot();
+    assert null != qedge(prev(e));
+    final QEdge n = qedge(prev(e)).rot().reverse();
+    r.setNext(n); }
+  return qEdges; }
+
+//--------------------------------------------------------------------
+// construction
+//--------------------------------------------------------------------
+
+private QEdgeBuilder (final SimplicialComplex2D cmplx) {
+  this._cmplx = cmplx; }
+
+public static final QEdgeBuilder
+make (final SimplicialComplex2D cmplx) {
+  return new QEdgeBuilder(cmplx); }
+
+//--------------------------------------------------------------------
 } // end class
 //--------------------------------------------------------------------
