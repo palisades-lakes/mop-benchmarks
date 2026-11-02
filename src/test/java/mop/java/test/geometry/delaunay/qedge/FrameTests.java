@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 202-10-30
+ * @version 202-11-02
  */
 
 public final class FrameTests {
@@ -20,15 +20,22 @@ public final class FrameTests {
   public final void triangleFrame () {
 
     // Construct a triangle containing the unit square:
-    final VectorD2 p1 = new VectorD2( -1.0, -1.0);
-    final VectorD2 p2 = new VectorD2(  2.0, -1.0);
-    final VectorD2 p3 = new VectorD2(  0.5,  3.0);
+    final VectorD2 p0 = new VectorD2( -1.0, -1.0);
+    final VectorD2 p1 = new VectorD2(  2.0, -1.0);
+    final VectorD2 p2 = new VectorD2(  0.5,  3.0);
 
     final LischinskiIncrementalBuilder frame =
-      LischinskiIncrementalBuilder.triangleFrame(p1, p2, p3);
-    System.out.println("triangle:");
-    frame.startingEdge().printMesh();
-
+      LischinskiIncrementalBuilder.triangleFrame(p0, p1, p2);
+//    System.out.println("triangle:");
+//    frame.startingEdge().printMesh();
+    // Note: returns two triangular faces
+    // in opposite orientation
+    // TODO: how does the delaunay algorithm
+    //  determine which is 'inside' and which 'outside'?
+    //  Is it the embedding?
+    //  Wouldn't have any inside/outside in spherical
+    //  delaunay.
+    System.out.println(frame.build());
   }
 
   //--------------------------------------------------------------
@@ -39,10 +46,16 @@ public final class FrameTests {
     final LischinskiIncrementalBuilder frame =
       LischinskiIncrementalBuilder.rectangleFrame(
         0.0,1.0,0.0,1.0);
-    System.out.println("\nrectangle:");
-    frame.startingEdge().printMesh();
-    System.out.println("mesh");
-    System.out.println(frame.build()); }
+//    System.out.println("\nrectangle:");
+//    frame.startingEdge().printMesh();
+    // Note: returns the 2 triangular faces, excludes the
+    // 'reverse' quad face closing the manifold, because
+    // it is not a simplex.
+    // TODO: how does the delaunay algorithm
+    //  determine which is 'inside' and which 'outside'?
+    //  Is it the embedding?
+    System.out.println(frame.build());
+  }
 
   //--------------------------------------------------------------
 }

@@ -13,7 +13,7 @@ import java.util.*;
 
 /**
  * @author palisades dot lakes at gmail dot com
- * @version 2026-10-30
+ * @version 2026-11-02
  */
 
 public final class Util {
@@ -104,21 +104,25 @@ public final class Util {
 
     return v22*v0xv1 + v02*v1xv2 + v12*v2xv0; }
 
-  public static double inCircleDistance (final ZeroSimplex z0,
-                                         final ZeroSimplex z1,
-                                         final ZeroSimplex z2,
-                                         final ZeroSimplex z,
-                                         final Map<ZeroSimplex,VectorD2> embedding) {
-    final VectorD2 p0 = embedding.get(z0);
-    final VectorD2 p1 = embedding.get(z1);
-    final VectorD2 p2 = embedding.get(z2);
-    final VectorD2 p = embedding.get(z);
-    return inCircleDistance(p0, p1, p2, p); }
+// --Commented out by Inspection START (11/2/2026 15:20):
+//  public static double inCircleDistance (final ZeroSimplex z0,
+//                                         final ZeroSimplex z1,
+//                                         final ZeroSimplex z2,
+//                                         final ZeroSimplex z,
+//                                         final Map<ZeroSimplex,VectorD2> embedding) {
+//    final VectorD2 p0 = embedding.get(z0);
+//    final VectorD2 p1 = embedding.get(z1);
+//    final VectorD2 p2 = embedding.get(z2);
+//    final VectorD2 p = embedding.get(z);
+//    return inCircleDistance(p0, p1, p2, p); }
+// --Commented out by Inspection STOP (11/2/2026 15:20)
 
-  public static double inCircleDistance (final TwoSimplex t,
-                                         final ZeroSimplex z,
-                                         final Map<ZeroSimplex,VectorD2> embedding) {
-    return inCircleDistance(t.z0(), t.z1(), t.z2(), z, embedding); }
+// --Commented out by Inspection START (11/2/2026 15:00):
+//  public static double inCircleDistance (final TwoSimplex t,
+//                                         final ZeroSimplex z,
+//                                         final Map<ZeroSimplex,VectorD2> embedding) {
+//    return inCircleDistance(t.z0(), t.z1(), t.z2(), z, embedding); }
+// --Commented out by Inspection STOP (11/2/2026 15:00)
 
   public static boolean inCircle (final VectorD2 p0,
                                   final VectorD2 p1,
@@ -140,13 +144,31 @@ public final class Util {
     final VectorD2 p = embedding.get(z);
     return inCircle(p0,p1,p2,p); }
 
-  public static boolean inCircle (final TwoSimplex t,
-                                  final ZeroSimplex z,
-                                  final Map<ZeroSimplex,VectorD2> embedding) {
-    return inCircle(t.z0(), t.z1(), t.z2(), z, embedding); }
+// --Commented out by Inspection START (11/2/2026 15:00):
+//  public static boolean inCircle (final TwoSimplex t,
+//                                  final ZeroSimplex z,
+//                                  final Map<ZeroSimplex,VectorD2> embedding) {
+//    return inCircle(t.z0(), t.z1(), t.z2(), z, embedding); }
+// --Commented out by Inspection STOP (11/2/2026 15:00)
 
   //--------------------------------------------------------------------
   // Delaunay frame meshes
+  //--------------------------------------------------------------------
+
+  public static final TriangleMesh triangleFrame (final VectorD2 p0,
+                                                  final VectorD2 p1,
+                                                  final VectorD2 p2) {
+
+    final ZeroSimplex z0 = ZeroSimplex.make("z0");
+    final ZeroSimplex z1 = ZeroSimplex.make("z1");
+    final ZeroSimplex z2 = ZeroSimplex.make("z2");
+    final TwoSimplex t012 = TwoSimplex.make(z0, z1, z2);
+    final SimplicialComplex2D c =
+      SimplicialComplex2D.make(List.of(t012));
+    final IFn e = IFnWrapper.make(Map.of(z0, p0, z1, p1, z2, p2));
+
+    return TriangleMesh.make(c,e); }
+
   //--------------------------------------------------------------------
   /** Triangle enclosing (0,1) square.
    * TODO: enclose arbitrary rectangle.
@@ -154,20 +176,11 @@ public final class Util {
 
   public static final TriangleMesh triangleFrame01 () {
 
-    // Construct a triangle containing the unit square:
-    final ZeroSimplex z0 = ZeroSimplex.make("f0");
-    final ZeroSimplex z1 = ZeroSimplex.make("f1");
-    final ZeroSimplex z2 = ZeroSimplex.make("f2");
-    final TwoSimplex t012 = TwoSimplex.make(z0, z1, z2);
-    final SimplicialComplex2D c =
-      SimplicialComplex2D.make(List.of(t012));
-
     final VectorD2 p0 = new VectorD2(-1.0, -1.0);
     final VectorD2 p1 = new VectorD2(2.0, -1.0);
     final VectorD2 p2 = new VectorD2(0.5, 3.0);
-    final IFn e = IFnWrapper.make(Map.of(z0, p0, z1, p1, z2, p2));
 
-    return TriangleMesh.make(c,e); }
+    return triangleFrame(p0,p1,p2); }
 
   //--------------------------------------------------------------------
   /** Rectangle <code>[xmin,xmax] X [ymin,ymax]</code>

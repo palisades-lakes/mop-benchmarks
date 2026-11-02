@@ -39,9 +39,9 @@ import java.util.concurrent.atomic.AtomicInteger;
  * are topologically equivalent.
  * </p>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-10-31
+ * @version 2026-11-02
  */
-public final class QEdge {
+public final class QEdge implements Comparable<QEdge> {
 
   // TODO: separate primal and dual edges, primal with reference to
   //  origin point, dual reference to explicit origin face?
@@ -77,6 +77,7 @@ public final class QEdge {
   public final QEdge reverse () { return rot().rot(); }
 
   public final ZeroSimplex dest () { return reverse().origin(); }
+
   /** The next edge cw around the origin. */
   public final QEdge prev () { return rot().next().rot(); }
 
@@ -84,9 +85,8 @@ public final class QEdge {
   public final QEdge faceNext () {
     return rot().reverse().next().rot(); }
 
-//  /** The previous edge ccw around the (left) face. */
-//  public final QEdge facePrev () {
-//    return next().reverse(); }
+  /** The previous edge ccw around the (left) face. */
+  public final QEdge facePrev () { return next().reverse(); }
 
   //--------------------------------------------------------------------
   // Basic Topological Operators
@@ -286,6 +286,16 @@ public final class QEdge {
 // --Commented out by Inspection STOP (10/25/2026 14:07)
 
   //--------------------------------------------------------------------
+  // Comparable
+  //--------------------------------------------------------------------
+
+  @Override
+  public int compareTo (final QEdge q) {
+    final int c = origin().compareTo(q.origin());
+    if (0 != c) { return c; }
+    return dest().compareTo(q.dest()); }
+
+  //--------------------------------------------------------------------
   // Object
   //--------------------------------------------------------------------
 
@@ -294,8 +304,13 @@ public final class QEdge {
     return
       "\n" + name()
         + "\nnext:" + next().name()
+        + "\nprev:" + prev().name()
         + "\nfaceNext:" + faceNext().name()
+        + "\nfacePrev:" + facePrev().name()
+        + "\nreverse:" + reverse().name()
+        + "\nreverse.next():" + reverse().next().name()
         + "\nrot:" + rot().name()
+        + "\nrot.next:" + rot().next().name()
         + "\nreverse:" + reverse().name()
         + "\nrot.reverse:" + rot().reverse().name()
         + "\nrot.reverse.next:" + rot().reverse().next().name()
@@ -306,30 +321,34 @@ public final class QEdge {
   //--------------------------------------------------------------------
 
   private final String _name;
-  private final String name () { return _name; }
+  public final String name () { return _name; }
 
-  public static final void printFace (final Set<QEdge> visited,
-                                      final Stack<QEdge> toVisit) {
-    final QEdge e0 = toVisit.pop();
-    if ((null!=e0) && (! visited.contains(e0))) {
-      System.out.println("\nface:" );
-      QEdge e1 = e0;
-      do {
-        toVisit.remove(e1);
-        if (! visited.contains(e1)) {
-          System.out.println(e1);
-          visited.add(e1);
-          final QEdge ri = e1.reverse();
-          if (! visited.contains(ri)) { toVisit.push(ri); } }
-        e1 = e1.faceNext();
-        assert null != e1;
-      } while (e0 != e1); } }
+// --Commented out by Inspection START (11/2/2026 15:21):
+//  public static final void printFace (final Set<QEdge> visited,
+//                                      final Stack<QEdge> toVisit) {
+//    final QEdge e0 = toVisit.pop();
+//    if ((null!=e0) && (! visited.contains(e0))) {
+//      System.out.println("\nface:" );
+//      QEdge e1 = e0;
+//      do {
+//        toVisit.remove(e1);
+//        if (! visited.contains(e1)) {
+//          System.out.println(e1);
+//          visited.add(e1);
+//          final QEdge ri = e1.reverse();
+//          if (! visited.contains(ri)) { toVisit.push(ri); } }
+//        e1 = e1.faceNext();
+//        assert null != e1;
+//      } while (e0 != e1); } }
+// --Commented out by Inspection STOP (11/2/2026 15:21)
 
-  public final void printMesh () {
-    final Set<QEdge> visited = new HashSet<>();
-    final Stack<QEdge> toVisit = new Stack<>();
-    toVisit.push(this);
-    while (!toVisit.empty()) { printFace(visited,toVisit); } }
+// --Commented out by Inspection START (11/2/2026 15:20):
+//  public final void printMesh () {
+//    final Set<QEdge> visited = new HashSet<>();
+//    final Stack<QEdge> toVisit = new Stack<>();
+//    toVisit.push(this);
+//    while (!toVisit.empty()) { printFace(visited,toVisit); } }
+// --Commented out by Inspection STOP (11/2/2026 15:20)
 
   //--------------------------------------------------------------------
   // construction

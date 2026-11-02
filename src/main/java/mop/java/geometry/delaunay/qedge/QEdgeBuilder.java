@@ -5,10 +5,7 @@ import mop.java.cmplx.SimplicialComplex2D;
 import mop.java.cmplx.TwoSimplex;
 import mop.java.cmplx.ZeroSimplex;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /** Convert the two-simplexes (faces)
  * of a <code>SimpllcialComplex2D</code>
@@ -44,10 +41,10 @@ public final class QEdgeBuilder {
   // directed one simplexes == half edges
   //--------------------------------------------------------------------
 
-  private final Map<DirectedOneSimplex,DirectedOneSimplex>
-    _reverse = new HashMap<>();
+  private final SortedMap<DirectedOneSimplex,DirectedOneSimplex>
+    _reverse = new TreeMap<>();
 
-  private final Map<DirectedOneSimplex,DirectedOneSimplex>
+  private final SortedMap<DirectedOneSimplex,DirectedOneSimplex>
   reverse () { return _reverse; }
 
   private final DirectedOneSimplex
@@ -224,7 +221,6 @@ public final class QEdgeBuilder {
   private final void primalNeighbors (final DirectedOneSimplex e) {
 
     // TODO: optimize once working
-    System.out.println("e:" + e);
 
     if (interior(e) && interior(reverse(e))) {
       setNext(e, reverse(facePrev(e)));
@@ -242,11 +238,8 @@ public final class QEdgeBuilder {
     assert interior(reverse(e));
     setPrev(e, faceNext(reverse(e)));
     DirectedOneSimplex n = faceNext(reverse(e));
-    System.out.println("n:" + n);
     while (! boundary(reverse(n))) {
-      n = faceNext(reverse(n));
-      System.out.println("n:" + n);
-    }
+      n = faceNext(reverse(n)); }
     setNext(e,n); }
 
 //--------------------------------------------------------------------
@@ -260,8 +253,10 @@ private final void index () {
 //--------------------------------------------------------------------
 // map DirectedOneSimplex's to corresponding primal QEdges
 
-private final Map<DirectedOneSimplex,QEdge> _qedge = new HashMap<>();
-private final Map<DirectedOneSimplex,QEdge> qedge () { return _qedge; }
+private final SortedMap<DirectedOneSimplex,QEdge> _qedge =
+  new TreeMap<>();
+private final SortedMap<DirectedOneSimplex,QEdge> qedge () {
+  return _qedge; }
 private final QEdge qedge (final DirectedOneSimplex e) {
   return qedge().get(e); }
 private final void qedge (final DirectedOneSimplex e, final QEdge q) {
@@ -284,10 +279,10 @@ private final QEdge makeQuartet (final DirectedOneSimplex e) {
  * but multiple may be necessary if the corresponding manifold is
  * not connected.
  */
-public final Set<QEdge>
-build () {
+public final SortedSet<QEdge> build () {
   index();
-  final Set<QEdge> qEdges = new HashSet<>();
+  final SortedSet<QEdge> qEdges = new TreeSet<>();
+  // TODO: order of iteration seems to matter! why?
   // initial QEdge's only carry the origin and reverse links
   for (final DirectedOneSimplex e : reverse().keySet()) {
     final DirectedOneSimplex r  = reverse(e);
@@ -295,10 +290,9 @@ build () {
       final QEdge q = makeQuartet(e);
       qedge(e,q);
       qedge(r,q.reverse());
-      qEdges.add(q);
-      //qEdges.add(q.reverse());
-    } }
+      qEdges.add(q); } }
   // Stitch QEdges together via next links
+  // TODO: order of iteration seems to matter! why?
   for (final DirectedOneSimplex e : reverse().keySet()) {
     final QEdge q = qedge(e);
     assert null != qedge(next(e));
@@ -320,6 +314,6 @@ public static final QEdgeBuilder
 make (final SimplicialComplex2D cmplx) {
   return new QEdgeBuilder(cmplx); }
 
-//--------------------------------------------------------------------
+  //--------------------------------------------------------------------
 } // end class
 //--------------------------------------------------------------------

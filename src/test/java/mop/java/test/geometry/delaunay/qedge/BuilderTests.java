@@ -36,7 +36,8 @@ public final class BuilderTests {
     Assertions.assertEquals(3, b.nBoundary());
     Assertions.assertEquals(3, b.nInterior());
 
-  for (final QEdge q : primal) { System.out.println(q); } }
+//  for (final QEdge q : primal) { System.out.println(q); }
+  }
 
   //--------------------------------------------------------------
 
@@ -54,7 +55,8 @@ public final class BuilderTests {
     Assertions.assertEquals(10, b.nHalfEdges());
     Assertions.assertEquals(6, b.nInterior());
     Assertions.assertEquals(4, b.nBoundary());
-    for (final QEdge q : primal) { System.out.println(q); } }
+//    for (final QEdge q : primal) { System.out.println(q); }
+  }
 
   //--------------------------------------------------------------
 }

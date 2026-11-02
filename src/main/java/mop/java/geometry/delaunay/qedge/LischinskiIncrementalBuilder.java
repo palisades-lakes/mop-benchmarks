@@ -24,7 +24,7 @@ import java.util.TreeMap;
  * <b>NOTE: </b> all inserted points must fall within the existing mesh!
  * </p>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-10-30
+ * @version 2026-11-02
  */
 
 public final class LischinskiIncrementalBuilder
@@ -279,7 +279,7 @@ public final class LischinskiIncrementalBuilder
 
   public final TriangleMesh build () {
     final SimplicialComplex2D cmplx = SimplicialComplex2D.make(faces());
-    System.out.println(cmplx);
+    //System.out.println(cmplx);
     final IFn z2p = IFnWrapper.make(embedding());
     return TriangleMesh.make(cmplx, z2p); }
 
@@ -317,6 +317,25 @@ public final class LischinskiIncrementalBuilder
     builder.setStartingEdge(startingEdge);
     return builder; }
 
+  public static final LischinskiIncrementalBuilder
+  make (final TriangleMesh mesh) {
+    final IFn embed = mesh.embedding();
+    // TODO: handle general cell complexes?
+    final SimplicialComplex2D cmplx =
+      (SimplicialComplex2D) mesh.cmplx();
+    final SortedMap<ZeroSimplex, VectorD2> embedding = new TreeMap<>();
+    for (final ZeroSimplex z : cmplx.vertices()) {
+      embedding.put(z,(VectorD2) embed.invoke(z)); }
+    final LischinskiIncrementalBuilder builder = unsafe(embedding);
+    // TODO: handle multiple starting edges
+    final SortedSet<QEdge> primal = QEdgeBuilder.make(cmplx).build();
+//    System.out.println("primals:" + primal.size());
+//    for (final QEdge q : primal) {
+//      System.out.println(q.name());
+//    }
+    builder.setStartingEdge(primal.first());
+    return builder; }
+
 //  /** Use <code>mesh</code> as the initial frame for the builder. */
 //
 //  public static final DelaunayBuilder make (final TriangleMesh mesh) {
@@ -345,9 +364,9 @@ public final class LischinskiIncrementalBuilder
     final Map<ZeroSimplex,VectorD2> embedding =
       Map.of(z0,p0,z1,p1,z2,p2);
 
-    final QEdge e01 = QEdge.make("e01", z0, z1);
-    final QEdge e12 = QEdge.make("e12", z1, z2);
-    final QEdge e20 = QEdge.make("e20", z2, z0);
+    final QEdge e01 = QEdge.make("z0->z1", z0, z1);
+    final QEdge e12 = QEdge.make("z1->z2", z1, z2);
+    final QEdge e20 = QEdge.make("z2->z0", z2, z0);
 
     final QEdge r01 = e01.rot();
     final QEdge r12 = e12.rot();

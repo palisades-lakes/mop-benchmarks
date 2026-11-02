@@ -17,27 +17,10 @@ import java.util.SortedSet;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 202-10-29
+ * @version 202-11-02
  */
 
 public final class InsertTests {
-
-  //--------------------------------------------------------------
-
-//  @Test
-//  public final void pointOnVertex () {
-//
-//    // Construct a triangle containing the unit square:
-//    final VectorD2 p0 = new VectorD2( -1.0, -1.0);
-//    final VectorD2 p1 = new VectorD2(  2.0, -1.0);
-//    final VectorD2 p2 = new VectorD2(  0.5,  3.0);
-//
-//    final LischinskiIncrementalBuilder builder =
-//      LischinskiIncrementalBuilder.triangleFrame(p0, p1, p2);
-//    // TODO: infinite loop when new simplex mapped to same point!
-//    //  that is, insert a point which is one of the existing vertices
-//     builder.insert(p0);
-//    builder.insert(new VectorD2(0.0, -1.0)); }
 
   //--------------------------------------------------------------
 
@@ -51,9 +34,11 @@ public final class InsertTests {
 
     final LischinskiIncrementalBuilder builder =
       LischinskiIncrementalBuilder.triangleFrame(p0, p1, p2);
-    final SortedSet<ZeroSimplex> zs = builder.vertices();
-    builder.insert(zs);
-    builder.insertPoint(new VectorD2(0.0, -1.0)); }
+//    builder.startingEdge().printMesh();
+    final SortedSet<ZeroSimplex> frame = builder.vertices();
+    builder.insert(frame);
+    builder.insertPoint(new VectorD2(0.0, -1.0));
+  }
 
   //--------------------------------------------------------------
 
@@ -103,32 +88,6 @@ public final class InsertTests {
     final int nsites = 16;
     for (int i=0;i<nsites;i++) {
       builder.insertPoint((VectorD2) pointGenerator.next()); } }
-
-  //--------------------------------------------------------------
-
-// goes into infinite loop!!!
-//  @Test
-//  public final void laplaceDelaunay () {
-//
-//    // Construct a triangle containing the unit square:
-//    final VectorD2 p0 = new VectorD2( -1.0, -1.0);
-//    final VectorD2 p1 = new VectorD2(  2.0, -1.0);
-//    final VectorD2 p2 = new VectorD2(  0.5,  3.0);
-//
-//    final QMesh mesh = QMesh.triangleFrame(p0,p1,p2);
-//
-//    final double pMu = 0.0;
-//    final double pSigma = 3.0;
-//    final Generator pointGenerator = Generators.vectorD2Generator(
-//      Doubles.laplaceGenerator(
-//        PRNG.well44497b("seeds/Well44497b-2019-01-11.txt"),
-//        pMu,pSigma));
-//
-//    final int nsites = 16;
-//    for (int i=0;i<nsites;i++) {
-//      mesh.InsertSite((VectorD2) pointGenerator.next()); }
-//  }
-
 
   //--------------------------------------------------------------
 }
