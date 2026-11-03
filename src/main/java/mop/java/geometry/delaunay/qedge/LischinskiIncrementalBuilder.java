@@ -10,10 +10,7 @@ import mop.java.geometry.delaunay.Util;
 import mop.java.geometry.euclidean.VectorD2;
 import mop.java.util.IFnWrapper;
 
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.SortedSet;
-import java.util.TreeMap;
+import java.util.*;
 
 /** Algorithm for Delaunay triangulation, after
  * <a href="https://www.researchgate.net/publication/262235495_Incremental_Delaunay_Triangulation">
@@ -32,9 +29,9 @@ public final class LischinskiIncrementalBuilder
 
   //--------------------------------------------------------------------
 
-  private final SortedMap<ZeroSimplex, VectorD2> _embedding;
+  private final Map<ZeroSimplex, VectorD2> _embedding;
   @Override
-  public final SortedMap<ZeroSimplex, VectorD2> embedding () {
+  public final Map<ZeroSimplex, VectorD2> embedding () {
     return _embedding; }
 
   // TODO: Map implementation that allows adding.
@@ -289,11 +286,11 @@ public final class LischinskiIncrementalBuilder
   /** disabled constructor, class methods only. */
 
   private LischinskiIncrementalBuilder (
-    final SortedMap<ZeroSimplex, VectorD2> embedding) {
+    final Map<ZeroSimplex, VectorD2> embedding) {
     _embedding = embedding; }
 
   public static final LischinskiIncrementalBuilder
-  unsafe (final SortedMap<ZeroSimplex, VectorD2> embedding) {
+  unsafe (final Map<ZeroSimplex, VectorD2> embedding) {
     return new LischinskiIncrementalBuilder(embedding); }
 
 // --Commented out by Inspection START (10/25/2026 14:09):
@@ -323,17 +320,17 @@ public final class LischinskiIncrementalBuilder
     // TODO: handle general cell complexes?
     final SimplicialComplex2D cmplx =
       (SimplicialComplex2D) mesh.cmplx();
-    final SortedMap<ZeroSimplex, VectorD2> embedding = new TreeMap<>();
+    final Map<ZeroSimplex, VectorD2> embedding = new HashMap<>();
     for (final ZeroSimplex z : cmplx.vertices()) {
       embedding.put(z,(VectorD2) embed.invoke(z)); }
     final LischinskiIncrementalBuilder builder = unsafe(embedding);
     // TODO: handle multiple starting edges
-    final SortedSet<QEdge> primal = QEdgeBuilder.make(cmplx).build();
+    final Set<QEdge> primal = QEdgeBuilder.make(cmplx).build();
 //    System.out.println("primals:" + primal.size());
 //    for (final QEdge q : primal) {
 //      System.out.println(q.name());
 //    }
-    builder.setStartingEdge(primal.first());
+    builder.setStartingEdge(primal.iterator().next());
     return builder; }
 
 //  /** Use <code>mesh</code> as the initial frame for the builder. */
