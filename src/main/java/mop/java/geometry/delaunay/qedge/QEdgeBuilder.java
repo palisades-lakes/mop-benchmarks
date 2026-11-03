@@ -253,9 +253,8 @@ private final void index () {
 //--------------------------------------------------------------------
 // map DirectedOneSimplex's to corresponding primal QEdges
 
-private final SortedMap<DirectedOneSimplex,QEdge> _qedge =
-  new TreeMap<>();
-private final SortedMap<DirectedOneSimplex,QEdge> qedge () {
+private final Map<DirectedOneSimplex,QEdge> _qedge = new HashMap<>();
+private final Map<DirectedOneSimplex,QEdge> qedge () {
   return _qedge; }
 private final QEdge qedge (final DirectedOneSimplex e) {
   return qedge().get(e); }
