@@ -284,10 +284,13 @@ private final QEdge makeQuartet (final DirectedOneSimplex e) {
 public final Set<QEdge> build () {
   index();
   final Set<QEdge> qEdges = new HashSet<>();
-  // TODO: order of iteration seems to matter! why?
   // initial QEdge's only carry the origin and reverse links
   for (final DirectedOneSimplex e : reverse().keySet()) {
     // create quartets for interior edges only
+    // necessary for LischinskiIncrementalBuilder to correclty
+    // distinguish 'inside' vs 'outside' initial frame.
+    // TODO: modify LischinskiIncrementalBuilder to work without
+    //  an initial frame enclosing all future site insertions!
     if (interior(e)) {
     final DirectedOneSimplex r  = reverse(e);
     if (! (qedge().containsKey(e) || qedge().containsKey(r))) {
@@ -296,7 +299,6 @@ public final Set<QEdge> build () {
       qedge(r,q.reverse());
       qEdges.add(q); } } }
   // Stitch QEdges together via next links
-  // TODO: order of iteration seems to matter! why?
   for (final DirectedOneSimplex e : reverse().keySet()) {
     final QEdge q = qedge(e);
     assert null != qedge(next(e));
