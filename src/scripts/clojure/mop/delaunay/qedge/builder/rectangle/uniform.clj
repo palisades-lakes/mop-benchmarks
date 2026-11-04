@@ -1,10 +1,10 @@
 (set! *warn-on-reflection* true)
 (set! *unchecked-math* :warn-on-boxed)
 ;;----------------------------------------------------------------
-(ns mop.delaunay.qedge.builder.rectangle-uniform
+(ns mop.delaunay.qedge.builder.rectangle.uniform
   {:doc     "Use JavaFX to display a delaunay triangulation."
    :author  "palisades dot lakes at gmail dot com"
-   :version "2026-10-25"}
+   :version "2026-11-03"}
 
   (:require
     [mop.commons.time :as mct])
@@ -16,7 +16,7 @@
     [mop.java.numbers Doubles]
     [mop.java.prng PRNG]))
 ;;----------------------------------------------------------------
-;; mvn -q -DskipTests=true install & cljfx src\scripts\clojure\mop\delaunay\qedge\builder\rectangle_uniform.clj
+;; mvn -q -DskipTests=true install & cljfx src\scripts\clojure\mop\delaunay\qedge\builder\rectangle\uniform.clj
 ;;----------------------------------------------------------------
 (defn make-world []
   (mct/seconds

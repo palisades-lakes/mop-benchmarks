@@ -19,7 +19,7 @@ import java.util.SortedSet;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 202-11-02
+ * @version 202-11-03
  */
 
 public final class BuilderInsertTests {
@@ -35,13 +35,11 @@ public final class BuilderInsertTests {
     final VectorD2 p2 = new VectorD2(  0.5,  3.0);
 
     final TriangleMesh frame = Util.triangleFrame(p0,p1,p2);
-//    System.out.println(frame);
     final LischinskiIncrementalBuilder builder =
       LischinskiIncrementalBuilder.make(frame);
-//    builder.startingEdge().printMesh();
     final SortedSet<ZeroSimplex> vertices = builder.vertices();
     builder.insert(vertices);
-    builder.insertPoint(new VectorD2(0.0, -1.0));
+    builder.insertPoint(new VectorD2(0.5, 0.5));
   }
 
   //--------------------------------------------------------------
@@ -86,6 +84,35 @@ public final class BuilderInsertTests {
     final LischinskiIncrementalBuilder builder =
       LischinskiIncrementalBuilder.make(
         Util.rectangleFrame(0.0,1.0,0.0,1.0));
+    final Generator pointGenerator = Generators.vectorD2Generator(
+      Doubles.uniformGenerator(
+        PRNG.well44497b("seeds/Well44497b-2019-01-11.txt"),
+        0.0, 1.0));
+
+    final int nsites = 16;
+    for (int i=0;i<nsites;i++) {
+      builder.insertPoint((VectorD2) pointGenerator.next()); } }
+
+  //--------------------------------------------------------------
+
+  @Test
+  public final void singularHexagonFrame () {
+
+    final LischinskiIncrementalBuilder builder =
+      LischinskiIncrementalBuilder.make(
+        Util.hexagonFrame(0.0,1.0,0.0,1.0));
+    final Set<ZeroSimplex> frame = builder.vertices();
+    for (final ZeroSimplex z : frame) { builder.insert(z); }
+    builder.insertPoint(new VectorD2(0.5, 0.5)); }
+
+  //--------------------------------------------------------------
+
+  @Test
+  public final void uniform01HexagonFrame () {
+
+    final LischinskiIncrementalBuilder builder =
+      LischinskiIncrementalBuilder.make(
+        Util.hexagonFrame(0.0,1.0,0.0,1.0));
     final Generator pointGenerator = Generators.vectorD2Generator(
       Doubles.uniformGenerator(
         PRNG.well44497b("seeds/Well44497b-2019-01-11.txt"),

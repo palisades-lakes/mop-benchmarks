@@ -13,7 +13,7 @@ import java.util.*;
 
 /**
  * @author palisades dot lakes at gmail dot com
- * @version 2026-11-02
+ * @version 2026-11-03
  */
 
 public final class Util {
@@ -193,7 +193,7 @@ public final class Util {
                                                    final double ymin,
                                                    final double ymax) {
 
-    // Construct a unit square as 2 triangles:
+    // Construct a rectangle as 2 triangles:
     final ZeroSimplex z0 = ZeroSimplex.make("f0");
     final ZeroSimplex z1 = ZeroSimplex.make("f1");
     final ZeroSimplex z2 = ZeroSimplex.make("f2");
@@ -210,6 +210,46 @@ public final class Util {
 
     final IFn e = IFnWrapper.make(
       Map.of(z0, p0, z1, p1, z2, p2, z3, p3));
+
+    return TriangleMesh.make(c,e); }
+
+  //--------------------------------------------------------------------
+  /** Hexagon enclosing <code>[xmin,xmax] X [ymin,ymax]</code>,
+   * made of 4 triangles,
+   * to initialize a <code>DelaunayBuilder</code>
+   */
+
+  public static final TriangleMesh hexagonFrame (final double xmin,
+                                                 final double xmax,
+                                                 final double ymin,
+                                                 final double ymax) {
+    assert xmin < xmax;
+    assert ymin < ymax;
+    // Construct a hexagon as 4 triangles:
+    final ZeroSimplex z0 = ZeroSimplex.make("f0");
+    final ZeroSimplex z1 = ZeroSimplex.make("f1");
+    final ZeroSimplex z2 = ZeroSimplex.make("f2");
+    final ZeroSimplex z3 = ZeroSimplex.make("f3");
+    final ZeroSimplex z4 = ZeroSimplex.make("f4");
+    final ZeroSimplex z5 = ZeroSimplex.make("f5");
+    final TwoSimplex t012 = TwoSimplex.make(z0, z1, z2);
+    final TwoSimplex t234 = TwoSimplex.make(z2, z3, z4);
+    final TwoSimplex t450 = TwoSimplex.make(z4, z5, z0);
+    final TwoSimplex t024 = TwoSimplex.make(z0, z2, z4);
+    final SimplicialComplex2D c =
+      SimplicialComplex2D.make(List.of(t012,t234,t450,t024));
+
+    final double xmid = (xmax+xmin)*0.5;
+    final double dy = (xmax-xmin)*0.5*Math.tan(Math.PI/6.0);
+    final VectorD2 p0 = new VectorD2(xmid,ymin-dy);
+    final VectorD2 p1 = new VectorD2(xmax,ymin);
+    final VectorD2 p2 = new VectorD2(xmax,ymax);
+    final VectorD2 p3 = new VectorD2(xmid,ymax+dy);
+    final VectorD2 p4 = new VectorD2(xmin,ymax);
+    final VectorD2 p5 = new VectorD2(xmin,ymin);
+
+    final IFn e = IFnWrapper.make(
+      Map.of(z0,p0, z1,p1, z2,p2, z3,p3, z4,p4, z5,p5));
 
     return TriangleMesh.make(c,e); }
 

@@ -1,27 +1,30 @@
 (set! *warn-on-reflection* true)
 (set! *unchecked-math* :warn-on-boxed)
 ;;----------------------------------------------------------------
-(ns mop.delaunay.qedge.builder.rectangle-frame
+(ns mop.delaunay.qedge.builder.triangle.two
   {:doc     "Use JavaFX to display a delaunay triangulation."
    :author  "palisades dot lakes at gmail dot com"
-   :version "2026-11-02"}
+   :version "2026-11-03"}
 
   (:import
-    [java.util Arrays]
     [mop.java.geometry.delaunay Util]
     [mop.java.geometry.delaunay.qedge LischinskiIncrementalBuilder]
+    [mop.java.geometry.euclidean VectorD2]
     [mop.java.jfx JFX JfxWorld]))
 ;;----------------------------------------------------------------
-;; mvn -q -DskipTests=true install & cljfx src\scripts\clojure\mop\delaunay\qedge\builder\rectangle_frame.clj
+;; mvn -q install & cljfx src\scripts\clojure\mop\delaunay\qedge\builder\triangle\two.clj
 ;;----------------------------------------------------------------
 (defn make-world []
-  (let [frame (Util/rectangleFrame 0.0 1.0 0.0 1.0)
+  (let [p0 (VectorD2. -1.0 -1.0)
+        p1 (VectorD2.  2.0 -1.0)
+        p2 (VectorD2.  0.5, 3.0)
+        frame (Util/triangleFrame p0 p1 p2)
         builder (LischinskiIncrementalBuilder/make frame)
-        edgeCoords (Util/edgeCoordinates (.build builder))]
-    (println "edges")
-    (doseq [e edgeCoords]
-      (println (Arrays/toString ^objects e)))
-    (JFX/edges edgeCoords JFX/MESH_COLOR "rectangle frame")))
+        exclude #{}]
+    (.insertPoint builder (VectorD2. 0.25 0.25))
+    (.insertPoint builder (VectorD2. 0.75 0.75))
+    (JFX/edges (Util/edgeCoordinates (.build builder) exclude)
+      JFX/FRAME_COLOR "triangle-two")))
 ;;----------------------------------------------------------------
 (System/setProperty "glass.win.uiScale" "1")
 (JfxWorld/setWorldBuilder make-world)

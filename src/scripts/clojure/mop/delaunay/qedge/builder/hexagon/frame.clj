@@ -1,29 +1,27 @@
 (set! *warn-on-reflection* true)
 (set! *unchecked-math* :warn-on-boxed)
 ;;----------------------------------------------------------------
-(ns mop.delaunay.qedge.builder.triangle-one
+(ns mop.delaunay.qedge.builder.hexagon.frame
   {:doc     "Use JavaFX to display a delaunay triangulation."
    :author  "palisades dot lakes at gmail dot com"
-   :version "2026-11-02"}
+   :version "2026-11-03"}
 
   (:import
+    [java.util Arrays]
     [mop.java.geometry.delaunay Util]
     [mop.java.geometry.delaunay.qedge LischinskiIncrementalBuilder]
-    [mop.java.geometry.euclidean VectorD2]
     [mop.java.jfx JFX JfxWorld]))
 ;;----------------------------------------------------------------
-;; mvn -q install & cljfx src\scripts\clojure\mop\delaunay\qedge\builder\triangle_one.clj
+;; mvn -q -DskipTests=true install & cljfx src\scripts\clojure\mop\delaunay\qedge\builder\hexagon\frame.clj
 ;;----------------------------------------------------------------
 (defn make-world []
-  (let [p0 (VectorD2. -1.0 -1.0)
-        p1 (VectorD2.  2.0 -1.0)
-        p2 (VectorD2.  0.5, 3.0)
-        frame (Util/triangleFrame p0 p1 p2)
+  (let [frame (Util/hexagonFrame 0.0 1.0 0.0 1.0)
         builder (LischinskiIncrementalBuilder/make frame)
-        exclude #{}]
-    (.insertPoint builder (VectorD2.  0.0  0.0))
-    (JFX/edges (Util/edgeCoordinates (.build builder) exclude)
-      JFX/FRAME_COLOR "triangle-one")))
+        edgeCoords (Util/edgeCoordinates (.build builder))]
+    (println "edges")
+    (doseq [e edgeCoords]
+      (println (Arrays/toString ^objects e)))
+    (JFX/edges edgeCoords JFX/MESH_COLOR "hexagon frame")))
 ;;----------------------------------------------------------------
 (System/setProperty "glass.win.uiScale" "1")
 (JfxWorld/setWorldBuilder make-world)

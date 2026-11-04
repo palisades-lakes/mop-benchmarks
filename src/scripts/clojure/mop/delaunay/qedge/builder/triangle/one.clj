@@ -1,10 +1,10 @@
 (set! *warn-on-reflection* true)
 (set! *unchecked-math* :warn-on-boxed)
 ;;----------------------------------------------------------------
-(ns mop.delaunay.qedge.builder.triangle-nonconvex
+(ns mop.delaunay.qedge.builder.triangle.one
   {:doc     "Use JavaFX to display a delaunay triangulation."
    :author  "palisades dot lakes at gmail dot com"
-   :version "2026-11-02"}
+   :version "2026-11-03"}
 
   (:import
     [mop.java.geometry.delaunay Util]
@@ -12,25 +12,19 @@
     [mop.java.geometry.euclidean VectorD2]
     [mop.java.jfx JFX JfxWorld]))
 ;;----------------------------------------------------------------
-;; mvn -q -DskipTests=true install & cljfx src\scripts\clojure\mop\delaunay\qedge\builder\triangle_nonconvex.clj
+;; mvn -q install & cljfx src\scripts\clojure\mop\delaunay\qedge\builder\triangle\one.clj
 ;;----------------------------------------------------------------
 (defn make-world []
-  (let [p0 (VectorD2. 0.0 0.0)
-        p1 (VectorD2. 2.0 0.0)
-        p2 (VectorD2. 0.0 2.0)
+  (let [p0 (VectorD2. -1.0 -1.0)
+        p1 (VectorD2.  2.0 -1.0)
+        p2 (VectorD2.  0.5, 3.0)
         frame (Util/triangleFrame p0 p1 p2)
         builder (LischinskiIncrementalBuilder/make frame)
-        exclude (.vertices builder)
-        sites [(VectorD2. 0.5 0.25)
-               (VectorD2. 0.5 0.75)
-               (VectorD2. 0.25 0.5)
-               (VectorD2. 0.75 0.5)
-               (VectorD2. 0.25 0.2)
-               (VectorD2. 0.75 0.2)]]
-    (doseq [site sites] (.insertPoint builder site))
+        exclude #{}]
+    (.insertPoint builder (VectorD2.  0.0  0.0))
     (JFX/edges (Util/edgeCoordinates (.build builder) exclude)
-      JFX/MESH_COLOR "triangle-nonconvex")))
-    ;;----------------------------------------------------------------
+      JFX/FRAME_COLOR "triangle-one")))
+;;----------------------------------------------------------------
 (System/setProperty "glass.win.uiScale" "1")
 (JfxWorld/setWorldBuilder make-world)
 (JfxWorld/launch JfxWorld (make-array String 0))

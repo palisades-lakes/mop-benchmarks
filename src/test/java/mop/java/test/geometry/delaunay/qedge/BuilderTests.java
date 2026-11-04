@@ -15,7 +15,7 @@ import java.util.Set;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 202-10-31
+ * @version 202-11-03
  */
 
 public final class BuilderTests {
@@ -55,6 +55,25 @@ public final class BuilderTests {
     Assertions.assertEquals(10, b.nHalfEdges());
     Assertions.assertEquals(6, b.nInterior());
     Assertions.assertEquals(4, b.nBoundary());
+//    for (final QEdge q : primal) { System.out.println(q); }
+  }
+
+  //--------------------------------------------------------------
+
+  @Test
+  public final void hexagonFrame () {
+
+    final TriangleMesh mesh =
+      Util.hexagonFrame(0.0,1.0,0.0,1.0);
+    final SimplicialComplex2D cmplx =
+      (SimplicialComplex2D) mesh.cmplx();
+    final QEdgeBuilder b = QEdgeBuilder.make(cmplx);
+    final Set<QEdge> primal = b.build();
+    Assertions.assertEquals(9, primal.size());
+    Assertions.assertEquals(4, b.nFaces());
+    Assertions.assertEquals(18, b.nHalfEdges());
+    Assertions.assertEquals(12, b.nInterior());
+    Assertions.assertEquals(6, b.nBoundary());
 //    for (final QEdge q : primal) { System.out.println(q); }
   }
 
