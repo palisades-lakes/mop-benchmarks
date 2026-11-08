@@ -13,7 +13,6 @@ import mop.java.util.IFnWrapper;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
 
 /** Delaunay triangulation,
@@ -255,11 +254,8 @@ public interface DelaunayBuilder {
 
   //--------------------------------------------------------------------
 
-  static final AtomicInteger _counter = new AtomicInteger(0);
-  private static int counter () { return _counter.getAndIncrement(); }
-
   public default void insertPoint (final VectorD2 p) {
-    final ZeroSimplex z = ZeroSimplex.make("s" + counter());
+    final ZeroSimplex z = ZeroSimplex.make("s");
     embed(z,p);
     insert(z); }
 

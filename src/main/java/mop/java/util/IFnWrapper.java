@@ -1,6 +1,7 @@
 package mop.java.util;
 
 import java.util.Map;
+import java.util.TreeMap;
 
 /** Wrapper to allow Java <code>Map</code>s to be used as
  * clojure functions.
@@ -39,8 +40,10 @@ public final class IFnWrapper extends IFnImplementation {
   private IFnWrapper (final Map mutable) {
     super();
     // defensive copy
-    _immutableMap = Map.copyOf(mutable); }
+    _immutableMap = new TreeMap(mutable); }
 
+  // Use TreeMap to make debugging easier -- embeddings print in
+  // ZeroSimplex key order
   public static final IFnWrapper make (final Map mutable) {
     return new IFnWrapper(mutable); }
 

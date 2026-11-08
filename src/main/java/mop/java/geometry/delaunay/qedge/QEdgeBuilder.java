@@ -12,18 +12,18 @@ import java.util.Set;
 
 /** Convert the two-simplexes (faces)
  * of a <code>SimpllcialComplex2D</code>
- * into a <code>QEdge</code> structure.
+ * into a <code>HEdge</code> structure.
  * Dangling one and zero simplexes are ignored.
  * The faces must form an oriented manifold with boundary.
- * The resulting <code>QEdge</code> structure will be a connected,
+ * The resulting <code>HEdge</code> structure will be a connected,
  * oriented manifold <em>without</em> boundary, with triangular faces
  * corresponding to the simplicial complex's faces,
  * and possibly non-triangular 'exterior' faces closing boundary
  * loops.
  * <br>
- * TODO: is it really true that the resulting <code>QEdge</code>
+ * TODO: is it really true that the resulting <code>HEdge</code>
  *  will always be connected, and so can be represented by one
- *  <code>QEdge</code>?
+ *  <code>HEdge</code>?
  * <br>
  * Essentially constructing a half-edge mesh,
  * via <code>Map</code>s rather than direct references.
@@ -265,26 +265,26 @@ private final void qedge (final DirectedOneSimplex e, final QEdge q) {
   if (! qedge().containsKey(e)) { qedge().put(e,q); } }
 
 //--------------------------------------------------------------------
-/** create the <code>QEdge</code> quartet corresponding to the
+/** create the <code>HEdge</code> quartet corresponding to the
  * <code>DirectedOneSimplex</code>;
- * return the primal <code>QEdge</code>,
+ * return the primal <code>HEdge</code>,
  * which links to the other 3.
  */
 
 private final QEdge makeQuartet (final DirectedOneSimplex e) {
-  return QEdge.make(e.toString(),e.z0(),e.z1()); }
+  return QEdge.make(e.z0(),e.z1()); }
 
 /** Return the primal <code>QEdges</code>s representing a completed
  * version of the input <code>SimplicialComplex2D</code>.
  * <br>
- * Usually one <code>QEdge</code> is enough to link into the mesh,
+ * Usually one <code>HEdge</code> is enough to link into the mesh,
  * but multiple may be necessary if the corresponding manifold is
  * not connected.
  */
 public final Set<QEdge> build () {
   index();
   final Set<QEdge> qEdges = new HashSet<>();
-  // initial QEdge's only carry the origin and reverse links
+  // initial HEdge's only carry the origin and reverse links
   for (final DirectedOneSimplex e : reverse().keySet()) {
     // create quartets for interior edges only
     // necessary for LischinskiIncrementalBuilder to correclty

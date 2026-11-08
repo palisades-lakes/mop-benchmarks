@@ -36,9 +36,9 @@ public final class DelaunayBuilderTest {
   private final void singleTriangle (final DelaunayBuilder builder) {
 
     // Construct a triangle containing the unit square:
-    final ZeroSimplex z0 = ZeroSimplex.make("z0");
-    final ZeroSimplex z1 = ZeroSimplex.make("z1");
-    final ZeroSimplex z2 = ZeroSimplex.make("z2");
+    final ZeroSimplex z0 = ZeroSimplex.make();
+    final ZeroSimplex z1 = ZeroSimplex.make();
+    final ZeroSimplex z2 = ZeroSimplex.make();
     final TwoSimplex t0 = TwoSimplex.make(z0, z1, z2);
     final TwoSimplex t1 = TwoSimplex.make(z1,z2,z0);
     Assertions.assertEquals(t0,t1);
@@ -85,7 +85,7 @@ public final class DelaunayBuilderTest {
     Assertions.assertEquals(z0,e2.z0());
     Assertions.assertEquals(z1,e2.z1());
 
-    final ZeroSimplex z = ZeroSimplex.make("z");
+    final ZeroSimplex z = ZeroSimplex.make("s");
     final VectorD2 p = new VectorD2(0.5,0.5);
     builder.embed(z,p);
     Assertions.assertTrue(Util.inCircle(z0, z1, z2, z,builder.embedding()));
@@ -97,10 +97,10 @@ public final class DelaunayBuilderTest {
   private final void splitRectangle (final DelaunayBuilder builder) {
 
     // Construct a unit square as 2 triangles:
-    final ZeroSimplex z0 = ZeroSimplex.make("z0");
-    final ZeroSimplex z1 = ZeroSimplex.make("z1");
-    final ZeroSimplex z2 = ZeroSimplex.make("z2");
-    final ZeroSimplex z3 = ZeroSimplex.make("z3");
+    final ZeroSimplex z0 = ZeroSimplex.make();
+    final ZeroSimplex z1 = ZeroSimplex.make();
+    final ZeroSimplex z2 = ZeroSimplex.make();
+    final ZeroSimplex z3 = ZeroSimplex.make();
 
     final VectorD2 p0 = new VectorD2(0.0,0.0);
     final VectorD2 p1 = new VectorD2(1.0,0.0);
@@ -171,7 +171,7 @@ public final class DelaunayBuilderTest {
         (z0.equals(e2.z0()) && z1.equals(e2.z1()) ||
           (z3.equals(e2.z0())) && z0.equals(e2.z1()))); }
 
-    final ZeroSimplex z = ZeroSimplex.make("z");
+    final ZeroSimplex z = ZeroSimplex.make("s");
     final VectorD2 p = new VectorD2(0.5,0.25);
     builder.embed(z,p);
 //    Assert.assertEquals(t012,builder.locate(z));
@@ -192,7 +192,7 @@ public final class DelaunayBuilderTest {
 
     final int nsites = 128;
     for (int i=0;i<nsites;i++) {
-      final ZeroSimplex zi = ZeroSimplex.make("a" + i);
+      final ZeroSimplex zi = ZeroSimplex.make("s");
       final VectorD2 pi = (VectorD2) pointGenerator.next();
       builder.embed(zi,pi);
       builder.insert(zi); }

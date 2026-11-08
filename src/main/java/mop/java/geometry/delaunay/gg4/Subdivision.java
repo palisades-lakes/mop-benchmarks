@@ -131,7 +131,7 @@ public final class Subdivision {
   private static final boolean RightOf (final VectorD2 x, final Edge e) {
     return ccw(x, e.Dest2d(), e.Org2d()); }
 
-//  private static final boolean LeftOf (final VectorD2 x, final  QEdge e) {
+//  private static final boolean LeftOf (final VectorD2 x, final  HEdge e) {
 //    return ccw(x, e.Org2d(), e.Dest2d()); }
 
   private static final double EPS = 1.0e-6;

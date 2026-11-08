@@ -44,7 +44,7 @@ public final class Edge {
     // Return the next cw edge around (from) the origin of the current edge.
     return Rot().Onext().Rot(); }
 
-//  public final QEdge Dnext() {
+//  public final HEdge Dnext() {
 //    // Return the next ccw edge around (into) the destination of the current edge.
 //    return Sym().Onext().Sym(); }
 
@@ -60,11 +60,11 @@ public final class Edge {
     // Return the ccw edge around the left face before the current edge.
     return Onext().Sym(); }
 
-//  public final QEdge Rnext() {
+//  public final HEdge Rnext() {
 //    // Return the edge around the right face ccw following the current edge.
 //      return Rot().Onext().invRot(); }
 
-//  public final QEdge Rprev() {
+//  public final HEdge Rprev() {
 //    // Return the edge around the right face ccw before the current edge.
 //    return Sym().Onext(); }
 

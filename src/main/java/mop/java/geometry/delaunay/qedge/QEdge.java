@@ -4,7 +4,6 @@ import mop.java.cmplx.TwoSimplex;
 import mop.java.cmplx.ZeroSimplex;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /** Delaunay triangulation, after
  * <a href="https://www.researchgate.net/publication/262235495_Incremental_Delaunay_Triangulation">
@@ -39,7 +38,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * are topologically equivalent.
  * </p>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-11-02
+ * @version 2026-11-06
  */
 public final class QEdge implements Comparable<QEdge> {
 
@@ -142,12 +141,6 @@ public final class QEdge implements Comparable<QEdge> {
     e.splice(faceNext());
     e.reverse().splice(that);
     return e; }
-
-//  public final QEdge connect (final QEdge that, final String prefix) {
-//    final QEdge e = make(prefix,reverse().origin(), that.origin());
-//    e.splice(faceNext());
-//    e.reverse().splice(that);
-//    return e; }
 
   /** Lischinski: <br>
    * Essentially turns edge e counterclockwise inside its enclosing
@@ -309,12 +302,12 @@ public final class QEdge implements Comparable<QEdge> {
         + "\nfacePrev:" + facePrev().name()
         + "\nreverse:" + reverse().name()
         + "\nreverse.next():" + reverse().next().name()
-        + "\nrot:" + rot().name()
-        + "\nrot.next:" + rot().next().name()
-        + "\nreverse:" + reverse().name()
-        + "\nrot.reverse:" + rot().reverse().name()
-        + "\nrot.reverse.next:" + rot().reverse().next().name()
-        + "\n" + origin() + "->" + dest(); }
+//        + "\nrot:" + rot().name()
+//        + "\nrot.next:" + rot().next().name()
+//        + "\nreverse:" + reverse().name()
+//        + "\nrot.reverse:" + rot().reverse().name()
+//        + "\nrot.reverse.next:" + rot().reverse().next().name()
+      ; }
 
   //--------------------------------------------------------------------
   // debugging
@@ -323,32 +316,28 @@ public final class QEdge implements Comparable<QEdge> {
   private final String _name;
   public final String name () { return _name; }
 
-// --Commented out by Inspection START (11/2/2026 15:21):
-//  public static final void printFace (final Set<QEdge> visited,
-//                                      final Stack<QEdge> toVisit) {
-//    final QEdge e0 = toVisit.pop();
-//    if ((null!=e0) && (! visited.contains(e0))) {
-//      System.out.println("\nface:" );
-//      QEdge e1 = e0;
-//      do {
-//        toVisit.remove(e1);
-//        if (! visited.contains(e1)) {
-//          System.out.println(e1);
-//          visited.add(e1);
-//          final QEdge ri = e1.reverse();
-//          if (! visited.contains(ri)) { toVisit.push(ri); } }
-//        e1 = e1.faceNext();
-//        assert null != e1;
-//      } while (e0 != e1); } }
-// --Commented out by Inspection STOP (11/2/2026 15:21)
+  public static final void printFace (final Set<QEdge> visited,
+                                      final Stack<QEdge> toVisit) {
+    final QEdge e0 = toVisit.pop();
+    if ((null!=e0) && (! visited.contains(e0))) {
+      System.out.println("\nface:" );
+      QEdge e1 = e0;
+      do {
+        toVisit.remove(e1);
+        if (! visited.contains(e1)) {
+          System.out.println(e1);
+          visited.add(e1);
+          final QEdge ri = e1.reverse();
+          if (! visited.contains(ri)) { toVisit.push(ri); } }
+        e1 = e1.faceNext();
+        assert null != e1;
+      } while (e0 != e1); } }
 
-// --Commented out by Inspection START (11/2/2026 15:20):
-//  public final void printMesh () {
-//    final Set<QEdge> visited = new HashSet<>();
-//    final Stack<QEdge> toVisit = new Stack<>();
-//    toVisit.push(this);
-//    while (!toVisit.empty()) { printFace(visited,toVisit); } }
-// --Commented out by Inspection STOP (11/2/2026 15:20)
+  public final void printMesh () {
+    final Set<QEdge> visited = new HashSet<>();
+    final Stack<QEdge> toVisit = new Stack<>();
+    toVisit.push(this);
+    while (!toVisit.empty()) { printFace(visited,toVisit); } }
 
   //--------------------------------------------------------------------
   // construction
@@ -366,17 +355,13 @@ public final class QEdge implements Comparable<QEdge> {
    * as a representative for the group.
    */
 
-  private static final AtomicInteger _counter = new AtomicInteger(0);
-  private static int counter () { return _counter.getAndIncrement(); }
+  public static final QEdge make (final ZeroSimplex z0,
+                                  final ZeroSimplex z1) {
 
-  public static final QEdge make (final String prefix,
-                                  final ZeroSimplex p0,
-                                  final ZeroSimplex p1) {
-
-    final QEdge primal = new QEdge(prefix + ".pri", p0);
-    final QEdge reverse = new QEdge(prefix + ".rev", p1);
-    final QEdge rot = new QEdge(prefix + ".rot",null);
-    final QEdge reverseRot = new QEdge(prefix + ".rer",null);
+    final QEdge primal = new QEdge(z0 + "->" + z1, z0);
+    final QEdge reverse = new QEdge(z1 + "->" + z0, z1);
+    final QEdge rot = new QEdge(z0 + "/^" + z1,null);
+    final QEdge reverseRot = new QEdge(z1 + "/^" + z0,null);
 
     primal._rot = rot;
     reverse._rot = reverseRot;
@@ -388,11 +373,6 @@ public final class QEdge implements Comparable<QEdge> {
 
     return primal; }
 
-  public static final QEdge make (final ZeroSimplex p0,
-                                  final ZeroSimplex p1) {
-
-    return make("q" + counter(),p0,p1); }
-
-  //--------------------------------------------------------------------
+    //--------------------------------------------------------------------
 } // end class
 //--------------------------------------------------------------------

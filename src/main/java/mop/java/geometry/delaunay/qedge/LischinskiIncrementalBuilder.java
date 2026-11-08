@@ -355,15 +355,15 @@ public final class LischinskiIncrementalBuilder
                  final VectorD2 p1,
                  final VectorD2 p2) {
     // this creates a closed manifold, a triangle and its 'reverse'
-    final ZeroSimplex z0 = ZeroSimplex.make("z0");
-    final ZeroSimplex z1 = ZeroSimplex.make("z1");
-    final ZeroSimplex z2 = ZeroSimplex.make("z2");
+    final ZeroSimplex z0 = ZeroSimplex.make();
+    final ZeroSimplex z1 = ZeroSimplex.make();
+    final ZeroSimplex z2 = ZeroSimplex.make();
     final Map<ZeroSimplex,VectorD2> embedding =
       Map.of(z0,p0,z1,p1,z2,p2);
 
-    final QEdge e01 = QEdge.make("z0->z1", z0, z1);
-    final QEdge e12 = QEdge.make("z1->z2", z1, z2);
-    final QEdge e20 = QEdge.make("z2->z0", z2, z0);
+    final QEdge e01 = QEdge.make(z0, z1);
+    final QEdge e12 = QEdge.make(z1, z2);
+    final QEdge e20 = QEdge.make(z2, z0);
 
     final QEdge r01 = e01.rot();
     final QEdge r12 = e12.rot();
@@ -410,10 +410,10 @@ public final class LischinskiIncrementalBuilder
                   final double xmax,
                   final double ymin,
                   final double ymax) {
-    final ZeroSimplex z0 = ZeroSimplex.make("z0");
-    final ZeroSimplex z1 = ZeroSimplex.make("z1");
-    final ZeroSimplex z2 = ZeroSimplex.make("z2");
-    final ZeroSimplex z3 = ZeroSimplex.make("z3");
+    final ZeroSimplex z0 = ZeroSimplex.make();
+    final ZeroSimplex z1 = ZeroSimplex.make();
+    final ZeroSimplex z2 = ZeroSimplex.make();
+    final ZeroSimplex z3 = ZeroSimplex.make();
     final VectorD2 p0 = new VectorD2(xmin,ymin);
     final VectorD2 p1 = new VectorD2(xmax,ymin);
     final VectorD2 p2 = new VectorD2(xmax,ymax);
@@ -424,13 +424,13 @@ public final class LischinskiIncrementalBuilder
     // primal edges
 
     // 4 ccw inner rectangle
-    final QEdge e01 = QEdge.make("e01",z0,z1);
-    final QEdge e12 = QEdge.make("e12",z1,z2);
-    final QEdge e23 = QEdge.make("e23",z2,z3);
-    final QEdge e30 = QEdge.make("e30",z3,z0);
+    final QEdge e01 = QEdge.make(z0,z1);
+    final QEdge e12 = QEdge.make(z1,z2);
+    final QEdge e23 = QEdge.make(z2,z3);
+    final QEdge e30 = QEdge.make(z3,z0);
 
     // 2 inner diagonal
-    final QEdge e20 = QEdge.make("e20",z2,z0);
+    final QEdge e20 = QEdge.make(z2,z0);
     final QEdge e02 = e20.reverse();
 
     // 4 cw outer rectangle

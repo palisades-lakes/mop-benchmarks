@@ -24,7 +24,7 @@ set XMX=
 :: see https://docs.oracle.com/en/java/javase/26/docs/specs/man/java.html
 
 ::set PROF=
-set PROF=-agentpath:"C:\Program Files\YourKit Java Profiler 2026.9.146\bin\windows-x86-64\yjpagent.dll=_no_java_version_check"
+set PROF=-agentpath:"C:\Program Files\YourKit Java Profiler 2026.9.157\bin\windows-x86-64\yjpagent.dll=_no_java_version_check"
 
 set OPENS=--add-opens java.base/java.lang=ALL-UNNAMED
 set CP=-cp lib/*

@@ -17,7 +17,7 @@ import java.util.SortedSet;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 202-11-02
+ * @version 202-11-07
  */
 
 public final class InsertTests {
@@ -28,16 +28,16 @@ public final class InsertTests {
   public final void singularTriangleFrame () {
 
     // Construct a triangle containing the unit square:
-    final VectorD2 p0 = new VectorD2( -1.0, -1.0);
-    final VectorD2 p1 = new VectorD2(  2.0, -1.0);
-    final VectorD2 p2 = new VectorD2(  0.5,  3.0);
+    final VectorD2 p0 = new VectorD2(0.0,0.0);
+    final VectorD2 p1 = new VectorD2(2.0,0.0);
+    final VectorD2 p2 = new VectorD2(0.0,2.0);
 
     final LischinskiIncrementalBuilder builder =
       LischinskiIncrementalBuilder.triangleFrame(p0, p1, p2);
-//    builder.startingEdge().printMesh();
+    //builder.startingEdge().printMesh();
     final SortedSet<ZeroSimplex> frame = builder.vertices();
     builder.insert(frame);
-    builder.insertPoint(new VectorD2(0.0, -1.0));
+    builder.insertPoint(new VectorD2(0.5, 0.5));
   }
 
   //--------------------------------------------------------------
@@ -46,9 +46,9 @@ public final class InsertTests {
   public final void uniform01TriangleFrame () {
 
     // Construct a triangle containing the unit square:
-    final VectorD2 p0 = new VectorD2( -1.0, -1.0);
-    final VectorD2 p1 = new VectorD2(  2.0, -1.0);
-    final VectorD2 p2 = new VectorD2(  0.5,  3.0);
+    final VectorD2 p0 = new VectorD2(0.0,0.0);
+    final VectorD2 p1 = new VectorD2(2.0,0.0);
+    final VectorD2 p2 = new VectorD2(0.0,2.0);
 
     final LischinskiIncrementalBuilder builder =
       LischinskiIncrementalBuilder.triangleFrame(p0, p1, p2);

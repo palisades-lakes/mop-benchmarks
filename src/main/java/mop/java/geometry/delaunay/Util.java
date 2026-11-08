@@ -159,9 +159,9 @@ public final class Util {
                                                   final VectorD2 p1,
                                                   final VectorD2 p2) {
 
-    final ZeroSimplex z0 = ZeroSimplex.make("z0");
-    final ZeroSimplex z1 = ZeroSimplex.make("z1");
-    final ZeroSimplex z2 = ZeroSimplex.make("z2");
+    final ZeroSimplex z0 = ZeroSimplex.make();
+    final ZeroSimplex z1 = ZeroSimplex.make();
+    final ZeroSimplex z2 = ZeroSimplex.make();
     final TwoSimplex t012 = TwoSimplex.make(z0, z1, z2);
     final SimplicialComplex2D c =
       SimplicialComplex2D.make(List.of(t012));
@@ -194,10 +194,10 @@ public final class Util {
                                                    final double ymax) {
 
     // Construct a rectangle as 2 triangles:
-    final ZeroSimplex z0 = ZeroSimplex.make("f0");
-    final ZeroSimplex z1 = ZeroSimplex.make("f1");
-    final ZeroSimplex z2 = ZeroSimplex.make("f2");
-    final ZeroSimplex z3 = ZeroSimplex.make("f3");
+    final ZeroSimplex z0 = ZeroSimplex.make("f");
+    final ZeroSimplex z1 = ZeroSimplex.make("f");
+    final ZeroSimplex z2 = ZeroSimplex.make("f");
+    final ZeroSimplex z3 = ZeroSimplex.make("f");
     final TwoSimplex t012 = TwoSimplex.make(z0, z1, z2);
     final TwoSimplex t023 = TwoSimplex.make(z0, z2, z3);
     final SimplicialComplex2D c =
@@ -226,12 +226,12 @@ public final class Util {
     assert xmin < xmax;
     assert ymin < ymax;
     // Construct a hexagon as 4 triangles:
-    final ZeroSimplex z0 = ZeroSimplex.make("f0");
-    final ZeroSimplex z1 = ZeroSimplex.make("f1");
-    final ZeroSimplex z2 = ZeroSimplex.make("f2");
-    final ZeroSimplex z3 = ZeroSimplex.make("f3");
-    final ZeroSimplex z4 = ZeroSimplex.make("f4");
-    final ZeroSimplex z5 = ZeroSimplex.make("f5");
+    final ZeroSimplex z0 = ZeroSimplex.make("f");
+    final ZeroSimplex z1 = ZeroSimplex.make("f");
+    final ZeroSimplex z2 = ZeroSimplex.make("f");
+    final ZeroSimplex z3 = ZeroSimplex.make("f");
+    final ZeroSimplex z4 = ZeroSimplex.make("f");
+    final ZeroSimplex z5 = ZeroSimplex.make("f");
     final TwoSimplex t012 = TwoSimplex.make(z0, z1, z2);
     final TwoSimplex t234 = TwoSimplex.make(z2, z3, z4);
     final TwoSimplex t450 = TwoSimplex.make(z4, z5, z0);
