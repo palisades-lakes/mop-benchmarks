@@ -15,7 +15,7 @@ import java.util.Set;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 202-11-07
+ * @version 202-11-10
  */
 
 public final class BuilderTests {
@@ -78,5 +78,5 @@ public final class BuilderTests {
   }
 
   //--------------------------------------------------------------
-}
+} // end class
 //--------------------------------------------------------------

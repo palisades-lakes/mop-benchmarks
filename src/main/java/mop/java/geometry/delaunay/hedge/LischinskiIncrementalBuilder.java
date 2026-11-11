@@ -21,7 +21,7 @@ import java.util.*;
  * <b>NOTE: </b> all inserted points must fall within the existing mesh!
  * </p>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-11-05
+ * @version 2026-11-10
  */
 
 public final class LischinskiIncrementalBuilder
@@ -54,11 +54,11 @@ public final class LischinskiIncrementalBuilder
 
   private HEdge _startingEdge;
   /** The entry into the abstract cell complex represented
-   * by the <code>QEdege</code>s.
+   * by the <code>HEdge</code>s.
    */
   public final HEdge startingEdge () { return _startingEdge; }
   /** The entry into the abstract cell complex represented
-   * by the <code>QEdege</code>s.
+   * by the <code>HEdge</code>s.
    */
   final void setStartingEdge (final HEdge e) { _startingEdge = e; }
 
@@ -232,10 +232,11 @@ public final class LischinskiIncrementalBuilder
       "No embedding for " + z + "\n" + embedding();
 
     HEdge e = locateQ(z);
-    // point is already in QMesh
+    // point is already in Mesh
     if (z.equals(e.origin()) || z.equals(e.reverse().origin()))  {
       return; }
     else if (onEdge(z, e)) { e = e.prev(); e.next().delete(); }
+
     // Connect the new point to the vertices of the containing
     // triangle (or quadrilateral, if the new point fell on an
     // existing edge.)
@@ -246,6 +247,7 @@ public final class LischinskiIncrementalBuilder
       base = e.connect(base.reverse());
       e = base.prev();
     } while (e.faceNext() != startingEdge());
+
     // Examine suspect edges to ensure that the Delaunay condition
     // is satisfied.
     do {
@@ -256,8 +258,7 @@ public final class LischinskiIncrementalBuilder
         Util.inCircle(e.origin(),tr.origin(),er.origin(),
                       z,
                       embedding())) {
-        e.swap();
-        e = e.prev(); }
+        e = e.swap().prev(); }
       // no more suspect edges
       else if (e.next() == startingEdge()) { return; }
       // pop a suspect edge
@@ -275,6 +276,7 @@ public final class LischinskiIncrementalBuilder
    */
 
   public final TriangleMesh build () {
+    startingEdge().validateMesh();
     final SimplicialComplex2D cmplx = SimplicialComplex2D.make(faces());
     //System.out.println(cmplx);
     final IFn z2p = IFnWrapper.make(embedding());

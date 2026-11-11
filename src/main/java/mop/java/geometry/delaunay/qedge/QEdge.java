@@ -38,8 +38,9 @@ import java.util.*;
  * are topologically equivalent.
  * </p>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-11-06
+ * @version 2026-11-10
  */
+
 public final class QEdge implements Comparable<QEdge> {
 
   // TODO: separate primal and dual edges, primal with reference to
@@ -57,16 +58,34 @@ public final class QEdge implements Comparable<QEdge> {
 
   private ZeroSimplex _origin;
   public final ZeroSimplex origin () { return _origin; }
+  /** A basic weakness of the <code>QEdge</code> representation:
+    * <code>origin()</code>> is a mutable field,
+   * with a constraint relative the value of
+   * <code>next()</code>, which is also mutable.
+   * Also, <code>origin()</code> should always be null for
+   * dual (<code>rot()</code>) edges.
+    */
   public final void setOrigin (final ZeroSimplex p) {
-    assert _origin != null;
+    // dual/rot edges have null origins, which shouldn't  changed
+    assert origin() != null;
+    assert Objects.equals(origin(),next().origin());
+    assert Objects.equals(p,next().origin());
     _origin = p; }
 
   /** The next edge ccw around the origin. */
   private QEdge _next;
   /** The next edge ccw around the origin. */
   public final QEdge next () { return _next; }
-  /** The next edge ccw around the origin. */
-  public final void setNext (final QEdge e) { _next = e; }
+
+  /** The next edge ccw around the origin.
+   * A basic weakness of the <code>QEdge</code> representation:
+   * <code>next()</code>> is a mutable field,
+   * with a constraint relative the value of
+   * <code>origin()</code>, which is also mutable.
+   */
+  public final void setNext (final QEdge e) {
+    assert Objects.equals(origin(),e.origin());
+    _next = e; }
 
   //--------------------------------------------------------------------
   // minimal edge 'algebra'
@@ -84,14 +103,40 @@ public final class QEdge implements Comparable<QEdge> {
   public final QEdge faceNext () {
     return rot().reverse().next().rot(); }
 
-  /** The previous edge ccw around the (left) face. */
+  /** The next edge cw around the (left) face. */
   public final QEdge facePrev () { return next().reverse(); }
 
   //--------------------------------------------------------------------
   // Basic Topological Operators
   //--------------------------------------------------------------------
+  /** Break all the links from <code>this</code> quartet to any
+   * other <code>QEdge</code>.
+   * Unlike <code>delete</code>, <code>isolate</code> does nothing
+   * to the neighbors.
+   * To keep the mesh valid, no other <code>QEdge</code>s
+   * can have references to
+   * <code>this</code>.
+   */
+
+  private final void isolate () {
+    final QEdge pr = this;
+    final QEdge re = reverse();
+    final QEdge ro = rot();
+    final QEdge rr = rot().reverse();
+    pr.setNext(pr);
+    re.setNext(re);
+    ro.setNext(ro);
+    rr.setNext(rr); }
+
+  //--------------------------------------------------------------------
+  /** <em>NOTE:</em> <code>this and <code>that</code> must have the same
+   * <code>origin()</code>, which may be <code>null</code> if
+   * <code>this<</code> and <code>that</code> are dual (rot)
+   * <code>QEdge</code>s.
+   */
 
   private final void swapNext (final QEdge that) {
+    assert Objects.equals(origin(),that.origin());
     final QEdge n0 = this.next();
     final QEdge n1 = that.next();
     this.setNext(n1);
@@ -114,9 +159,14 @@ public final class QEdge implements Comparable<QEdge> {
    * and to break them apart. <br>
    * See Guibas and Stolfi (1985) p.96 for more details
    * and illustrations.
+   * <br>
+   * NOTE: <code>this</code> and <code>that</code> must have the same
+   * <code>origin</code>, and the same for <code>this.rot()</code>
+   * and <code>that.rot()</code>.
    */
 
   public final void splice (final QEdge that) {
+
     swapNext(that);
     next().rot().swapNext(that.next().rot()); }
 
@@ -144,20 +194,29 @@ public final class QEdge implements Comparable<QEdge> {
 
   /** Lischinski: <br>
    * Essentially turns edge e counterclockwise inside its enclosing
-   * quadrilateral. The data pointers are modified accordingly.
+   * quadrilateral.
+   * <br>
+   * <em>Rewritten to return a new QEdge, to maintain that constraint
+   * between <code>next()</code> and <code>origin()</code></em>.
    */
 
-  public final void swap () {
-    // TODO: can we replace with a new edge, rather than modifying?
-    // TODO: what happens if it's not in a quadrilateral? -> unit test!
+  public final QEdge swap () {
+
+    final ZeroSimplex z0 = reverse().faceNext().dest();
+    final ZeroSimplex z1 = faceNext().dest();
+    final QEdge e = make(z0,z1);
+
     final QEdge a = prev();
     final QEdge b = reverse().prev();
     splice(a);
     reverse().splice(b);
-    splice(a.faceNext());
-    reverse().splice(b.faceNext());
-    setOrigin(a.reverse().origin());
-    reverse().setOrigin(b.reverse().origin()); }
+
+    e.splice(a.faceNext());
+    e.reverse().splice(b.faceNext());
+
+    isolate();
+
+    return e; }
 
   //--------------------------------------------------------------------
   // collect mesh elements
@@ -196,32 +255,6 @@ public final class QEdge implements Comparable<QEdge> {
   public final SortedSet<ZeroSimplex> zeroSimplexes () {
     return zeroSimplexes(new TreeSet<>()); }
 
-//  /** Collect the edges as a set of pairs of coordinates.
-//   * Skip edges that have any vertices in <code>exclude</code>.
-//   * <b>Assumes mesh is connected!</b>
-//   */
-//
-//  public final SortedSet<ZeroSimplex[]> edges (final Set<ZeroSimplex> exclude) {
-//    final Set<ZeroSimplex[]> t = new HashSet<>();
-//    final Set<QEdge> visited = new HashSet<>();
-//    final Stack<QEdge> toVisit = new Stack<>();
-//    toVisit.push(this);
-//    while (! toVisit.empty()) {
-//      final QEdge e0 = toVisit.pop();
-//      if (! visited.contains(e0)) {
-//        final QEdge e1 = e0.reverse();
-//        visited.add(e0);
-//        visited.add(e1);
-//        toVisit.push(e0.faceNext());
-//        toVisit.push(e1.faceNext());
-//        // TODO: sort, preserving orientation, so that same edge
-//        //  only returned once.
-//        final ZeroSimplex[] points = new ZeroSimplex[] {
-//          e0.origin(), e1.origin(), };
-//        Arrays.sort(points);
-//        if (noElements(exclude,points)) { t.add(points); } } }
-//    return t; }
-
   /** Collect connected triangular faces, skip others. */
   public final SortedSet<TwoSimplex> twoSimplexes () {
     final SortedSet<TwoSimplex> faces = new TreeSet<>();
@@ -248,35 +281,6 @@ public final class QEdge implements Comparable<QEdge> {
             visited.add(e3); toVisit.push(e3.reverse());
             e3 = e3.faceNext(); } } } }
     return faces; }
-
-  //--------------------------------------------------------------------
-// --Commented out by Inspection START (10/25/2026 14:07):
-//  /** Collect the triangles as a set of triples of coordinates.
-//   * Skip triangles that have any vertices in <code>exclude</code>.
-//   * <b>Assumes mesh is connected!</b>
-//   */
-//
-//  public final Set<ZeroSimplex[]> triangles (final Set<ZeroSimplex> exclude) {
-//    final Set<ZeroSimplex[]> t = new HashSet<>();
-//    final Set<QEdge> visited = new HashSet<>();
-//    final Stack<QEdge> toVisit = new Stack<>();
-//    toVisit.push(this);
-//    while (! toVisit.empty()) {
-//      final QEdge e0 = toVisit.pop();
-//      if (! visited.contains(e0)) {
-//        visited.add(e0);
-//        final QEdge e1 = e0.faceNext();
-//        final QEdge e2 = e1.faceNext();
-//        toVisit.push(e0.reverse());
-//        toVisit.push(e1.reverse());
-//        toVisit.push(e2.reverse());
-//        // TODO: sort, preserving orientation, so that same triangle
-//        //  only returned once.
-//        final ZeroSimplex[] vtxs = new ZeroSimplex[] {
-//          e0.origin(), e1.origin(), e2.origin(), };
-//        if (noElements(exclude,vtxs)) { t.add(vtxs); } } }
-//    return t; }
-// --Commented out by Inspection STOP (10/25/2026 14:07)
 
   //--------------------------------------------------------------------
   // Comparable
@@ -313,6 +317,26 @@ public final class QEdge implements Comparable<QEdge> {
   // debugging
   //--------------------------------------------------------------------
 
+  public final void validate () {
+    assert Objects.equals(origin(),next().origin());
+    assert Objects.equals(origin(),prev().origin());
+    assert Objects.equals(origin(),facePrev().dest());
+    assert Objects.equals(dest(),faceNext().origin());
+    assert Objects.equals(this,reverse().reverse()); }
+
+  public final void validateMesh () {
+    final Set<QEdge> visited = new HashSet<>();
+    final Stack<QEdge> toVisit = new Stack<>();
+    toVisit.push(this);
+    while (! toVisit.empty()) {
+      final QEdge e = toVisit.pop();
+      if (! visited.contains(e)) {
+        e.validate();
+        visited.add(e);
+        toVisit.push(e.next());
+        toVisit.push(e.rot());
+      }}
+  }
   private final String _name;
   public final String name () { return _name; }
 

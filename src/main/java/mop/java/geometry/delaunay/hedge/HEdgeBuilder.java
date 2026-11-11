@@ -5,10 +5,7 @@ import mop.java.cmplx.SimplicialComplex2D;
 import mop.java.cmplx.TwoSimplex;
 import mop.java.cmplx.ZeroSimplex;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /** Convert the two-simplexes (faces)
  * of a <code>SimpllcialComplex2D</code>
@@ -31,7 +28,7 @@ import java.util.Set;
  * TODO: Allow building both quad-edge and half-edge meshes.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-11-05
+ * @version 2026-11-10
  */
 public final class HEdgeBuilder {
 
@@ -41,7 +38,7 @@ public final class HEdgeBuilder {
   private final SimplicialComplex2D cmplx () { return _cmplx; }
 
   //--------------------------------------------------------------------
-  // directed one simplexes == half edges
+  // directed one simplex pairs == half edges
   //--------------------------------------------------------------------
 
   private final Map<DirectedOneSimplex,DirectedOneSimplex>
@@ -51,13 +48,13 @@ public final class HEdgeBuilder {
   reverse () { return _reverse; }
 
   private final DirectedOneSimplex
-  reverse (final DirectedOneSimplex e) {
+  getReverse (final DirectedOneSimplex e) {
     assert null != e;
     final DirectedOneSimplex r = reverse().get(e);
     assert null != r;
     return r; }
 
-  private final void setReverse (final DirectedOneSimplex e,
+  private final void putReverse (final DirectedOneSimplex e,
                                  final DirectedOneSimplex r) {
     assert null != e;
     assert null != r;
@@ -83,13 +80,17 @@ public final class HEdgeBuilder {
     return _facePrev; }
 
   private final DirectedOneSimplex
-  facePrev (final DirectedOneSimplex e) { return facePrev().get(e); }
+  getFacePrev (final DirectedOneSimplex e) {
+    assert null != e;
+    return facePrev().get(e); }
 
-  private final void setFacePrev (final DirectedOneSimplex e,
+  private final void putFacePrev (final DirectedOneSimplex e,
                                   final DirectedOneSimplex prev) {
     assert null != e;
     assert ! facePrev().containsKey(e);
     facePrev().put(e,prev); }
+
+  //--------------------------------------------------------------------
 
   private final Map<DirectedOneSimplex,DirectedOneSimplex> _faceNext =
     new HashMap<>();
@@ -98,56 +99,58 @@ public final class HEdgeBuilder {
     return _faceNext; }
 
   private final DirectedOneSimplex
-  faceNext (final DirectedOneSimplex e) {
+  getFaceNext (final DirectedOneSimplex e) {
     assert null != e;
     return faceNext().get(e); }
 
-  private final void setFaceNext (final DirectedOneSimplex e,
+  private final void putFaceNext (final DirectedOneSimplex e,
                                   final DirectedOneSimplex next) {
     assert null != e;
-    assert ! faceNext().containsKey(e);
-    faceNext().put(e,next); }
+    if (! faceNext().containsKey(e)) { faceNext().put(e,next); }
+    else {
+      assert Objects.equals(next,getFaceNext(e)) :
+        next + "\n" + getFaceNext(e); } }
 
-  //--------------------------------------------------------------------
-  // Previous (CW) / next (CCW) half edges around their shared origin
-  // vertex:
-
-  private final Map<DirectedOneSimplex,DirectedOneSimplex> _prev =
-    new HashMap<>();
-
-  private final Map<DirectedOneSimplex,DirectedOneSimplex> prev () {
-    return _prev; }
-
-  private final DirectedOneSimplex
-  prev (final DirectedOneSimplex e) {
-    assert null != e;
-    return prev().get(e); }
-
-  private final void setPrev (final DirectedOneSimplex e,
-                              final DirectedOneSimplex prev) {
-    assert null != e;
-    assert ! prev().containsKey(e);
-    assert null != prev;
-    prev().put(e,prev); }
-
-  private final Map<DirectedOneSimplex,DirectedOneSimplex> _next =
-    new HashMap<>();
-
-  private final Map<DirectedOneSimplex,DirectedOneSimplex> next () {
-    return _next; }
-
-  private final DirectedOneSimplex
-  next (final DirectedOneSimplex e) {
-    assert null != e;
-    return next().get(e); }
-
-  private final void setNext (final DirectedOneSimplex e,
-                              final DirectedOneSimplex next) {
-    assert null != e;
-    assert ! next().containsKey(e);
-    assert null != next;
-    next().put(e,next); }
-
+//  //--------------------------------------------------------------------
+//  // Previous (CW) / next (CCW) half edges around their shared origin
+//  // vertex:
+//
+//  private final Map<DirectedOneSimplex,DirectedOneSimplex> _prev =
+//    new HashMap<>();
+//
+//  private final Map<DirectedOneSimplex,DirectedOneSimplex> prev () {
+//    return _prev; }
+//
+//  private final DirectedOneSimplex getPrev (final DirectedOneSimplex e) {
+//    assert null != e;
+//    return prev().get(e); }
+//
+//  private final void setPrev (final DirectedOneSimplex e,
+//                              final DirectedOneSimplex prev) {
+//    assert null != e;
+//    assert ! prev().containsKey(e);
+//    assert null != prev;
+//    prev().put(e,prev); }
+//
+//  //--------------------------------------------------------------------
+//
+//  private final Map<DirectedOneSimplex,DirectedOneSimplex> _next =
+//    new HashMap<>();
+//
+//  private final Map<DirectedOneSimplex,DirectedOneSimplex> next () {
+//    return _next; }
+//
+//  private final DirectedOneSimplex getNext (final DirectedOneSimplex e) {
+//    assert null != e;
+//    return next().get(e); }
+//
+//  private final void setNext (final DirectedOneSimplex e,
+//                              final DirectedOneSimplex next) {
+//    assert null != e;
+//    assert ! next().containsKey(e);
+//    assert null != next;
+//    next().put(e,next); }
+//
   //--------------------------------------------------------------------
   // face indexes
   //--------------------------------------------------------------------
@@ -160,12 +163,12 @@ public final class HEdgeBuilder {
 
   //public final int nFaces () { return faces().size() / 3; }
 
-  private final TwoSimplex face (final DirectedOneSimplex e) {
+  private final TwoSimplex getFace (final DirectedOneSimplex e) {
     assert null != e;
     return faces().get(e); }
 
-  private final void face (final DirectedOneSimplex e,
-                           final TwoSimplex f) {
+  private final void putFace (final DirectedOneSimplex e,
+                              final TwoSimplex f) {
     assert ! faces().containsKey(e);
     faces().put(e, f); }
 
@@ -176,26 +179,26 @@ public final class HEdgeBuilder {
   // edge classification
   //--------------------------------------------------------------------
 
-  private final boolean boundary (final DirectedOneSimplex e) {
+  private final boolean isBoundary (final DirectedOneSimplex e) {
     assert null != e;
-    return null == face(e); }
+    return null == getFace(e); }
 
-  private final boolean interior (final DirectedOneSimplex e) {
+  private final boolean isInterior (final DirectedOneSimplex e) {
     assert null != e;
-    return ! boundary(e); }
+    return ! isBoundary(e); }
 
   // for testing
 
   public final int nBoundary () {
     int n = 0;
     for (final DirectedOneSimplex e : reverse().keySet()) {
-      if (boundary(e)) { n++; } }
+      if (isBoundary(e)) { n++; } }
     return n; }
 
   public final int nInterior () {
     int n = 0;
     for (final DirectedOneSimplex e : reverse().keySet()) {
-      if (interior(e)) { n++; } }
+      if (isInterior(e)) { n++; } }
     return n; }
 
   //--------------------------------------------------------------------
@@ -204,121 +207,100 @@ public final class HEdgeBuilder {
     final ZeroSimplex z0 = f.z0();
     final ZeroSimplex z1 = f.z1();
     final ZeroSimplex z2 = f.z2();
-    // interior
+    // edges interior to the face
     final DirectedOneSimplex e01 = DirectedOneSimplex.make(z0,z1);
     final DirectedOneSimplex e12 = DirectedOneSimplex.make(z1,z2);
     final DirectedOneSimplex e20 = DirectedOneSimplex.make(z2,z0);
+    putFace(e01, f); putFace(e12, f); putFace(e20, f);
+    putFacePrev(e01, e20); putFacePrev(e12, e01); putFacePrev(e20, e12);
+    putFaceNext(e01, e12); putFaceNext(e12, e20); putFaceNext(e20, e01);
     // possible boundary
     final DirectedOneSimplex e10 = DirectedOneSimplex.make(z1,z0);
     final DirectedOneSimplex e21 = DirectedOneSimplex.make(z2,z1);
     final DirectedOneSimplex e02 = DirectedOneSimplex.make(z0,z2);
-    setReverse(e01,e10); setReverse(e12,e21); setReverse(e20,e02);
-    face(e01,f); face(e12, f); face(e20,f);
-    setFacePrev(e01, e20); setFacePrev(e12, e01); setFacePrev(e20, e12);
-    setFaceNext(e01, e12); setFaceNext(e12, e20); setFaceNext(e20, e01);
+    putReverse(e10, e01); putReverse(e21, e12); putReverse(e02, e20);
   }
 
-  // cache next and prev for e,
-  // using previously cached reverse, faceNext, and facePrev
-  // TODO: do reverse(e) at the same time?
-  private final void primalNeighbors (final DirectedOneSimplex e) {
-
-    // TODO: optimize once working
-
-    if (interior(e) && interior(reverse(e))) {
-      setNext(e, reverse(facePrev(e)));
-      setPrev(e, faceNext(reverse(e)));
-      return; }
-
-    if (interior(e) && boundary(reverse(e))) {
-      setNext(e, reverse(facePrev(e)));
-      DirectedOneSimplex p = reverse(facePrev(e));
-      while (! boundary(p)) { p = reverse(facePrev(p)); }
-      setPrev(e, p);
-      return; }
-
-    assert boundary(e);
-    assert interior(reverse(e));
-    setPrev(e, faceNext(reverse(e)));
-    DirectedOneSimplex n = faceNext(reverse(e));
-    while (! boundary(reverse(n))) {
-      n = faceNext(reverse(n)); }
-    setNext(e,n); }
+  private final void boundaryFaceNext (final DirectedOneSimplex e) {
+    if (isBoundary(e)) {
+      DirectedOneSimplex r = getReverse(getFacePrev(getReverse(e)));
+      while (! isBoundary(r)) { r = getReverse(getFacePrev(r)); }
+      putFaceNext(e,r); } }
 
 //--------------------------------------------------------------------
 
-private final void index () {
-  for (final TwoSimplex f : cmplx().faces()) { addFace(f); }
-  // stitch primal QEdges
-  for (final DirectedOneSimplex e : reverse().keySet()) {
-    primalNeighbors(e); } }
+  private final void index () {
+    for (final TwoSimplex f : cmplx().faces()) { addFace(f); }
+    for (final DirectedOneSimplex e : reverse().keySet()) {
+      boundaryFaceNext(e); } }
 
 //--------------------------------------------------------------------
-// map DirectedOneSimplex's to corresponding primal QEdges
+// map DirectedOneSimplex's to corresponding primal HEdges
 
-private final Map<DirectedOneSimplex, HEdge> _hedge = new HashMap<>();
-private final Map<DirectedOneSimplex, HEdge> hedge () {
-  return _hedge; }
-private final HEdge hedge (final DirectedOneSimplex e) {
-  return hedge().get(e); }
-private final void hedge (final DirectedOneSimplex e, final HEdge q) {
-  if (! hedge().containsKey(e)) { hedge().put(e,q); } }
+  private final Map<DirectedOneSimplex, HEdge> _hedge = new HashMap<>();
+  private final Map<DirectedOneSimplex, HEdge> hedge () {
+    return _hedge; }
+  private final HEdge getHEdge (final DirectedOneSimplex e) {
+    return hedge().get(e); }
+  private final void putHEdge (final DirectedOneSimplex e,
+                               final HEdge h) {
+    if (! hedge().containsKey(e)) { hedge().put(e,h); } }
 
 //--------------------------------------------------------------------
-/** create the <code>HEdge</code> quartet corresponding to the
- * <code>DirectedOneSimplex</code>;
- * return the primal <code>HEdge</code>,
- * which links to the other 3.
- */
+  /** create the <code>HEdge</code> pair corresponding to the
+   * <code>DirectedOneSimplex</code>;
+   * return the primal/interior <code>HEdge</code>,
+   * which links to the reverse.
+   */
 
-private final HEdge makePair (final DirectedOneSimplex e) {
-  return HEdge.make(e.z0(), e.z1()); }
+  private final HEdge makePair (final DirectedOneSimplex e) {
+    return HEdge.make(e.z0(), e.z1()); }
 
-/** Return the primal <code>QEdges</code>s representing a completed
- * version of the input <code>SimplicialComplex2D</code>.
- * <br>
- * Usually one <code>HEdge</code> is enough to link into the mesh,
- * but multiple may be necessary if the corresponding manifold is
- * not connected.
- */
-public final Set<HEdge> build () {
-  index();
-  final Set<HEdge> qEdges = new HashSet<>();
-  // initial HEdge's only carry the origin and reverse links
-  for (final DirectedOneSimplex e : reverse().keySet()) {
-    // create quartets for interior edges only
-    // necessary for LischinskiIncrementalBuilder to correclty
-    // distinguish 'inside' vs 'outside' initial frame.
-    // TODO: modify LischinskiIncrementalBuilder to work without
-    //  an initial frame enclosing all future site insertions!
-    if (interior(e)) {
-    final DirectedOneSimplex r  = reverse(e);
-    if (! (hedge().containsKey(e) || hedge().containsKey(r))) {
-      final HEdge q = makePair(e);
-      hedge(e,q);
-      hedge(r,q.reverse());
-      qEdges.add(q); } } }
-  // Stitch QEdges together via next links
-  for (final DirectedOneSimplex e : reverse().keySet()) {
-    final HEdge q = hedge(e);
-    assert null != hedge(next(e));
-    q.setFaceNext(hedge(next(e)));
-    final HEdge r = q.reverse();
-    assert null != hedge(prev(e));
-    final HEdge n = hedge(prev(e)).reverse().reverse();
-    r.setFaceNext(n); }
-  return qEdges; }
+  /** Return the primal <code>HEdges</code>s representing a completed
+   * version of the input <code>SimplicialComplex2D</code>.
+   * <br>
+   * Usually one <code>HEdge</code> is enough to link into the mesh,
+   * but multiple may be necessary if the corresponding manifold is
+   * not connected.
+   */
+  public final Set<HEdge> build () {
+    index();
+    final Set<HEdge> hEdges = new HashSet<>();
+    // set origin and reverse (and dest=reverse.origin)
+    // for interior HEdges
+    for (final DirectedOneSimplex e : faces().keySet()) {
+      final DirectedOneSimplex r  = getReverse(e);
+      if (! (hedge().containsKey(e) || hedge().containsKey(r))) {
+        final HEdge h = makePair(e);
+        putHEdge(e, h);
+        putHEdge(r, h.reverse());
+        hEdges.add(h); } }
+    // set faceNext for all HEdges
+    for (final DirectedOneSimplex e : hedge().keySet()) {
+      final HEdge h = getHEdge(e);
+      assert null != getHEdge(getFaceNext(e));
+      try {
+        h.setFaceNext(getHEdge(getFaceNext(e)));
+      }
+      catch (final Throwable t) {
+        System.out.println(cmplx());
+        throw t;
+      }
+    }
+    for (final HEdge h : hEdges) {
+      h.validate(); }
+    return hEdges; }
 
 //--------------------------------------------------------------------
 // construction
 //--------------------------------------------------------------------
 
-private HEdgeBuilder (final SimplicialComplex2D cmplx) {
-  this._cmplx = cmplx; }
+  private HEdgeBuilder (final SimplicialComplex2D cmplx) {
+    this._cmplx = cmplx; }
 
-public static final HEdgeBuilder
-make (final SimplicialComplex2D cmplx) {
-  return new HEdgeBuilder(cmplx); }
+  public static final HEdgeBuilder
+  make (final SimplicialComplex2D cmplx) {
+    return new HEdgeBuilder(cmplx); }
 
   //--------------------------------------------------------------------
 } // end class

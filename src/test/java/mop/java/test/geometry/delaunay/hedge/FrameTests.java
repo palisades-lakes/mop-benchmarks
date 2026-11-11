@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 202-11-07
+ * @version 202-11-10
  */
 
 public final class FrameTests {
@@ -77,6 +77,7 @@ public final class FrameTests {
 
     final LischinskiIncrementalBuilder frame =
       LischinskiIncrementalBuilder.triangleFrame(p0, p1, p2);
+    frame.startingEdge().validateMesh();
 //    System.out.println("triangle:");
 //    frame.startingEdge().printMesh();
     // Note: returns two triangular faces
@@ -98,6 +99,7 @@ public final class FrameTests {
     final LischinskiIncrementalBuilder frame =
       LischinskiIncrementalBuilder.rectangleFrame(
         0.0,1.0,0.0,1.0);
+    frame.startingEdge().validateMesh();
 //    System.out.println("\nrectangle:");
 //    frame.startingEdge().printMesh();
     // Note: returns the 2 triangular faces, excludes the

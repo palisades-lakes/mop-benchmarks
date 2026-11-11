@@ -17,7 +17,7 @@ import java.util.SortedSet;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 202-11-07
+ * @version 202-11-10
  */
 
 public final class InsertTests {
@@ -37,7 +37,9 @@ public final class InsertTests {
     //builder.startingEdge().printMesh();
     final SortedSet<ZeroSimplex> frame = builder.vertices();
     builder.insert(frame);
+    builder.startingEdge().validateMesh();
     builder.insertPoint(new VectorD2(0.5,0.5));
+    builder.startingEdge().validateMesh();
   }
 
   //--------------------------------------------------------------
@@ -62,7 +64,8 @@ public final class InsertTests {
     for (int i=0;i<nsites;i++) {
       final VectorD2 pi = (VectorD2) pointGenerator.next();
       System.out.println(i + " : " + pi);
-      builder.insertPoint(pi); } }
+      builder.insertPoint(pi);
+      builder.startingEdge().validateMesh(); } }
 
   //--------------------------------------------------------------
 
@@ -73,7 +76,8 @@ public final class InsertTests {
       LischinskiIncrementalBuilder.rectangleFrame(0.0,1.0,0.0,1.0);
     final Set<ZeroSimplex> frame = builder.vertices();
     for (final ZeroSimplex z : frame) { builder.insert(z); }
-    builder.insertPoint(new VectorD2(0.5, 0.5)); }
+    builder.insertPoint(new VectorD2(0.5, 0.5));
+    builder.startingEdge().validateMesh(); }
 
   //--------------------------------------------------------------
 
@@ -89,7 +93,8 @@ public final class InsertTests {
 
     final int nsites = 1;
     for (int i=0;i<nsites;i++) {
-      builder.insertPoint((VectorD2) pointGenerator.next()); } }
+      builder.insertPoint((VectorD2) pointGenerator.next());
+      builder.startingEdge().validateMesh(); } }
 
   //--------------------------------------------------------------
 }

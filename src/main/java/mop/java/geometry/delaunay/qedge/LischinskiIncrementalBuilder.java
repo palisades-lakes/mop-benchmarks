@@ -21,7 +21,7 @@ import java.util.*;
  * <b>NOTE: </b> all inserted points must fall within the existing mesh!
  * </p>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-11-02
+ * @version 2026-11-10
  */
 
 public final class LischinskiIncrementalBuilder
@@ -70,6 +70,7 @@ public final class LischinskiIncrementalBuilder
 
   @Override
   public final SortedSet<TwoSimplex> faces () {
+    startingEdge().validateMesh();
     return startingEdge().twoSimplexes(); }
 
   //--------------------------------------------------------------------
@@ -256,8 +257,7 @@ public final class LischinskiIncrementalBuilder
                       e.reverse().origin(),
                       z,
                       embedding())) {
-        e.swap();
-        e = e.prev(); }
+        e = e.swap().prev(); }
       // no more suspect edges
       else if (e.next() == startingEdge()) { return; }
       // pop a suspect edge
@@ -382,6 +382,7 @@ public final class LischinskiIncrementalBuilder
     r01.setNext(r20); r12.setNext(r01); r20.setNext(r12);
     r10.setNext(r21); r21.setNext(r02); r02.setNext(r10);
 
+    e01.validateMesh();
     return make(embedding,e01); }
 
 //  public static final LischinskiIncrementalBuilder
@@ -474,7 +475,7 @@ public final class LischinskiIncrementalBuilder
     r10.setNext(r21); r21.setNext(r02);
     r32.setNext(r03); r03.setNext(r20);
 
-
+    e01.validateMesh();
     return make(embedding,e01); }
 
 //--------------------------------------------------------------------

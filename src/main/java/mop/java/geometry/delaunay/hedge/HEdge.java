@@ -39,7 +39,7 @@ import java.util.*;
  * are topologically equivalent.
  * </p>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-11-05
+ * @version 2026-11-10
  */
 public final class HEdge implements Comparable<HEdge> {
 
@@ -53,24 +53,29 @@ public final class HEdge implements Comparable<HEdge> {
   /** The edge from the destination to the origin. */
   public final HEdge reverse () { return _reverse; }
 
-  private final String _name;
-  public final String name () { return _name; }
+  public final String name () {
+    return origin() + "->" + dest(); }
 
   private ZeroSimplex _origin;
   public final ZeroSimplex origin () { return _origin; }
   public final void setOrigin (final ZeroSimplex p) {
     assert _origin != null;
+    assert Objects.equals(p,facePrev().dest());
     _origin = p; }
 
   public final ZeroSimplex dest () { return reverse().origin(); }
 
-  /** The next edge ccw in the face. */
+  /** The next edge ccw in the left face. */
   private HEdge _faceNext;
-  /** The next edge ccw in the face. */
+
+  /** The next edge ccw in the left face. */
   public final HEdge faceNext () { return _faceNext; }
-  /** The next edge ccw in the face. */
+
+  /** The next edge ccw in the left face. */
   public final void setFaceNext (final HEdge e) {
     assert null != e;
+    assert Objects.equals(dest(),e.origin()) :
+      "\nsetFaceNext:\n" + this +  "\n" + e;
     _faceNext = e; }
 
   /** The next edge cw in the face.
@@ -88,14 +93,30 @@ public final class HEdge implements Comparable<HEdge> {
   //--------------------------------------------------------------------
 
   /** The next edge ccw around the origin. */
-  public final HEdge next () {
-    return facePrev().reverse(); }
+  public final HEdge next () { return facePrev().reverse(); }
 
   /** The next edge cw around the origin. */
   public final HEdge prev () { return reverse().faceNext(); }
 
   //--------------------------------------------------------------------
   // Basic Topological Operators
+  //--------------------------------------------------------------------
+  /** Break all the links from <code>this</code> quartet to any
+   * other <code>HEdge</code>.
+   * Unlike <code>delete</code>, <code>isolate</code> does nothing
+   * to the neighbors.
+   * To keep the mesh valid, no other <code>HEdge</code>s
+   * can have references to
+   * <code>this</code>.
+   */
+
+  private final void isolate () {
+    final HEdge pr = this;
+    final HEdge re = reverse();
+    pr.setFaceNext(re);
+    re.setFaceNext(pr);
+  }
+
   //--------------------------------------------------------------------
 
   private final void swapFaceNext (final HEdge that) {
@@ -156,33 +177,29 @@ public final class HEdge implements Comparable<HEdge> {
 
   /** Lischinski: <br>
    * Essentially turns edge e counterclockwise inside its enclosing
-   * quadrilateral. The data pointers are modified accordingly.
+   * quadrilateral.
+   * <br>
+   * <em>Rewritten to return a new HEdge, to maintain that constraint
+   * between <code>next()</code> and <code>origin()</code></em>.
    */
 
-  public final void swap () {
-    // TODO: return new edge pair, rather than modifying?
-    //  but need to modify neighbors anyway
-    // TODO: what happens if it's not in a quadrilateral?
-    //  should be rotate ccw one edge -> unit test!
-    final ZeroSimplex z0 = reverse().faceNext().dest();
-    final ZeroSimplex z1 = faceNext().dest();
-    final HEdge e0 = this;
-    final HEdge e1 = reverse();
-    final HEdge n0 = e0.faceNext();
-    final HEdge n1 = e1.faceNext();
+  public final HEdge swap () {
+    final HEdge n0 = faceNext();
+    final HEdge n1 = reverse().faceNext();
     final HEdge nn0 = n0.faceNext();
     final HEdge nn1 = n1.faceNext();
-    final HEdge p0 = e0.facePrev();
-    final HEdge p1 = e1.facePrev();
-    e0.setOrigin(z0);
-    e1.setOrigin(z1);
+    final HEdge p0 = facePrev();
+    final HEdge p1 = reverse().facePrev();
+    final HEdge e0 = make(nn1.origin(),nn0.origin());
+    final HEdge e1 = e0.reverse();
     e0.setFaceNext(nn0);
     e1.setFaceNext(nn1);
     n0.setFaceNext(e1);
     n1.setFaceNext(e0);
     p0.setFaceNext(n1);
     p1.setFaceNext(n0);
-  }
+    isolate();
+    return e0; }
 
 //  public final void swap () {
 //    // TODO: can we replace with a new edge, rather than modifying?
@@ -261,21 +278,27 @@ public final class HEdge implements Comparable<HEdge> {
 
   /** Collect connected triangular faces, skip others. */
   public final SortedSet<TwoSimplex> twoSimplexes () {
+    validateMesh();
     final SortedSet<TwoSimplex> faces = new TreeSet<>();
     final Set<HEdge> visited = new HashSet<>();
     final Stack<HEdge> toVisit = new Stack<>();
     toVisit.push(this);
     while (! toVisit.empty()) {
       final HEdge e0 = toVisit.pop();
+      System.out.println("visit: e0:" + e0.name());
+      System.out.println(visited);
       if (! visited.contains(e0)) {
         visited.add(e0);
         final HEdge e1 = e0.faceNext(); visited.add(e1);
         final HEdge e2 = e1.faceNext(); visited.add(e2);
+        System.out.println("e1:" + e1.name());
+        System.out.println("e2:" + e2.name());
         assert ! (e0.equals(e1) || e0.equals(e2) || (e1.equals(e2)));
         toVisit.push(e0.reverse());
         toVisit.push(e1.reverse());
         toVisit.push(e2.reverse());
         HEdge e3 = e2.faceNext();
+        System.out.println("e3:" + e3.name());
         if (e0.equals(e3)) { // triangular
           final ZeroSimplex z0 = e0.origin();
           final ZeroSimplex z1 = e1.origin();
@@ -286,6 +309,7 @@ public final class HEdge implements Comparable<HEdge> {
           assert ! z1.equals(z2) : "e1 <> e2" + e1 + "\n" + e2;
           assert ! z2.equals(z0) : "e2 <> e0" + e2 + "\n" + e0;
           final TwoSimplex face = TwoSimplex.make(z0,z1,z2);
+          System.out.println("face:" + face);
           faces.add(face); }
         else {
           while (! e0.equals(e3)) {
@@ -310,25 +334,48 @@ public final class HEdge implements Comparable<HEdge> {
   @Override
   public final String toString () {
     return
-      "\n" + name()
-        + "\norigin:" + origin()
-        + "\ndest:" + dest()
-        + "\nnext:" + next().name()
-        + "\nprev:" + prev().name()
-        + "\nfaceNext:" + faceNext().name()
-        + "\nfacePrev:" + facePrev().name()
-        + "\nreverse:" + reverse().name()
-        + "\nreverse.next():" + reverse().next().name(); }
+//      "\n" +
+        name()
+//        + "\norigin:" + origin()
+//        + "\ndest:" + dest()
+//        + "\nnext:" + next().name()
+//        + "\nprev:" + prev().name()
+//        + "\nfaceNext:" + faceNext().name()
+//        + "\nfacePrev:" + facePrev().name()
+//        + "\nreverse:" + reverse().name()
+//        + "\nreverse.next():" + reverse().next().name()
+  ; }
 
   //--------------------------------------------------------------------
   // debugging
   //--------------------------------------------------------------------
 
+
+  public final void validate () {
+    assert Objects.equals(origin(),next().origin());
+    assert Objects.equals(origin(),prev().origin());
+    assert Objects.equals(origin(),facePrev().dest());
+    assert Objects.equals(dest(),faceNext().origin());
+    assert Objects.equals(this,reverse().reverse()); }
+
+  public final void validateMesh () {
+    final Set<HEdge> visited = new HashSet<>();
+    final Stack<HEdge> toVisit = new Stack<>();
+    toVisit.push(this);
+    while (! toVisit.empty()) {
+      final HEdge e = toVisit.pop();
+      if (! visited.contains(e)) {
+        e.validate();
+        visited.add(e);
+        toVisit.push(e.next());
+        toVisit.push(e.reverse());
+      }}
+  }
   public static final void printFace (final Set<HEdge> visited,
                                       final Stack<HEdge> toVisit) {
     final HEdge e0 = toVisit.pop();
     if ((null!=e0) && (! visited.contains(e0))) {
-      System.out.println("\nface:" );
+      System.out.println("face:" );
       HEdge e1 = e0;
       do {
         toVisit.remove(e1);
@@ -352,10 +399,7 @@ public final class HEdge implements Comparable<HEdge> {
   //--------------------------------------------------------------------
   // Mutable mesh wired together by setting _next
 
-  private HEdge (final String name,
-                 final ZeroSimplex origin) {
-    _name = name;
-    _origin = origin; }
+  private HEdge (final ZeroSimplex origin) { _origin = origin; }
 
   /** Construct a group of 2 linked <code>HEdge</code>s,
    * returning the one from <code>p0</code> to <code>p1</code>,
@@ -365,8 +409,8 @@ public final class HEdge implements Comparable<HEdge> {
   public static final HEdge make (final ZeroSimplex z0,
                                   final ZeroSimplex z1) {
 
-    final HEdge h0 = new HEdge(z0 + "->" + z1, z0);
-    final HEdge h1 = new HEdge(z1 + "->" + z0, z1);
+    final HEdge h0 = new HEdge(z0);
+    final HEdge h1 = new HEdge(z1);
 
     h0._reverse = h1;
     h1._reverse = h0;

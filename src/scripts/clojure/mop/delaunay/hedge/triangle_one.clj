@@ -4,7 +4,7 @@
 (ns mop.delaunay.hedge.triangle-one
   {:doc     "Use JavaFX to display a delaunay triangulation."
    :author  "palisades dot lakes at gmail dot com"
-   :version "2026-11-05"}
+   :version "2026-11-09"}
 
   (:import
     [mop.java.geometry.delaunay Util]
@@ -20,9 +20,13 @@
         p2 (VectorD2.  0.5, 3.0)
         builder (LischinskiIncrementalBuilder/triangleFrame p0 p1 p2)
         exclude #{}
+        _ (.insertPoint builder (VectorD2.  0.0  0.0))
+        mesh (.build builder)
         ]
-    (.insertPoint builder (VectorD2.  0.0  0.0))
-    (JFX/edges (Util/edgeCoordinates (.build builder) exclude)
+    (println "Hedge:")
+    (.printMesh (.startingEdge builder))
+    (println "TriangleMesh:\n" mesh)
+    (JFX/edges (Util/edgeCoordinates mesh exclude)
       JFX/FRAME_COLOR "triangle-one")))
 ;;----------------------------------------------------------------
 (System/setProperty "glass.win.uiScale" "1")
