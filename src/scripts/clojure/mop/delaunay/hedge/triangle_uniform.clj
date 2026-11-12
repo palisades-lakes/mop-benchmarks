@@ -4,7 +4,7 @@
 (ns mop.delaunay.hedge.triangle-uniform
   {:doc     "Use JavaFX to display a delaunay triangulation."
    :author  "palisades dot lakes at gmail dot com"
-   :version "2026-10-25"}
+   :version "2026-11-12"}
 
   (:import
     [mop.java.geometry Generators]
@@ -27,7 +27,7 @@
                          (Doubles/uniformGenerator
                            (PRNG/well44497b "seeds/Well44497b-2019-01-11.txt")
                            0.0 1.0))
-        nsites 1]
+        nsites 16]
     (dotimes [_ nsites] (.insertPoint builder (.next pointGenerator)))
     (JFX/edges (Util/edgeCoordinates (.build builder) exclude)
       JFX/MESH_COLOR "triangle-uniform")))

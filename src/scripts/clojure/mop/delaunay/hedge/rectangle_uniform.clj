@@ -27,7 +27,7 @@
                            (Doubles/uniformGenerator
                              (PRNG/well44497b "seeds/Well44497b-2019-01-11.txt")
                              0.0 1.0))
-          nsites (* 64 1024)]
+          nsites (* 64 #_1024)]
       (mct/seconds
         (str "insert: " nsites)
         (dotimes [_ nsites]

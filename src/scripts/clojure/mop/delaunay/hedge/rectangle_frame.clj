@@ -16,7 +16,7 @@
 ;;----------------------------------------------------------------
 (defn make-world []
   (let [builder (LischinskiIncrementalBuilder/rectangleFrame 0.0 1.0 0.0 1.0)
-        _ (.swap (.startingEdge builder))
+        _ (.setStartingEdge builder (.swap (.startingEdge builder)))
         edgeCoords (Util/edgeCoordinates (.build builder))]
     (println (.startingEdge builder))
     (println "edges")

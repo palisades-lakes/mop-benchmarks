@@ -38,7 +38,7 @@ import java.util.*;
  * are topologically equivalent.
  * </p>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-11-10
+ * @version 2026-11-12
  */
 
 public final class QEdge implements Comparable<QEdge> {
@@ -187,7 +187,7 @@ public final class QEdge implements Comparable<QEdge> {
    */
 
   public final QEdge connect (final QEdge that) {
-    final QEdge e = make(reverse().origin(), that.origin());
+    final QEdge e = make(this.dest(), that.origin());
     e.splice(faceNext());
     e.reverse().splice(that);
     return e; }
@@ -357,6 +357,7 @@ public final class QEdge implements Comparable<QEdge> {
         assert null != e1;
       } while (e0 != e1); } }
 
+  @SuppressWarnings("unused")
   public final void printMesh () {
     final Set<QEdge> visited = new HashSet<>();
     final Stack<QEdge> toVisit = new Stack<>();
@@ -371,8 +372,7 @@ public final class QEdge implements Comparable<QEdge> {
   private QEdge (final String name,
                  final ZeroSimplex origin) {
     _name = name;
-    _origin = origin;
-    _next = this; }
+    _origin = origin; }
 
   /** Construct a group of 4 circularly linked <code>QEdge</code>s,
    * returning the one from <code>p0</code> to <code>p1</code>,
@@ -392,6 +392,8 @@ public final class QEdge implements Comparable<QEdge> {
     rot._rot = reverse;
     reverseRot._rot = primal;
 
+    primal.setNext(primal);
+    reverse.setNext(reverse);
     rot.setNext(reverseRot);
     reverseRot.setNext(rot);
 

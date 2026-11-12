@@ -58,10 +58,13 @@ public final class HEdge implements Comparable<HEdge> {
 
   private ZeroSimplex _origin;
   public final ZeroSimplex origin () { return _origin; }
-  public final void setOrigin (final ZeroSimplex p) {
+//  public final void setOrigin (final ZeroSimplex p) {
+//    assert _origin != null;
+//    assert Objects.equals(p,facePrev().dest());
+//    _origin = p; }
+  public final void clearOrigin () {
     assert _origin != null;
-    assert Objects.equals(p,facePrev().dest());
-    _origin = p; }
+    _origin = null; }
 
   public final ZeroSimplex dest () { return reverse().origin(); }
 
@@ -101,63 +104,60 @@ public final class HEdge implements Comparable<HEdge> {
   //--------------------------------------------------------------------
   // Basic Topological Operators
   //--------------------------------------------------------------------
-  /** Break all the links from <code>this</code> quartet to any
+  /** Break all the links from <code>this</code> pair to any
    * other <code>HEdge</code>.
-   * Unlike <code>delete</code>, <code>isolate</code> does nothing
-   * to the neighbors.
-   * To keep the mesh valid, no other <code>HEdge</code>s
-   * can have references to
-   * <code>this</code>.
+   * Repair the <code>faceNext</code> links in neighbors.
    */
 
-  private final void isolate () {
+  public final void delete () {
     final HEdge pr = this;
     final HEdge re = reverse();
+    final HEdge pn = pr.faceNext();
+    final HEdge rn = re.faceNext();
+    final HEdge pp = pr.facePrev();
+    final HEdge rp = re.facePrev();
     pr.setFaceNext(re);
     re.setFaceNext(pr);
-  }
+    pp.setFaceNext(rn);
+    rp.setFaceNext(pn);
+    pr.clearOrigin();
+    re.clearOrigin(); }
 
   //--------------------------------------------------------------------
 
-  private final void swapFaceNext (final HEdge that) {
-    final HEdge n0 = this.faceNext();
-    final HEdge n1 = that.faceNext();
-    this.setFaceNext(n1);
-    that.setFaceNext(n0); }
+//  private final void swapFaceNext (final HEdge that) {
+//    final HEdge n0 = this.faceNext();
+//    final HEdge n1 = that.faceNext();
+//    this.setFaceNext(n1);
+//    that.setFaceNext(n0); }
 
   //--------------------------------------------------------------------
   // https://github.com/MeshInspector/MeshLib#readme
   // https://www.ic.unicamp.br/~stolfi/voynich/projects/voynich/Notes/053/work/programs/c/JSLIBS/libquad/haf.h
   // https://www.ic.unicamp.br/~stolfi/voynich/projects/voynich/Notes/053/work/programs/c/JSLIBS/libquad/haf.c
   // https://github.com/JorgeStolfi/JSLIBS
-  /** Lischinski: <br>
-   * This operator affects the two edge rings around the origins
-   * of a and b, and, independently, the two edge rings around
-   * the left faces of a and b. In each case,
-   * <ol>
-   * <li> if the two rings are distinct, Splice will combine
-   * them into one;
-   * </li>
-   * <li> if the two are the same ring, Splice will break it
-   * into two separate pieces.
-   * </li>
-   * </ol>
-   * Thus, splice can be used both to attach the two edges together,
-   * and to break them apart. <br>
-   * See Guibas and Stolfi (1985) p.96 for more details
-   * and illustrations.
-   */
-
-  public final void splice (final HEdge that) {
+//  /** Lischinski: <br>
+//   * This operator affects the two edge rings around the origins
+//   * of a and b, and, independently, the two edge rings around
+//   * the left faces of a and b. In each case,
+//   * <ol>
+//   * <li> if the two rings are distinct, Splice will combine
+//   * them into one;
+//   * </li>
+//   * <li> if the two are the same ring, Splice will break it
+//   * into two separate pieces.
+//   * </li>
+//   * </ol>
+//   * Thus, splice can be used both to attach the two edges together,
+//   * and to break them apart. <br>
+//   * See Guibas and Stolfi (1985) p.96 for more details
+//   * and illustrations.
+//   */
+//
+//  public final void splice (final HEdge that) {
 //    swapFaceNext(that);
-    reverse().swapFaceNext(that.reverse());
-  }
-
-    //--------------------------------------------------------------------
-
-  public final void delete () {
-    splice(prev());
-    reverse().splice(reverse().prev()); }
+//    reverse().swapFaceNext(that.reverse());
+//  }
 
   //--------------------------------------------------------------------
   /** Lischinski: <br>
@@ -170,14 +170,23 @@ public final class HEdge implements Comparable<HEdge> {
    */
 
   public final HEdge connect (final HEdge that) {
-    final HEdge e = make(reverse().origin(), that.origin());
-    e.splice(faceNext());
-    e.reverse().splice(that);
+    final ZeroSimplex z0 = dest();
+    final ZeroSimplex z1 = that.origin();
+    assert ! Objects.equals(z0,z1);
+    // should ensure no existing edge btwn z0 and z1!
+    final HEdge e = make(dest(), that.origin());
+    final HEdge r = e.reverse();
+    final HEdge n = faceNext();
+    final HEdge p = that.facePrev();
+    e.setFaceNext(that);
+    r.setFaceNext(n);
+    setFaceNext(e);
+    p.setFaceNext(r);
     return e; }
 
   /** Lischinski: <br>
    * Essentially turns edge e counterclockwise inside its enclosing
-   * quadrilateral.
+   * face (at least quadrilateral).
    * <br>
    * <em>Rewritten to return a new HEdge, to maintain that constraint
    * between <code>next()</code> and <code>origin()</code></em>.
@@ -192,27 +201,15 @@ public final class HEdge implements Comparable<HEdge> {
     final HEdge p1 = reverse().facePrev();
     final HEdge e0 = make(nn1.origin(),nn0.origin());
     final HEdge e1 = e0.reverse();
+    delete();
     e0.setFaceNext(nn0);
-    e1.setFaceNext(nn1);
-    n0.setFaceNext(e1);
     n1.setFaceNext(e0);
     p0.setFaceNext(n1);
+    e1.setFaceNext(nn1);
+    n0.setFaceNext(e1);
     p1.setFaceNext(n0);
-    isolate();
     return e0; }
 
-//  public final void swap () {
-//    // TODO: can we replace with a new edge, rather than modifying?
-//    // TODO: what happens if it's not in a quadrilateral? -> unit test!
-//    final HEdge a = prev();
-//    final HEdge b = reverse().prev();
-//    splice(a);
-//    reverse().splice(b);
-//    splice(a.faceNext());
-//    reverse().splice(b.faceNext());
-//    setOrigin(a.reverse().origin());
-//    reverse().setOrigin(b.reverse().origin()); }
-//
   //--------------------------------------------------------------------
   // collect mesh elements
   //--------------------------------------------------------------------
@@ -285,20 +282,15 @@ public final class HEdge implements Comparable<HEdge> {
     toVisit.push(this);
     while (! toVisit.empty()) {
       final HEdge e0 = toVisit.pop();
-      System.out.println("visit: e0:" + e0.name());
-      System.out.println(visited);
       if (! visited.contains(e0)) {
         visited.add(e0);
         final HEdge e1 = e0.faceNext(); visited.add(e1);
         final HEdge e2 = e1.faceNext(); visited.add(e2);
-        System.out.println("e1:" + e1.name());
-        System.out.println("e2:" + e2.name());
         assert ! (e0.equals(e1) || e0.equals(e2) || (e1.equals(e2)));
         toVisit.push(e0.reverse());
         toVisit.push(e1.reverse());
         toVisit.push(e2.reverse());
         HEdge e3 = e2.faceNext();
-        System.out.println("e3:" + e3.name());
         if (e0.equals(e3)) { // triangular
           final ZeroSimplex z0 = e0.origin();
           final ZeroSimplex z1 = e1.origin();
@@ -309,7 +301,6 @@ public final class HEdge implements Comparable<HEdge> {
           assert ! z1.equals(z2) : "e1 <> e2" + e1 + "\n" + e2;
           assert ! z2.equals(z0) : "e2 <> e0" + e2 + "\n" + e0;
           final TwoSimplex face = TwoSimplex.make(z0,z1,z2);
-          System.out.println("face:" + face);
           faces.add(face); }
         else {
           while (! e0.equals(e3)) {
@@ -325,7 +316,7 @@ public final class HEdge implements Comparable<HEdge> {
   public int compareTo (final HEdge h) {
     final int c = origin().compareTo(h.origin());
     if (0 != c) { return c; }
-    return reverse().origin().compareTo(h.reverse().origin()); }
+    return dest().compareTo(h.dest()); }
 
   //--------------------------------------------------------------------
   // Object

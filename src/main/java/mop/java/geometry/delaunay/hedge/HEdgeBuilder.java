@@ -279,13 +279,7 @@ public final class HEdgeBuilder {
     for (final DirectedOneSimplex e : hedge().keySet()) {
       final HEdge h = getHEdge(e);
       assert null != getHEdge(getFaceNext(e));
-      try {
         h.setFaceNext(getHEdge(getFaceNext(e)));
-      }
-      catch (final Throwable t) {
-        System.out.println(cmplx());
-        throw t;
-      }
     }
     for (final HEdge h : hEdges) {
       h.validate(); }

@@ -63,7 +63,6 @@ public final class InsertTests {
     final int nsites = 1;
     for (int i=0;i<nsites;i++) {
       final VectorD2 pi = (VectorD2) pointGenerator.next();
-      System.out.println(i + " : " + pi);
       builder.insertPoint(pi);
       builder.startingEdge().validateMesh(); } }
 

@@ -21,7 +21,7 @@ import java.util.*;
  * <b>NOTE: </b> all inserted points must fall within the existing mesh!
  * </p>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-11-10
+ * @version 2026-11-11
  */
 
 public final class LischinskiIncrementalBuilder
@@ -60,7 +60,7 @@ public final class LischinskiIncrementalBuilder
   /** The entry into the abstract cell complex represented
    * by the <code>HEdge</code>s.
    */
-  final void setStartingEdge (final HEdge e) { _startingEdge = e; }
+  public final void setStartingEdge (final HEdge e) { _startingEdge = e; }
 
   //--------------------------------------------------------------------
 
@@ -241,7 +241,8 @@ public final class LischinskiIncrementalBuilder
     // triangle (or quadrilateral, if the new point fell on an
     // existing edge.)
     HEdge base = HEdge.make(e.origin(), z);
-    base.splice(e);
+    base.reverse().setFaceNext(e);
+    e.facePrev().setFaceNext(base);
     setStartingEdge(base);
     do {
       base = e.connect(base.reverse());
@@ -352,47 +353,28 @@ public final class LischinskiIncrementalBuilder
    * <code>p0, p1, p2</code>.
    */
 
-//  public static final LischinskiIncrementalBuilder
-//  triangleFrame (final VectorD2 p0,
-//                 final VectorD2 p1,
-//                 final VectorD2 p2) {
-//    // this creates a closed manifold, a triangle and its 'reverse'
-//    final ZeroSimplex z0 = ZeroSimplex.make("z0");
-//    final ZeroSimplex z1 = ZeroSimplex.make("z1");
-//    final ZeroSimplex z2 = ZeroSimplex.make("z2");
-//    final Map<ZeroSimplex,VectorD2> embedding =
-//      Map.of(z0,p0,z1,p1,z2,p2);
-//
-//    final HEdge e01 = HEdge.make(z0, z1);
-//    final HEdge e12 = HEdge.make(z1, z2);
-//    final HEdge e20 = HEdge.make(z2, z0);
-//
-//    final HEdge e10 = e01.reverse();
-//    final HEdge e21 = e12.reverse();
-//    final HEdge e02 = e20.reverse();
-//
-//    e01.setFaceNext(e12); e12.setFaceNext(e20); e20.setFaceNext(e01);
-//    e02.setFaceNext(e21); e21.setFaceNext(e10); e10.setFaceNext(e02);
-//
-//    return make(embedding,e01); }
-
   public static final LischinskiIncrementalBuilder
   triangleFrame (final VectorD2 p0,
                  final VectorD2 p1,
                  final VectorD2 p2) {
     // this creates a closed manifold, a triangle and its 'reverse'
-    final ZeroSimplex z0 = ZeroSimplex.make();
-    final ZeroSimplex z1 = ZeroSimplex.make();
-    final ZeroSimplex z2 = ZeroSimplex.make();
+    final ZeroSimplex z0 = ZeroSimplex.make("z0");
+    final ZeroSimplex z1 = ZeroSimplex.make("z1");
+    final ZeroSimplex z2 = ZeroSimplex.make("z2");
     final Map<ZeroSimplex,VectorD2> embedding =
       Map.of(z0,p0,z1,p1,z2,p2);
 
     final HEdge e01 = HEdge.make(z0, z1);
     final HEdge e12 = HEdge.make(z1, z2);
     final HEdge e20 = HEdge.make(z2, z0);
-    e12.splice(e01.reverse());
-    e20.splice(e12.reverse());
-    e01.splice(e20.reverse());
+
+    final HEdge e10 = e01.reverse();
+    final HEdge e21 = e12.reverse();
+    final HEdge e02 = e20.reverse();
+
+    e01.setFaceNext(e12); e12.setFaceNext(e20); e20.setFaceNext(e01);
+    e02.setFaceNext(e21); e21.setFaceNext(e10); e10.setFaceNext(e02);
+
     return make(embedding,e01); }
 
   //--------------------------------------------------------------------

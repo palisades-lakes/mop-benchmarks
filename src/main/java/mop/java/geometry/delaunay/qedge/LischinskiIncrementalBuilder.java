@@ -21,7 +21,7 @@ import java.util.*;
  * <b>NOTE: </b> all inserted points must fall within the existing mesh!
  * </p>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-11-10
+ * @version 2026-11-11
  */
 
 public final class LischinskiIncrementalBuilder
