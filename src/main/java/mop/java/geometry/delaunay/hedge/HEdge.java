@@ -18,6 +18,8 @@ import java.util.*;
  *   like JTS.</li>
  *   <li>Simplify edge algebra.</li>
  *   <li>Drop dual (rot) edges.</li>
+ *   <li>Remove <code>splie</code>, explicit <code>faceNext</code>
+ *   updates instead.</li>
  * </ul>
  * </p>
  * Note: <br>

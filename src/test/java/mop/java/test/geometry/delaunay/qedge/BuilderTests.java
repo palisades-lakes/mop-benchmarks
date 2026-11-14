@@ -31,10 +31,10 @@ public final class BuilderTests {
     final QEdgeBuilder b = QEdgeBuilder.make(cmplx);
     final Set<QEdge> primal = b.build();
     Assertions.assertEquals(3, primal.size());
-    Assertions.assertEquals(1, b.nFaces());
-    Assertions.assertEquals(6, b.nHalfEdges());
-    Assertions.assertEquals(3, b.nBoundary());
-    Assertions.assertEquals(3, b.nInterior());
+    Assertions.assertEquals(1, b.index().nFaces());
+    Assertions.assertEquals(6, b.index().nDEdges());
+    Assertions.assertEquals(3, b.index().nBoundary());
+    Assertions.assertEquals(3, b.index().nInterior());
 
 //  for (final HEdge q : primal) { System.out.println(q); }
   }
@@ -51,10 +51,10 @@ public final class BuilderTests {
     final QEdgeBuilder b = QEdgeBuilder.make(cmplx);
     final Set<QEdge> primal = b.build();
     Assertions.assertEquals(5, primal.size());
-    Assertions.assertEquals(2, b.nFaces());
-    Assertions.assertEquals(10, b.nHalfEdges());
-    Assertions.assertEquals(6, b.nInterior());
-    Assertions.assertEquals(4, b.nBoundary());
+    Assertions.assertEquals(2, b.index().nFaces());
+    Assertions.assertEquals(10, b.index().nDEdges());
+    Assertions.assertEquals(6, b.index().nInterior());
+    Assertions.assertEquals(4, b.index().nBoundary());
 //    for (final HEdge q : primal) { System.out.println(q); }
   }
 
@@ -70,10 +70,10 @@ public final class BuilderTests {
     final QEdgeBuilder b = QEdgeBuilder.make(cmplx);
     final Set<QEdge> primal = b.build();
     Assertions.assertEquals(9, primal.size());
-    Assertions.assertEquals(4, b.nFaces());
-    Assertions.assertEquals(18, b.nHalfEdges());
-    Assertions.assertEquals(12, b.nInterior());
-    Assertions.assertEquals(6, b.nBoundary());
+    Assertions.assertEquals(4, b.index().nFaces());
+    Assertions.assertEquals(18, b.index().nDEdges());
+    Assertions.assertEquals(12, b.index().nInterior());
+    Assertions.assertEquals(6, b.index().nBoundary());
 //    for (final HEdge q : primal) { System.out.println(q); }
   }
 
