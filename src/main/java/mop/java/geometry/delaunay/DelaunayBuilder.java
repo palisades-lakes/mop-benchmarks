@@ -245,17 +245,10 @@ public interface DelaunayBuilder {
   public default void insert (final Set<ZeroSimplex> zs) {
     for (final ZeroSimplex z : zs) { insert(z); } }
 
-// --Commented out by Inspection START (10/25/2026 14:08):
-//  public default void insert (final ZeroSimplex z,
-//                              final VectorD2 p) {
-//    embed(z,p);
-//    insert(z); }
-// --Commented out by Inspection STOP (10/25/2026 14:08)
-
   //--------------------------------------------------------------------
 
   public default void insertPoint (final VectorD2 p) {
-    final ZeroSimplex z = ZeroSimplex.make("s");
+    final ZeroSimplex z = ZeroSimplex.make("p");
     embed(z,p);
     insert(z); }
 

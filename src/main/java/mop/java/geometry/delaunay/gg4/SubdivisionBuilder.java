@@ -1,13 +1,12 @@
 package mop.java.geometry.delaunay.gg4;
 
-import javafx.scene.Group;
-import javafx.scene.Node;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Polyline;
-import javafx.scene.shape.Shape;
-import javafx.scene.shape.StrokeType;
+import clojure.lang.IFn;
+import mop.java.cmplx.SimplicialComplex2D;
+import mop.java.cmplx.TwoSimplex;
 import mop.java.cmplx.ZeroSimplex;
+import mop.java.geom.mesh.TriangleMesh;
 import mop.java.geometry.delaunay.DelaunayBuilder;
+import mop.java.geometry.delaunay.Edge;
 import mop.java.geometry.euclidean.VectorD2;
 
 import java.util.*;
@@ -19,10 +18,10 @@ import java.util.*;
  *  <b>Graphics Gems IV</b> Academic Press 1994 </a>
 
  * @author palisades dot lakes at gmail dot com
- * @version 2026-11-14
+ * @version 2026-11-16
  */
 
-public final class Subdivision implements DelaunayBuilder {
+public final class SubdivisionBuilder implements DelaunayBuilder {
 
   //--------------------------------------------------------------------
 
@@ -49,28 +48,38 @@ public final class Subdivision implements DelaunayBuilder {
 
   //--------------------------------------------------------------------
 
-  private Edge _startingEdge;
+  private LEdge _startingEdge;
   /** The entry into the abstract cell complex represented
    * by the <code>QEdege</code>s.
    */
-  public final Edge startingEdge () { return _startingEdge; }
+  public final LEdge startingEdge () { return _startingEdge; }
   /** The entry into the abstract cell complex represented
    * by the <code>QEdege</code>s.
    */
-  final void setStartingEdge (final Edge e) { _startingEdge = e; }
+  final void setStartingEdge (final LEdge e) { _startingEdge = e; }
+
+  //--------------------------------------------------------------------
+
+  @Override
+  public final SortedSet<ZeroSimplex> vertices () {
+    return startingEdge().zeroSimplexes(); }
+
+  @Override
+  public final SortedSet<TwoSimplex> faces () {
+    return startingEdge().twoSimplexes(); }
 
   //--------------------------------------------------------------------
   // Basic Topological Operators
   //--------------------------------------------------------------------
 
-  private static final Edge MakeEdge () {
+  private static final LEdge MakeEdge () {
     // TODO: should this return the edge array or the 0th edge?
-    final QuadEdge ql = new QuadEdge();
+    final Quartet ql = new Quartet();
     return ql.edge(0); }
 
   //--------------------------------------------------------------------
 
-  private static final void Splice (final Edge a, final Edge b) {
+  private static final void Splice (final LEdge a, final LEdge b) {
     // This operator affects the two edge rings around the origins of a and b,
     // and, independently, the two edge rings around the left faces of a and b.
     // In each case, (i) if the two rings are distinct, Splice will combine
@@ -79,12 +88,12 @@ public final class Subdivision implements DelaunayBuilder {
     // Thus, Splice can be used both to attach the two edges together, and
     // to break them apart. See Guibas and Stolfi (1985) p.96 for more details
     // and illustrations.
-    final Edge alpha = a.Onext().Rot();
-    final Edge beta = b.Onext().Rot();
-    final Edge t1 = b.Onext();
-    final Edge t2 = a.Onext();
-    final Edge t3 = beta.Onext();
-    final Edge t4 = alpha.Onext();
+    final LEdge alpha = a.Onext().Rot();
+    final LEdge beta = b.Onext().Rot();
+    final LEdge t1 = b.Onext();
+    final LEdge t2 = a.Onext();
+    final LEdge t3 = beta.Onext();
+    final LEdge t4 = alpha.Onext();
     a.next = t1;
     b.next = t2;
     alpha.next = t3;
@@ -92,7 +101,7 @@ public final class Subdivision implements DelaunayBuilder {
 
   //--------------------------------------------------------------------
 
-  private static final void DeleteEdge (final Edge e) {
+  static final void DeleteEdge (final LEdge e) {
     Splice(e, e.Oprev());
     Splice(e.Sym(), e.Sym().Oprev());
     // garbage collection!
@@ -101,12 +110,12 @@ public final class Subdivision implements DelaunayBuilder {
 
   //--------------------------------------------------------------------
 
-  private static final Edge Connect (final Edge a, final Edge b) {
+  static final LEdge Connect (final LEdge a, final LEdge b) {
     // Add a new edge e connecting the destination of a to the
     // origin of b, in such a way that all three have the same
     // left face after the connection is complete.
     // Additionally, the data pointers of the new edge are set.
-    final Edge e = MakeEdge();
+    final LEdge e = MakeEdge();
     Splice(e, a.Lnext());
     Splice(e.Sym(), b);
     e.EndPoints(a.Dest(), b.Org());
@@ -114,16 +123,17 @@ public final class Subdivision implements DelaunayBuilder {
 
   //--------------------------------------------------------------------
 
-  private static final void Swap (final Edge e) {
+  static final LEdge Swap (final LEdge e) {
     // Essentially turns edge e counterclockwise inside its enclosing
     // quadrilateral. The data pointers are modified accordingly.
-    final Edge a = e.Oprev();
-    final Edge b = e.Sym().Oprev();
+    final LEdge a = e.Oprev();
+    final LEdge b = e.Sym().Oprev();
     Splice(e, a);
     Splice(e.Sym(), b);
     Splice(e, a.Lnext());
     Splice(e.Sym(), b.Lnext());
-    e.EndPoints(a.Dest(), b.Dest()); }
+    e.EndPoints(a.Dest(), b.Dest());
+    return e; }
 
   //--------------------------------------------------------------------
   // geometric predicates
@@ -156,14 +166,21 @@ public final class Subdivision implements DelaunayBuilder {
         (d.x()*d.x() + d.y()*d.y()) * TriArea(a, b, c))
         > 0.0; }
 
+  private final boolean InCircle (final ZeroSimplex a,
+                                  final ZeroSimplex b,
+                                  final ZeroSimplex c,
+                                  final ZeroSimplex d) {
+    return
+      InCircle(embedding(a), embedding(b), embedding(c), embedding(d)); }
+
   private static final boolean ccw (final VectorD2 a,
                                     final VectorD2 b,
                                     final VectorD2 c) {
     // Returns true if the points a, b, c are in a counterclockwise order
     return (TriArea(a, b, c) > 0); }
 
-  private static final boolean RightOf (final VectorD2 x, final Edge e) {
-    return ccw(x, e.Dest2d(), e.Org2d()); }
+  private final boolean RightOf (final ZeroSimplex z, final LEdge e) {
+    return ccw(embedding(z), embedding(e.Dest()), embedding(e.Org())); }
 
 //  private static final boolean LeftOf (final VectorD2 x, final  HEdge e) {
 //    return ccw(x, e.Org2d(), e.Dest2d()); }
@@ -199,40 +216,51 @@ public final class Subdivision implements DelaunayBuilder {
 
   //--------------------------------------------------------------------
 
-  private static final boolean OnEdge (final VectorD2 x, final  Edge e) {
+  private final boolean OnEdge (final ZeroSimplex z, final LEdge e) {
     // A predicate that determines if the point x is on the edge e.
     // The point is considered on if it is in the EPS-neighborhood
     // of the edge.
     // NOTE: Lischinski uses norm rather than norm2.
     // This requires a sqrt call, costing time and adding rounding error
-    final double t1 = x.subtract(e.Org2d()).l2norm2();
-    final double t2 = x.subtract(e.Dest2d()).l2norm2();
+    final VectorD2 x = embedding(z);
+    final VectorD2 p0 = embedding(e.origin());
+    final VectorD2 p1 = embedding(e.dest());
+    final double t1 = x.subtract(p0).l2norm2();
+    final double t2 = x.subtract(p1).l2norm2();
     if (t1 < EPS2 || t2 < EPS2) { return true; }
-    final double t3 = e.Org2d().subtract(e.Dest2d()).l2norm2();
+    final double t3 = p0.subtract(p1).l2norm2();
     if (t1 > t3 || t2 > t3) { return false; }
-    final Line line = new Line(e.Org2d(), e.Dest2d());
+    final Line line = new Line(p0, p1);
     return (Math.abs(line.eval(x)) < EPS); }
 
   //--------------------------------------------------------------------
   // Incremental delaunay
   //--------------------------------------------------------------------
 
-  private final Edge Locate (final VectorD2 x) {
+  private final LEdge Locate (final ZeroSimplex z) {
     // Returns an edge e, s.t. either x is on e, or e is an edge of
     // a triangle containing x. The search starts from startingEdge
     // and proceeds in the general direction of x. Based on the
     // pseudocode in Guibas and Stolfi (1985) p.121.
-    Edge e = _startingEdge;
+    LEdge e = startingEdge();
     while (true) {
-      if (x == e.Org2d() || x == e.Dest2d()) { return e; }
-      else if (RightOf(x, e)) { e = e.Sym(); }
-      else if (!RightOf(x, e.Onext())) { e = e.Onext(); }
-      else if (!RightOf(x, e.Dprev())) { e = e.Dprev(); }
-      else { return e; } } }
+      assert ! e.origin().equals(e.dest());
+      assert null != embedding(e.dest());
+      assert null != embedding(e.dest());
+      if (z.equals(e.origin())) { return e; }
+      if (z.equals(e.dest())) { return e; }
+      else if (RightOf(z, e)) { e = e.Sym(); }
+      else if (!RightOf(z, e.Onext())) { e = e.Onext(); }
+      else if (!RightOf(z, e.Dprev())) { e = e.Dprev(); }
+      else { return e; }
+    } }
 
   //--------------------------------------------------------------------
 
-  public final void InsertSite (final VectorD2 x) {
+  public final void insert (final ZeroSimplex z) {
+
+    assert embedding().containsKey(z) :
+      "No embedding for " + z + "\n" + embedding();
 
     // Inserts a new point into a subdivision representing a Delaunay
     // triangulation, and fixes the affected edges so that the result
@@ -240,17 +268,17 @@ public final class Subdivision implements DelaunayBuilder {
     // pseudocode from Guibas and Stolfi (1985) p.120, with slight
     // modifications and a bug fix.
 
-    Edge e = Locate(x);
+    LEdge e = Locate(z);
     // point is already in QMesh
-    if ((x == e.Org2d()) || (x == e.Dest2d()))  { return; }
-    else if (OnEdge(x, e)) {
-      e = e.Oprev();
-      DeleteEdge(e.Onext()); }
+    if (z.equals(e.origin())) { return; }
+    if (z.equals(e.dest())) { return; }
+    if (OnEdge(z, e)) { e = e.Oprev(); DeleteEdge(e.Onext()); }
+
     // Connect the new point to the vertices of the containing
     // triangle (or quadrilateral, if the new point fell on an
     // existing edge.)
-    Edge base = MakeEdge();
-    base.EndPoints(e.Org(), x);
+    LEdge base = MakeEdge();
+    base.EndPoints(e.Org(), z);
     Splice(base, e);
     _startingEdge = base;
     do {
@@ -260,11 +288,10 @@ public final class Subdivision implements DelaunayBuilder {
     // Examine suspect edges to ensure that the Delaunay condition
     // is satisfied.
     do {
-      Edge t = e.Oprev();
-      if (RightOf(t.Dest2d(), e) &&
-        InCircle(e.Org2d(), t.Dest2d(), e.Dest2d(), x)) {
-        Swap(e);
-        e = e.Oprev(); }
+      LEdge t = e.Oprev();
+      if (RightOf(t.dest(), e)
+        && InCircle(e.origin(), t.dest(), e.dest(), z)) {
+        Swap(e); e = e.Oprev(); }
       // no more suspect edges
       else if (e.Onext() == _startingEdge) { return; }
       // pop a suspect edge
@@ -272,102 +299,63 @@ public final class Subdivision implements DelaunayBuilder {
     } while (true); }
 
   //--------------------------------------------------------------------
-  /** JFK triangle, */
-
-  public static final Shape jfxTriangle (final VectorD2 p0,
-                                         final VectorD2 p1,
-                                         final VectorD2 p2,
-                                         final Color color) {
-    final Shape t = new Polyline(p0.x(), p0.y(),
-                                 p1.x(), p1.y(),
-                                 p2.x(), p2.y());
-    t.setStroke(color);
-    t.setStrokeWidth(1);
-    t.setStrokeType(StrokeType.CENTERED);
-    return t; }
-
-  //--------------------------------------------------------------------
-  /** Collect the triangles as a JFK Group Node for display.
-   * <b>Assumes mesh is connected!</b>
-   */
-
-  public final Group jfxTriangles (final Color color) {
-    final Group group = new Group();
-    final List<Node> children = group.getChildren();
-
-    final Set<Edge> visited = new HashSet<>();
-    final Stack<Edge> toVisit = new Stack<>();
-    toVisit.push(_startingEdge);
-    while (! toVisit.empty()) {
-      final Edge e0 = toVisit.pop();
-      if (! visited.contains(e0)) {
-        visited.add(e0); toVisit.push(e0.Sym());
-        final Edge e1 = e0.Lnext();
-        visited.add(e1); toVisit.push(e1.Sym());
-        final Edge e2 = e1.Lnext();
-        visited.add(e2); toVisit.push(e2.Sym());
-        children.add(jfxTriangle(e0.Org(), e1.Org(), e2.Org(), color)); } }
-
-    return group; }
-
-  //--------------------------------------------------------------------
   // construction
   //--------------------------------------------------------------------
 
-  private Subdivision (final Map<ZeroSimplex, VectorD2> embedding) {
+  private SubdivisionBuilder (final Map<ZeroSimplex, VectorD2> embedding) {
     _embedding = embedding; }
 
-  public static final Subdivision
+  public static final SubdivisionBuilder
   unsafe (final Map<ZeroSimplex, VectorD2> embedding) {
-    return new Subdivision(embedding); }
+    return new SubdivisionBuilder(embedding); }
 
-  public static final Subdivision
+  public static final SubdivisionBuilder
   make (final Map<ZeroSimplex, VectorD2> embedding,
-        final Edge startingEdge) {
+        final LEdge startingEdge) {
     // defensive copy
-    final Subdivision builder =
-      unsafe(new TreeMap<>(embedding));
+    final SubdivisionBuilder builder = unsafe(new TreeMap<>(embedding));
     builder.setStartingEdge(startingEdge);
     return builder; }
 
-//  public static final Subdivision make (final TriangleMesh mesh) {
-//    final IFn embed = mesh.embedding();
-//    // TODO: handle general cell complexes?
-//    final SimplicialComplex2D cmplx =
-//      (SimplicialComplex2D) mesh.cmplx();
-//    final Map<ZeroSimplex, VectorD2> embedding = new HashMap<>();
-//    for (final ZeroSimplex z : cmplx.vertices()) {
-//      embedding.put(z,(VectorD2) embed.invoke(z)); }
-//    final Subdivision builder = unsafe(embedding);
-//    // TODO: handle multiple starting edges
-//    final Set<Edge> primal = make(cmplx).build();
-//    builder.setStartingEdge(primal.iterator().next());
-//    return builder; }
+  public static final SubdivisionBuilder make (final TriangleMesh mesh) {
+    final IFn embed = mesh.embedding();
+    // TODO: handle general cell complexes?
+    final SimplicialComplex2D cmplx =
+      (SimplicialComplex2D) mesh.cmplx();
+    final Map<ZeroSimplex, VectorD2> embedding = new HashMap<>();
+    for (final ZeroSimplex z : cmplx.vertices()) {
+      embedding.put(z,(VectorD2) embed.invoke(z)); }
+    final SubdivisionBuilder builder = unsafe(embedding);
+    // TODO: handle multiple starting edges
+    final Set<Edge> primal = LEdgeTranslator.make(cmplx).build();
+    builder.setStartingEdge((LEdge) primal.iterator().next());
+    return builder; }
 
+  //--------------------------------------------------------------------
   /** All inserted points must lie in the triangle formed by
-   * <code>a, b, c</code>.
+   * <code>p0, p1, p2</code>.
    */
 
-  public static final Subdivision triangleFrame (final VectorD2 a,
-                                           final VectorD2 b,
-                                           final VectorD2 c) {
-    // Initialize a subdivision to the triangle defined by the points a, b, c.
-    // Point2d *da, *db, *dc;
-    // da = new Point2d(a), db = new Point2d(b), dc = new Point2d(c);
-    // VectorD2 immutable!
-    // final VectorD2 da = a;
-    // final VectorD2 db = b;
-    // final VectorD2 dc = c;
-    final Edge ea = MakeEdge();
-    ea.EndPoints(a, b);
-    final Edge eb = MakeEdge();
+
+  public static final SubdivisionBuilder triangleFrame (final VectorD2 p0,
+                                                        final VectorD2 p1,
+                                                        final VectorD2 p2) {
+    // this creates a closed manifold, a triangle and its 'reverse'
+    final ZeroSimplex z0 = ZeroSimplex.make("f");
+    final ZeroSimplex z1 = ZeroSimplex.make("f");
+    final ZeroSimplex z2 = ZeroSimplex.make("f");
+    final Map<ZeroSimplex,VectorD2> embedding =
+      Map.of(z0,p0,z1,p1,z2,p2);
+    final LEdge ea = MakeEdge();
+    ea.EndPoints(z0,z1);
+    final LEdge eb = MakeEdge();
     Splice(ea.Sym(), eb);
-    eb.EndPoints(b, c);
-    final Edge ec = MakeEdge();
+    eb.EndPoints(z1,z2);
+    final LEdge ec = MakeEdge();
     Splice(eb.Sym(), ec);
-    ec.EndPoints(c, a);
+    ec.EndPoints(z2,z0);
     Splice(ec.Sym(), ea);
-    return make(null,ea); }
+    return make(embedding,ea); }
 
   //--------------------------------------------------------------------
 } // end class

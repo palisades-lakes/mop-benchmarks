@@ -34,7 +34,7 @@ import java.util.Set;
  * @author palisades dot lakes at gmail dot com
  * @version 2026-11-16
  */
-public final class HEdgeBuilder implements MeshTranslator {
+public final class HEdgeTranslator implements MeshTranslator {
 
   //--------------------------------------------------------------------
 
@@ -96,12 +96,12 @@ public final class HEdgeBuilder implements MeshTranslator {
 // construction
 //--------------------------------------------------------------------
 
-  private HEdgeBuilder (final MeshIndex index) {
+  private HEdgeTranslator (final MeshIndex index) {
     this._index = index; }
 
-  public static final HEdgeBuilder
+  public static final HEdgeTranslator
   make (final SimplicialComplex2D cmplx) {
-    return new HEdgeBuilder(MeshIndex.make(cmplx)); }
+    return new HEdgeTranslator(MeshIndex.make(cmplx)); }
 
   //--------------------------------------------------------------------
 } // end class

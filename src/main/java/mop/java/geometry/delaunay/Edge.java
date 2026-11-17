@@ -18,12 +18,15 @@ public interface Edge extends Comparable<Edge> {
   //  faceNExt
   //  face
 
+
   public ZeroSimplex origin ();
   public ZeroSimplex dest ();
+
+  public default String name () {
+    return origin() + "->" + dest(); }
+
   /** The edge from the destination to the origin. */
   public Edge reverse ();
-  public String name ();
-
   /** The next edge ccw in the left face. */
   public Edge faceNext ();
   public Edge facePrev ();

@@ -4,7 +4,7 @@ import mop.java.cmplx.SimplicialComplex2D;
 import mop.java.geom.mesh.TriangleMesh;
 import mop.java.geometry.delaunay.Edge;
 import mop.java.geometry.delaunay.Util;
-import mop.java.geometry.delaunay.qedge.QEdgeBuilder;
+import mop.java.geometry.delaunay.qedge.QEdgeTranslator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -28,7 +28,7 @@ public final class BuilderTests {
     final TriangleMesh mesh = Util.triangleFrame01();
     final SimplicialComplex2D cmplx =
       (SimplicialComplex2D) mesh.cmplx();
-    final QEdgeBuilder b = QEdgeBuilder.make(cmplx);
+    final QEdgeTranslator b = QEdgeTranslator.make(cmplx);
     final Set<Edge> primal = b.build();
     Assertions.assertEquals(3, primal.size());
     Assertions.assertEquals(1, b.index().nFaces());
@@ -48,7 +48,7 @@ public final class BuilderTests {
       Util.rectangleFrame(0.0,1.0,0.0,1.0);
     final SimplicialComplex2D cmplx =
       (SimplicialComplex2D) mesh.cmplx();
-    final QEdgeBuilder b = QEdgeBuilder.make(cmplx);
+    final QEdgeTranslator b = QEdgeTranslator.make(cmplx);
     final Set<Edge> primal = b.build();
     Assertions.assertEquals(5, primal.size());
     Assertions.assertEquals(2, b.index().nFaces());
@@ -67,7 +67,7 @@ public final class BuilderTests {
       Util.hexagonFrame(0.0,1.0,0.0,1.0);
     final SimplicialComplex2D cmplx =
       (SimplicialComplex2D) mesh.cmplx();
-    final QEdgeBuilder b = QEdgeBuilder.make(cmplx);
+    final QEdgeTranslator b = QEdgeTranslator.make(cmplx);
     final Set<Edge> primal = b.build();
     Assertions.assertEquals(9, primal.size());
     Assertions.assertEquals(4, b.index().nFaces());

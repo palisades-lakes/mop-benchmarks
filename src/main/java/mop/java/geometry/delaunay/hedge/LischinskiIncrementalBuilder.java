@@ -22,7 +22,7 @@ import java.util.*;
  * <b>NOTE: </b> all inserted points must fall within the existing mesh!
  * </p>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-11-11
+ * @version 2026-11-16
  */
 
 public final class LischinskiIncrementalBuilder
@@ -164,7 +164,7 @@ public final class LischinskiIncrementalBuilder
    * Shewchuk's GSFlaws:</a>
    * <pre>
    * Three fixes to Guibas and Stolfi's "Primitives for the Manipulation of
-   * General Subdivisions and the Computation of Voronoi Diagrams":
+   * General SubdivisionBuilders and the Computation of Voronoi Diagrams":
    *
    * One, their Locate primitive always works in the interior of the mesh,
    * but can get stuck in an infinite loop on the convex hull.  Consider
@@ -329,7 +329,7 @@ public final class LischinskiIncrementalBuilder
       embedding.put(z,(VectorD2) embed.invoke(z)); }
     final LischinskiIncrementalBuilder builder = unsafe(embedding);
     // TODO: handle multiple starting edges
-    final Set<Edge> primal = HEdgeBuilder.make(cmplx).build();
+    final Set<Edge> primal = HEdgeTranslator.make(cmplx).build();
 //    System.out.println("primals:" + primal.size());
 //    for (final HEdge q : primal) {
 //      System.out.println(q.name());

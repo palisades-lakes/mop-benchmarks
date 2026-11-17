@@ -5,6 +5,8 @@ import mop.java.geom.mesh.TriangleMesh;
 import mop.java.geometry.delaunay.Edge;
 import mop.java.geometry.delaunay.MeshTranslator;
 import mop.java.geometry.delaunay.Util;
+import mop.java.geometry.delaunay.hedge.HEdgeTranslator;
+import mop.java.geometry.delaunay.qedge.QEdgeTranslator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -83,8 +85,8 @@ private final void rectangleFrame
   private static final List<Function<SimplicialComplex2D, MeshTranslator>>
     delaunayMakers =
     List.of(
-      mop.java.geometry.delaunay.hedge.HEdgeBuilder::make,
-      mop.java.geometry.delaunay.qedge.QEdgeBuilder::make);
+      HEdgeTranslator::make,
+      QEdgeTranslator::make);
 
   @Test
   public final void runTests () {

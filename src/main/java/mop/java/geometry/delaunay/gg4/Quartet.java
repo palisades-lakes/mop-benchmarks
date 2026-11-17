@@ -7,24 +7,24 @@ package mop.java.geometry.delaunay.gg4;
  *  <b>Graphics Gems IV</b> Academic Press 1994 </a>
 
  * @author palisades dot lakes at gmail dot com
- * @version 2026-10-01
+ * @version 2026-11-16
  */
 
-public final class QuadEdge {
+public final class Quartet {
 
-  private final Edge[] e;
-  public final Edge edge (final int i) { return e[i]; }
+  private final LEdge[] e;
+  public final LEdge edge (final int i) { return e[i]; }
 
   //--------------------------------------------------------------------
   // construction
   //--------------------------------------------------------------------
 
-  public QuadEdge () {
-    e = new Edge[] {
-      new Edge(this),
-      new Edge(this),
-      new Edge(this),
-      new Edge(this), };
+  public Quartet () {
+    e = new LEdge[] {
+      new LEdge(this),
+      new LEdge(this),
+      new LEdge(this),
+      new LEdge(this), };
     e[0].num = 0;
     e[1].num = 1;
     e[2].num = 2;

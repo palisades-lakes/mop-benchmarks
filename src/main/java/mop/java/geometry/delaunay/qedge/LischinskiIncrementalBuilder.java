@@ -165,7 +165,7 @@ public final class LischinskiIncrementalBuilder
    * Shewchuk's GSFlaws:</a>
    * <pre>
    * Three fixes to Guibas and Stolfi's "Primitives for the Manipulation of
-   * General Subdivisions and the Computation of Voronoi Diagrams":
+   * General SubdivisionBuilders and the Computation of Voronoi Diagrams":
    *
    * One, their Locate primitive always works in the interior of the mesh,
    * but can get stuck in an infinite loop on the convex hull.  Consider
@@ -313,7 +313,7 @@ public final class LischinskiIncrementalBuilder
       embedding.put(z,(VectorD2) embed.invoke(z)); }
     final LischinskiIncrementalBuilder builder = unsafe(embedding);
     // TODO: handle multiple starting edges
-    final Set<Edge> primal = QEdgeBuilder.make(cmplx).build();
+    final Set<Edge> primal = QEdgeTranslator.make(cmplx).build();
     builder.setStartingEdge((QEdge) primal.iterator().next());
     return builder; }
 

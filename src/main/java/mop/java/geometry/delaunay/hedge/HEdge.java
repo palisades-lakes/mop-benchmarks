@@ -14,7 +14,7 @@ import java.util.Objects;
  * Changes from Graphics Gems version:
  * <<ul>
  *   <li>More meaningful names (at least for me).</li>
- *   <li>Delete separate QuadEdge class holding 4 related edges,
+ *   <li>Delete separate Quartet class holding 4 related edges,
  *   like JTS.</li>
  *   <li>Simplify edge algebra.</li>
  *   <li>Drop dual (rot) edges.</li>
@@ -49,10 +49,6 @@ public final class HEdge implements Edge {
   /** The edge from the destination to the origin. */
   @Override
   public final HEdge reverse () { return _reverse; }
-
-  @Override
-  public final String name () {
-    return origin() + "->" + dest(); }
 
   private ZeroSimplex _origin;
   @Override
