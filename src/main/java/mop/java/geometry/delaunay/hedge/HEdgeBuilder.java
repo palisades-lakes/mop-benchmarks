@@ -2,7 +2,9 @@ package mop.java.geometry.delaunay.hedge;
 
 import mop.java.cmplx.DirectedOneSimplex;
 import mop.java.cmplx.SimplicialComplex2D;
+import mop.java.geometry.delaunay.Edge;
 import mop.java.geometry.delaunay.MeshIndex;
+import mop.java.geometry.delaunay.MeshTranslator;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -30,9 +32,9 @@ import java.util.Set;
  * TODO: Allow building both quad-edge and half-edge meshes.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-11-14
+ * @version 2026-11-16
  */
-public final class HEdgeBuilder {
+public final class HEdgeBuilder implements MeshTranslator {
 
   //--------------------------------------------------------------------
 
@@ -47,7 +49,8 @@ public final class HEdgeBuilder {
     return _hedge; }
   private final HEdge getHEdge (final DirectedOneSimplex e) {
     return hedge().get(e); }
-  private final void putHEdge (final DirectedOneSimplex e, final HEdge h) {
+  private final void putHEdge (final DirectedOneSimplex e,
+                               final HEdge h) {
     if (! hedge().containsKey(e)) { hedge().put(e,h); } }
 
 //--------------------------------------------------------------------
@@ -67,10 +70,10 @@ public final class HEdgeBuilder {
    * but multiple may be necessary if the corresponding manifold is
    * not connected.
    */
-  public final Set<HEdge> build () {
+  public final Set<Edge> build () {
     index().indexFaces();
     index().linkBoundaryFaces();
-    final Set<HEdge> hEdges = new HashSet<>();
+    final Set<Edge> hEdges = new HashSet<>();
     // set origin and reverse (and dest=reverse.origin)
     // for interior HEdges
     for (final DirectedOneSimplex e : index().dedges()) {
@@ -86,7 +89,7 @@ public final class HEdgeBuilder {
       final HEdge n = getHEdge(index().getFaceNext(e));
       assert null != n;
       h.setFaceNext(n); }
-    for (final HEdge h : hEdges) { h.validate(); }
+    for (final Edge h : hEdges) { h.validate(); }
     return hEdges; }
 
 //--------------------------------------------------------------------

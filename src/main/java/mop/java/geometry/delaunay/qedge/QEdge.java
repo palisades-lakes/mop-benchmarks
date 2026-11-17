@@ -1,9 +1,9 @@
 package mop.java.geometry.delaunay.qedge;
 
-import mop.java.cmplx.TwoSimplex;
 import mop.java.cmplx.ZeroSimplex;
+import mop.java.geometry.delaunay.Edge;
 
-import java.util.*;
+import java.util.Objects;
 
 /** Delaunay triangulation, after
  * <a href="https://www.researchgate.net/publication/262235495_Incremental_Delaunay_Triangulation">
@@ -38,25 +38,17 @@ import java.util.*;
  * are topologically equivalent.
  * </p>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-11-12
+ * @version 2026-11-16
  */
 
-public final class QEdge implements Comparable<QEdge> {
+public final class QEdge implements Edge {
 
-  // TODO: separate primal and dual edges, primal with reference to
-  //  origin point, dual reference to explicit origin face?
-  //  G+S's edge algebra has separate finite sets E and E* for the
-  //  primal and dual edges.
-  // TODO: this is actually G+S Rot operation, not dual,
-  //  which is why dual().dual() == reverse(), not identity.
-
-  private QEdge _rot;
-  /** The dual edge, directed from the right face to the left. */
-  public final QEdge rot () { return _rot; }
-//  /** The dual edge, directed from the right face to the left. */
-//  public final void setRot (final QEdge e) { _rot = e; }
+  @Override
+  public final String name () {
+    return origin() + "->" + dest(); }
 
   private ZeroSimplex _origin;
+  @Override
   public final ZeroSimplex origin () { return _origin; }
   /** A basic weakness of the <code>QEdge</code> representation:
     * <code>origin()</code>> is a mutable field,
@@ -72,9 +64,14 @@ public final class QEdge implements Comparable<QEdge> {
     assert Objects.equals(p,next().origin());
     _origin = p; }
 
+  private QEdge _rot;
+  /** The dual edge, directed from the right face to the left. */
+  public final QEdge rot () { return _rot; }
+
   /** The next edge ccw around the origin. */
   private QEdge _next;
   /** The next edge ccw around the origin. */
+  @Override
   public final QEdge next () { return _next; }
 
   /** The next edge ccw around the origin.
@@ -92,18 +89,22 @@ public final class QEdge implements Comparable<QEdge> {
   //--------------------------------------------------------------------
 
   /** The edge from the destination to the origin. */
+  @Override
   public final QEdge reverse () { return rot().rot(); }
 
   public final ZeroSimplex dest () { return reverse().origin(); }
 
   /** The next edge cw around the origin. */
+  @Override
   public final QEdge prev () { return rot().next().rot(); }
 
   /** The next edge ccw around the (left) face. */
+  @Override
   public final QEdge faceNext () {
     return rot().reverse().next().rot(); }
 
   /** The next edge cw around the (left) face. */
+  @Override
   public final QEdge facePrev () { return next().reverse(); }
 
   //--------------------------------------------------------------------
@@ -192,14 +193,19 @@ public final class QEdge implements Comparable<QEdge> {
     e.reverse().splice(that);
     return e; }
 
-  /** Lischinski: <br>
-   * Essentially turns edge e counterclockwise inside its enclosing
-   * quadrilateral.
-   * <br>
-   * <em>Rewritten to return a new QEdge, to maintain that constraint
-   * between <code>next()</code> and <code>origin()</code></em>.
-   */
+  @Override
+  public final Edge connect (final Edge that) {
+    return connect((QEdge) that); }
 
+    /** Lischinski: <br>
+     * Essentially turns edge e counterclockwise inside its enclosing
+     * quadrilateral.
+     * <br>
+     * <em>Rewritten to return a new QEdge, to maintain that constraint
+     * between <code>next()</code> and <code>origin()</code></em>.
+     */
+
+  @Override
   public final QEdge swap () {
 
     final ZeroSimplex z0 = reverse().faceNext().dest();
@@ -218,81 +224,6 @@ public final class QEdge implements Comparable<QEdge> {
 
     return e; }
 
-  //--------------------------------------------------------------------
-  // collect mesh elements
-  //--------------------------------------------------------------------
-
-// --Commented out by Inspection START (10/25/2026 14:09):
-//  private final boolean noElements (final Set<ZeroSimplex> exclude,
-//                                    final ZeroSimplex[] points) {
-//    for (final ZeroSimplex p : points) {
-//      if (exclude.contains(p)) { return false; } }
-//    return true; }
-// --Commented out by Inspection STOP (10/25/2026 14:09)
-
-  //--------------------------------------------------------------------
-  /** Collect the vertices as a set of points.
-   * Skip elements of <code>exclude</code>.
-   * <b>Assumes mesh is connected!</b>
-   */
-
-  public final SortedSet<ZeroSimplex>
-  zeroSimplexes (final Set<ZeroSimplex> exclude) {
-    final SortedSet<ZeroSimplex> t = new TreeSet<>();
-    final Set<QEdge> visited = new HashSet<>();
-    final Stack<QEdge> toVisit = new Stack<>();
-    toVisit.push(this);
-    while (! toVisit.empty()) {
-      final QEdge e0 = toVisit.pop();
-      if (! visited.contains(e0)) {
-        visited.add(e0);
-        toVisit.push(e0.reverse());
-        toVisit.push(e0.faceNext());
-        final ZeroSimplex p = e0.origin();
-        if (!exclude.contains(p)) { t.add(p); } } }
-    return t; }
-
-  public final SortedSet<ZeroSimplex> zeroSimplexes () {
-    return zeroSimplexes(new TreeSet<>()); }
-
-  /** Collect connected triangular faces, skip others. */
-  public final SortedSet<TwoSimplex> twoSimplexes () {
-    final SortedSet<TwoSimplex> faces = new TreeSet<>();
-    final Set<QEdge> visited = new HashSet<>();
-    final Stack<QEdge> toVisit = new Stack<>();
-    toVisit.push(this);
-    while (! toVisit.empty()) {
-      final QEdge e0 = toVisit.pop();
-      if (! visited.contains(e0)) {
-        visited.add(e0);
-        final QEdge e1 = e0.faceNext(); visited.add(e1);
-        final QEdge e2 = e1.faceNext(); visited.add(e2);
-        assert ! (e0.equals(e1) || e0.equals(e2) || (e1.equals(e2)));
-        toVisit.push(e0.reverse());
-        toVisit.push(e1.reverse());
-        toVisit.push(e2.reverse());
-        QEdge e3 = e2.faceNext();
-        if (e0.equals(e3)) { // triangular
-          final TwoSimplex face = TwoSimplex.make(
-            e0.origin(), e1.origin(), e2.origin());
-          faces.add(face); }
-        else {
-          while (! e0.equals(e3)) {
-            visited.add(e3); toVisit.push(e3.reverse());
-            e3 = e3.faceNext(); } } } }
-    return faces; }
-
-  //--------------------------------------------------------------------
-  // Comparable
-  //--------------------------------------------------------------------
-
-  @Override
-  public int compareTo (final QEdge q) {
-    final int c = origin().compareTo(q.origin());
-    if (0 != c) { return c; }
-    return dest().compareTo(q.dest()); }
-
-  //--------------------------------------------------------------------
   // Object
   //--------------------------------------------------------------------
 
@@ -314,64 +245,11 @@ public final class QEdge implements Comparable<QEdge> {
       ; }
 
   //--------------------------------------------------------------------
-  // debugging
-  //--------------------------------------------------------------------
-
-  public final void validate () {
-    assert Objects.equals(origin(),next().origin());
-    assert Objects.equals(origin(),prev().origin());
-    assert Objects.equals(origin(),facePrev().dest());
-    assert Objects.equals(dest(),faceNext().origin());
-    assert Objects.equals(this,reverse().reverse()); }
-
-  public final void validateMesh () {
-    final Set<QEdge> visited = new HashSet<>();
-    final Stack<QEdge> toVisit = new Stack<>();
-    toVisit.push(this);
-    while (! toVisit.empty()) {
-      final QEdge e = toVisit.pop();
-      if (! visited.contains(e)) {
-        e.validate();
-        visited.add(e);
-        toVisit.push(e.next());
-        toVisit.push(e.rot());
-      }}
-  }
-  private final String _name;
-  public final String name () { return _name; }
-
-  public static final void printFace (final Set<QEdge> visited,
-                                      final Stack<QEdge> toVisit) {
-    final QEdge e0 = toVisit.pop();
-    if ((null!=e0) && (! visited.contains(e0))) {
-      System.out.println("\nface:" );
-      QEdge e1 = e0;
-      do {
-        toVisit.remove(e1);
-        if (! visited.contains(e1)) {
-          System.out.println(e1);
-          visited.add(e1);
-          final QEdge ri = e1.reverse();
-          if (! visited.contains(ri)) { toVisit.push(ri); } }
-        e1 = e1.faceNext();
-        assert null != e1;
-      } while (e0 != e1); } }
-
-  @SuppressWarnings("unused")
-  public final void printMesh () {
-    final Set<QEdge> visited = new HashSet<>();
-    final Stack<QEdge> toVisit = new Stack<>();
-    toVisit.push(this);
-    while (!toVisit.empty()) { printFace(visited,toVisit); } }
-
-  //--------------------------------------------------------------------
   // construction
   //--------------------------------------------------------------------
   // Mutable mesh wired together by setting _next
 
-  private QEdge (final String name,
-                 final ZeroSimplex origin) {
-    _name = name;
+  private QEdge (final ZeroSimplex origin) {
     _origin = origin; }
 
   /** Construct a group of 4 circularly linked <code>QEdge</code>s,
@@ -382,10 +260,10 @@ public final class QEdge implements Comparable<QEdge> {
   public static final QEdge make (final ZeroSimplex z0,
                                   final ZeroSimplex z1) {
 
-    final QEdge primal = new QEdge(z0 + "->" + z1, z0);
-    final QEdge reverse = new QEdge(z1 + "->" + z0, z1);
-    final QEdge rot = new QEdge(z0 + "/^" + z1,null);
-    final QEdge reverseRot = new QEdge(z1 + "/^" + z0,null);
+    final QEdge primal = new QEdge(z0);
+    final QEdge reverse = new QEdge(z1);
+    final QEdge rot = new QEdge(null);
+    final QEdge reverseRot = new QEdge(null);
 
     primal._rot = rot;
     reverse._rot = reverseRot;

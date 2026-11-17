@@ -6,6 +6,7 @@ import mop.java.cmplx.TwoSimplex;
 import mop.java.cmplx.ZeroSimplex;
 import mop.java.geom.mesh.TriangleMesh;
 import mop.java.geometry.delaunay.DelaunayBuilder;
+import mop.java.geometry.delaunay.Edge;
 import mop.java.geometry.delaunay.Util;
 import mop.java.geometry.euclidean.VectorD2;
 import mop.java.util.IFnWrapper;
@@ -283,7 +284,6 @@ public final class LischinskiIncrementalBuilder
   //--------------------------------------------------------------------
   // construction
   //--------------------------------------------------------------------
-  /** disabled constructor, class methods only. */
 
   private LischinskiIncrementalBuilder (
     final Map<ZeroSimplex, VectorD2> embedding) {
@@ -292,18 +292,6 @@ public final class LischinskiIncrementalBuilder
   public static final LischinskiIncrementalBuilder
   unsafe (final Map<ZeroSimplex, VectorD2> embedding) {
     return new LischinskiIncrementalBuilder(embedding); }
-
-// --Commented out by Inspection START (10/25/2026 14:09):
-//  public static final LischinskiIncrementalBuilder make () {
-//    return unsafe(new TreeMap<>()); }
-// --Commented out by Inspection STOP (10/25/2026 14:09)
-
-// --Commented out by Inspection START (10/25/2026 14:09):
-//  public static final LischinskiIncrementalBuilder
-//  make (final Map<ZeroSimplex, VectorD2> embedding) {
-//    // defensive copy
-//    return unsafe(new TreeMap<>(embedding)); }
-// --Commented out by Inspection STOP (10/25/2026 14:09)
 
   public static final LischinskiIncrementalBuilder
   make (final Map<ZeroSimplex, VectorD2> embedding,
@@ -325,26 +313,10 @@ public final class LischinskiIncrementalBuilder
       embedding.put(z,(VectorD2) embed.invoke(z)); }
     final LischinskiIncrementalBuilder builder = unsafe(embedding);
     // TODO: handle multiple starting edges
-    final Set<QEdge> primal = QEdgeBuilder.make(cmplx).build();
-//    System.out.println("primals:" + primal.size());
-//    for (final QEdge q : primal) {
-//      System.out.println(q.name());
-//    }
-    builder.setStartingEdge(primal.iterator().next());
+    final Set<Edge> primal = QEdgeBuilder.make(cmplx).build();
+    builder.setStartingEdge((QEdge) primal.iterator().next());
     return builder; }
 
-//  /** Use <code>mesh</code> as the initial frame for the builder. */
-//
-//  public static final DelaunayBuilder make (final TriangleMesh mesh) {
-//    final SimplicialComplex2D c = (SimplicialComplex2D) mesh.cmplx();
-//    final SortedMap<ZeroSimplex, VectorD2> embedding = new TreeMap<>();
-//    final IFn e = mesh.embedding();
-//    for (final ZeroSimplex z : c.vertices()) {
-//      embedding.put(z,(VectorD2) e.invoke(z)); }
-//    final LischinskiIncrementalBuilder b = unsafe(embedding);
-//    for (final TwoSimplex f : c.faces()) { b.addTriangle(f); }
-//    return b; }
-//
   //--------------------------------------------------------------------
   /** All inserted points must lie in the triangle formed by
    * <code>p0, p1, p2</code>.
@@ -384,25 +356,6 @@ public final class LischinskiIncrementalBuilder
 
     e01.validateMesh();
     return make(embedding,e01); }
-
-//  public static final LischinskiIncrementalBuilder
-//  triangleFrameX (final VectorD2 p0,
-//                  final VectorD2 p1,
-//                  final VectorD2 p2) {
-//    // this creates a closed manifold, a triangle and its 'reverse'
-//    final ZeroSimplex z0 = ZeroSimplex.make("z0");
-//    final ZeroSimplex z1 = ZeroSimplex.make("z1");
-//    final ZeroSimplex z2 = ZeroSimplex.make("z2");
-//    final Map<ZeroSimplex,VectorD2> embedding =
-//      Map.of(z0,p0,z1,p1,z2,p2);
-//
-//    final QEdge e01 = QEdge.make("e01", z0, z1);
-//    final QEdge e12 = QEdge.make("e12", z1, z2);
-//    final QEdge e20 = QEdge.make("e20", z2, z0);
-//    e01.splice(e20.reverse());
-//    e12.splice(e01.reverse());
-//    e20.splice(e12.reverse());
-//    return make(embedding,e01); }
 
   //--------------------------------------------------------------------
 

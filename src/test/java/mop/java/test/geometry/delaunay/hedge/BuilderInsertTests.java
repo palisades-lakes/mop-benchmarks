@@ -11,6 +11,7 @@ import mop.java.prng.Generator;
 import mop.java.prng.PRNG;
 import org.junit.jupiter.api.Test;
 
+import java.util.Set;
 import java.util.SortedSet;
 
 /** <pre>
@@ -38,7 +39,7 @@ public final class BuilderInsertTests {
       LischinskiIncrementalBuilder.make(frame);
     final SortedSet<ZeroSimplex> vertices = builder.vertices();
     builder.insert(vertices);
-//    builder.insertPoint(new VectorD2(0.5, 0.5));
+    builder.insertPoint(new VectorD2(0.5, 0.5));
   }
 
   //--------------------------------------------------------------
@@ -59,21 +60,21 @@ public final class BuilderInsertTests {
         PRNG.well44497b("seeds/Well44497b-2019-01-11.txt"),
         0.0, 1.0));
 
-    final int nsites = 1;
+    final int nsites = 16;
     for (int i=0;i<nsites;i++) {
       builder.insertPoint((VectorD2) pointGenerator.next()); } }
 
   //--------------------------------------------------------------
 
-//  @Test
-//  public final void singularRectangleFrame () {
-//
-//    final LischinskiIncrementalBuilder builder =
-//      LischinskiIncrementalBuilder.make(
-//        Util.rectangleFrame(0.0,1.0,0.0,1.0));
-//    final Set<ZeroSimplex> frame = builder.vertices();
-//    for (final ZeroSimplex z : frame) { builder.insert(z); }
-//    builder.insertPoint(new VectorD2(0.5, 0.5)); }
+  @Test
+  public final void singularRectangleFrame () {
+
+    final LischinskiIncrementalBuilder builder =
+      LischinskiIncrementalBuilder.make(
+        Util.rectangleFrame(0.0,1.0,0.0,1.0));
+    final Set<ZeroSimplex> frame = builder.vertices();
+    for (final ZeroSimplex z : frame) { builder.insert(z); }
+    builder.insertPoint(new VectorD2(0.5, 0.5)); }
 
   //--------------------------------------------------------------
 
@@ -88,38 +89,38 @@ public final class BuilderInsertTests {
         PRNG.well44497b("seeds/Well44497b-2019-01-11.txt"),
         0.0, 1.0));
 
-    final int nsites = 1;
+    final int nsites = 16;
     for (int i=0;i<nsites;i++) {
       builder.insertPoint((VectorD2) pointGenerator.next()); } }
 
   //--------------------------------------------------------------
 
-//  @Test
-//  public final void singularHexagonFrame () {
-//
-//    final LischinskiIncrementalBuilder builder =
-//      LischinskiIncrementalBuilder.make(
-//        Util.hexagonFrame(0.0,1.0,0.0,1.0));
-//    final Set<ZeroSimplex> frame = builder.vertices();
-//    for (final ZeroSimplex z : frame) { builder.insert(z); }
-//    builder.insertPoint(new VectorD2(0.5, 0.5)); }
+  @Test
+  public final void singularHexagonFrame () {
+
+    final LischinskiIncrementalBuilder builder =
+      LischinskiIncrementalBuilder.make(
+        Util.hexagonFrame(0.0,1.0,0.0,1.0));
+    final Set<ZeroSimplex> frame = builder.vertices();
+    for (final ZeroSimplex z : frame) { builder.insert(z); }
+    builder.insertPoint(new VectorD2(0.5, 0.5)); }
 
   //--------------------------------------------------------------
 
-//  @Test
-//  public final void uniform01HexagonFrame () {
-//
-//    final LischinskiIncrementalBuilder builder =
-//      LischinskiIncrementalBuilder.make(
-//        Util.hexagonFrame(0.0,1.0,0.0,1.0));
-//    final Generator pointGenerator = Generators.vectorD2Generator(
-//      Doubles.uniformGenerator(
-//        PRNG.well44497b("seeds/Well44497b-2019-01-11.txt"),
-//        0.0, 1.0));
-//
-//    final int nsites = 1;
-//    for (int i=0;i<nsites;i++) {
-//      builder.insertPoint((VectorD2) pointGenerator.next()); } }
+  @Test
+  public final void uniform01HexagonFrame () {
+
+    final LischinskiIncrementalBuilder builder =
+      LischinskiIncrementalBuilder.make(
+        Util.hexagonFrame(0.0,1.0,0.0,1.0));
+    final Generator pointGenerator = Generators.vectorD2Generator(
+      Doubles.uniformGenerator(
+        PRNG.well44497b("seeds/Well44497b-2019-01-11.txt"),
+        0.0, 1.0));
+
+    final int nsites = 16;
+    for (int i=0;i<nsites;i++) {
+      builder.insertPoint((VectorD2) pointGenerator.next()); } }
 
   //--------------------------------------------------------------
 }

@@ -2,8 +2,8 @@ package mop.java.test.geometry.delaunay.qedge;
 
 import mop.java.cmplx.SimplicialComplex2D;
 import mop.java.geom.mesh.TriangleMesh;
+import mop.java.geometry.delaunay.Edge;
 import mop.java.geometry.delaunay.Util;
-import mop.java.geometry.delaunay.qedge.QEdge;
 import mop.java.geometry.delaunay.qedge.QEdgeBuilder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -15,7 +15,7 @@ import java.util.Set;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 202-11-03
+ * @version 202-11-16
  */
 
 public final class BuilderTests {
@@ -29,7 +29,7 @@ public final class BuilderTests {
     final SimplicialComplex2D cmplx =
       (SimplicialComplex2D) mesh.cmplx();
     final QEdgeBuilder b = QEdgeBuilder.make(cmplx);
-    final Set<QEdge> primal = b.build();
+    final Set<Edge> primal = b.build();
     Assertions.assertEquals(3, primal.size());
     Assertions.assertEquals(1, b.index().nFaces());
     Assertions.assertEquals(6, b.index().nDEdges());
@@ -49,7 +49,7 @@ public final class BuilderTests {
     final SimplicialComplex2D cmplx =
       (SimplicialComplex2D) mesh.cmplx();
     final QEdgeBuilder b = QEdgeBuilder.make(cmplx);
-    final Set<QEdge> primal = b.build();
+    final Set<Edge> primal = b.build();
     Assertions.assertEquals(5, primal.size());
     Assertions.assertEquals(2, b.index().nFaces());
     Assertions.assertEquals(10, b.index().nDEdges());
@@ -68,7 +68,7 @@ public final class BuilderTests {
     final SimplicialComplex2D cmplx =
       (SimplicialComplex2D) mesh.cmplx();
     final QEdgeBuilder b = QEdgeBuilder.make(cmplx);
-    final Set<QEdge> primal = b.build();
+    final Set<Edge> primal = b.build();
     Assertions.assertEquals(9, primal.size());
     Assertions.assertEquals(4, b.index().nFaces());
     Assertions.assertEquals(18, b.index().nDEdges());

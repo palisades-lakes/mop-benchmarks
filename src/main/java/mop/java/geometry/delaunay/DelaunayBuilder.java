@@ -10,7 +10,6 @@ import mop.java.geometry.euclidean.VectorD2;
 import mop.java.geometry.triangle.TriangleR2;
 import mop.java.util.IFnWrapper;
 
-import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BiFunction;
@@ -48,21 +47,22 @@ import java.util.function.BiFunction;
  * </a>
  * </li>
  * <li>
- * <a href="https://www.cs.cmu.edu/~quake/triangle.html">Shewchuk's Triangle website</a>
+ * <a href="https://www.cs.cmu.edu/~quake/triangle.html">
+ *   Shewchuk's Triangle website</a>
  * </li>
  * </ul>
  * </p>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-10-25
+ * @version 2026-11-16
  */
 
 public interface DelaunayBuilder {
 
-  public default Collection<ZeroSimplex> vertices () {
+  public default Set<ZeroSimplex> vertices () {
     throw new UnsupportedOperationException(); }
 
-  public default Collection<TwoSimplex> faces (){
+  public default Set<TwoSimplex> faces (){
     throw new UnsupportedOperationException(); }
 
   public default int nFaces () { return faces().size(); }

@@ -6,6 +6,7 @@ import mop.java.cmplx.TwoSimplex;
 import mop.java.cmplx.ZeroSimplex;
 import mop.java.geom.mesh.TriangleMesh;
 import mop.java.geometry.delaunay.DelaunayBuilder;
+import mop.java.geometry.delaunay.Edge;
 import mop.java.geometry.delaunay.Util;
 import mop.java.geometry.euclidean.VectorD2;
 import mop.java.util.IFnWrapper;
@@ -328,12 +329,12 @@ public final class LischinskiIncrementalBuilder
       embedding.put(z,(VectorD2) embed.invoke(z)); }
     final LischinskiIncrementalBuilder builder = unsafe(embedding);
     // TODO: handle multiple starting edges
-    final Set<HEdge> primal = HEdgeBuilder.make(cmplx).build();
+    final Set<Edge> primal = HEdgeBuilder.make(cmplx).build();
 //    System.out.println("primals:" + primal.size());
 //    for (final HEdge q : primal) {
 //      System.out.println(q.name());
 //    }
-    builder.setStartingEdge(primal.iterator().next());
+    builder.setStartingEdge((HEdge) primal.iterator().next());
     return builder; }
 
 //  /** Use <code>mesh</code> as the initial frame for the builder. */

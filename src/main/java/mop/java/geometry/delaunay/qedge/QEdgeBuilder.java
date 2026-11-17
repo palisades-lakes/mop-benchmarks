@@ -2,7 +2,9 @@ package mop.java.geometry.delaunay.qedge;
 
 import mop.java.cmplx.DirectedOneSimplex;
 import mop.java.cmplx.SimplicialComplex2D;
+import mop.java.geometry.delaunay.Edge;
 import mop.java.geometry.delaunay.MeshIndex;
+import mop.java.geometry.delaunay.MeshTranslator;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -30,9 +32,9 @@ import java.util.Set;
  * TODO: Allow building both quad-edge and half-edge meshes.
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-11-14
+ * @version 2026-11-16
  */
-public final class QEdgeBuilder {
+public final class QEdgeBuilder implements MeshTranslator {
 
   //--------------------------------------------------------------------
 
@@ -45,9 +47,10 @@ public final class QEdgeBuilder {
   private final Map<DirectedOneSimplex,QEdge> _qedge = new HashMap<>();
   private final Map<DirectedOneSimplex,QEdge> qedge () {
     return _qedge; }
-  private final QEdge qedge (final DirectedOneSimplex e) {
+  private final QEdge getQEdge (final DirectedOneSimplex e) {
     return qedge().get(e); }
-  private final void qedge (final DirectedOneSimplex e, final QEdge q) {
+  private final void putQEdge (final DirectedOneSimplex e,
+                               final QEdge q) {
     if (! qedge().containsKey(e)) { qedge().put(e,q); } }
 
 //--------------------------------------------------------------------
@@ -67,10 +70,10 @@ public final class QEdgeBuilder {
    * but multiple may be necessary if the corresponding manifold is
    * not connected.
    */
-  public final Set<QEdge> build () {
+  public final Set<Edge> build () {
     index().indexFaces();
     index().linkVertexNeighbors();
-    final Set<QEdge> qEdges = new HashSet<>();
+    final Set<Edge> qEdges = new HashSet<>();
     // initial QEdge's only carry the origin and reverse links
     for (final DirectedOneSimplex e : index().dedges()) {
       // create quartets for interior edges only
@@ -82,17 +85,17 @@ public final class QEdgeBuilder {
         final DirectedOneSimplex r  = index().getReverse(e);
         if (! (qedge().containsKey(e) || qedge().containsKey(r))) {
           final QEdge q = makeQuartet(e);
-          qedge(e,q);
-          qedge(r,q.reverse());
+          putQEdge(e, q);
+          putQEdge(r, q.reverse());
           qEdges.add(q); } } }
     // Stitch QEdges together via next links
     for (final DirectedOneSimplex e : index().dedges()) {
-      final QEdge q = qedge(e);
-      final QEdge qn = qedge(index().getNext(e));
+      final QEdge q = getQEdge(e);
+      final QEdge qn = getQEdge(index().getNext(e));
       assert null != qn;
       q.setNext(qn);
       final QEdge r = q.rot();
-      final QEdge p = qedge(index().getPrev(e));
+      final QEdge p = getQEdge(index().getPrev(e));
       assert null != p;
       final QEdge rn = p.rot().reverse();
       r.setNext(rn); }

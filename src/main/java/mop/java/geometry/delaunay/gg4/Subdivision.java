@@ -6,12 +6,11 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Polyline;
 import javafx.scene.shape.Shape;
 import javafx.scene.shape.StrokeType;
+import mop.java.cmplx.ZeroSimplex;
+import mop.java.geometry.delaunay.DelaunayBuilder;
 import mop.java.geometry.euclidean.VectorD2;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.Stack;
+import java.util.*;
 
 /** Delaunay triangulation, after
  * <a href="https://www.researchgate.net/publication/262235495_Incremental_Delaunay_Triangulation">
@@ -20,12 +19,45 @@ import java.util.Stack;
  *  <b>Graphics Gems IV</b> Academic Press 1994 </a>
 
  * @author palisades dot lakes at gmail dot com
- * @version 2026-10-01
+ * @version 2026-11-14
  */
 
-public final class Subdivision {
+public final class Subdivision implements DelaunayBuilder {
 
-  private Edge startingEdge;
+  //--------------------------------------------------------------------
+
+  private final Map<ZeroSimplex, VectorD2> _embedding;
+  @Override
+  public final Map<ZeroSimplex, VectorD2> embedding () {
+    return _embedding; }
+
+  // TODO: Map implementation that allows adding.
+  //  but not modifying entries?
+  @Override
+  public final void embed (final ZeroSimplex z,
+                           final VectorD2 p) {
+    final Object previous = embedding().putIfAbsent(z,p);
+    assert (null == previous); }
+
+  @Override
+  public final VectorD2 embedding (final ZeroSimplex z) {
+    assert (null != z) : "No embedding for null";
+    assert embedding().containsKey(z) : "No embedding for " + z;
+    final VectorD2 p = embedding().get(z);
+    assert (null != p);
+    return p; }
+
+  //--------------------------------------------------------------------
+
+  private Edge _startingEdge;
+  /** The entry into the abstract cell complex represented
+   * by the <code>QEdege</code>s.
+   */
+  public final Edge startingEdge () { return _startingEdge; }
+  /** The entry into the abstract cell complex represented
+   * by the <code>QEdege</code>s.
+   */
+  final void setStartingEdge (final Edge e) { _startingEdge = e; }
 
   //--------------------------------------------------------------------
   // Basic Topological Operators
@@ -100,8 +132,10 @@ public final class Subdivision {
   private static final double TriArea (final VectorD2 a,
                                        final VectorD2 b,
                                        final VectorD2 c) {
-    // Returns twice the area of the oriented triangle (a, b, c), i.e., the
-    // area is positive if the triangle is oriented counterclockwise.
+
+    // Returns twice the signed area of the oriented triangle (a, b, c),
+    // i.e., the area is positive if the triangle is oriented
+    // counterclockwise.
 
     return
       (b.x() - a.x())*(c.y() - a.y())
@@ -188,7 +222,7 @@ public final class Subdivision {
     // a triangle containing x. The search starts from startingEdge
     // and proceeds in the general direction of x. Based on the
     // pseudocode in Guibas and Stolfi (1985) p.121.
-    Edge e = startingEdge;
+    Edge e = _startingEdge;
     while (true) {
       if (x == e.Org2d() || x == e.Dest2d()) { return e; }
       else if (RightOf(x, e)) { e = e.Sym(); }
@@ -218,11 +252,11 @@ public final class Subdivision {
     Edge base = MakeEdge();
     base.EndPoints(e.Org(), x);
     Splice(base, e);
-    startingEdge = base;
+    _startingEdge = base;
     do {
       base = Connect(e, base.Sym());
       e = base.Oprev();
-    } while (e.Lnext() != startingEdge);
+    } while (e.Lnext() != _startingEdge);
     // Examine suspect edges to ensure that the Delaunay condition
     // is satisfied.
     do {
@@ -232,7 +266,7 @@ public final class Subdivision {
         Swap(e);
         e = e.Oprev(); }
       // no more suspect edges
-      else if (e.Onext() == startingEdge) { return; }
+      else if (e.Onext() == _startingEdge) { return; }
       // pop a suspect edge
       else { e = e.Onext().Lprev(); }
     } while (true); }
@@ -263,7 +297,7 @@ public final class Subdivision {
 
     final Set<Edge> visited = new HashSet<>();
     final Stack<Edge> toVisit = new Stack<>();
-    toVisit.push(startingEdge);
+    toVisit.push(_startingEdge);
     while (! toVisit.empty()) {
       final Edge e0 = toVisit.pop();
       if (! visited.contains(e0)) {
@@ -279,13 +313,44 @@ public final class Subdivision {
   //--------------------------------------------------------------------
   // construction
   //--------------------------------------------------------------------
+
+  private Subdivision (final Map<ZeroSimplex, VectorD2> embedding) {
+    _embedding = embedding; }
+
+  public static final Subdivision
+  unsafe (final Map<ZeroSimplex, VectorD2> embedding) {
+    return new Subdivision(embedding); }
+
+  public static final Subdivision
+  make (final Map<ZeroSimplex, VectorD2> embedding,
+        final Edge startingEdge) {
+    // defensive copy
+    final Subdivision builder =
+      unsafe(new TreeMap<>(embedding));
+    builder.setStartingEdge(startingEdge);
+    return builder; }
+
+//  public static final Subdivision make (final TriangleMesh mesh) {
+//    final IFn embed = mesh.embedding();
+//    // TODO: handle general cell complexes?
+//    final SimplicialComplex2D cmplx =
+//      (SimplicialComplex2D) mesh.cmplx();
+//    final Map<ZeroSimplex, VectorD2> embedding = new HashMap<>();
+//    for (final ZeroSimplex z : cmplx.vertices()) {
+//      embedding.put(z,(VectorD2) embed.invoke(z)); }
+//    final Subdivision builder = unsafe(embedding);
+//    // TODO: handle multiple starting edges
+//    final Set<Edge> primal = make(cmplx).build();
+//    builder.setStartingEdge(primal.iterator().next());
+//    return builder; }
+
   /** All inserted points must lie in the triangle formed by
    * <code>a, b, c</code>.
    */
 
-  public Subdivision (final VectorD2 a,
-                      final VectorD2 b,
-                      final VectorD2 c) {
+  public static final Subdivision triangleFrame (final VectorD2 a,
+                                           final VectorD2 b,
+                                           final VectorD2 c) {
     // Initialize a subdivision to the triangle defined by the points a, b, c.
     // Point2d *da, *db, *dc;
     // da = new Point2d(a), db = new Point2d(b), dc = new Point2d(c);
@@ -302,7 +367,7 @@ public final class Subdivision {
     Splice(eb.Sym(), ec);
     ec.EndPoints(c, a);
     Splice(ec.Sym(), ea);
-    startingEdge = ea; }
+    return make(null,ea); }
 
   //--------------------------------------------------------------------
 } // end class

@@ -9,7 +9,7 @@ import mop.java.geometry.euclidean.VectorD2;
  *  <b>Graphics Gems IV</b> Academic Press 1994 </a>
 
  * @author palisades dot lakes at gmail dot com
- * @version 2026-10-01
+ * @version 2026-11-14
  */
 public final class Edge {
 
@@ -44,9 +44,10 @@ public final class Edge {
     // Return the next cw edge around (from) the origin of the current edge.
     return Rot().Onext().Rot(); }
 
-//  public final HEdge Dnext() {
-//    // Return the next ccw edge around (into) the destination of the current edge.
-//    return Sym().Onext().Sym(); }
+  @SuppressWarnings("unused")
+  public final Edge Dnext() {
+    // Return the next ccw edge around (into) the destination of the current edge.
+    return Sym().Onext().Sym(); }
 
   public final Edge Dprev() {
     // Return the next cw edge around (into) the destination of the current edge.
@@ -60,13 +61,15 @@ public final class Edge {
     // Return the ccw edge around the left face before the current edge.
     return Onext().Sym(); }
 
-//  public final HEdge Rnext() {
-//    // Return the edge around the right face ccw following the current edge.
-//      return Rot().Onext().invRot(); }
+  @SuppressWarnings("unused")
+  public final Edge Rnext () {
+    // Return the edge around the right face ccw following the current edge.
+      return Rot().Onext().invRot(); }
 
-//  public final HEdge Rprev() {
-//    // Return the edge around the right face ccw before the current edge.
-//    return Sym().Onext(); }
+  @SuppressWarnings("unused")
+  public final Edge Rprev() {
+    // Return the edge around the right face ccw before the current edge.
+    return Sym().Onext(); }
 
   public final VectorD2 Org() { return data; }
 
@@ -79,7 +82,7 @@ public final class Edge {
 
   public final void EndPoints (final VectorD2 or,
                                final VectorD2 de) {
-    data= or;
+    data = or;
     Sym().data = de; }
 
   //--------------------------------------------------------------------

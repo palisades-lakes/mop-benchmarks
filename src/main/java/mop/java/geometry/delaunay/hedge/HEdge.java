@@ -1,9 +1,9 @@
 package mop.java.geometry.delaunay.hedge;
 
-import mop.java.cmplx.TwoSimplex;
 import mop.java.cmplx.ZeroSimplex;
+import mop.java.geometry.delaunay.Edge;
 
-import java.util.*;
+import java.util.Objects;
 
 /** Delaunay triangulation, after
  * <a href="https://www.researchgate.net/publication/262235495_Incremental_Delaunay_Triangulation">
@@ -41,24 +41,21 @@ import java.util.*;
  * are topologically equivalent.
  * </p>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-11-10
+ * @version 2026-11-16
  */
-public final class HEdge implements Comparable<HEdge> {
-
-  // TODO: half edge structure typically have slots:
-  //  origin
-  //  reverse
-  //  faceNExt
-  //  face
+public final class HEdge implements Edge {
 
   private HEdge _reverse;
   /** The edge from the destination to the origin. */
+  @Override
   public final HEdge reverse () { return _reverse; }
 
+  @Override
   public final String name () {
     return origin() + "->" + dest(); }
 
   private ZeroSimplex _origin;
+  @Override
   public final ZeroSimplex origin () { return _origin; }
 //  public final void setOrigin (final ZeroSimplex p) {
 //    assert _origin != null;
@@ -68,12 +65,14 @@ public final class HEdge implements Comparable<HEdge> {
     assert _origin != null;
     _origin = null; }
 
+  @Override
   public final ZeroSimplex dest () { return reverse().origin(); }
 
   /** The next edge ccw in the left face. */
   private HEdge _faceNext;
 
   /** The next edge ccw in the left face. */
+  @Override
   public final HEdge faceNext () { return _faceNext; }
 
   /** The next edge ccw in the left face. */
@@ -86,6 +85,7 @@ public final class HEdge implements Comparable<HEdge> {
   /** The next edge cw in the face.
    * TODO: cache?
    */
+  @Override
   public final HEdge facePrev () {
     HEdge p = this;
     for (;;) {
@@ -98,9 +98,11 @@ public final class HEdge implements Comparable<HEdge> {
   //--------------------------------------------------------------------
 
   /** The next edge ccw around the origin. */
+  @Override
   public final HEdge next () { return facePrev().reverse(); }
 
   /** The next edge cw around the origin. */
+  @Override
   public final HEdge prev () { return reverse().faceNext(); }
 
   //--------------------------------------------------------------------
@@ -111,6 +113,7 @@ public final class HEdge implements Comparable<HEdge> {
    * Repair the <code>faceNext</code> links in neighbors.
    */
 
+  @Override
   public final void delete () {
     final HEdge pr = this;
     final HEdge re = reverse();
@@ -126,42 +129,6 @@ public final class HEdge implements Comparable<HEdge> {
     re.clearOrigin(); }
 
   //--------------------------------------------------------------------
-
-//  private final void swapFaceNext (final HEdge that) {
-//    final HEdge n0 = this.faceNext();
-//    final HEdge n1 = that.faceNext();
-//    this.setFaceNext(n1);
-//    that.setFaceNext(n0); }
-
-  //--------------------------------------------------------------------
-  // https://github.com/MeshInspector/MeshLib#readme
-  // https://www.ic.unicamp.br/~stolfi/voynich/projects/voynich/Notes/053/work/programs/c/JSLIBS/libquad/haf.h
-  // https://www.ic.unicamp.br/~stolfi/voynich/projects/voynich/Notes/053/work/programs/c/JSLIBS/libquad/haf.c
-  // https://github.com/JorgeStolfi/JSLIBS
-//  /** Lischinski: <br>
-//   * This operator affects the two edge rings around the origins
-//   * of a and b, and, independently, the two edge rings around
-//   * the left faces of a and b. In each case,
-//   * <ol>
-//   * <li> if the two rings are distinct, Splice will combine
-//   * them into one;
-//   * </li>
-//   * <li> if the two are the same ring, Splice will break it
-//   * into two separate pieces.
-//   * </li>
-//   * </ol>
-//   * Thus, splice can be used both to attach the two edges together,
-//   * and to break them apart. <br>
-//   * See Guibas and Stolfi (1985) p.96 for more details
-//   * and illustrations.
-//   */
-//
-//  public final void splice (final HEdge that) {
-//    swapFaceNext(that);
-//    reverse().swapFaceNext(that.reverse());
-//  }
-
-  //--------------------------------------------------------------------
   /** Lischinski: <br>
    * Add a new edge e connecting
    * the destination of <code>this</code>
@@ -171,7 +138,9 @@ public final class HEdge implements Comparable<HEdge> {
    * Additionally, the data pointers of the new edge are set.
    */
 
-  public final HEdge connect (final HEdge that) {
+  @Override
+  public final HEdge connect (final Edge that) {
+    assert that instanceof HEdge;
     final ZeroSimplex z0 = dest();
     final ZeroSimplex z1 = that.origin();
     assert ! Objects.equals(z0,z1);
@@ -179,8 +148,8 @@ public final class HEdge implements Comparable<HEdge> {
     final HEdge e = make(dest(), that.origin());
     final HEdge r = e.reverse();
     final HEdge n = faceNext();
-    final HEdge p = that.facePrev();
-    e.setFaceNext(that);
+    final HEdge p = (HEdge) that.facePrev();
+    e.setFaceNext((HEdge) that);
     r.setFaceNext(n);
     setFaceNext(e);
     p.setFaceNext(r);
@@ -194,6 +163,7 @@ public final class HEdge implements Comparable<HEdge> {
    * between <code>next()</code> and <code>origin()</code></em>.
    */
 
+  @Override
   public final HEdge swap () {
     final HEdge n0 = faceNext();
     final HEdge n1 = reverse().faceNext();
@@ -213,114 +183,6 @@ public final class HEdge implements Comparable<HEdge> {
     return e0; }
 
   //--------------------------------------------------------------------
-  // collect mesh elements
-  //--------------------------------------------------------------------
-
-// --Commented out by Inspection START (10/25/2026 14:09):
-//  private final boolean noElements (final Set<ZeroSimplex> exclude,
-//                                    final ZeroSimplex[] points) {
-//    for (final ZeroSimplex p : points) {
-//      if (exclude.contains(p)) { return false; } }
-//    return true; }
-// --Commented out by Inspection STOP (10/25/2026 14:09)
-
-  //--------------------------------------------------------------------
-  /** Collect the vertices as a set of points.
-   * Skip elements of <code>exclude</code>.
-   * <b>Assumes mesh is connected!</b>
-   */
-
-  public final SortedSet<ZeroSimplex>
-  zeroSimplexes (final Set<ZeroSimplex> exclude) {
-    final SortedSet<ZeroSimplex> t = new TreeSet<>();
-    final Set<HEdge> visited = new HashSet<>();
-    final Stack<HEdge> toVisit = new Stack<>();
-    toVisit.push(this);
-    while (! toVisit.empty()) {
-      final HEdge e0 = toVisit.pop();
-      if (! visited.contains(e0)) {
-        visited.add(e0);
-        toVisit.push(e0.reverse());
-        toVisit.push(e0.faceNext());
-        final ZeroSimplex p = e0.origin();
-        if (!exclude.contains(p)) { t.add(p); } } }
-    return t; }
-
-  public final SortedSet<ZeroSimplex> zeroSimplexes () {
-    return zeroSimplexes(new TreeSet<>()); }
-
-//  /** Collect the edges as a set of pairs of coordinates.
-//   * Skip edges that have any vertices in <code>exclude</code>.
-//   * <b>Assumes mesh is connected!</b>
-//   */
-//
-//  public final SortedSet<ZeroSimplex[]> edges (final Set<ZeroSimplex> exclude) {
-//    final Set<ZeroSimplex[]> t = new HashSet<>();
-//    final Set<HEdge> visited = new HashSet<>();
-//    final Stack<HEdge> toVisit = new Stack<>();
-//    toVisit.push(this);
-//    while (! toVisit.empty()) {
-//      final HEdge e0 = toVisit.pop();
-//      if (! visited.contains(e0)) {
-//        final HEdge e1 = e0.reverse();
-//        visited.add(e0);
-//        visited.add(e1);
-//        toVisit.push(e0.faceNext());
-//        toVisit.push(e1.faceNext());
-//        // TODO: sort, preserving orientation, so that same edge
-//        //  only returned once.
-//        final ZeroSimplex[] points = new ZeroSimplex[] {
-//          e0.origin(), e1.origin(), };
-//        Arrays.sort(points);
-//        if (noElements(exclude,points)) { t.add(points); } } }
-//    return t; }
-
-  /** Collect connected triangular faces, skip others. */
-  public final SortedSet<TwoSimplex> twoSimplexes () {
-    validateMesh();
-    final SortedSet<TwoSimplex> faces = new TreeSet<>();
-    final Set<HEdge> visited = new HashSet<>();
-    final Stack<HEdge> toVisit = new Stack<>();
-    toVisit.push(this);
-    while (! toVisit.empty()) {
-      final HEdge e0 = toVisit.pop();
-      if (! visited.contains(e0)) {
-        visited.add(e0);
-        final HEdge e1 = e0.faceNext(); visited.add(e1);
-        final HEdge e2 = e1.faceNext(); visited.add(e2);
-        assert ! (e0.equals(e1) || e0.equals(e2) || (e1.equals(e2)));
-        toVisit.push(e0.reverse());
-        toVisit.push(e1.reverse());
-        toVisit.push(e2.reverse());
-        HEdge e3 = e2.faceNext();
-        if (e0.equals(e3)) { // triangular
-          final ZeroSimplex z0 = e0.origin();
-          final ZeroSimplex z1 = e1.origin();
-          final ZeroSimplex z2 = e2.origin();
-          assert (! z0.equals(z1)) :
-            "e0 <> e1" + e0 + "\n" + e1
-            + "\n" + z0 + "<>" + z1;
-          assert ! z1.equals(z2) : "e1 <> e2" + e1 + "\n" + e2;
-          assert ! z2.equals(z0) : "e2 <> e0" + e2 + "\n" + e0;
-          final TwoSimplex face = TwoSimplex.make(z0,z1,z2);
-          faces.add(face); }
-        else {
-          while (! e0.equals(e3)) {
-            visited.add(e3); toVisit.push(e3.reverse());
-            e3 = e3.faceNext(); } } } }
-    return faces; }
-
-  //--------------------------------------------------------------------
-  // Comparable
-  //--------------------------------------------------------------------
-
-  @Override
-  public int compareTo (final HEdge h) {
-    final int c = origin().compareTo(h.origin());
-    if (0 != c) { return c; }
-    return dest().compareTo(h.dest()); }
-
-  //--------------------------------------------------------------------
   // Object
   //--------------------------------------------------------------------
 
@@ -338,54 +200,6 @@ public final class HEdge implements Comparable<HEdge> {
 //        + "\nreverse:" + reverse().name()
 //        + "\nreverse.next():" + reverse().next().name()
   ; }
-
-  //--------------------------------------------------------------------
-  // debugging
-  //--------------------------------------------------------------------
-
-
-  public final void validate () {
-    assert Objects.equals(origin(),next().origin());
-    assert Objects.equals(origin(),prev().origin());
-    assert Objects.equals(origin(),facePrev().dest());
-    assert Objects.equals(dest(),faceNext().origin());
-    assert Objects.equals(this,reverse().reverse()); }
-
-  public final void validateMesh () {
-    final Set<HEdge> visited = new HashSet<>();
-    final Stack<HEdge> toVisit = new Stack<>();
-    toVisit.push(this);
-    while (! toVisit.empty()) {
-      final HEdge e = toVisit.pop();
-      if (! visited.contains(e)) {
-        e.validate();
-        visited.add(e);
-        toVisit.push(e.next());
-        toVisit.push(e.reverse());
-      }}
-  }
-  public static final void printFace (final Set<HEdge> visited,
-                                      final Stack<HEdge> toVisit) {
-    final HEdge e0 = toVisit.pop();
-    if ((null!=e0) && (! visited.contains(e0))) {
-      System.out.println("face:" );
-      HEdge e1 = e0;
-      do {
-        toVisit.remove(e1);
-        if (! visited.contains(e1)) {
-          System.out.println(e1);
-          visited.add(e1);
-          final HEdge ri = e1.reverse();
-          if (! visited.contains(ri)) { toVisit.push(ri); } }
-        e1 = e1.faceNext();
-        assert null != e1;
-      } while (e0 != e1); } }
-
-  public final void printMesh () {
-    final Set<HEdge> visited = new HashSet<>();
-    final Stack<HEdge> toVisit = new Stack<>();
-    toVisit.push(this);
-    while (!toVisit.empty()) { printFace(visited,toVisit); } }
 
   //--------------------------------------------------------------------
   // construction
