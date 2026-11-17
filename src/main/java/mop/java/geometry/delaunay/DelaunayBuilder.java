@@ -54,7 +54,7 @@ import java.util.function.BiFunction;
  * </p>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 2026-11-16
+ * @version 2026-11-17
  */
 
 public interface DelaunayBuilder {
@@ -236,6 +236,10 @@ public interface DelaunayBuilder {
   //--------------------------------------------------------------------
 
   public default void insert (final ZeroSimplex z) {
+    if (vertices().contains(z)) {
+      //System.out.println(this + "\n" + z + " already in mesh");
+      //new Throwable().printStackTrace();
+      return; }
     final TwoSimplex t = locate(z);
     //System.out.println("locate(" + z + ") -> " + t);
     insertVertex(z,t); }

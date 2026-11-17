@@ -20,7 +20,7 @@ import java.util.function.Function;
  * </pre>
  *
  * @author palisades dot lakes at gmail dot com
- * @version 202-11-16
+ * @version 202-11-17
  */
 
 public final class BuilderInsertTests {
@@ -126,13 +126,15 @@ public final class BuilderInsertTests {
   private static final List<Function<TriangleMesh, DelaunayBuilder>>
     delaunayMakers =
     List.of(
+      mop.java.geometry.delaunay.cdsbw.CDSBWDelaunayBuilder::make,
+      mop.java.geometry.delaunay.cdsbw.RobustCDSBWDelaunayBuilder::make,
       mop.java.geometry.delaunay.gg4.SubdivisionBuilder::make,
       mop.java.geometry.delaunay.hedge.LischinskiIncrementalBuilder::make,
       mop.java.geometry.delaunay.qedge.LischinskiIncrementalBuilder::make);
 
   @Test
   public final void runTests () {
-    for (Function<TriangleMesh, DelaunayBuilder> maker :
+    for (final Function<TriangleMesh, DelaunayBuilder> maker :
       delaunayMakers) {
       singularTriangleFrame(maker);
       uniform01TriangleFrame(maker);

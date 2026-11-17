@@ -5,7 +5,7 @@ import mop.java.geometry.delaunay.Edge;
 
 import java.util.Objects;
 
-/** Delaunay triangulation, after
+/** Half edge version of quad edge based Delaunay triangulation, after
  * <a href="https://www.researchgate.net/publication/262235495_Incremental_Delaunay_Triangulation">
  *  Dani Lischinski
  *  <i>Incremental Delaunay triangulation</i>
@@ -18,7 +18,7 @@ import java.util.Objects;
  *   like JTS.</li>
  *   <li>Simplify edge algebra.</li>
  *   <li>Drop dual (rot) edges.</li>
- *   <li>Remove <code>splie</code>, explicit <code>faceNext</code>
+ *   <li>Remove <code>splice</code>, explicit <code>faceNext</code>
  *   updates instead.</li>
  * </ul>
  * </p>
@@ -41,7 +41,7 @@ import java.util.Objects;
  * are topologically equivalent.
  * </p>
  * @author palisades dot lakes at gmail dot com
- * @version 2026-11-16
+ * @version 2026-11-17
  */
 public final class HEdge implements Edge {
 

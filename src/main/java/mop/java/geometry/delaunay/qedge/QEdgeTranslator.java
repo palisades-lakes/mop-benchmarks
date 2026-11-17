@@ -29,7 +29,6 @@ import java.util.Set;
  * Essentially constructing a half-edge mesh,
  * via <code>Map</code>s rather than direct references.
  * <br>
- * TODO: Allow building both quad-edge and half-edge meshes.
  *
  * @author palisades dot lakes at gmail dot com
  * @version 2026-11-16

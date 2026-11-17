@@ -38,9 +38,7 @@ public final class BuilderTests {
     Assertions.assertEquals(1, b.index().nFaces());
     Assertions.assertEquals(6, b.index().nDEdges());
     Assertions.assertEquals(3, b.index().nBoundary());
-    Assertions.assertEquals(3, b.index().nInterior());
-
-  }
+    Assertions.assertEquals(3, b.index().nInterior()); }
 
   //--------------------------------------------------------------------
 

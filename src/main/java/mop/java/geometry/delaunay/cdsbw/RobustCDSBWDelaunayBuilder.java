@@ -84,7 +84,7 @@ public final class RobustCDSBWDelaunayBuilder implements
   public final void embed (final ZeroSimplex z,
                            final VectorD2 p) {
     // just in case...
-    vertices().add(z);
+//    vertices().add(z);
     final Object previous = embedding().putIfAbsent(z,p);
     assert (null == previous); }
 

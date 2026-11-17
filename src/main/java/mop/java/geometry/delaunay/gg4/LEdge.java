@@ -3,7 +3,8 @@ package mop.java.geometry.delaunay.gg4;
 import mop.java.cmplx.ZeroSimplex;
 import mop.java.geometry.delaunay.Edge;
 
-/** Delaunay triangulation, after
+/** "LEdge" == Lischinski quad edge, from Graphics Gems IV.
+ * Used in Delaunay triangulation, after
  * <a href="https://www.researchgate.net/publication/262235495_Incremental_Delaunay_Triangulation">
  *  Dani Lischinski
  *  <i>Incremental Delaunay triangulation</i>
