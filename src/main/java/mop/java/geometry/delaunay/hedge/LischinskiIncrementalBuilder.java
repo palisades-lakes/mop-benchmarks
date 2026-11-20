@@ -297,18 +297,6 @@ public final class LischinskiIncrementalBuilder
   unsafe (final Map<ZeroSimplex, VectorD2> embedding) {
     return new LischinskiIncrementalBuilder(embedding); }
 
-// --Commented out by Inspection START (10/25/2026 14:09):
-//  public static final LischinskiIncrementalBuilder make () {
-//    return unsafe(new TreeMap<>()); }
-// --Commented out by Inspection STOP (10/25/2026 14:09)
-
-// --Commented out by Inspection START (10/25/2026 14:09):
-//  public static final LischinskiIncrementalBuilder
-//  make (final Map<ZeroSimplex, VectorD2> embedding) {
-//    // defensive copy
-//    return unsafe(new TreeMap<>(embedding)); }
-// --Commented out by Inspection STOP (10/25/2026 14:09)
-
   public static final LischinskiIncrementalBuilder
   make (final Map<ZeroSimplex, VectorD2> embedding,
         final HEdge startingEdge) {
